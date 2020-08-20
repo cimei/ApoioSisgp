@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+
+        <div class="card border-primary mb-3">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="container">
+              <div class="row">
+                <div class="col-3">
+                  {% if dadosSEI != None %}
+                    <h3>{{convenio.NR_CONVENIO}}/{{dadosSEI.ano}}</h3>
+                  {% else %}
+                    <h3>{{convenio.NR_CONVENIO}}</h3>
+                  {% endif %}
+                </div>
+                <div class="col-2">
+                  <h3>{{dadosSEI.programa}}</h3>
+                </div>
+                <div class="col-2">
+                  <h3>{{dadosSEI.epe}}-{{dadosSEI.uf}}</h3>
+                </div>
+                <div class="col-4">
+                  {% if sei != 'Nº SEI não informado' %}
+                    <h3><a href="{{url_for('convenios.SEI_demandas', conv=convenio.NR_CONVENIO)}}">
+                      <abbr title="Clique aqui para ver as demandas deste processo">{{sei.split('_')[0]+'/'+sei.split('_')[1]}}</abbr></a></h3>
+                  {% else %}
+                    <h3>{{ sei.split('_')[0]+'/'+sei.split('_')[1] }}</h3>
+                  {% endif %}
+                </div>
+                <div class="col-1">
+                  <abbr title="Clique aqui para gerar um caput para documentos"><button type="button" class="btn btn-info" data-toggle='modal' data-target='#caput_modal'><h5>t</h5></button></abbr>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <div class="container">
+
+              <div class="row">
+                <div class="col">
+                  Assinado em: <h5 align = "center">{{convenio.DIA_ASSIN_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Publicado em: <h5 align = "center">{{convenio.DIA_PUBL_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Início: <h5 align = "center">{{convenio.DIA_INIC_VIGENC_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Término: <h5 align = "center">{{convenio.DIA_FIM_VIGENC_CONV.strftime('%x')}}</h5>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  Situação da contratação: <h5 align = "center">{{convenio.SITUACAO_CONTRATACAO}}</h5>
+                </div>
+                <div class="col">
+                  Situação do convênio: <h5 align = "center">{{convenio.SIT_CONVENIO}}</h5>
+                </div>
+                <div class="col">
+                  Subsituação: <h5 align = "center">{{convenio.SUBSITUACAO_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Opera OBTV: <h5 align = "center">{{convenio.IND_OPERA_OBTV}}</h5>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  TAs já celebrados: <h5 align = "center">{% if convenio.QTD_TA == '' %}
+                                                            0
+                                                          {% else %}
+                                                            {{convenio.QTD_TA}}
+                                                          {% endif %}</h5>
+                </div>
+                <div class="col">
+                  Prorrogações já realizadas: <h5 align = "center">{% if convenio.QTD_PRORROGA == '' %}
+                                                            0
+                                                          {% else %}
+                                                            {{convenio.QTD_PRORROGA}}
+                                                          {% endif %}</h5>
+                </div>
+              </div>
+            </div>
+
+<br>
+            <h5>Valor Global: R$ {{ VL_GLOBAL_CONV }}</h5>
+
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  Repasse: <h5 align = "center">R$ {{VL_REPASSE_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Empenhado: <h5 align = "center">R$ {{VL_EMPENHADO_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Desembolsado: <h5 align = "center">R$ {{VL_DESEMBOLSADO_CONV}}</h5>
+                </div>
+                <div class="col">
+                  Contrapartida: <h5 align = "center">R$ {{VL_CONTRAPARTIDA_CONV}}</h5>
+                </div>
+              </div>
+            </div>
+
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  Rendimento de aplicação: <h5 align = "center">R$ {{VL_RENDIMENTO_APLICACAO}}</h5>
+                </div>
+                <div class="col">
+                  A Empenhar: <h5 align = "center">R$ {{vl_a_empenhar}} ({{100-percent_empen_repass}}%)</h5>
+                </div>
+                <div class="col" >
+                  A Desembolsar: <h5 align = "center">R$ {{vl_a_desembolsar}} ({{100-percent_desemb_repass}}%)</h5>
+                </div>
+                <div class="col">
+                  Ingresso contrapartida: <h5 align = "center">R$ {{VL_INGRESSO_CONTRAPARTIDA}} ({{percent_ingre_contrap}}%)</h5>
+                </div>
+              </div>
+            </div>
+<br>
+        <div class="container">
+          <div class="row">
+            <div class="col align = "center"" >
+              <button type="button" class="btn btn-primary" data-toggle='modal' data-target='#emp_desemb_modal'>Empenhos e Desembolsos</button>
+            </div>
+            <div class="col align = "center"" >
+              <button type="button" class="btn btn-warning" data-toggle='modal' data-target='#chamadas_modal'>Chamadas Homologadas</button>
+            </div>
+            <div class="col">
+              <p align = "center"><button type="button" class="btn btn-success" data-toggle='modal' data-target='#pag_modal'>Pagamentos efetuados pela EPE</button></p>
+            </div>
+          </div>
+        </div>
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+{# modal para visualizar pagamentos efetuados #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="pag_modal">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Pagamentos conforme dados de {{data_carga.strftime('%x')}}</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">ID</p></th>
+              <th scope="col"><p align = "center">NOME</p></th>
+              <th scope="col"><p align = "center">QTD</p></th>
+              <th scope="col"><p align = "center">VALOR</p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for pag in pagamento %}
+              <tr>
+                <td><p align = "center"> {{pag[0]}} </p></td>
+                <td><p align = "left"> {{pag[1]}} </p></td>
+                <td><p align = "center"> {{pag[3]}} </p></td>
+                <td><p align = "right"> {{pag[2]}} </p></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <p>{{qtd_pag}} itens, totalizando R$ {{pag_tot}}</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{# modal para visualizar empenhos e desembolsos #}
+
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" id="emp_desemb_modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Empenhos e desembolsos</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">Empenho</p></th>
+              <th scope="col"><p align = "center">Tipo nota</p></th>
+              <th scope="col"><p align = "center">Data emissão</p></th>
+              <th scope="col"><p align = "center">Situação</p></th>
+              <th scope="col"><p align = "center">Valor Empenho</p></th>
+              <th scope="col"><p align = "center">Data desemb.</p></th>
+              <th scope="col"><p align = "center">SIAFI</p></th>
+              <th scope="col"><p align = "center">Valor desemb.</p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for item in empenho_desembolso %}
+              <tr>
+                <td><p align = "center"> {{item[0]}} </p></td>
+                <td><p align = "left"> {{item[1]}} </p></td>
+                {% if item[2] != None %}
+                  <td><p align = "center"> {{item[2].strftime('%x')}} </p></td>
+                {% else %}
+                  <td></td>
+                {% endif %}
+                <td><p align = "right"> {{item[3]}} </p></td>
+                <td><p align = "center"> {{item[4]}} </p></td>
+                {% if item[5] != None %}
+                  <td><p align = "left"> {{item[5].strftime('%x')}} </p></td>
+                {% else %}
+                  <td></td>
+                {% endif %}
+                <td><p align = "center"> {{item[6]}} </p></td>
+                <td><p align = "right"> {{item[7]}} </p></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <p align = "center">Total empenhado: {{emp_tot}}</p>
+            </div>
+            <div class="col">
+              <p align = "center">Total desembolsado: {{desemb_tot}}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{# modal para visualizar chamadas homologadas #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="chamadas_modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Chamadas Homologadas</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">ID</p></th>
+              <th scope="col"><p align = "center">Chamada</p></th>
+              <th scope="col"><p align = "center">Projetos</p></th>
+              <th scope="col"><p align = "center">Valor Homolog.</p></th>
+              <th scope="col"><p align = "center">Ref. SEI</p></th>
+              <th scope="col"><p align = "center">Obs.</p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for chamada in chamadas %}
+              <tr>
+                <td><p align = "left">  <a href="{{url_for('core.update_chamada', id=chamada[0])}}"><abbr title="Clique aqui atualizar esta chamada">{{chamada[0]}}</abbr></a> </p></td>
+                <td><p align = "left"> {{chamada[1]}} </p></td>
+                <td><p align = "center"> {{chamada[2]}} </p></td>
+                <td><p align = "right"> {{chamada[3]}} </p></td>
+                <td><p align = "center"> {{chamada[4]}} </p></td>
+                <td><p align = "left"> {{chamada[5]}} </p></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <p>{{qtd_chamadas}} registro(s): {{qtd_proj}} projetos, totalizando R$ {{chamadas_tot}}</p>
+        <br>
+        <p><a href="{{url_for('core.cria_chamada',sei=sei)}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir novo</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# modal para visualizar caput de documento #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="caput_modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Texto para caput de documento </h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <span class="text-left">Convênio: {{convenio.NR_CONVENIO}}/{{dadosSEI.ano}}</span><br>
+        <span class="text-left">SEI: {{dadosSEI.sei}}</span><br>
+        <span class="text-left">Programa: {{dadosSEI.programa}}</span><br>
+        <p class="text-left">Entidade Parceira Estatual (EPE): {{dadosSEI.epe}} - {{dadosSEI.uf}}</p>
+
+        <p class="text-left">ASSUNTO: ...</p>
+
+        <p class="text-justify">
+          Versam os registros da Plataforma +Brasil acerca do convênio firmado entre CNPq e {{dadosSEI.epe}},
+           com vistas à implementação do programa supracitado, no período de {{convenio.DIA_INIC_VIGENC_CONV}} a {{convenio.DIA_FIM_VIGENC_CONV.strftime('%x')}}.
+            O valor global compreende R$ {{ VL_GLOBAL_CONV }} sendo R$ {{VL_REPASSE_CONV}} de repasse, R$ {{VL_CONTRAPARTIDA_CONV}} de
+            contrapartida) e R$ {{VL_RENDIMENTO_APLICACAO}} referentes a rendimentos de aplicação financeira. Consta como desembolso do CNPq
+            o valor de R$ {{VL_DESEMBOLSADO_CONV}} ({{percent_desemb_repass}}% do repasse) e como ingresso de contrapartida o valor de
+            R$ {{VL_INGRESSO_CONTRAPARTIDA}} ({{percent_ingre_contrap}}% da contrapartida).
+
+          </p>
+
+        <p class="text-justify">
+          O Convênio tem por objeto: "{{proposta.OBJETO_PROPOSTA}}".
+        </p>
+
+        <p class="text-justify">
+          No âmbito deste convênio houve {{qtd_chamadas}} chamada(s) homologada(s)
+          {% for chamada in chamadas %}
+            ({{chamada[1]}},),
+          {% endfor %}
+          compreendendo {{qtd_proj}} projetos, totalizando R$ {{chamadas_tot}}.
+        </p>
+
+        <p class="text-justify">
+          *** NO CASO DE PRORROGAÇÃO DE OFÍCIO ***<br>
+          De acordo com o exposto no Art. 30 da Portaria Interministerial Nº 127/2008, no Art. 43, da Portaria Interministerial Nº 507/2011
+          e no Art. 27 da Portaria Interministerial Nº 424/2016, é prevista a obrigação da concedente em prorrogar de ofício
+          a vigência do convênio antes do seu término, quando der causa a atraso na liberação dos recursos, limitada a prorrogação
+          ao exato período do atraso verificado.
+         </p>
+
+         <p class="text-justify">
+           *** NO CASO DE RELATÓRIO TÉCNICO FINAL ***<br>
+           No que tange ao relatório técnico final, a análise técnica deve considerar o alcance ou não do objeto do convênio, que consistia,
+           precipuamente, na implementação do Programa com a contratação e execução das propostas de pesquisa selecionadas por meio de editais.
+           <br>
+           A prestação de contas final apresentada pela {{dadosSEI.epe}}, via Plataforma +Brasil contém, dentre outras, as seguintes informações:
+           . sobre o cumprimento do objeto;
+           . sobre a realização dos objetivos;
+           . relatórios: Financeiro do Plano de Trabalho, Pagamentos Realizados, Documentos de Liquidação Incluídos,
+             Físico do Plano de Trabalho e Receita e Despesa do Plano de Trabalho.
+           <br>
+           Atesta a EPE que os objetivos propostos foram alcançados parcialmente, sendo as metas e etapas cumpridas.
+           <br>
+           Esta área técnica verificou a lista de pagamentos efetuados e não encontrou incongruências com a lista de contemplados e
+           respectivos valores concedidos. A verificação não levou em conta os casos pagos a menor.
+           <br>
+           De acordo com as informações apresentadas, verifica-se terem sido implementados projetos recomendados e aprovados
+           no âmbito do convênio e que as ações empreendidas visaram à formação de recursos humanos de alta qualificação,
+           o que denota terem sido cumpridas satisfatoriamente as metas do convênio, bem como alcançados os seus objetivos.
+           <br>
+           Do ponto de vista técnico, recomenda-se à aprovação do Relatório Técnico Final, pois a {{dadosSEI.epe}} cumpriu com
+           suas obrigações relativas ao Plano de Trabalho, parte integrante do Convênio, conforme registro Plataforma+Brasil
+           nº {{convenio.NR_CONVENIO}}/{{dadosSEI.ano}}.
+          </p>
+
+        <p>...</p>
+
+      </div>
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

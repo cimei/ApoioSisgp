@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+
+        <div class="card border-primary mb-3">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="container">
+              <div class="row">
+
+                  <h3>Programas e Acordos</h3>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <div class="container">
+              {% for programa in programas %}
+
+                <div class="card">
+
+                  <div class="card-header">
+                    <h5><a href="{{url_for('acordos.lista_acordos',lista='programa'+programa[0],coord='*')}}">{{programa[1]}}</a></h5>
+                    <h5></h5>
+                  </div>
+
+                  <div class="card-body">
+
+                    <div class="row">
+                      <div class="col">
+                        <h5>
+                          {% if programa[5] == 1 %}
+                            <a href="{{url_for('acordos.edic_programa',cod_programa=programa[0])}}">{{programa[5]}} Edição</a>
+                          {% else %}
+                            <a href="{{url_for('acordos.edic_programa',cod_programa=programa[0])}}">{{programa[5]}} Edições</a>
+                          {% endif %} </h5>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Acordos:</span>
+                        <h5 align = "center">{{programa[4]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor CNPq:</span> <h5 align = "center">{{programa[2]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor EPEs:</span> <h5 align = "center">{{programa[3]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor pago:</span> <h5 align = "center">{{programa[9]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor a pagar:</span> <h5 align = "center">{{programa[10]}}</h5>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Mães:</span>
+                        <h5 align = "center">{{programa[6]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Filhos:</span>
+                        <h5 align = "center">{{programa[7]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Bolsistas:</span>
+                        <h5 align = "center">{{programa[8]}} </h5>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              {% endfor %}
+
+            </div>
+
+          </div>
+
+          <div class="card-footer">
+            <div class="container">
+              <div class="row">
+                {% if qtd_maes_sem_acordo > 0 %}
+                  <p><span class="font-weight-bold">ATENÇÃO: </span>
+                    Exitem
+                    <a href="" data-toggle='modal' data-target='#mae_modal'>{{ qtd_maes_sem_acordo}}</a>
+                    processos mãe na folha de pagamento que não foram associados a acordos.</p>
+                {% else %}
+                  <p align = "center">Fim da lista</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+{# modal para visualizar maes sem acordo #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="mae_modal">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Processos Mãe não associados a Acordos</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">COD. PROGRAMA</p></th>
+              <th scope="col"><p align = "center">PROCESSO MÃE</p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for mae in maes_sem_acordo %}
+              <tr>
+                <td><p align = "center"> {{mae[0]}} </p></td>
+                <td><p align = "center"> {{mae[1]}} </p></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <p>{{qtd_maes_sem_acordo}} processos.</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

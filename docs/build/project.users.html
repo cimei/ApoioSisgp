@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>project.users package &#8212; SICOPES 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-users-package">
+<h1>project.users package<a class="headerlink" href="#project-users-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-project.users.forms">
+<span id="project-users-forms-module"></span><h2>project.users.forms module<a class="headerlink" href="#module-project.users.forms" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first"><strong>Usuários (formulários)</strong></p>
+<p>Os formulários do módulo <em>Users</em> recebem dados informados pelo usuário para seu registro
+inicial, para entrar no sistema (login), para atualização de registro, bem como os dados
+para atualização de senha.</p>
+<p>Para o tratamento de usuários, foram definidos 5 formulários:</p>
+<ul class="simple">
+<li><p>LoginForm: utilizado para entrar (login) no sistema.</p></li>
+<li><p>RegistrationForm: utilizado para o registro de um novo usuário.</p></li>
+<li><p>UpdateUserForm: utilizado para que um usuário possa atualizar seus dados.</p></li>
+<li><p>EmailForm: utilizado para um usuário informar seu e-mail quando precisar trocar sua senha.</p></li>
+<li><p>PasswordForm: utilizado quando o usuário eferuar a troca de senha.</p></li>
+</ul>
+</div>
+<p><strong>Campos definidos em cada formulário de *Users*:</strong></p>
+<dl class="class">
+<dt id="project.users.forms.EmailForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.users.forms.</code><code class="sig-name descname">EmailForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.EmailForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.users.forms.EmailForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('E-mail: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.EmailForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.EmailForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Enviar',), {})&gt;</em><a class="headerlink" href="#project.users.forms.EmailForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.users.forms.LoginForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.users.forms.</code><code class="sig-name descname">LoginForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.LoginForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.users.forms.LoginForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('E-mail: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.LoginForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.LoginForm.password">
+<code class="sig-name descname">password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Senha: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.LoginForm.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.LoginForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Entrar',), {})&gt;</em><a class="headerlink" href="#project.users.forms.LoginForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.users.forms.PasswordForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.users.forms.</code><code class="sig-name descname">PasswordForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.PasswordForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.users.forms.PasswordForm.pass_confirm">
+<code class="sig-name descname">pass_confirm</code><em class="property"> = &lt;UnboundField(PasswordField, ('Confirmar senha: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.PasswordForm.pass_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.PasswordForm.password">
+<code class="sig-name descname">password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Senha: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.EqualTo object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.PasswordForm.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.PasswordForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Enviar',), {})&gt;</em><a class="headerlink" href="#project.users.forms.PasswordForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.users.forms.RegistrationForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.users.forms.</code><code class="sig-name descname">RegistrationForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.RegistrationForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="method">
+<dt id="project.users.forms.RegistrationForm.check_email">
+<code class="sig-name descname">check_email</code><span class="sig-paren">(</span><em class="sig-param">field</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.RegistrationForm.check_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="project.users.forms.RegistrationForm.check_username">
+<code class="sig-name descname">check_username</code><span class="sig-paren">(</span><em class="sig-param">field</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.RegistrationForm.check_username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.despacha">
+<code class="sig-name descname">despacha</code><em class="property"> = &lt;UnboundField(BooleanField, ('Chefe?',), {})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.despacha" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('E-mail: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.pass_confirm">
+<code class="sig-name descname">pass_confirm</code><em class="property"> = &lt;UnboundField(PasswordField, ('Confirmar Senha: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.pass_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.password">
+<code class="sig-name descname">password</code><em class="property"> = &lt;UnboundField(PasswordField, ('Senha: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.EqualTo object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar-se',), {})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.RegistrationForm.username">
+<code class="sig-name descname">username</code><em class="property"> = &lt;UnboundField(StringField, ('Usuário: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.RegistrationForm.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.users.forms.UpdateUserForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.users.forms.</code><code class="sig-name descname">UpdateUserForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.UpdateUserForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.users.forms.UpdateUserForm.email">
+<code class="sig-name descname">email</code><em class="property"> = &lt;UnboundField(StringField, ('E-mail: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;, &lt;wtforms.validators.Email object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.UpdateUserForm.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.UpdateUserForm.picture">
+<code class="sig-name descname">picture</code><em class="property"> = &lt;UnboundField(FileField, ('Atualizar imagem do perfil: ',), {'validators': [&lt;flask_wtf.file.FileAllowed object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.UpdateUserForm.picture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.UpdateUserForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Atualizar',), {})&gt;</em><a class="headerlink" href="#project.users.forms.UpdateUserForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.users.forms.UpdateUserForm.username">
+<code class="sig-name descname">username</code><em class="property"> = &lt;UnboundField(StringField, ('Usuário: ',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.users.forms.UpdateUserForm.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="project.users.forms.UpdateUserForm.validate_email">
+<code class="sig-name descname">validate_email</code><span class="sig-paren">(</span><em class="sig-param">field</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.UpdateUserForm.validate_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="project.users.forms.UpdateUserForm.validate_username">
+<code class="sig-name descname">validate_username</code><span class="sig-paren">(</span><em class="sig-param">field</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.forms.UpdateUserForm.validate_username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.users.picture_handler">
+<span id="project-users-picture-handler-module"></span><h2>project.users.picture_handler module<a class="headerlink" href="#module-project.users.picture_handler" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="project.users.picture_handler.add_profile_pic">
+<code class="sig-prename descclassname">project.users.picture_handler.</code><code class="sig-name descname">add_profile_pic</code><span class="sig-paren">(</span><em class="sig-param">pic_upload</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.picture_handler.add_profile_pic" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Trata e salva a imagem de perfil do usuário quando este a atualiza.
+A imagem fica guardada em pasta específica do sistema. No banco de dados fica
+somente o nome do arquivo de imagem.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.users.views">
+<span id="project-users-views-module"></span><h2>project.users.views module<a class="headerlink" href="#module-project.users.views" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Usuários (views)</p>
+<p>Usuários registrados são os técnicos que administram suas demandas neste aplicativo.
+Cada usuário tem seu ID, nome, e-mail e senha únicos, podendo ter também uma imagem personalizada
+de perfil, caso deseje.</p>
+<p>O registro é feito por meio da respectiva opção no menu do aplicativo, com o preenchimento dos dados
+básicos do usuário. Este registro precisa ser confirmado com o token enviado pelo sistema, por e-mail,
+ao usúario.</p>
+<p>Para entrar no aplicativo, o usuário se idenfica com seu e-mail e informa sua senha pessoal.</p>
+<p>O usuário pode alterar seus dados de perfil, contudo, para alterar sua senha, seja por motivo de
+esquecimento, ou simplemente porque quer alterá-la, o procedimento envolve o envio de um e-mail
+do sistema para seu endereço de e-mail registrado, com o token que abre uma tela para registro de
+nova senha. Este token tem validade de uma hora.</p>
+<p>As funções relativas ao tratamento de demandas só ficam disponíveis no menu para usuários registrados.</p>
+</div>
+<div class="topic">
+<p class="topic-title first">Ações relacionadas aos usuários:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Funções auxiliares:</dt><dd><ul>
+<li><p>Envia e-mail de forma assincrona: send_async_email</p></li>
+<li><p>Prepara e-mail: send_email</p></li>
+<li><p>Dados para e-mail de confirmação: send_confirmation_email</p></li>
+<li><p>Dados para e-mail de troca de senha: send_password_reset_email</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Registro de usuário: register</p></li>
+<li><p>Trata retorno da confirmação: confirm_email</p></li>
+<li><p>Trata pedido de troca de senha: reset</p></li>
+<li><p>Realiza troca de senha: reset_with_token</p></li>
+<li><p>Entrada de usuário: login</p></li>
+<li><p>Saída de usuário: logout</p></li>
+<li><p>Atualizar dados do usuário: account</p></li>
+<li><p>Demandas de um usuário: user_posts</p></li>
+</ul>
+</div>
+<dl class="function">
+<dt id="project.users.views.account">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.account" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite que o usuário atualize seus dados.
+A tela é acessada quando o usuário clica em seu nome na barra de menus.
+Este pode atualizar seu nome de usuário, seu endereço de e-mail e sua imagem
+de perfil.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.confirm_email">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">confirm_email</code><span class="sig-paren">(</span><em class="sig-param">token</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.confirm_email" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Trata o retorno do e-mail de confirmação de registro, verificano se o token enviado
+é válido (igual ao enviado no momento do registro e tem menos de 1 hora de vida).</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.login">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.login" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Fornece a tela para que o usuário entre no sistema (login).
+O acesso é feito por e-mail e senha cadastrados.
+Antes do primeiro acesso após o registro, o usuário precisa cofirmar este registro
+para poder fazer o login, conforme mensagem enviada.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.logout">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.logout" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Efetua a saída do usuário do sistema.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.register">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.register" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Efetua o registro de um usuário. Este recebe o aviso para verificar sua caixa de
+e-mails, pois o aplicativo envia uma mensagem sobre a confirmação do registro.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.reset">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.reset" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Trata o pedido de troca de senha. Enviando um e-mail para o usuário.
+O usuário deve estar registrado (com registro confirmado) antes de poder efetuar uma
+troca de senha.
+O aplicativo envia uma mensagem ao usuário sobre o procedimento de troca de senha.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.reset_with_token">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">reset_with_token</code><span class="sig-paren">(</span><em class="sig-param">token</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.reset_with_token" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Trata o retorno do e-mail enviado ao usuário com token de troca de senha.
+Verifica se o token é válido.
+Abre tela para o usuário informar nova senha.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.send_async_email">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">send_async_email</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.send_async_email" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Executa o envio de e-mails de forma assíncrona.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.send_confirmation_email">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">send_confirmation_email</code><span class="sig-paren">(</span><em class="sig-param">user_email</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.send_confirmation_email" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Preparação dos dados para e-mail de confirmação de usuário</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.send_email">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">send_email</code><span class="sig-paren">(</span><em class="sig-param">subject</em>, <em class="sig-param">recipients</em>, <em class="sig-param">text_body</em>, <em class="sig-param">html_body</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.send_email" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Envia e-mails.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.send_password_reset_email">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">send_password_reset_email</code><span class="sig-paren">(</span><em class="sig-param">user_email</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.send_password_reset_email" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Preparação dos dados para e-mail de troca de senha.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.users.views.user_posts">
+<code class="sig-prename descclassname">project.users.views.</code><code class="sig-name descname">user_posts</code><span class="sig-paren">(</span><em class="sig-param">username</em><span class="sig-paren">)</span><a class="headerlink" href="#project.users.views.user_posts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Mostra as demandas de um usuário quando seu nome é selecionado em uma tela de
+consulta de demandas.
+Recebe o nome do usuário como parâmetro</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.users">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-project.users" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SICOPES</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.users.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+    <h3> Resumo das Demandas </h3>
+    <h4>{{demandas_count}} Demandas</h4><br>
+    <div class="row">
+
+      <div class="col-sm">
+        <div class="card border-info mb-4">
+        <div class="card bg-light mb-3">
+          <div class="card-header"><div class="text-info">Por tipo (quantidades)</div></div>
+          <div class="card-body">
+
+            <table class="table table-sm table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Tipo</th>
+                  <th scope="col"><center>Ano ant.</center></th>
+                  <th scope="col"><center>Este ano</center></th>
+                  <th scope="col"><center>Geral</center></th>
+                  <th scope="col"><center>Conclu.</center></th>
+                  <th scope="col"><center>Vida média</center></th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {% for tipo in demandas_tipos %}
+
+                  <tr>
+
+                    <td>{{tipo.tipo}}</td>
+
+                    {% for deman in demandas_por_tipo %}
+                    {% set ns = namespace(x=false) %}
+                      {% if deman.tipo == tipo.tipo %}
+
+                        {% for dem in demandas_por_tipo_ano_anterior %}
+                          {% if dem.tipo == deman.tipo %}
+                            <td><center>{{dem.qtd_por_tipo}}</center></td>
+                            {% set ns.x = true %}
+                          {% endif %}
+                        {% endfor %}
+                        {% if ns.x == false %}
+                          <td><center>0</center></td>
+                        {% endif %}
+
+                        {% set ns.x = false %}
+
+                        {% for dem in demandas_por_tipo_ano_corrente %}
+                          {% if dem.tipo == deman.tipo %}
+                            <td><center>{{dem.qtd_por_tipo}}</center></td>
+                            {% set ns.x = true %}
+                          {% endif %}
+                        {% endfor %}
+                        {% if ns.x == false %}
+                          <td><center>0</center></td>
+                        {% endif %}
+
+                        <td><center>{{deman.qtd_por_tipo}}</center></td>
+
+                          {% for v_m in vida_m_por_tipo %}
+                            {% if deman.tipo == v_m[0]%}
+                              <td><center>{{v_m[1]}}</center></td>
+                              <td><center>{{v_m[2]}} dias</center></td>
+                            {% endif %}
+                          {% endfor %}
+
+                      {% endif %}
+                    {% endfor %}
+
+                  </tr>
+
+                {% endfor %}
+
+
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="col-sm">
+        <div class="card border-success mb-4">
+        <div class="card bg-light mb-3">
+        <div class="card-header"><div class="text-success">Estatísticas</div></div>
+          <div class="card-body">
+            <div class="list-group">
+              <p>Vida média das demandas: <b>{{vida_m}} dias</b> (ano corrente: <b>{{vida_m_ano}} dias</b>)</p>
+              <p>Prazo médio dos despachos: <b>{{desp_m}} dias</b></p>
+              <p>Percentual de conclusão: <b>{{percent_conclu}} %</b></p>
+              <p></p>
+              <h5>Demandas por colaborador ativo</h5>
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col"><p align = "center">Média</p></th>
+                    <th scope="col"><p align = "center">Maior qtd.</p></th>
+                    <th scope="col"><p align = "center">Menor qtd.</p></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><p align = "center"> {{qtd_demandas_avg}}</p></td>
+                    <td><p align = "center"> {{qtd_demandas_max}}</p></td>
+                    <td><p align = "center"> {{qtd_demandas_min}}</p></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p></p>
+              <h5>Últimos 12 meses</h5>
+              <p>Demandas</p>
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col"><p align = "center">Média mensal</p></th>
+                    <th scope="col"><p align = "center">Maior qtd.</p></th>
+                    <th scope="col"><p align = "center">Menor qtd.</p></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><p align = "center"> {{med_dm}} </p></td>
+                    <td><p align = "center"> {{max_dm}} em {{mes_max_dm[0]}}/{{mes_max_dm[1]}}</p></td>
+                    <td><p align = "center"> {{min_dm}} em {{mes_min_dm[0]}}/{{mes_min_dm[1]}}</p></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p>Providências</p>
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col"><p align = "center">Média mensal</p></th>
+                    <th scope="col"><p align = "center">Maior qtd.</p></th>
+                    <th scope="col"><p align = "center">Menor qtd.</p></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><p align = "center"> {{med_pr}} </p></td>
+                    <td><p align = "center"> {{max_pr}} em {{mes_max_pr[0]}}/{{mes_max_pr[1]}}</p></td>
+                    <td><p align = "center"> {{min_pr}} em {{mes_min_pr[0]}}/{{mes_min_pr[1]}}</p></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p>Despachos</p>
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col"><p align = "center">Média mensal</p></th>
+                    <th scope="col"><p align = "center">Maior qtd.</p></th>
+                    <th scope="col"><p align = "center">Menor qtd.</p></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><p align = "center"> {{med_dp}} </p></td>
+                    <td><p align = "center"> {{max_dp}} em {{mes_max_dp[0]}}/{{mes_max_dp[1]}}</p></td>
+                    <td><p align = "center"> {{min_dp}} em {{mes_min_dp[0]}}/{{mes_min_dp[1]}}</p></td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+
+
+{% endblock %}

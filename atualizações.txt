@@ -1,0 +1,172 @@
+## Atualizações ##
+
+17/08/2020
+
+Incluida funcionalidade de geração de relatório de atividades. v 4.2.5
+
+11/08/2020
+
+Incluida funcionalidade de geraçã de relatório de demanda em pdf. v 4.2.3. Corrigido em seguida para criar c:temp quando não existir. v 4.2.4
+
+10/08/2020
+
+Correção na consulta a dados de convênio sem sei devidamente registrado. v 4.2.2
+
+07/08/2020
+
+Permitida busca por parte do registro de log manual (Observação do usuário). Na busca, as datas de início e fim devem ser informadas. v 4.2.1
+
+06/08/2020
+
+Inserida funcionalidade de registro e manutenção de plano de trabalho para os usuários. v 4.2.0
+
+31/07/2020
+
+Quando uma demanda for encerrada, o coordenador e seu substituto serão avisados por e-mail para que possam aferí-la.
+Quando uma demanda tiver a opção de "necessita despacho" marcada, o coordenador e seu substituto serão avisados por e-mail.
+v 4.1.6
+
+27/07/2020
+
+Na consulta aos Acordos, é possível ver os dados dos programas ao se clicar no nome de cada um na respectiva coluna. V 4.1.5
+
+16/07/2020
+
+Ao listar suas demandas em aberto, o usuário tem a indicação de quais tem despacho a ser verificado.
+Admim pode registrar a versão do sistema no bando de dados, antes era via SQLiteStudio. V 4.1.4
+
+15/07/2020
+
+Alterada URL origem dos arquivos do SICONV. V 4.1.3
+
+14/07/2020
+
+Alteração para permitir inclusão de programa (sigef) de acordo sem existência prévia de processo mãe e bolsistas associados. V 4.1.2
+
+09/07/2020
+
+Liberava versão 4.1.1, concorreção de erro ao transferir e avocar demandas (providências passaram a contar com
+os dois atributos de momento e duração).
+
+06/07/2020
+
+Implementada remoção dos diretórios temporários do Pyinstaller.
+
+05/07/2020
+
+Liberada a versão 4.1.0, as há que se melhorar a questão do client.json, por enquanto ele tem que ficar na mema pasta do
+executável. Há também a questão do google-api-python-client, a distribuição tem que ficar no diretório do projeto para que o
+pyinstaller possa pegar.
+
+03/07/2020
+
+O usuário passa a ter a opção de agendar no google calendar uma providência futura.
+
+02/07/2020
+
+Providências permitem alterar a data de registro e informar duração em horas. Na consulta às demandas, as providências futuras
+são marcadas com um P antes da data.
+
+01/07/2020
+
+Início da tentatia de criar a versão 4.1.0. Nesta o conceito de providência será substituido pelo conceito de evento. O evento permitirá
+definir a data de início e sua duração e este será registrado no google agenda.
+
+_______________________________________________________________________________________________
+|
+| Deste ponto em diante, o registro nas atualizações.txt passa era feito de forma crescente.
+|______________________________________________________________________________________________
+
+19/02/2020
+
+Inserido o campo data_env_despacho no banco de demandas para se registrar o momento em que a demanda foi marcada com necessita
+despacho superior. Isto implicou alterações nos templates que listam demandas e nas view de demandas, onde se cria demanda,
+altera demanda e cria despacho.
+
+20/02/2020
+
+Papel de chefe de serviço incorporado ao sistema com mesmo status de coordenador.
+Na lista de cadastrados coordenador ou chefe de serviço tem o nome em verde e coordenador-geral em vermelho.
+No form de verificação pré criação de demnanda, o choices do campo tipo foram retirados e inseridos na view que chama o form,
+desta forma, quando um novo tipo for criado, este já fica disponível para uso em uma nova demanda.
+
+21/02/2020
+
+Ao atualizar um tipo de demanda, alterando o tipo propriamente dito, as demandas que tinham o tipo anterior também são atualizadas
+para o novo tipo.
+Cor nos nomes de coordenador e coordenador geral diferenciadas nos despachos (verde coordenador, vermelho coordenador-geral)
+
+26/02/2020
+
+Criado do Demanda_ATU_Form para resolver problemas na atualização de demandas, pois estas não precisam da triagem do tipo, feita
+nas demandas novas.
+
+28/02/2020
+
+Fixado caminho para aquivos do SICONV como forma de resolver problema que acontecia quando a carga era executada por outras pessoas
+(computadores diferentes). Usando um caminho local (C:\temp\arqs_siconv) também torna a carga mais rápida.
+
+01/04/2020
+
+Início da criação do esquema de log do sistema. Log automático implementado: tabela log_auto e função de gravação após principais
+commits dos sistema.
+
+03/04/2020
+
+Registro e consulta de log de atividades implementado. O usuário pode registrar entradas, bem como cosultar por intervalo de
+datas a sua atividade. Com esta implementão, o sistema entra na sua versão 4.0.
+
+06/04/2020
+
+Implementado filtro que permite consultar demandas por responsável na lista de prioridades.
+Implementada consulta ao log geral pelo Admin.
+
+07/04/2020
+
+Log passa a registrar alteração de demanda quando despachante (chefe) decide encerrar uma demanda no momento do despacho.
+Lista de mensagens do SICONV destaca em vermelho os registros novos (aqueles que não constavam na carga anterior).
+
+08/04/2020
+
+Versão 4.0.1: o sistema agora acusa quando uma versão errada estiver sendo usada.
+
+09/04/2020
+
+Versão 4.0.2: alteração no aviso da versão.
+
+14/04/2020
+
+Aviso sobre versão aparece somente para usuário logado. Opção Bolsas foi colocada dentro de Acordos.
+
+22/04/2020
+
+Versão 4.0.3
+Nos convênios, os empenhos passam a ter a informação sobre natureza de despesa que é inserida de forma manual pelos usuários.
+DadosSEI não permitirá mais incluir dados caso o convênio em questão já tenha um registro associado.
+
+24/04/2020
+
+É possível consultar um convênio pelo seu número na tela de visualização de demanda.
+
+28/04/2020
+
+Inserida tabela de resumo ao final da tela dos registros de log.
+
+04/05/2020
+
+Upload da versão 4.0.4
+
+21/05/2020
+
+Na inserção de demanda, colocado placeholder no campo de Programa, solicitando para informar NA quando não houver. Aviso semelhante
+colocado no campo de Convênio, avisando para informar número, quando houver. Mantida versão do sistema.
+
+09/06/2020
+
+Corrigido erro que ocorria quando do registro de novo usuário por conta da verificação de versão do aplicativo.
+Agora o sistema pega a versão do primeiro usuário e a cadastra para o recem inserido.
+
+24/06/2020
+
+Textos das opções do usuário logado foram alterados. Todos podem ver o log geral. Inserido aviso nas informações
+do usuário sobre o local onde se pode alterar a senha de acesso. Sistema na versão 4.0.6.

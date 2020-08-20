@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+  <h5><b>Plano de Trabalho (Atividades)</b></h5>
+
+  {% if current_user.is_authenticated %}
+    {% if current_user.despacha %}
+      <div>
+        <a href="{{url_for('demandas.cria_atividade')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir Atividade</a>
+        <small class="form-text text-muted">Ou clique em um número de sequência para alterar atividade existente.</small>
+      </div>
+    {% endif %}
+  {% endif %}
+  <br>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> atividades.</p>
+      </div>
+  </div>
+</caption>
+
+  <table class="table table-striped table-hover table-sm">
+    <caption>Plano de Trabalho</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col"><p align = "center">Sigla</p></th>
+        <th scope="col"><p align = "center">Descrição</p></th>
+        <th scope="col"><p align = "center">Natureza</p></th>
+        <th scope="col"><p align = "center">Meta (h/sem.)</p></th>
+        <th scope="col"><p align = "center">1º respon.</p></th>
+        <th scope="col"><p align = "center">2º respon.</p></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for atividade in atividades %}
+
+      <tr>
+        {% if current_user.despacha %}
+          <th scope="row"><p align = "center"><a href="{{url_for('demandas.update_plano_trabalho', id=atividade.id)}}"> {{atividades.index(atividade) + 1}} </a></p></th>
+        {% else %}
+          <th scope="row"><p align = "center"> {{atividades.index(atividade) + 1}} </p></th>
+        {% endif %}
+        <td><p align = "center"> {{atividade.atividade_sigla}} </p></td>
+        <td><p align = "left"> {{atividade.atividade_desc}} </p></td>
+        <td><p align = "center"> {{atividade.natureza}} </p></td>
+        <td><p align = "center"> {{atividade.meta}} </p></td>
+        <td><p align = "center"> {{atividade.resp1}} </p></td>
+        <td><p align = "center"> {{atividade.resp2}} </p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>project.projetos package &#8212; SICOPES 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-projetos-package">
+<h1>project.projetos package<a class="headerlink" href="#project-projetos-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-project.projetos.forms">
+<span id="project-projetos-forms-module"></span><h2>project.projetos.forms module<a class="headerlink" href="#module-project.projetos.forms" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Processos-Mãe (formulários)</p>
+<p>O formulário do módulo <em>Projetos</em> recebe dados informados pelo usuário para o registro de
+um processo mãe, permitindo o seu relacionamento com um determinado acordo.</p>
+<p>O formulário é o mesmo usado quando da atualização de dados de processo mãe:</p>
+<ul class="simple">
+<li><p>ProcMaeForm: utilizado registrar ou atualizar dados de um processo mãe.</p></li>
+</ul>
+</div>
+<p><strong>Campos definidos no formulário (todos são obrigatórios):</strong></p>
+<dl class="class">
+<dt id="project.projetos.forms.ProcMaeForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.projetos.forms.</code><code class="sig-name descname">ProcMaeForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.projetos.forms.ProcMaeForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.acordo_nome">
+<code class="sig-name descname">acordo_nome</code><em class="property"> = &lt;UnboundField(StringField, ('Edição:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.acordo_nome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.epe">
+<code class="sig-name descname">epe</code><em class="property"> = &lt;UnboundField(StringField, ('EPE:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.epe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.processo_mae_num">
+<code class="sig-name descname">processo_mae_num</code><em class="property"> = &lt;UnboundField(StringField, ('Processo Mãe:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.processo_mae_num" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar',), {})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.uf">
+<code class="sig-name descname">uf</code><em class="property"> = &lt;UnboundField(StringField, ('UF:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.uf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.projetos.forms.ProcMaeForm.valor">
+<code class="sig-name descname">valor</code><em class="property"> = &lt;UnboundField(StringField, ('Valor:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.projetos.forms.ProcMaeForm.valor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.projetos.views">
+<span id="project-projetos-views-module"></span><h2>project.projetos.views module<a class="headerlink" href="#module-project.projetos.views" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Processo Mãe (views)</p>
+<p>Toda bolsa é implementada por meio de um processo de bolsa (processo filho), que, por sua vez, deve estar vinculado a
+um projeto (processo mãe).</p>
+<p>Em princípio, é no processo mãe que são definidos a quantidade máxima de bolsas que poderão ser implementadas no projeto,
+pois o processo mãe tem um valor de concessão definido, bem como uma vigência que limita as vigências dos processos filho.</p>
+<p>Apesar da planilha COSAO trazer, em tese, os processos mãe aos quais os bolsistas estão vinculados, é necessário fazer a
+conexão destes dados com os dados dos acordos celebrados.</p>
+</div>
+<div class="topic">
+<p class="topic-title first">Ações relacionadas aos processos mãe</p>
+<ul class="simple">
+<li><p>Listar processos mãe: lista_projetos</p></li>
+<li><p>LIstar processos mãe vigentes: lista_projetos_vigentes</p></li>
+<li><p>Alterar dados de um processo mãe: update</p></li>
+</ul>
+</div>
+<dl class="function">
+<dt id="project.projetos.views.lista_projetos">
+<code class="sig-prename descclassname">project.projetos.views.</code><code class="sig-name descname">lista_projetos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.projetos.views.lista_projetos" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Identifica os processos mãe constantes nos dados enviados pela COSAU, relaciona cada
+um deles com um acordo e calcula quantos bolsistas foram contemplados, quantas bolsas
+foram implementadas, quantas mensalides foram pagas e o valor total pago.</p>
+<p>A eventual diferença entre a quantidade de bolsistas e a quantidade de bolsas
+implementadas vem do fato de uma pessoa poder ser indicada mais de uma vez ao logo da
+vigência do processo mãe.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.projetos.views.lista_projetos_vigentes">
+<code class="sig-prename descclassname">project.projetos.views.</code><code class="sig-name descname">lista_projetos_vigentes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.projetos.views.lista_projetos_vigentes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Identifica os processos mãe constantes nos dados enviados pela COSAU, cuja data de
+vencimento seja maior ou igual à data de referência.
+Relaciona cada um deles com um acordo e calcula quantos bolsistas foram contemplados,
+quantas bolsas foram implementadas, quantas mensalides foram pagas e o valor
+total pago.</p>
+<p>A eventual diferença entre a quantidade de bolsistas e a quantidade de bolsas
+implementadas vem do fato de uma pessoa poder ser indicada mais de uma vez ao logo da
+vigência do processo mãe.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.projetos.views.update">
+<code class="sig-prename descclassname">project.projetos.views.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">processo_mae_id</em><span class="sig-paren">)</span><a class="headerlink" href="#project.projetos.views.update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite alterar os dados do processo mãe relativos ao relacionamento com um acordo,
+bem como o valor da concessão.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.projetos">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-project.projetos" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SICOPES</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.projetos.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

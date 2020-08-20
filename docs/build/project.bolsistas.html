@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>project.bolsistas package &#8212; SICOPES 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-bolsistas-package">
+<h1>project.bolsistas package<a class="headerlink" href="#project-bolsistas-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-project.bolsistas.views">
+<span id="project-bolsistas-views-module"></span><h2>project.bolsistas.views module<a class="headerlink" href="#module-project.bolsistas.views" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Bolsistas (views)</p>
+<p>Os indivíduos selecionados pelas EPEs no âmbito do acordo e indicados junto ao CNPq para receber uma bolsa
+são os bolsistas.</p>
+<p>A indicação é feita pela EPE em plataforma específica do CNPq e este módulo trabalha com os dados fornecidos
+por este sistema, via planilha excel enviada pela COSAO, sob demanda da COPES.</p>
+<p>Dos vários atributos que um bolsistas tem, ficam evidenciados:</p>
+<ul class="simple">
+<li><p>Nome</p></li>
+<li><p>Nível da bolsa DCR</p></li>
+<li><p>Grande Área</p></li>
+<li><p>Área Conhecimento</p></li>
+<li><p>Situação</p></li>
+<li><p>Início</p></li>
+<li><p>Fim</p></li>
+<li><p>UF</p></li>
+<li><p>Mensalidades pagas</p></li>
+<li><p>Valor total pago</p></li>
+<li><p>Mensalides a pagar</p></li>
+<li><p>Valor total a pagar</p></li>
+</ul>
+</div>
+<p>Os valores pagos são calculados pela soma de todos os pagamentos registrados para cada bolsista (CPF) na planilha COSAO.
+Da mesma forma, é feito o cálculo da quantidade de mensalides pagas.</p>
+<p>Os valores a pagar consistem da multiplicação da quantidade de meses entre a data de referência (data de geração da
+planilha COSAO) e o fim de vigência de cada processo-filho pelo valor da respectiva memsalidade do nível de bolsa no
+qual o bolsista foi enquadrado. Da mesma forma, é feito o cálculo da quantidade de mensalides a pagar.</p>
+<div class="topic">
+<p class="topic-title first">Ações relacionadas aos bolsistas</p>
+<ul class="simple">
+<li><p>Listar todos os bolsistas: lista_bolsistas</p></li>
+<li><p>Listar bolsistas com bolsa vigente: lista_bolsistas_vigentes</p></li>
+</ul>
+</div>
+<dl class="function">
+<dt id="project.bolsistas.views.lista_bolsistas">
+<code class="sig-prename descclassname">project.bolsistas.views.</code><code class="sig-name descname">lista_bolsistas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsistas.views.lista_bolsistas" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Lista todos os bolsistas existentes nos dados enviados pela COSAO, ou seja, todos os
+que foram indicados junto ao CNPq.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.bolsistas.views.lista_bolsistas_vigentes">
+<code class="sig-prename descclassname">project.bolsistas.views.</code><code class="sig-name descname">lista_bolsistas_vigentes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsistas.views.lista_bolsistas_vigentes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Lista todos os bolsistas cujo processo tem vigência superior à data de referência.</p>
+<dl class="simple">
+<dt>Desta lista não constam os que estejam em uma das seguintes situações:</dt><dd><ul class="simple">
+<li><p>17 - CANCELADO POR MOTIVO DE SaúDE</p></li>
+<li><p>18 - ENCERRADO COM DEVOLUçãO DE RECURSOS</p></li>
+<li><p>40 - CANCELADO POR AQUISIçãO DE VíNCULO EMPREGATíCIO</p></li>
+<li><p>41 - CANCELADO POR ACUMULO DE CONCESSõES (OUTRA AgêNCIA/CNPQ)</p></li>
+<li><p>61 - CANCELADO PELO CNPQ</p></li>
+<li><p>62 - CANCELADO A PEDIDO DO BOLSISTA/PESQUISADOR</p></li>
+<li><p>63 - CANCELADO A PEDIDO DO COORDENADOR</p></li>
+<li><p>66 - CANCELADO COM DéBITO</p></li>
+</ul>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.bolsistas">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-project.bolsistas" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SICOPES</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.bolsistas.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+  <h5>Tipos de Demanda</h5>
+
+  {% if current_user.is_authenticated %}
+    <div>
+      <a href="{{url_for('demandas.cria_tipo_demanda')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir Tipo</a>
+      <small class="form-text text-muted">Ou clique em um número de sequência para alterar tipo existente.</small>
+    </div>
+  {% endif %}
+  <br>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p>Lista dos <span class="badge badge-pill badge-primary">{{quantidade}}</span> tipos de demanda.</p>
+      </div>
+  </div>
+</caption>
+
+  <table class="table table-striped table-hover table-sm">
+    <caption>Tipos de Demanda</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col"><p align = "center">Tipo</p></th>
+        <th scope="col"><p align = "center">Relevância</p></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tipo in tipos %}
+
+      <tr>
+        <th scope="row"><p align = "center"><a href="{{url_for('demandas.tipos_update', id=tipo[0])}}"> {{tipos.index(tipo) + 1}} </a></p></th>
+        <td><p align = "center"> {{tipo[1]}} </p></td>
+        <td><p align = "center"> {{tipo[3]}} </p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+
+
+</div>
+{% endblock %}

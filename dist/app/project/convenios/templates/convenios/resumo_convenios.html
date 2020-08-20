@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+
+        <div class="card border-primary mb-3">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="container">
+              <div class="row">
+
+                  <h3>Programas e Convênios</h3>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <div class="container">
+              {% for programa in programas %}
+
+                <div class="card">
+
+                  <div class="card-header">
+                    <a href="{{url_for('convenios.lista_convenios_SICONV',lista='programa'+programa[1],coord='*')}}"><h5>{{programa[1]}}</h5></a>
+                  </div>
+
+                  <div class="card-body">
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Convênios:</span>
+                        <h5 align = "center">{{programa[2]}} <span class="font-weight-light">({{programa[9]}} em execução)</span></h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor Global:</span> <h5 align = "center">{{programa[3]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Repasse:</span> <h5 align = "center">{{programa[4]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Contrapartida:</span> <h5 align = "center">{{programa[7]}}</h5>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Empenhado:</span>
+                        <h5 align = "center">{{programa[5]}} <span class="font-weight-light">({{programa[10]}} %)</span></h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Desembolsado:</span>
+                        <h5 align = "center">{{programa[6]}} <span class="font-weight-light">({{programa[11]}} %)</span></h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Ingresso de Contrapartida:</span>
+                        <h5 align = "center">{{programa[8]}} <span class="font-weight-light">({{programa[12]}} %)</span></h5>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              {% endfor %}
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+{% endblock %}

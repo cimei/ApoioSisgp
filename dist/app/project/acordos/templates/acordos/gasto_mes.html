@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+  <h5>Gasto mensal por acordo</h5>
+
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p>Lista dos <span class="badge badge-pill badge-primary">{{qtd_meses}}
+           </span> <b>meses pagos no Acordo {{prog}}-{{edic}} {{epe}}-{{uf}}
+        </p>
+      </div>
+  </div>
+</caption>
+
+  <table class="table table-striped table-hover table-sm">
+
+     <caption>Gasto mensal do Acordo {{prog}}-{{edic}} {{epe}}-{{uf}}</caption>
+
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">Ano</p></th>
+        <th scope="col"><p align = "center">Mês</p></th>
+        <th scope="col"><p align = "center">Valor</p></th>
+        <th scope="col"><p align = "center">Pagamentos</p></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for gasto in gastos %}
+        <tr>
+          <td><p align = "center"> {{gasto[0]}} </p></td>
+          <td><p align = "center"> {{gasto[1]}} </p></td>
+          <td><p align = "center"> {{gasto[2]}} </p></td>
+          <td><p align = "center"> {{gasto[3]}} </p></td>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+
+{% endblock %}

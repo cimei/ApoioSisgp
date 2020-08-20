@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+<div class="jumbotron">
+<h5>Gerar Relatório de Atividades</h5>
+<br>
+
+{% macro render_field(field,obr) %}
+  {% if obr == True %}
+    <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+  {% else %}
+    <dt>{{ field.label(class="form-control-label") }}
+  {% endif %}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+    <div class="col">
+      <form class="form-group" method='POST'>
+        {{ form.hidden_tag() }}
+          <div class="form-group row">
+
+            <div class="form-group col-3">
+              {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+            </div>
+            <div class="form-group col-3">
+              {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+            </div>
+
+            <div class="form-group col-2">
+              {{ form.submit(class="btn btn-outline-primary btn-sm") }}
+            </div>
+
+          </div>
+    </div>
+
+
+</div>
+</div>
+{% endblock %}

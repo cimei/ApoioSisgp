@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+<div class="jumbotron">
+
+  {% macro render_field(field,obr) %}
+    {% if obr == True %}
+      <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+    {% else %}
+      <dt>{{ field.label(class="form-control-label") }}
+    {% endif %}
+    <dd>{{ field(**kwargs)|safe }}
+    {% if field.errors %}
+      <ul class=errors>
+      {% for error in field.errors %}
+        <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    </dd>
+  {% endmacro %}
+
+<form method="POST">
+
+  {{form.hidden_tag()}}
+
+  <div class="form-group">
+    {{render_field(form.email,class="form-control", placeholder="Insira seu e_mail",obr=True)}}
+  </div>
+
+  {{form.submit(class="btn btn-primary")}}
+
+</form>
+
+</div>
+</div>
+{% endblock %}

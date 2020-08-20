@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+<h5>Lista de Acordos</h5>
+
+  {% if current_user.is_authenticated %}
+    <div>
+      <div class="row">
+        <div class="col-1">
+          <a href="{{url_for('acordos.cria_acordo')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir novo</a>
+        </div>
+        <div class="col">
+          <small class="form-text text-muted">Ou clique em um número de sequência para alterar dados do respectivo acordo.</small>
+        </div>
+
+  {% endif %}
+        <div class="col">
+          <form class="form-group" method='POST'>
+            {{ form.hidden_tag() }}
+              <div class="row">
+                <div class="col">
+                  {{ form.coord(class="form-control form-control-sm") }}
+                </div>
+                <div class="col">
+                  {{ form.submit(class="btn btn-outline-primary btn-sm") }}
+                </div>
+              </div>
+          </div>
+      </div>
+<br>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p>Lista dos <span class="badge badge-pill badge-primary">{{quantidade}}</span>
+          <span class="font-weight-bold">Acordos</span> cadastrados
+          {% if lista == 'todos' %}
+            <span class="text-info font-weight-bold">(todos)</span>
+          {% endif %}
+        {% if lista == 'em execução' %}
+          <span class="text-info font-weight-bold">(em execução)</span>
+        {% endif %}
+        {% if lista[:8] == 'programa' %}
+          <span class="text-info font-weight-bold">({{acordos[0][1]}})</span>
+        {% endif %}
+        {% if lista[:4] == 'edic' %}
+          <span class="text-info font-weight-bold">({{acordos[0][1]}} Edição {{lista[4:]}})</span>
+        {% endif %}
+        </p>
+      </div>
+
+  </div>
+</caption>
+
+  <table class="table table-striped table-hover table-sm">
+    <caption>Acordos</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col"><p align = "center">?</p></th>
+        <th scope="col"><p align = "center">Coord.</p></th>
+        <th scope="col"><p align = "center">Programa</p></th>
+        <th scope="col"><p align = "center">Edição</p></th>
+        <th scope="col"><p align = "center">SEI</p></th>
+        <th scope="col"><p align = "center">EPE UF</p></th>
+        <th scope="col"><p align = "center">Início</p></th>
+        <th scope="col"><p align = "center">Término</p></th>
+        <th scope="col"><p align = "center">Valor EPE</p></th>
+        <th scope="col"><p align = "center">Valor CNPq</p></th>
+        <th scope="col"><p align = "center">QTD Mães</p></th>
+        <th scope="col"><p align = "center">QTD Filhos</p></th>
+        <th scope="col"><p align = "center">Pago</p></th>
+        <th scope="col"><p align = "center">A pagar</p></th>
+        <th scope="col"><p align = "center">Saldo</p></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for acordo in acordos %}
+
+      <tr>
+        <th scope="row"><p align = "center">
+          {% if (acordos.index(acordo) + 1) <= quantidade %}
+            <a href="{{url_for('acordos.update', acordo_id=acordo[0])}}"><abbr title="Clique aqui atualizar">{{acordos.index(acordo) + 1}}</abbr></a>
+          {% endif %}
+        </p></th>
+        <td><p align = "center">
+          {% if (acordos.index(acordo) + 1) <= quantidade %}
+            <a href="{{url_for('acordos.acordo_detalhe',acordo_id=acordo[0],prog=acordo[1],edic=acordo[2],epe=acordo[4],uf=acordo[5])}}"> <abbr title="Clique aqui detalhes do acordo"><span class="badge badge-pill badge-primary">?</span></abbr></a>
+          {% endif %}
+        </p></td>
+        <td><p align = "center"><small> {{acordo[15]}}</small></p></td>
+        <td><p align = "center">
+          <a href="{{url_for('acordos.atualiza_programa_cnpq', id=acordo[17])}}"><abbr title="Clique para detalhes do programa"><small> {{acordo[1]}}</small></abbr></a>
+        </p></td>
+        <td><p align = "center"><small> {{acordo[2]}}</small></p></td>
+        {% if acordo[3] != None%}
+          <td><p align = "center"> <a href="{{url_for('acordos.acordo_demandas', acordo_id=acordo[0])}}"><abbr title="Clique aqui para ver demandas deste acordo"><small> {{acordo[3]}} </small></abbr></a> </p></td>
+        {% else %}
+          <td><p align = "center"><small> {{acordo[3]}}</small></p></td>
+        {% endif %}
+        <td><p align = "center"><small> {{acordo[4]}} {{acordo[5]}}</small></p></td>
+        <td><p align = "center"><small> {{acordo[6]}}</small></p></td>
+        {% if acordo[16] <= 30 and acordo[16] >= 0 %}
+          <td><p align = "center" class="bg-danger text-white font-weight-bold"><small> {{acordo[7]}}</small> </p></td>
+        {% elif acordo[16] <= 60 and acordo[16] > 30 %}
+          <td><p align = "center" class="bg-warning text-dark font-weight-bold"><small> {{acordo[7]}}</small> </p></td>
+        {% elif acordo[16] <= 90 and acordo[16] > 60 %}
+          <td><p align = "center" class="bg-secondary text-white font-weight-bold"><small> {{acordo[7]}}</small> </p></td>
+        {% else %}
+          <td><p align = "center"> <small> {{acordo[7]}}</small> </p></td>
+        {% endif %}
+        <td><p align = "right"><small>  {{acordo[8]}}</small></p></td>
+        <td><p align = "right"><small>  {{acordo[9]}}</small></p></td>
+        {% if acordo[1] != None%}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_processos_mae_por_acordo',acordo_id=acordo[0],prog=acordo[1],edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small class="font-weight-bold"> {{acordo[10]}}</small></a></p></td>
+        {% else %}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_processos_mae_por_acordo',acordo_id=acordo[0],prog='',edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small> {{acordo[10]}}</small></a></p></td>
+        {% endif %}
+
+        {% if acordo[1] != None%}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_processos_filho_por_acordo',acordo_id=acordo[0],prog=acordo[1],edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small class="font-weight-bold"> {{acordo[11]}}</small></a></p></td>
+        {% else %}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_processos_filho_por_acordo',acordo_id=acordo[0],prog='',edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small> {{acordo[11]}}</small></a></p></td>
+        {% endif %}
+        <td><p align = "center"><small> {{acordo[12]}}</small></p></td>
+        <td><p align = "right"><small>  {{acordo[13]}}</small></p></td>
+        <td><p align = "right"><small>  {{acordo[14]}}</small></p></td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+
+{% endblock %}

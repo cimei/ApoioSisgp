@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+
+        <div class="card border-primary mb-3">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="container">
+              <div class="row">
+
+                  <h3>Programas e Acordos (Edições)</h3>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <div class="container">
+              {% for edic in edics %}
+
+                <div class="card">
+
+                  <div class="card-header">
+                    <h5><a href="{{url_for('acordos.lista_acordos',lista='edic'+edic[0],coord='*')}}">{{edic[0]}}</a></h5>
+                    <h5></h5>
+                  </div>
+
+                  <div class="card-body">
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Acordos:</span>
+                        <h5 align = "center">{{edic[1]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor CNPq:</span> <h5 align = "center">{{edic[2]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor EPEs:</span> <h5 align = "center">{{edic[3]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor pago:</span> <h5 align = "center">{{edic[7]}}</h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Valor a pagar:</span> <h5 align = "center">{{edic[8]}}</h5>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col">
+                        <span class="font-weight-light">Mães:</span>
+                        <h5 align = "center">{{edic[4]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Filhos:</span>
+                        <h5 align = "center">{{edic[5]}} </h5>
+                      </div>
+                      <div class="col">
+                        <span class="font-weight-light">Bolsistas:</span>
+                        <h5 align = "center">{{edic[6]}} </h5>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              {% endfor %}
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+{% endblock %}

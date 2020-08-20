@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>project.bolsas package &#8212; SICOPES 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-bolsas-package">
+<h1>project.bolsas package<a class="headerlink" href="#project-bolsas-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-project.bolsas.forms">
+<span id="project-bolsas-forms-module"></span><h2>project.bolsas.forms module<a class="headerlink" href="#module-project.bolsas.forms" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Bolsas (formulários)</p>
+<p>O formulário do módulo <em>Bolsas</em> recebe dados informados pelo usuário para o registro de
+uma modalide/nível de bolsa. O formulário é o mesmo usado quando da atualização de dados de uma bolsa.</p>
+<ul class="simple">
+<li><p>BolsaForm: utilizado registrar ou atualizar dados de uma bolsa.</p></li>
+</ul>
+</div>
+<p><strong>Campos definidos no formulário (todos são obrigatórios):</strong></p>
+<dl class="class">
+<dt id="project.bolsas.forms.BolsaForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.bolsas.forms.</code><code class="sig-name descname">BolsaForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsas.forms.BolsaForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.bolsas.forms.BolsaForm.auxílio">
+<code class="sig-name descname">auxílio</code><em class="property"> = &lt;UnboundField(StringField, ('Valor dos auxílios:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.bolsas.forms.BolsaForm.auxílio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.bolsas.forms.BolsaForm.mensalidade">
+<code class="sig-name descname">mensalidade</code><em class="property"> = &lt;UnboundField(StringField, ('Valor da Mensalidade:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.bolsas.forms.BolsaForm.mensalidade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.bolsas.forms.BolsaForm.modalidade">
+<code class="sig-name descname">modalidade</code><em class="property"> = &lt;UnboundField(StringField, ('Modalidade:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.bolsas.forms.BolsaForm.modalidade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.bolsas.forms.BolsaForm.nivel">
+<code class="sig-name descname">nivel</code><em class="property"> = &lt;UnboundField(StringField, ('Nível:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.bolsas.forms.BolsaForm.nivel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.bolsas.forms.BolsaForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar',), {})&gt;</em><a class="headerlink" href="#project.bolsas.forms.BolsaForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.bolsas.views">
+<span id="project-bolsas-views-module"></span><h2>project.bolsas.views module<a class="headerlink" href="#module-project.bolsas.views" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Bolsas (views)</p>
+<p>As bolsas são o instrumento básico de fomento dos Acordos, pois o repasse é feito diretamente ao beneficiário,
+sem movimentação financeira entre partícipes.</p>
+<p>No caso do PDCTR, por exemplo, somente uma modalidade de bolsa é utilizada: DCR, cujos níveis e valores ficam
+registrados neste módulo.</p>
+<p>Uma bolsa tem atributos que são registrados no momento de sua criação. Todos são obrigatórios:</p>
+<ul class="simple">
+<li><p>Modalidade</p></li>
+<li><p>Nível</p></li>
+<li><p>Valor de mensalidade</p></li>
+<li><p>Valor de auxílios</p></li>
+</ul>
+</div>
+<div class="topic">
+<p class="topic-title first">Ações relacionadas às bolsas</p>
+<ul class="simple">
+<li><p>Listar bolsas cadastradas: lista_bolsas</p></li>
+<li><p>Registrar uma bolsa: cria_bolsa</p></li>
+<li><p>Atualizar dados de uma bolsa: update</p></li>
+</ul>
+</div>
+<dl class="function">
+<dt id="project.bolsas.views.cria_bolsa">
+<code class="sig-prename descclassname">project.bolsas.views.</code><code class="sig-name descname">cria_bolsa</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsas.views.cria_bolsa" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite registrar, ou alterar, os dados de um bolsa.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.bolsas.views.lista_bolsas">
+<code class="sig-prename descclassname">project.bolsas.views.</code><code class="sig-name descname">lista_bolsas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsas.views.lista_bolsas" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Lista as bolsas cadastradas no sistema.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.bolsas.views.update">
+<code class="sig-prename descclassname">project.bolsas.views.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">bolsa_id</em><span class="sig-paren">)</span><a class="headerlink" href="#project.bolsas.views.update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite atualizar os dados de uma bolsa selecionado na tela de consulta.</p>
+<p>Recebe o ID da bolsa como parâmetro.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.bolsas">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-project.bolsas" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SICOPES</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.bolsas.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

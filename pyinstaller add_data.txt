@@ -1,0 +1,9 @@
+pyinstaller --onefile --add-data "project\templates;project\templates" --add-data "project
+\static;project\static" --add-data "project
+\acordos;project\acordos" --add-data "project
+\bolsas;project\bolsas" --add-data "project
+\bolsistas;project\bolsistas" --add-data "project
+\core;project\core" --add-data "project
+\demandas;project\demandas" --add-data "project
+\error_pages;project\error_pages" --add-data "project
+\users;project\users" app.py

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+  <div class="jumbotron">
+
+  <h5>Altera data de conclusão da Demanda {{demanda_id}}</h5>
+
+  {% macro render_field(field,obr) %}
+    {% if obr == True %}
+      <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+    {% else %}
+      <dt>{{ field.label(class="form-control-label") }}
+    {% endif %}
+    <dd>{{ field(**kwargs)|safe }}
+    {% if field.errors %}
+      <ul class=errors>
+      {% for error in field.errors %}
+        <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    </dd>
+  {% endmacro %}
+
+
+  <form class="form-group" method='POST'>
+    {{ form.hidden_tag() }}
+
+    <div class="form-row">
+      <div class="form-group col-3">
+        {{ render_field(form.data_conclu,class="form-control",placeholder="dd/mm/aaaa",obr=True) }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary active") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

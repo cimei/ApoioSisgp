@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>project.convenios package &#8212; SICOPES 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="project-convenios-package">
+<h1>project.convenios package<a class="headerlink" href="#project-convenios-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-project.convenios.forms">
+<span id="project-convenios-forms-module"></span><h2>project.convenios.forms module<a class="headerlink" href="#module-project.convenios.forms" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Convênios (formulários)</p>
+<p>O formulário do módulo <em>Convenios</em> recebe dados informados pelo usuário para o registro
+de dados SEI de um convênio e é o mesmo utilizado quando da atualização de dados já existente.</p>
+<ul class="simple">
+<li><p>SEIForm: utilizado registrar ou atualizar dados SEI de um convênio.</p></li>
+<li><p>ProgPrefForm: para registrar ou atualizar programas preferenciais, ou seja, aqueles a partir dos quais será feira extração no SICONV.</p></li>
+<li><p>ChamadaForm: para registrar ou atualizar dados de chamadas públicas cujos resultados foram homologados pelo CNPq.</p></li>
+</ul>
+</div>
+<p><strong>Campos definidos no formulário (todos são obrigatórios, exceto o “obs” do ChamadaForm):</strong></p>
+<dl class="class">
+<dt id="project.convenios.forms.ChamadaForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.convenios.forms.</code><code class="sig-name descname">ChamadaForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.forms.ChamadaForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.chamada">
+<code class="sig-name descname">chamada</code><em class="property"> = &lt;UnboundField(StringField, ('Chamada:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.chamada" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.doc_sei">
+<code class="sig-name descname">doc_sei</code><em class="property"> = &lt;UnboundField(StringField, ('Doc com a lista de projetos no SEI:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.doc_sei" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.obs">
+<code class="sig-name descname">obs</code><em class="property"> = &lt;UnboundField(StringField, ('Observações:',), {})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.obs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.qtd_projetos">
+<code class="sig-name descname">qtd_projetos</code><em class="property"> = &lt;UnboundField(StringField, ('Quantidade de projetos:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.qtd_projetos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.sei">
+<code class="sig-name descname">sei</code><em class="property"> = &lt;UnboundField(StringField, ('Número SEI:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.sei" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar',), {})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ChamadaForm.vl_total_chamada">
+<code class="sig-name descname">vl_total_chamada</code><em class="property"> = &lt;UnboundField(StringField, ('Valor total homologado:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ChamadaForm.vl_total_chamada" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.convenios.forms.ProgPrefForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.convenios.forms.</code><code class="sig-name descname">ProgPrefForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.forms.ProgPrefForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.convenios.forms.ProgPrefForm.cod_programa">
+<code class="sig-name descname">cod_programa</code><em class="property"> = &lt;UnboundField(IntegerField, ('Código do Programa:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ProgPrefForm.cod_programa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ProgPrefForm.desc">
+<code class="sig-name descname">desc</code><em class="property"> = &lt;UnboundField(StringField, ('Descrição:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.ProgPrefForm.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.ProgPrefForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar',), {})&gt;</em><a class="headerlink" href="#project.convenios.forms.ProgPrefForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="project.convenios.forms.SEIForm">
+<em class="property">class </em><code class="sig-prename descclassname">project.convenios.forms.</code><code class="sig-name descname">SEIForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=&lt;object object&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.forms.SEIForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.ano">
+<code class="sig-name descname">ano</code><em class="property"> = &lt;UnboundField(IntegerField, ('Ano do Convênio:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.ano" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.epe">
+<code class="sig-name descname">epe</code><em class="property"> = &lt;UnboundField(StringField, ('Sigla da EPE:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.epe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.nr_convenio">
+<code class="sig-name descname">nr_convenio</code><em class="property"> = &lt;UnboundField(IntegerField, ('Número SICONV:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.nr_convenio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.programa">
+<code class="sig-name descname">programa</code><em class="property"> = &lt;UnboundField(StringField, ('Sigla do Programa:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.programa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.sei">
+<code class="sig-name descname">sei</code><em class="property"> = &lt;UnboundField(StringField, ('SEI do Convênio:',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.sei" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.submit">
+<code class="sig-name descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Registrar',), {})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="project.convenios.forms.SEIForm.uf">
+<code class="sig-name descname">uf</code><em class="property"> = &lt;UnboundField(StringField, ('UF (sigla):',), {'validators': [&lt;wtforms.validators.DataRequired object&gt;]})&gt;</em><a class="headerlink" href="#project.convenios.forms.SEIForm.uf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.convenios.views">
+<span id="project-convenios-views-module"></span><h2>project.convenios.views module<a class="headerlink" href="#module-project.convenios.views" title="Permalink to this headline">¶</a></h2>
+<div class="topic">
+<p class="topic-title first">Convênios (views)</p>
+<p>Os Convênios são instrumentos de parceria entre o CNPq e Entidades Parceiras Estaduais - EPEs onde
+há repasse direto de recursos das partes para a conta do convênio.</p>
+<p>Os convênios são gerenciados por meio do SICONV, contudo o trâmite administrativo no CNPq demanda os registros em processo
+SEI.</p>
+<p>Um convênio tem atributos relativos ao SEI registrados manualmente. Demais dados podem ser importados do SICONV.</p>
+<p>Os campos relativos ao SEI são:</p>
+<ul class="simple">
+<li><p>Número do convênio no SICONV</p></li>
+<li><p>Ano do convênio no SICONV</p></li>
+<li><p>Número do processo SEI</p></li>
+<li><p>Sigla da EPE</p></li>
+<li><p>Unidade da Federação da EPE</p></li>
+<li><p>Sigla do programa</p></li>
+</ul>
+<p>Dados relativos ao importado do SICONV estão em implementação…</p>
+</div>
+<div class="topic">
+<p class="topic-title first">Ações relacionadas aos convênios</p>
+<ul class="simple">
+<li><p>Lista programas da coordenação: lista_programas_pref</p></li>
+<li><p>Atualiza lista de programas da coordnação: prog_pref_update</p></li>
+<li><p>Insere um novo programa na lista de programas da coordenação: cria_Prog_Pref</p></li>
+<li><p>Atualizar dados SEI de um convenio: update_SEI</p></li>
+<li><p>Registrar um dados SEI de um convê no sistema: cria_SEI</p></li>
+<li><p>Listar convênios SICONV: lista_convenios_SICONV</p></li>
+<li><p>Mostra detalhes de um determinado convênio: convenio_detalhe</p></li>
+<li><p>Listar demandas de um determinado Convênio: SEI_demandas</p></li>
+</ul>
+</div>
+<dl class="function">
+<dt id="project.convenios.views.SEI_demandas">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">SEI_demandas</code><span class="sig-paren">(</span><em class="sig-param">conv</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.SEI_demandas" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Mostra as demandas relacionadas a um processo SEI quando seu NUP é selecionado em uma
+lista de convênios.
+Recebe o número do convênio como parâmetro.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.convenio_detalhe">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">convenio_detalhe</code><span class="sig-paren">(</span><em class="sig-param">conv</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.convenio_detalhe" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta os dados de um convênio específico.
+Recebe o número do convênio como parâmetro.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.cria_Prog_Pref">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">cria_Prog_Pref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.cria_Prog_Pref" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite inseir um programa na lista de programas preferenciais.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.cria_SEI">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">cria_SEI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.cria_SEI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite registrar os dados de um processo SEI referente a um convênio.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.lista_convenios_SICONV">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">lista_convenios_SICONV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.lista_convenios_SICONV" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta uma lista dos convênios de responsabilidade da COPES no SICONV.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.lista_programas_pref">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">lista_programas_pref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.lista_programas_pref" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta uma lista dos programas sob a responsabilidade da coordenação.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.prog_pref_update">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">prog_pref_update</code><span class="sig-paren">(</span><em class="sig-param">cod_prog</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.prog_pref_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite atualizar os dados de um programa preferencial (programa da coordenação).</p>
+<p>Recebe o código do progrma como parâmetro.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="project.convenios.views.update_SEI">
+<code class="sig-prename descclassname">project.convenios.views.</code><code class="sig-name descname">update_SEI</code><span class="sig-paren">(</span><em class="sig-param">SEI_id</em><span class="sig-paren">)</span><a class="headerlink" href="#project.convenios.views.update_SEI" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite atualizar os dados de um registro SEI de um convênio selecionado na tela de consulta.</p>
+<p>Recebe o ID do registro SEI como parâmetro.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-project.convenios">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-project.convenios" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SICOPES</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.convenios.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

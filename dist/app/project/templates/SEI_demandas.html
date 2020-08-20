@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+    <div align = 'center'>
+      <h3>{{demandas_count}} demanda(s) relacionadas ao processo SEI {{sei}}</h3>
+    </div>
+  </div>
+
+  {% for post in demandas %}
+    <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.titulo}}</a></h5>
+    <p class="text-muted">Registrada por {{autores[demandas.index(post)]}} em: {{post.data.strftime("%x")}} Tipo: {{post.tipo}}
+    {% if post.necessita_despacho %} <span class="bg-warning text-dark">** AGUARDA DESPACHO **</span> {% endif %}
+    {% if post.necessita_despacho_cg %} <span class="bg-info text-dark">** AGUARDA DESPACHO CG **</span> {% endif %}
+    {% if post.conclu %} <span class="bg-success text-white">** CONCLUÍDO **</span> {% endif %} </p>
+    <li class="list-group-item list-group-item-light">{{post.desc}}</li>
+  {% endfor %}
+
+
+  {% if current_user.is_authenticated %}
+    <div>
+      <br>
+      <a href="{{url_for('demandas.acordo_convenio_demanda',prog=dados[0],sei=dados[1],conv=dados[2],ano=dados[3])}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
+    </div>
+  {% endif %}
+
+
+</div>
+
+{% endblock %}

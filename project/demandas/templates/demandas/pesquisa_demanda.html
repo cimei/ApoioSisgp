@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+  <div class="jumbotron">
+  <h3>Procurar Demanda</h3>
+  <br>
+  <form class="form-group" method='POST'>
+    {{ form.hidden_tag() }}
+
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        {{ form.coord.label(class="form-control-label") }}
+        {{ form.coord(class="form-control form-control-sm") }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        {{ form.demanda_id.label(class="form-control-label") }}
+        {{ form.demanda_id(class="form-control form-control-sm") }}
+      </div>
+
+       <div class="form-group col-md-2">
+        {{ form.atividade.label(class="form-control-label") }}
+        {{ form.atividade(class="form-control form-control-sm") }}
+      </div>
+   
+      <div class="form-group col-md-4">
+        {{ form.sei.label(class="form-control-label") }}
+        {{ form.sei(class="form-control form-control-sm") }}
+      </div>
+      <div class="form-group col-md-2">
+        {{ form.convênio.label(class="form-control-label") }}
+        {{ form.convênio(class="form-control form-control-sm") }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.titulo.label(class="form-control-label") }}
+      {{ form.titulo(class="form-control form-control-sm") }}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        {{ form.autor.label(class="form-control-label") }}
+        {{ form.autor(class="form-control form-control-sm") }}
+      </div>
+      <div class="form-group col-md-4">
+        {{ form.tipo.label(class="form-control-label") }}
+        {{ form.tipo(class="form-control form-control-sm") }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        {{ form.necessita_despacho.label(class="form-control-label") }}
+        {{ form.necessita_despacho(class="form-control form-control-sm") }}
+      </div>
+      <div class="form-group col-md-3">
+        {{ form.necessita_despacho_cg.label(class="form-control-label") }}
+        {{ form.necessita_despacho_cg(class="form-control form-control-sm") }}
+      </div>
+      <div class="form-group col-md-2">
+        {{ form.conclu.label(class="form-control-label") }}
+        {{ form.conclu(class="form-control form-control-sm") }}
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-primary") }}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
