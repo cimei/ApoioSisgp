@@ -20,6 +20,8 @@
     * PesquisaForm: localizar demandas conforme os campos informados.
     * PesosForm: atribuição de pesos para os critérios de priorização de demandas.
     * Afere_Demanda_Form: atribuir nota a uma demanda
+    * Pdf_Demanda_Form: para gerar pdf da demanda em tela
+    * CoordForm: escolher uma coordeação específica
 
 
 **Campos definidos em cada formulário de *Demandas*:**
@@ -220,3 +222,15 @@ class Afere_Demanda_Form(FlaskForm):
 class Pdf_Demanda_Form(FlaskForm):
 
     submit      = SubmitField('Gerar pdf')
+
+# form para escolher coordenação
+class CoordForm(FlaskForm):
+
+    coords = db.session.query(Coords.sigla)\
+                      .order_by(Coords.sigla).all()
+    lista_coords = [(c[0],c[0]) for c in coords]
+    lista_coords.insert(0,('',''))
+
+    coord  = SelectField('Coordenação:',choices= lista_coords)
+
+    submit = SubmitField('Aplicar')

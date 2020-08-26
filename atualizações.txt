@@ -1,5 +1,13 @@
 ## Atualizações ##
 
+26/08/2020
+
+Resumo das demandas (estatísticas) passam a ser filtrados por coordenação. v 4.2.7
+
+24/08/2020
+
+Nome e descritivo do sistema agora são parametrizáveis pelo admin. v 4.2.6
+
 17/08/2020
 
 Incluida funcionalidade de geração de relatório de atividades. v 4.2.5

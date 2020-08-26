@@ -28,7 +28,8 @@ from sqlalchemy.sql import label
 from project import db
 from project.models import PagamentosPDCTR, RefCargaPDCTR, Programa, Proposta, Convenio,\
                            Programa_Interesse, Pagamento, Empenho, Desembolso, RefSICONV,\
-                           DadosSEI, Chamadas, MSG_Siconv, Acordo, Bolsa, Processo_Mae, Processo_Filho
+                           DadosSEI, Chamadas, MSG_Siconv, Acordo, Bolsa, Processo_Mae,\
+                           Processo_Filho, Sistema
 
 from project.demandas.views import registra_log_auto
 from project.convenios.forms import ChamadaForm
@@ -814,7 +815,9 @@ def index():
     |Apresenta a tela inicial do aplicativo.                                                |
     +---------------------------------------------------------------------------------------+
     """
-    return render_template ('index.html')
+    sistema = db.session.query(Sistema).first()
+
+    return render_template ('index.html',sistema=sistema)
 
 @core.route('/info')
 def info():
@@ -894,7 +897,8 @@ def carregaSICONV():
 
     registra_log_auto(current_user.id,None,'car')
 
-    return render_template('index.html')
+    #return render_template('index.html')
+    return redirect(url_for('core.index'))
 
 
 #

@@ -914,7 +914,25 @@ class Log_Desc(db.Model):
     def __repr__(self):
 
         return f"{self.tipo_registro};{self.desc_registro}"
+#
+## tabela com dados gerais
+class Sistema(db.Model):
 
+    __bind_key__ = 'demandas_banco'
+    __tablename__ = 'sistema'
+
+    id            = db.Column(db.Integer, primary_key=True)
+    nome_sistema  = db.Column(db.String,nullable=False)
+    descritivo    = db.Column(db.Text,nullable=False)
+
+    def __init__(self, nome_sistema, descritivo):
+
+        self.nome_sistema = nome_sistema
+        self.descritivo   = tipo_registro
+
+    def __repr__(self):
+
+        return f"{self.nome_sistema};{self.descritivo}"
 #
 ## tabela que guarda as datas de referência em que as planilhas da COSAO foram geradas
 class RefSICONV (db.Model):

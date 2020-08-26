@@ -122,8 +122,10 @@ class LogFormMan(FlaskForm):
 
 class VerForm(FlaskForm):
 
-    ver = StringField('Versão: ')
-    submit = SubmitField('Registrar')
+    ver          = StringField('Versão: ')
+    nome_sistema = StringField('Nome do sistema: ')
+    descritivo   = TextAreaField('Descritivo: ')
+    submit       = SubmitField('Registrar')
 
 class RelForm(FlaskForm):
 

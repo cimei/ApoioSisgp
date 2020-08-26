@@ -55,7 +55,8 @@ from sqlalchemy.orm import aliased
 from collections import Counter
 
 from project import db, mail, app
-from project.models import User, Demanda, Despacho, Providencia, Coords, Log_Auto, Log_Desc, Plano_Trabalho
+from project.models import User, Demanda, Despacho, Providencia, Coords, Log_Auto,\
+                           Log_Desc, Plano_Trabalho, Sistema
 from project.users.forms import RegistrationForm, LoginForm, UpdateUserForm, EmailForm, PasswordForm, AdminForm,\
                                 LogForm, LogFormMan, VerForm, RelForm
 from project.users.picture_handler import add_profile_pic
@@ -293,7 +294,7 @@ def login():
 
                     user.last_logged_in = user.current_logged_in
                     user.current_logged_in = datetime.now()
-                    db.session.add(user)
+                    #db.session.add(user)
                     db.session.commit()
 
                     login_user(user)
@@ -664,7 +665,8 @@ def admin_reg_ver():
     if current_user.role[0:5] != 'admin':
         abort(403)
     else:
-        users = User.query.order_by(User.id).all()
+        users   = User.query.order_by(User.id).all()
+        sistema = Sistema.query.first()
 
         form = VerForm()
 
@@ -676,16 +678,21 @@ def admin_reg_ver():
 
             db.session.commit()
 
+            sistema.nome_sistema = form.nome_sistema.data
+            sistema.descritivo   = form.descritivo.data
+
             registra_log_auto(current_user.id,None,'ver')
 
-            flash('Nova versão do sistema registrada!','sucesso')
+            flash('Dados gerais do sistema atualizados!','sucesso')
 
             return redirect(url_for('core.index'))
 
         # traz a versão atual
         elif request.method == 'GET':
 
-            form.ver.data = users[0].sversion
+            form.ver.data          = users[0].sversion
+            form.nome_sistema.data = sistema.nome_sistema
+            form.descritivo.data   = sistema.descritivo
 
         return render_template('admin_reg_ver.html', title='Update', form=form)
 
