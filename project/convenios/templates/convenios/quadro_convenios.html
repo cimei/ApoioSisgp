@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container bg-light">
+<!-- <div class="container bg-light"> -->
 
 
 <caption>
   <div class="row">
       <div class="col-8">
         <p>Quadro dos convênios das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
-          UFs (Quantidade de convênios -- valor global acumulado)
+          UFs (Quantidade de convênios e valor global acumulado)
         </p>
       </div>
       <div class="col">
@@ -18,6 +18,8 @@
   </div>
 </caption>
 
+<div class="container-fluid bg-light">
+  <div class="table-responsive">
   <table class="table table-bordered table-sm">
     <caption>Convênios</caption>
     <thead>
@@ -39,12 +41,14 @@
             <a href="{{url_for('convenios.lista_convenios_uf', uf=linha[0][3])}}"> {{linha[0][3]}} </a></p></th>
           {% for item in linha %}
             <td class="border border-dark border-right-0">
-              <p align = "right" ><a href="{{url_for('convenios.lista_convenios_quadro', uf=item[3], programa=item[1])}}">
-                <span class="font-weight-bold">{{item[0]}}</span> </a></p>
+              <div style="text-align: center;">
+                <a href="{{url_for('convenios.lista_convenios_quadro', uf=item[3], programa=item[1])}}">
+                <span class="font-weight-bold">{{item[0]}}</span> </a>
+                <br>
+                <span>{% if item[2] != '' %}R${% endif %} {{item[2]}}</span>
+              </div>
             </td>
-            <td class="border border-dark border-left-0"><p align = "right">
-              {% if item[2] != '' %}R${% endif %} {{item[2]}}</p>
-            </td>
+            <td class="border border-dark border-left-0"> </td>
           {% endfor %}
         </tr>
       {% endfor %}
@@ -52,9 +56,9 @@
     </tbody>
 
   </table>
-
-
-
 </div>
+</div>
+
+<!-- </div> -->
 
 {% endblock %}

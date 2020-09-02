@@ -87,7 +87,7 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 		<tr height="21">
 			<td colspan="2" height="21" style="height:21px;">	</td>
 			<td colspan="4">Reg. # {{registro.id}} - Atividade:
-				{% if registro.atividade_sigla == Null%}Geral{% else %}{{registro.atividade_sigla}}{% endif %} -
+				{% if registro.atividade_sigla == Null or registro.atividade_sigla == None %}Geral{% else %}{{registro.atividade_sigla}}{% endif %} -
 				{% if registro.tipo_registro[0:3] == 'man' %}
           <b>Observação do usuário: </b> {{registro.tipo_registro[5:]}}
         {% else %}

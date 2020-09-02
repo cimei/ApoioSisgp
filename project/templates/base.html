@@ -14,6 +14,9 @@
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+
+
       <a class="navbar-brand" href="#">
         <img src="/static/coop_nac.png" width="30" height="41" alt="">
       </a>
@@ -123,15 +126,17 @@
             </div>
           </li>
 
-          {% if current_user.is_authenticated and current_user.sversion != "4.2.7" %}
+          {% set ver = namespace(num='4.2.10') %}
+
+          {% if current_user.is_authenticated and current_user.sversion != ver.num %}
             <li class="nav-item">
-              <span class="navbar-text text-danger">ATENÇÃO! VOCÊ NÃO ESTÁ EXECUTANDO A VERSÃO CORRETA DO SISTEMA: {{current_user.sversion}}!</span>
+              <span class="navbar-text text-danger">ATENÇÃO! VOCÊ NÃO ESTÁ EXECUTANDO A VERSÃO CORRETA DO SISTEMA!</span>
             </li>
           {% endif %}
 
         </ul>
 
-        <span class="navbar-text">  V. 4.2.7 <small>cbt</small> </span>
+        <span class="navbar-text">  V. {{ ver.num }} <small>cbt</small> </span>
 
       </div>
     </nav>

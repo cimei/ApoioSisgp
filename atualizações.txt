@@ -1,5 +1,24 @@
 ## Atualizações ##
 
+--/--/====
+
+Ajustes nas tabelas html.
+
+01/09/2020
+
+Usando nome parametrizado do sistema nos e-mails para chefes. Corrigido erro na criação de demanda de acordo/convênio por conta da
+atividade inexistente. v 4.2.10
+
+31/08/2020
+
+E-mails para chefes (demanda concluída ou que requer despacho) passam a informar atividade e título da demanda. v 4.2.9
+
+28/08/2020
+
+Correção no relatório de atividades, atribuindo "Geral" para atividade nula ou vazia. E-mail enviado
+ao chefe quando de demanda concluída ou de necesidade de despacho passa a ir para o usuário também.
+Pequenas correções. v 4.2.8
+
 26/08/2020
 
 Resumo das demandas (estatísticas) passam a ser filtrados por coordenação. v 4.2.7

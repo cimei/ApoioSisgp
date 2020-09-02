@@ -31,24 +31,21 @@
     <form class="form-group" method='POST'>
       {{ form.hidden_tag() }}
         <div class="form-group row">
-
-          <div class="form-group col-3">
+          <div class="form-group col-2">
             {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
           </div>
-          <div class="form-group col-3">
+          <div class="form-group col-2">
             {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+          </div>
+          <div class="form-group col-4">
+            {{ render_field(form.log_part,class="form-control",obr=False) }}
           </div>
         </div>
 
         <div class="form-group row">
-          <div class="form-group col-6">
-            {{ render_field(form.log_part,class="form-control",obr=False) }}
-          </div>
-
           <div class="form-group col-2">
             {{ form.submit(class="btn btn-outline-primary btn-sm") }}
           </div>
-
         </div>
   </div>
 
@@ -116,6 +113,7 @@
 
   </table>
 
+<div class="container">
 <h3>Resumo</h3>
 
   <table class="table table-striped table-hover table-sm">
@@ -144,7 +142,7 @@
     </tbody>
 
   </table>
-
+</div>
 {% endif %}
 
 </div>

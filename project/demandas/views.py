@@ -34,13 +34,14 @@
     * Atualizar demandas: update_demanda
     * Transferir demanda: transfer_demanda
     * Avocar demanda: avocar_demanda
+    * Admin altera data de conclusão: admin_altera_demanda
     * Remover demandas: delete_demanda
     * Procurar demandas: pesquisa_demanda
     * Lista resultado da procura: list_pesquisa
     * Registrar despachos: cria_despacho
     * Aferir demandas: afere_demanda
     * Registrar providências: cria_providencia
-    * Resumo e estatísticas das demandas: demandas_resumo (em construção...)
+    * Resumo e estatísticas das demandas: demandas_resumo
 
 """
 
@@ -54,7 +55,8 @@ from sqlalchemy import or_, and_, func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db, mail, app
-from project.models import Demanda, Providencia, Despacho, User, Tipos_Demanda, DadosSEI, Acordo, Log_Auto, Plano_Trabalho
+from project.models import Demanda, Providencia, Despacho, User, Tipos_Demanda, DadosSEI, Acordo, Log_Auto, Plano_Trabalho,\
+                           Sistema
 from project.demandas.forms import DemandaForm1, DemandaForm, Demanda_ATU_Form, DespachoForm, ProvidenciaForm, PesquisaForm,\
                                    Tipos_DemandaForm, TransferDemandaForm, Admin_Altera_Demanda_Form, PesosForm, Afere_Demanda_Form,\
                                    Plano_TrabalhoForm, Pdf_Demanda_Form, CoordForm
@@ -456,9 +458,9 @@ def confirma_cria_demanda(sei,tipo,mensagem):
 
         flash ('Demanda criada!','sucesso')
 
+        # enviar e-mail para chefes sobre demanda concluida
         if form.conclu.data == True:
 
-            # enviar e-mail para chefes sobre demanda concluida
             chefes_emails = db.session.query(User.email)\
                                       .filter(User.despacha == True,
                                               User.coord == current_user.coord)
@@ -466,12 +468,41 @@ def confirma_cria_demanda(sei,tipo,mensagem):
             destino = []
             for email in chefes_emails:
                 destino.append(email[0])
+            destino.append(current_user.email)
 
-            if len(destino) > 0:
+            if len(destino) > 1:
 
-                html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username)
+                sistema = db.session.query(Sistema.nome_sistema).first()
 
-                send_email('Demanda ' + str(demanda_id) + ' foi concluída', destino,'', html)
+                html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username,
+                                        titulo=form.titulo.data, sistema=sistema.nome_sistema)
+
+                pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                send_email('Demanda ' + str(demanda_id) + ' foi concluída (' + pt.atividade_sigla + ')', destino,'', html)
+
+        # enviar e-mail para chefes sobre necessidade de despacho
+        if form.necessita_despacho.data == True:
+
+            chefes_emails = db.session.query(User.email)\
+                                      .filter(User.despacha == True,
+                                              User.coord == current_user.coord)
+
+            destino = []
+            for email in chefes_emails:
+                destino.append(email[0])
+            destino.append(current_user.email)
+
+            if len(destino) > 1:
+
+                sistema = db.session.query(Sistema.nome_sistema).first()
+
+                html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username,
+                                        titulo=form.titulo.data,sistema=sistema.nome_sistema)
+
+                pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
 
         return redirect(url_for('demandas.list_demandas'))
 
@@ -519,6 +550,10 @@ def acordo_convenio_demanda(prog,sei,conv,ano):
 
         atividade = db.session.query(Plano_Trabalho.id)\
                               .filter(Plano_Trabalho.atividade_sigla == prog).first()
+
+        if atividade == None:
+            atividade = db.session.query(Plano_Trabalho.id)\
+                                  .filter(Plano_Trabalho.atividade_sigla == "Diversos").first()
 
         return redirect(url_for('demandas.confirma_acordo_convenio_demanda',
                                                         prog=atividade.id,
@@ -589,9 +624,9 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
 
         flash ('Demanda criada!','sucesso')
 
+        # enviar e-mail para chefes sobre demanda concluida
         if form.conclu.data == True:
 
-            # enviar e-mail para chefes sobre demanda concluida
             chefes_emails = db.session.query(User.email)\
                                       .filter(User.despacha == True,
                                               User.coord == current_user.coord)
@@ -599,12 +634,42 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
             destino = []
             for email in chefes_emails:
                 destino.append(email[0])
+            destino.append(current_user.email)
 
-            if len(destino) > 0:
+            if len(destino) > 1:
 
-                html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username)
+                sistema = db.session.query(Sistema.nome_sistema).first()
 
-                send_email('Demanda ' + str(demanda_id) + ' foi concluída', destino,'', html)
+                html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username,
+                                        titulo=form.titulo.data,sistema=sistema.nome_sistema)
+
+                pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                send_email('Demanda ' + str(demanda_id) + ' foi concluída (' + pt.atividade_sigla + ')', destino,'', html)
+
+        # enviar e-mail para chefes sobre necessidade de despacho
+        if form.necessita_despacho.data == True:
+
+            chefes_emails = db.session.query(User.email)\
+                                      .filter(User.despacha == True,
+                                              User.coord == current_user.coord)
+
+            destino = []
+            for email in chefes_emails:
+                destino.append(email[0])
+            destino.append(current_user.email)
+
+            if len(destino) > 1:
+
+                sistema = db.session.query(Sistema.nome_sistema).first()
+
+                html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username,
+                                        titulo=form.titulo.data,sistema=sistema.nome_sistema)
+
+                pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
+
 
         return redirect(url_for('demandas.list_demandas'))
         #return redirect(url_for('demandas.demandas'))
@@ -1138,7 +1203,7 @@ def update_demanda(demanda_id):
 
         if form.tipo_despacho.data == '1':
 
-            # enviar e-mail para chefes sobre necessidade de depacho
+            # enviar e-mail para chefes sobre necessidade de despacho
             if demanda.necessita_despacho == False:
 
                 chefes_emails = db.session.query(User.email)\
@@ -1148,12 +1213,18 @@ def update_demanda(demanda_id):
                 destino = []
                 for email in chefes_emails:
                     destino.append(email[0])
+                destino.append(current_user.email)
 
-                if len(destino) > 0:
+                if len(destino) > 1:
 
-                    html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username)
+                    sistema = db.session.query(Sistema.nome_sistema).first()
 
-                    send_email('Demanda ' + str(demanda_id) + ' requer despacho', destino,'', html)
+                    html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username,
+                                            titulo=form.titulo.data,sistema=sistema.nome_sistema)
+
+                    pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                    send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
 
                 demanda.necessita_despacho    = True
                 demanda.data_env_despacho     = datetime.now()
@@ -1181,12 +1252,18 @@ def update_demanda(demanda_id):
                 destino = []
                 for email in chefes_emails:
                     destino.append(email[0])
+                destino.append(current_user.email)
 
-                if len(destino) > 0:
+                if len(destino) > 1:
 
-                    html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username)
+                    sistema = db.session.query(Sistema.nome_sistema).first()
 
-                    send_email('Demanda ' + str(demanda_id) + ' foi concluída', destino,'', html)
+                    html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username,
+                                            titulo=form.titulo.data,sistema=sistema.nome_sistema)
+
+                    pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==form.atividade.data).first()
+
+                    send_email('Demanda ' + str(demanda_id) + ' foi concluída (' + pt.atividade_sigla + ')', destino,'', html)
 
         else:
             demanda.data_conclu = None
@@ -1623,12 +1700,18 @@ def cria_despacho(demanda_id):
                 destino = []
                 for email in chefes_emails:
                     destino.append(email[0])
+                destino.append(current_user.email)
 
-                if len(destino) > 0:
+                if len(destino) > 1:
 
-                    html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username)
+                    sistema = db.session.query(Sistema.nome_sistema).first()
 
-                    send_email('Demanda ' + str(demanda_id) + ' foi concluída', destino,'', html)
+                    html = render_template('email_demanda_conclu.html',demanda=demanda_id,user=current_user.username,
+                                            titulo=demanda.titulo, sistema=sistema.nome_sistema)
+
+                    pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==demanda.programa).first()
+
+                    send_email('Demanda ' + str(demanda_id) + ' foi concluída (' + pt.atividade_sigla + ')', destino,'', html)
 
             demanda.conclu      = True
             demanda.data_conclu = datetime.now()
@@ -1752,12 +1835,18 @@ def cria_providencia(demanda_id):
                 destino = []
                 for email in chefes_emails:
                     destino.append(email[0])
+                destino.append(current_user.email)
 
-                if len(destino) > 0:
+                if len(destino) > 1:
 
-                    html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username)
+                    sistema = db.session.query(Sistema.nome_sistema).first()
 
-                    send_email('Demanda ' + str(demanda_id) + ' requer despacho', destino,'', html)
+                    html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username,
+                                            titulo=demanda.titulo,sistema=sistema.nome_sistema)
+
+                    pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==demanda.programa).first()
+
+                    send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
 
             demanda.necessita_despacho = True
             demanda.necessita_despacho_cg = False

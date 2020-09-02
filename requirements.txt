@@ -21,6 +21,7 @@ Flask-OAuth==0.12
 Flask-OAuthlib==0.9.4
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
+fpdf2==2.0.5
 future==0.17.1
 google-api-core==1.21.0
 google-api-python-client==1.9.3
@@ -37,6 +38,7 @@ lazy==1.3
 macholib==1.11
 Mako==1.0.7
 MarkupSafe==1.0
+numpy==1.19.1
 oauth2==1.9.0.post1
 oauth2client==4.1.3
 oauthlib==2.0.7
