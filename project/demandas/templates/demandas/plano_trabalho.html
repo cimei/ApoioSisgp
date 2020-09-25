@@ -4,7 +4,7 @@
   <h5><b>Plano de Trabalho (Atividades)</b></h5>
 
   {% if current_user.is_authenticated %}
-    {% if current_user.despacha %}
+    {% if current_user.despacha or current_user.despacha0 or current_user.despacha2 %}
       <div>
         <a href="{{url_for('demandas.cria_atividade')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir Atividade</a>
         <small class="form-text text-muted">Ou clique em um número de sequência para alterar atividade existente.</small>
@@ -40,7 +40,7 @@
       {% for atividade in atividades %}
 
       <tr>
-        {% if current_user.despacha %}
+        {% if current_user.despacha or current_user.despacha0 or current_user.despacha2 %}
           <th scope="row"><p align = "center"><a href="{{url_for('demandas.update_plano_trabalho', id=atividade.id)}}"> {{atividades.index(atividade) + 1}} </a></p></th>
         {% else %}
           <th scope="row"><p align = "center"> {{atividades.index(atividade) + 1}} </p></th>

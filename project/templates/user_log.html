@@ -67,7 +67,7 @@
 
 </div>
 
-{% if log == [] %}
+{% if atividades == [] %}
   <h3>Nada, por enquanto.</h3>
 {% else %}
 
@@ -79,14 +79,15 @@
         {% if usu == 'todos' %}
           <th scope="col"><p align = "left">Usuário</p></th>
         {% endif %}
+        <th scope="col"><p align = "center">Atividade</p></th>
         <th scope="col"><p align = "center">Demanda</p></th>
-        <th scope="col"><p align = "left">Atividade</p></th>
+        <th scope="col"><p align = "left">Ação</p></th>
       </tr>
     </thead>
 
     <tbody>
 
-      {% for registro in log %}
+      {% for registro in atividades %}
 
       <tr>
         <th scope="row"><p align = "center">{{registro.id}}</p></th>
@@ -95,6 +96,15 @@
         {% if usu == 'todos' %}
           <td><p align = "left"> {{registro.username}} </p></td>
         {% endif %}
+        {% if registro.atividade_sigla == Null or registro.atividade_sigla == None %}
+					{% if registro.ativ_sigla == Null or registro.ativ_sigla == None %}
+						<td><p align = "center">Geral</p></td>
+					{% else %}
+						<td><p align = "center">{{registro.ativ_sigla}}</p></td>
+					{% endif %}
+				{% else %}
+					<td><p align = "center">{{registro.atividade_sigla}}</p></td>
+				{% endif %}
         {% if registro.demanda_id != None %}
           <td><p align = "center"> <a href="{{url_for('demandas.demanda', demanda_id=registro.demanda_id)}}"><abbr title="Clique aqui para ver a demanda">{{registro.demanda_id}}</abbr></a> </p></td>
         {% else %}

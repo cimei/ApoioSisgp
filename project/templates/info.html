@@ -7,6 +7,7 @@
     <p>Uma iniciativa que visa auxiliar o dia a dia no trabalho, trazendo as informações básicas dos Acordos e Convênios sob a
       responsabilidade da Coordenação. O sitema oferece também uma forma de registrar e acompanhar as demandas tratadas por seus técnicos.
     </p>
+    {% if current_user.is_authenticated and current_user.trab_acordo %}
     <br>
     <h4>Acordos</h4>
     <p>No sistema, para que os dados de um Acordo possam ser visulizados, é necessário que o Programa correspondente seja cadastrado.
@@ -24,6 +25,8 @@
        <br>Com os cadastros em dia, basta carregar em <a href="{{url_for('core.carregaPDCTR')}}">Carrega F. Pag.</a> as planilhas
        excel de folha de pagamento geradas pela COSAO para que as informações sejam atualizadas.
     </p>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.trab_conv %}
     <br>
     <h4>Convênios</h4>
     <p>
@@ -34,18 +37,27 @@
        está cadastrado no sistema. <br>Em <a href="{{url_for('convenios.lista_programas_pref')}}">Programas Preferenciais</a>,
        estão os Programas sob a responsabilidade da Coordenação, bem como a opção de cadastrar um novo.
     </p>
+    {% endif %}
     <br>
     <h4>Demandas</h4>
     <p>
-       Demanda é tudo aquilo que nos é atribuído na coordenação. Pode ser atribuído pelo chefe, por um colega, ou por nós mesmos.
-       <br>Toda a demanda tem relação com um processo. Caso identifique alguma que não tenha, avalie se não é o caso de abrir um processo.
-       <br>Uma demanda para vários processos são em verdade várias demandas.
-       <br>Quem abre uma demanda tem a incumbência de concluí-la. Excepcionalmente, o coordenador pode encerrar uma demanda.
-       <br>Podemos registrar providências tomadas nas nossas e nas demandas dos colegas.
-       <br>Em princípio, o chefe não deveria registrar providências, mas registrar despachos. De qualquer forma, não é vedado.
-       <br>
+       Demandas compreendem tudo aquilo que nos é atribuído na coordenação a título de trabalho. Esta atribuição pode ser feita pelo chefe,
+       por um colega, ou por nós mesmos.
+       <br>O Plano de Trabalho comporta as macro atividades da coordenação, identificando para cada atividade os seus respectivos gestores.
+       <br>Toda a demanda tem relação com o Plano de Trabalho e com um processo. Surgindo uma demanda que não tenha relação com um processo,
+        é o caso de criar um processo que contemple o assunto. A relação demanda-processo, nesta direção, é unívoca, ou seja,
+         não podemos ter uma mesma demanda que corresponda a vários processos, são sempre várias demandas para vários processos.
+         Um processo, contudo, pode ter várias demandas a ele associadas.
+       <br>Quem abre uma demanda tem a incumbência de concluí-la. Em casos excepcionais, como uma ausência prolongada do responsável,
+        o chefe pode encerrar uma demanda.
+       <br>Podemos registrar providências (ações) tomadas nas nossas e nas demandas dos colegas. Para um registro mais sintético,
+       estas providências contam, preferencialmente, com um único verbo.
+       <br>Em princípio, o chefe não deveria registrar providências, pois este é responsável pelos despachos. De qualquer forma, não é vedado,
+       pois o chefe pode gerenciar suas próprias demandas.
+      <br>
        Sob estas premissas, o sistema permite o regisro, acompanhamento e consulta de demandas, respectivas providências e
-       despachos, apresentando estatísticas relevantes.
+       despachos, fornecendo estatísticas básicas sobre o trabalho realizado e um diário do uso do sistema, o que é bem útil para a
+       elaboração de relatórios de atividades.
 
 
 

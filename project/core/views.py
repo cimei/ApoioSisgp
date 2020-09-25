@@ -424,6 +424,9 @@ def cargaSICONV():
         print ('*****************************************************************')
         print ('<<',dt.now().isoformat(timespec='minutes'),'>> ','Carregando dados de programas...')
 
+        # pega código da instituição para resgate dos programas associados
+        cod_inst = db.session.query(RefSICONV.cod_inst).first()
+
         # abre csv dos programas e gera a lista data_lines
         with open(arq, newline='',encoding = 'utf-8') as data:
             data_lines = csv.DictReader(data,delimiter=';')
@@ -432,7 +435,7 @@ def cargaSICONV():
         # gera a lista programas pegando somente os cujo código começa com 20501 (CNPq)
             for line in data_lines:
 
-                if str(line['COD_PROGRAMA'][0:5]) == '20501':
+                if str(line['COD_PROGRAMA'][0:5]) == cod_inst.cod_inst:
 
                     programas.append([line['ID_PROGRAMA'],line['COD_PROGRAMA'],line['NOME_PROGRAMA']])
 
@@ -783,11 +786,10 @@ def cargaSICONV():
         for line in data_lines:
             data_ref = dt.strptime(str(line[nome_campo][:10]), '%d/%m/%Y').date()
 
-        db.session.query(RefSICONV).delete()
-        db.session.commit()
+        ref_siconv = db.session.query(RefSICONV).first()
 
-        ref = RefSICONV(data_ref = data_ref)
-        db.session.add(ref)
+        ref_siconv.data_ref = data_ref
+
         db.session.commit()
 
     if os.path.exists(arq):

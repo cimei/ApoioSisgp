@@ -69,6 +69,7 @@
         <th scope="col"><p align = "center">Valor CNPq</p></th>
         <th scope="col"><p align = "center">QTD Mães</p></th>
         <th scope="col"><p align = "center">QTD Filhos</p></th>
+        <th scope="col"><p align = "center">QTD CPFs</p></th>
         <th scope="col"><p align = "center">Pago</p></th>
         <th scope="col"><p align = "center">A pagar</p></th>
         <th scope="col"><p align = "center">Saldo</p></th>
@@ -130,6 +131,17 @@
             <a href="{{url_for('acordos.lista_processos_filho_por_acordo',acordo_id=acordo[0],prog='',edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
               <small> {{acordo[11]}}</small></a></p></td>
         {% endif %}
+
+        {% if acordo[1] != None%}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_bolsistas_acordo',acordo_id=acordo[0],prog=acordo[1],edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small class="font-weight-bold"> {{acordo[18]}}</small></a></p></td>
+        {% else %}
+          <td><p align = "center">
+            <a href="{{url_for('acordos.lista_bolsistas_acordo',acordo_id=acordo[0],prog='',edic=acordo[2],epe=acordo[4],uf=acordo[5])}}">
+              <small> {{acordo[18]}}</small></a></p></td>
+        {% endif %}
+
         <td><p align = "center"><small> {{acordo[12]}}</small></p></td>
         <td><p align = "right"><small>  {{acordo[13]}}</small></p></td>
         <td><p align = "right"><small>  {{acordo[14]}}</small></p></td>

@@ -30,7 +30,7 @@ from flask import flash
 
 from flask_login import current_user
 from project import db
-from project.models import User, Coords
+from project.models import User, Coords, Plano_Trabalho
 
 class LoginForm(FlaskForm):
 
@@ -40,19 +40,21 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
 
-    #coords = db.session.query(Coords.sigla)\
-    #                  .order_by(Coords.sigla).all()
-    #lista_coords = [(c[0],c[0]) for c in coords]
-    #lista_coords.insert(0,('',''))
+    # coords = db.session.query(Coords.sigla)\
+    #                   .order_by(Coords.sigla).all()
+    # lista_coords = [(c[0],c[0]) for c in coords]
+    # lista_coords.insert(0,('',''))
 
     email        = StringField('E-mail: ', validators=[DataRequired(message="Informe seu e-mail!"),Email()])
-    username     = StringField('Usuário: ', validators=[DataRequired(message="Informe um nome de usuário!")])
+    username     = StringField('Nome do usuário: ', validators=[DataRequired(message="Informe um nome de usuário!")])
     password     = PasswordField('Senha: ', validators=[DataRequired(message="Informe uma senha!"),EqualTo('pass_confirm',message='Senhas devem ser iguais!')])
     pass_confirm = PasswordField('Confirmar Senha: ', validators=[DataRequired(message="Confirme a senha!")])
+    # não é utilizada a lista de coordenações, pois o usuário pode se registrar antes de existirem coordenações no banco.
     coord        = StringField('Coordenação:',validators=[DataRequired(message="Informe a Coordenação!")])
-    #coord        = SelectField('Coordenação:',choices= lista_coords, validators=[DataRequired(message="Escolha uma Coordenção!")])
-    despacha     = BooleanField('Você é o coordenador, chefe de serviço ou o seu substituto?')
-    despacha2    = BooleanField('Você é o coordenador-geral ou o seu substituto?')
+    # coord        = SelectField('Coordenação:',choices= lista_coords, validators=[DataRequired(message="Escolha uma Coordenação!")])
+    despacha     = BooleanField('Você é coordenador, ou o seu substituto?')
+    despacha2    = BooleanField('Você é coordenador-geral, ou o seu substituto?')
+    despacha0    = BooleanField('Você é chefe de serviço, ou o seu substituto?')
     submit       = SubmitField('Registrar-se')
 
     def check_email(self,field):
@@ -101,11 +103,14 @@ class AdminForm(FlaskForm):
     lista_coords.insert(0,('',''))
 
     coord        = SelectField('Coordenação:',choices= lista_coords, validators=[DataRequired(message="Escolha uma Coordenção!")])
-    despacha     = BooleanField('É coordenador(a), chefe de serviço ou substituto(a)?')
-    despacha2    = BooleanField('É coordenador(a)-geral ou substituto(a)?')
+    despacha0    = BooleanField('É chefe de serviço, ou o seu substituto?')
+    despacha     = BooleanField('É coordenador(a), ou substituto(a)?')
+    despacha2    = BooleanField('É coordenador(a)-geral, ou substituto(a)?')
     role         = SelectField('Role: ',choices=[('user','user'),('admin','admin')] ,validators=[DataRequired(message="Informe o papel do usuário!")])
     cargo_func   = StringField('Cargo e Função: ')
     ativo        = BooleanField('Usuário está ativo?')
+    trab_conv    = BooleanField('Usuário trabalha com convênios?')
+    trab_acordo  = BooleanField('Usuário trabalha com acordos e encomendas?')
     submit       = SubmitField('Atualizar')
 
 class LogForm(FlaskForm):
@@ -117,15 +122,24 @@ class LogForm(FlaskForm):
 
 class LogFormMan(FlaskForm):
 
+    atividades = db.session.query(Plano_Trabalho.atividade_sigla, Plano_Trabalho.id)\
+                      .order_by(Plano_Trabalho.atividade_sigla).all()
+    lista_atividades = [(str(a[1]),a[0]) for a in atividades]
+    lista_atividades.insert(0,('',''))
+
+    atividade   = SelectField('Atividade:',choices= lista_atividades)
     entrada_log = TextAreaField('Entrada no Diário: ')
-    submit   = SubmitField('Registrar')
+    submit      = SubmitField('Registrar')
 
 class VerForm(FlaskForm):
 
-    ver          = StringField('Versão: ')
-    nome_sistema = StringField('Nome do sistema: ')
-    descritivo   = TextAreaField('Descritivo: ')
-    submit       = SubmitField('Registrar')
+    ver                   = StringField('Versão: ')
+    cod_inst              = StringField('Cód. da Instituição: ')
+    nome_sistema          = StringField('Nome do sistema: ')
+    descritivo            = TextAreaField('Descritivo: ')
+    funcionalidade_conv   = BooleanField('Habilitar funcionalidade convênios?')
+    funcionalidade_acordo = BooleanField('Habilitar funcionalidade acordos?')
+    submit                = SubmitField('Registrar')
 
 class RelForm(FlaskForm):
 

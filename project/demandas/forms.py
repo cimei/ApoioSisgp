@@ -90,7 +90,7 @@ class DemandaForm(FlaskForm):
     titulo                = StringField('Título:', validators=[DataRequired(message="Defina um Título!")])
     desc                  = TextAreaField('Descrição:',validators=[DataRequired(message="Descreva a Demanda!")])
     necessita_despacho    = BooleanField('Necessita despacho?')
-    necessita_despacho_cg = BooleanField('Necessita despacho da CG ou sup.?')
+    necessita_despacho_cg = BooleanField('Necessita despacho superior?')
     conclu                = BooleanField('Concluída?')
     urgencia              = SelectField('Urgência:',choices=[('3','Baixa'),('2','Média'),('1','Alta')],
                                        validators=[DataRequired(message="Defina a urgência!")])
@@ -112,7 +112,7 @@ class Demanda_ATU_Form(FlaskForm):
     ano_convênio        = StringField('Ano do Convênio:')
     titulo              = StringField('Título:', validators=[DataRequired(message="Defina um Título!")])
     desc                = TextAreaField('Descrição:',validators=[DataRequired(message="Descreva a Demanda!")])
-    tipo_despacho       = RadioField('Necessita despacho?',choices=[('0','Nenhum'),('1','Coord. Téc.'),('2','Coord. Geral')])
+    tipo_despacho       = RadioField('Necessita despacho?',choices=[('0','Nenhum'),('1','1º nível'),('2','Superior')])
     conclu              = BooleanField('Concluída?')
     urgencia            = SelectField('Urgência:',choices=[('3','Baixa'),('2','Média'),('1','Alta')],
                                        validators=[DataRequired(message="Defina a urgência!")])
@@ -131,7 +131,7 @@ class TransferDemandaForm(FlaskForm):
 class DespachoForm(FlaskForm):
 
     texto                  = TextAreaField('Descrição:',validators=[DataRequired(message="Descreva o Despacho!")])
-    necessita_despacho_cg  = BooleanField('Necessita despacho CG ou sup.?')
+    necessita_despacho_cg  = BooleanField('Necessita despacho superior?')
     conclu                 = BooleanField('Concluir a Demanda?')
     submit                 = SubmitField('Registrar')
 
@@ -175,7 +175,7 @@ class PesquisaForm(FlaskForm):
     necessita_despacho  = SelectField('Aguarda Despacho',choices=[('Todos','Todos'),
                                                ('Sim','Não'),
                                                ('Não','Sim')])
-    necessita_despacho_cg  = SelectField('Aguarda Despacho CG ou sup.',choices=[('Todos','Todos'),
+    necessita_despacho_cg  = SelectField('Aguarda Despacho superior',choices=[('Todos','Todos'),
                                               ('Sim','Não'),
                                               ('Não','Sim')])
     conclu              = SelectField('Concluído',choices=[('Todos','Todos'),

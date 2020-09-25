@@ -25,33 +25,45 @@
 <form class="needs-validation" method='POST' >
   {{ form.hidden_tag() }}
 
-<div class="col-4">
-
-  <div class="form-group">
-    {{ render_field(form.coord,class="form-control",obr=True) }}
+  <div class="row">
+    <div class="form-group col-3">
+      {{ render_field(form.cargo_func,class="form-control", obr=False) }}
+    </div>
+    <div class="form-group col-3">
+      {{ render_field(form.role,class="form-control", obr=True) }}
+    </div>
   </div>
 
-  <div class="form-group">
-    {{ render_field(form.despacha,class="form-control",obr=False) }}
+  <div class="row">
+    <div class="form-group col-3">
+      {{ render_field(form.coord,class="form-control",obr=True) }}
+    </div>
+    <div class="form-group col-3">
+      {{ render_field(form.despacha0,class="form-control",obr=False) }}
+    </div>
+    <div class="form-group col-3">
+      {{ render_field(form.despacha,class="form-control",obr=False) }}
+    </div>
+    <div class="form-group col-3">
+      {{ render_field(form.despacha2,class="form-control",obr=False) }}
+    </div>
   </div>
 
-  <div class="form-group">
-    {{ render_field(form.despacha2,class="form-control",obr=False) }}
-  </div>
-
-  <div class="form-group">
-    {{ render_field(form.role,class="form-control", obr=True) }}
-  </div>
-
-  <div class="form-group">
-    {{ render_field(form.cargo_func,class="form-control", obr=False) }}
-  </div>
-
-  <div class="form-group">
+  <div class="form-group col-3">
     {{ render_field(form.ativo,class="form-control", obr=True) }}
   </div>
 
-</div>
+  <div class="row">
+    <div class="form-group col-4">
+      {{ render_field(form.trab_conv,class="form-control", obr=False) }}
+    </div>
+    <div class="form-group col-5">
+      {{ render_field(form.trab_acordo,class="form-control", obr=False) }}
+    </div>
+    <div class="col-8">
+      <p align="center">OBS: Estas opções dependem do uso das respectivas funcionalidades pelo sistema.</p>
+    </div>
+  </div>
 
   <div class="form-group">
     {{ form.submit(class="btn btn-primary") }}

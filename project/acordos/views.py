@@ -50,6 +50,7 @@
     * Listar processos filho de um processo mãe: lista_processos_filho
     * Listar bolsistas (cpf) de um processo mãe: lista_bolsistas
     * Listar os processos filho de um acordo: lista_processos_filho_por_acordo
+    * Listar bolsistas (cpf) de um acordo: lista_bolsistas_acordo
     * Resumo dos Acordos :resumo_acordos
     * Edições de cada programa: edic_programa
     * Gasto mensal por acordo: gasto_mes
@@ -241,6 +242,13 @@ def lista_acordos(lista,coord):
                                   .join(Processo_Mae, Processo_Mae.id == Acordo_ProcMae.proc_mae_id)\
                                   .filter(Acordo_ProcMae.acordo_id == acordo.id).all()
             qtd_proc_mae = len(procs_mae)
+            l_procs_mae = [p.proc_mae for p in procs_mae]
+
+            cpfs_banco = db.session.query(Processo_Filho.cpf)\
+                             .filter(Processo_Filho.proc_mae.in_(l_procs_mae))\
+                             .group_by(Processo_Filho.cpf)\
+                             .all()
+            qtd_cpfs = len(cpfs_banco)
 
             qtd_filhos_acordo = 0
             pago_acordo       = 0
@@ -276,7 +284,8 @@ def lista_acordos(lista,coord):
                             locale.currency(acordo.valor_cnpq - pago_acordo - a_pagar, symbol=False, grouping = True),
                             acordo.COORD,
                             dias,
-                            acordo.ID_PROGRAMA])
+                            acordo.ID_PROGRAMA,
+                            qtd_cpfs])
 
         return render_template('lista_acordos.html', acordos=acordos,quantidade=quantidade,lista=lista,form=form)
 
@@ -750,8 +759,8 @@ def lista_bolsistas(proc_mae,prog,edic,epe,uf):
                               Processo_Filho.modalidade,
                               Processo_Filho.nivel,
                               Processo_Filho.situ_filho,
-                              Processo_Filho.inic_filho,
-                              Processo_Filho.term_filho,
+                              label('min_inic_filho',func.min(Processo_Filho.inic_filho)),
+                              label('max_term_filho',func.max(Processo_Filho.term_filho)),
                               label('mens_p',func.sum(Processo_Filho.mens_pagas)),
                               label('pago',func.sum(Processo_Filho.pago_total)),
                               label('mens_ap',func.sum(Processo_Filho.mens_apagar)),
@@ -771,8 +780,8 @@ def lista_bolsistas(proc_mae,prog,edic,epe,uf):
                        cpf.modalidade,
                        cpf.nivel,
                        cpf.situ_filho,
-                       cpf.inic_filho.strftime("%x"),
-                       cpf.term_filho.strftime("%x"),
+                       cpf.min_inic_filho.strftime("%x"),
+                       cpf.max_term_filho.strftime("%x"),
                        cpf.mens_p,
                        locale.currency(cpf.pago, symbol=False, grouping = True),
                        cpf.mens_ap,
@@ -853,6 +862,66 @@ def lista_processos_filho_por_acordo(acordo_id,prog,edic,epe,uf):
                                                         prog=prog,edic=edic,epe=epe,uf=uf,max_ult_pag=max_ult_pag.strftime("%x"))
 
 #
+### LISTAR bolsistas (cpf) de um acordo
+
+@acordos.route("/<int:acordo_id>/<prog>/<edic>/<epe>/<uf>/lista_bolsistas")
+def lista_bolsistas_acordo(acordo_id,prog,edic,epe,uf):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Lista bolsistas (cpfs) de um acordo especifico.                                        |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    lista = 'acordo'
+
+    procs_mae = db.session.query(Processo_Mae.proc_mae)\
+                          .join(Acordo_ProcMae, Processo_Mae.id == Acordo_ProcMae.proc_mae_id)\
+                          .filter(Acordo_ProcMae.acordo_id == acordo_id).all()
+
+    l_procs_mae = [p.proc_mae for p in procs_mae]
+
+    qtd_maes = len(procs_mae)
+
+    filhos = []
+    qtd_filhos = 0
+    ultimo_pag = []
+
+    cpfs_banco = db.session.query(Processo_Filho.nome,
+                              Processo_Filho.cpf,
+                              Processo_Filho.modalidade,
+                              Processo_Filho.nivel,
+                              Processo_Filho.situ_filho,
+                              label('min_inic_filho',func.min(Processo_Filho.inic_filho)),
+                              label('max_term_filho',func.max(Processo_Filho.term_filho)),
+                              label('mens_p',func.sum(Processo_Filho.mens_pagas)),
+                              label('pago',func.sum(Processo_Filho.pago_total)),
+                              label('mens_ap',func.sum(Processo_Filho.mens_apagar)),
+                              label('apagar',func.sum(Processo_Filho.valor_apagar)))\
+                       .filter(Processo_Filho.proc_mae.in_(l_procs_mae))\
+                       .group_by(Processo_Filho.cpf)\
+                       .order_by(Processo_Filho.nome).all()
+
+    qtd_cpfs = len(cpfs_banco)
+
+    cpfs = []
+
+    for cpf in cpfs_banco:
+
+        cpfs.append([cpf.nome,
+                       cpf.cpf,
+                       cpf.modalidade,
+                       cpf.nivel,
+                       cpf.situ_filho,
+                       cpf.min_inic_filho.strftime("%x"),
+                       cpf.max_term_filho.strftime("%x"),
+                       cpf.mens_p,
+                       locale.currency(cpf.pago, symbol=False, grouping = True),
+                       cpf.mens_ap,
+                       locale.currency(cpf.apagar, symbol=False, grouping = True)])
+
+    return render_template('lista_bolsistas.html',proc_mae=l_procs_mae,cpfs=cpfs,
+                                                   qtd_cpfs=qtd_cpfs,
+                                                   prog=prog,edic=edic,epe=epe,uf=uf)
 #
 ## RESUMO acordos
 

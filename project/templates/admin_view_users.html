@@ -27,7 +27,9 @@
           {% for user in users %}
             <tr>
               <td> <a href="{{url_for('users.admin_update_user', user_id=user.id)}}"><abbr title="Clique aqui atualizar">{{ user.id }} </td>
-              {% if user.despacha == True %}
+              {% if user.despacha0 == True %}
+                <td> <span class="text-warning">{{user.username }}</span> </td>
+              {% elif user.despacha == True%}
                 <td> <span class="text-success">{{user.username }}</span> </td>
               {% elif user.despacha2 == True%}
                 <td> <span class="text-danger">{{user.username }}</span> </td>

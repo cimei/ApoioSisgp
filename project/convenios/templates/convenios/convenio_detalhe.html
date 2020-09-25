@@ -9,26 +9,33 @@
           <div class="card-header">
             <div class="container">
               <div class="row">
-                <div class="col-3">
-                  {% if dadosSEI != None %}
-                    <h3>{{convenio.NR_CONVENIO}}/{{dadosSEI.ano}}</h3>
-                  {% else %}
-                    <h3>{{convenio.NR_CONVENIO}}</h3>
-                  {% endif %}
-                </div>
-                <div class="col-2">
-                  <h3>{{dadosSEI.programa}}</h3>
-                </div>
-                <div class="col-2">
-                  <h3>{{dadosSEI.epe}}-{{dadosSEI.uf}}</h3>
-                </div>
-                <div class="col-4">
-                  {% if sei != 'Nº SEI não informado' %}
-                    <h3><a href="{{url_for('convenios.SEI_demandas', conv=convenio.NR_CONVENIO)}}">
-                      <abbr title="Clique aqui para ver as demandas deste processo">{{sei.split('_')[0]+'/'+sei.split('_')[1]}}</abbr></a></h3>
-                  {% else %}
-                    <h3>Nº SEI não informado</h3>
-                  {% endif %}
+                <div class="col">
+                  <div class="row">
+                    <div class="col-3">
+                      {% if dadosSEI != None %}
+                        <h4>{{convenio.NR_CONVENIO}}/{{dadosSEI.ano}}</h4>
+                      {% else %}
+                        <h4>{{convenio.NR_CONVENIO}}</h4>
+                      {% endif %}
+                    </div>
+                    <div class="col-3">
+                      <h4>{{dadosSEI.programa}}</h4>
+                    </div>
+                    <div class="col-2">
+                      <h4>{{dadosSEI.epe}}-{{dadosSEI.uf}}</h4>
+                    </div>
+                    <div class="col-4">
+                      {% if sei != 'Nº SEI não informado' %}
+                        <h4><a href="{{url_for('convenios.SEI_demandas', conv=convenio.NR_CONVENIO)}}">
+                          <abbr title="Clique aqui para ver as demandas deste processo">{{sei.split('_')[0]+'/'+sei.split('_')[1]}}</abbr></a></h4>
+                      {% else %}
+                        <h4>Nº SEI não informado</h4>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <h7>Prog.: {{programa.COD_PROGRAMA}} - {{programa.NOME_PROGRAMA}}</h7>
+                  </div>
                 </div>
                 <div class="col-1">
                   <abbr title="Clique aqui para gerar um caput para documentos"><button type="button" class="btn btn-info" data-toggle='modal' data-target='#caput_modal'><h5>t</h5></button></abbr>

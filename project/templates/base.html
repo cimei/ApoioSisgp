@@ -35,32 +35,36 @@
             <a class="nav-link" href="{{url_for('core.info')}}">Sobre</a>
           </li>
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Convênios
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-              <a class="dropdown-item" href="{{url_for('convenios.lista_programas_pref')}}">Programas Preferenciais</a>
-              <a class="dropdown-item" href="{{url_for('convenios.lista_convenios_SICONV',lista='todos',coord='*')}}">Todos</a>
-              <a class="dropdown-item" href="{{url_for('convenios.lista_convenios_SICONV',lista='em execução',coord='*')}}">Em execução</a>
-              <a class="dropdown-item" href="{{url_for('convenios.msg_siconv')}}">Mensagens SICONV</a>
-              <a class="dropdown-item" href="{{url_for('convenios.quadro_convenios')}}">Por UF</a>
-              <a class="dropdown-item" href="{{url_for('convenios.resumo_convenios')}}">Resumo por Programa</a>
-            </div>
-          </li>
+          {% if current_user.is_authenticated and current_user.trab_conv %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Convênios
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
+                <a class="dropdown-item" href="{{url_for('convenios.lista_programas_pref')}}">Programas Preferenciais</a>
+                <a class="dropdown-item" href="{{url_for('convenios.lista_convenios_SICONV',lista='todos',coord='*')}}">Todos</a>
+                <a class="dropdown-item" href="{{url_for('convenios.lista_convenios_SICONV',lista='em execução',coord='*')}}">Em execução</a>
+                <a class="dropdown-item" href="{{url_for('convenios.msg_siconv')}}">Mensagens SICONV</a>
+                <a class="dropdown-item" href="{{url_for('convenios.quadro_convenios')}}">Por UF</a>
+                <a class="dropdown-item" href="{{url_for('convenios.resumo_convenios')}}">Resumo por Programa</a>
+              </div>
+            </li>
+          {% endif %}
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Acordos
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-              <a class="dropdown-item" href="{{url_for('acordos.lista_programa_cnpq')}}">Programas CNPq</a>
-              <a class="dropdown-item" href="{{url_for('acordos.lista_acordos',lista='todos',coord='*')}}">Todos</a>
-              <a class="dropdown-item" href="{{url_for('acordos.lista_acordos',lista='em execução',coord='*')}}">Em Execução</a>
-              <a class="dropdown-item" href="{{url_for('acordos.resumo_acordos')}}">Resumo</a>
-              <a class="dropdown-item" href="{{url_for('bolsas.lista_bolsas')}}">Bolsas</a>
-            </div>
-          </li>
+          {% if current_user.is_authenticated and current_user.trab_acordo %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Acordos
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                <a class="dropdown-item" href="{{url_for('acordos.lista_programa_cnpq')}}">Programas CNPq</a>
+                <a class="dropdown-item" href="{{url_for('acordos.lista_acordos',lista='todos',coord='*')}}">Todos</a>
+                <a class="dropdown-item" href="{{url_for('acordos.lista_acordos',lista='em execução',coord='*')}}">Em Execução</a>
+                <a class="dropdown-item" href="{{url_for('acordos.resumo_acordos')}}">Resumo</a>
+                <a class="dropdown-item" href="{{url_for('bolsas.lista_bolsas')}}">Bolsas</a>
+              </div>
+            </li>
+          {% endif %}
 
           {% if current_user.is_authenticated %}
 
@@ -80,22 +84,28 @@
                   <a class="dropdown-item"  href="{{ url_for('users.admin_view_users') }}">Ver Usuários (Admin)</a>
                   <a class="dropdown-item"  href="{{ url_for('users.admin_reg_ver') }}">Dados gerais do sistema (Admin)</a>
                 {% endif %}
-                {% if current_user.despacha == True %}
+                {% if current_user.despacha == True or current_user.despacha0 == True %}
                   <a class="dropdown-item"  href="{{ url_for('users.user_posts',username='todos',filtro='conclu') }}">Aferir demandas (Coord.)</a>
                 {% endif %}
               </div>
             </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Carga
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{{url_for('core.carregaPDCTR')}}">Carrega F. Pag.</a>
-                <button class="dropdown-item" data-toggle='modal' data-target='#siconv_modal'>Carrega SICONV</button>
-                <a class="dropdown-item" href="{{url_for('core.carregaMSG')}}">Carrega Caixa de Entrada SICONV</a>
-              </div>
-            </li>
+            {% if current_user.trab_acordo or current_user.trab_conv %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Carga
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  {% if current_user.trab_acordo %}
+                    <a class="dropdown-item" href="{{url_for('core.carregaPDCTR')}}">Carrega F. Pag.</a>
+                  {% endif %}
+                  {% if current_user.trab_conv %}
+                    <button class="dropdown-item" data-toggle='modal' data-target='#siconv_modal'>Carrega SICONV</button>
+                    <a class="dropdown-item" href="{{url_for('core.carregaMSG')}}">Carrega Caixa de Entrada SICONV</a>
+                  {% endif %}
+                </div>
+              </li>
+            {% endif %}
 
           {% else %}
 
@@ -126,7 +136,7 @@
             </div>
           </li>
 
-          {% set ver = namespace(num='4.2.10') %}
+          {% set ver = namespace(num='4.2.19') %}
 
           {% if current_user.is_authenticated and current_user.sversion != ver.num %}
             <li class="nav-item">

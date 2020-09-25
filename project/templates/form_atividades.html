@@ -14,7 +14,7 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 
 <p class="Calibre_12_Centralizado"><u><strong>TRABALHO REMOTO</strong></u></p>
 
-<p class="Calibre_12_Centralizado">DCOI/CGNAC/{{current_user.coord}}</p>
+<p class="Calibre_12_Centralizado">{{current_user.coord}}</p>
 <table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;" width="1260">
 	<colgroup>
 		<col span="20" />
@@ -65,14 +65,71 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 			<td colspan="2" height="116" style="height:116px;">&nbsp;</td>
 			<td colspan="17" x:str="">Este formul&aacute;rio tem como objetivo subsidiar o acompanhamento da realiza&ccedil;&atilde;o de atividades acordadas entre chefia e servidor durante o per&iacute;odo de emerg&ecirc;ncia em sa&uacute;de p&uacute;blica, no qual ser&aacute; utilizada a modalidade de trabalho remoto. Para tal, dever&atilde;o ser listados os projetos, atividades e/ou tarefas que lhe foram atribu&iacute;dos e as datas pactuadas para entrega, dentro do per&iacute;odo de 01(um) m&ecirc;s. As metas devem ser pactuadas entre chefia e servidor, levando em considera&ccedil;&atilde;o eventuais fatores intervenientes na execu&ccedil;&atilde;o. Este formul&aacute;rio dever&aacute; ser preenchido no in&iacute;cio de cada m&ecirc;s, para registro das tarefas e dos prazos de entrega e no decorrer do m&ecirc;s para registro do prazo efetivo de entrega.&nbsp;</td>
 		</tr>
+
 		<tr height="27">
 			<td colspan="2" height="27" style="height:27px;">&nbsp;</td>
-			<td colspan="17" style="background-color: rgb(204, 204, 204);" x:str=""><strong>3. RELATÓRIO</strong></td>
+			<td colspan="17" style="background-color: rgb(204, 204, 204);" x:str=""><strong>3. PLANO DE TRABALHO</strong></td>
 			<td>&nbsp;</td>
 		</tr>
 		<tr height="95">
 			<td colspan="2" height="95" style="height:94px;">&nbsp;</td>
-			<td colspan="4" x:str="">Atividades/tarefas/projetos pactuados entre chefia e servidor(a)</td>
+			<td colspan="7" x:str=""><p align = "center">Atividades pactuados entre chefia e servidor(a)</p></td>
+			<td colspan="4" x:str=""><p align = "center">Sigla</p></td>
+			<td colspan="2" x:str=""><p align = "center">Natureza</p></td>
+			<td colspan="4" x:str=""><p align = "center">Meta (h/sem.)</p></td>
+			<td>&nbsp;</td>
+		</tr>
+
+		{% for atividade in atividades_1 %}
+
+			<tr>
+				<td colspan="2" height="21" style="height:21px;">	</td>
+				<td colspan="7"><p align = "left"> {{atividade.atividade_desc}} </p></td>
+				<td colspan="4"><p align = "center"> {{atividade.atividade_sigla}} </p></td>
+				<td colspan="2"><p align = "center"> {{atividade.natureza}} </p></td>
+				<td colspan="4"><p align = "center"> {{atividade.meta}} </p></td>
+				<td>&nbsp;</td>
+			</tr>
+
+		{% endfor %}
+
+		<tr height="116">
+			<td colspan="2" height="116" style="height:116px;">&nbsp;</td>
+			<td colspan="17" x:str="">
+				<p>Observações:</p>
+				<p>Nas {{quantidade_1}} atividades listadas acima o(a) servidor(a) é o gestor principal.</p>
+				<p>Carga horária total prevista: {{carga_1}} horas por semana.</p></td>
+		</tr>
+
+		{% for atividade in atividades_2 %}
+
+			<tr>
+				<td colspan="2" height="21" style="height:21px;">	</td>
+				<td colspan="7"><p align = "left"> {{atividade.atividade_desc}} </p></td>
+				<td colspan="4"><p align = "center"> {{atividade.atividade_sigla}} </p></td>
+				<td colspan="2"><p align = "center"> {{atividade.natureza}} </p></td>
+				<td colspan="4"><p align = "center"> {{atividade.meta}} </p></td>
+				<td>&nbsp;</td>
+			</tr>
+
+		{% endfor %}
+
+		<tr height="116">
+			<td colspan="2" height="116" style="height:116px;">&nbsp;</td>
+			<td colspan="17" x:str="">
+				<p>Observações:</p>
+				<p>Nas {{quantidade_2}} atividades listadas acima o(a) servidor(a) é o gestor substitudo. Atua quando necessário,
+					ou apoiando o gestor principal, ou quando da ausência deste.</p>
+		</tr>
+
+		<tr height="27">
+			<td colspan="2" height="27" style="height:27px;">&nbsp;</td>
+			<td colspan="17" style="background-color: rgb(204, 204, 204);" x:str=""><strong>4. RELATÓRIO</strong></td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="95">
+			<td colspan="2" height="95" style="height:94px;">&nbsp;</td>
+			<td colspan="4" x:str="">Ações executadas pelo servidor(a)</td>
 			<td colspan="2" x:str="">Data de entrega pactuada</td>
 			<td colspan="2" style="width: 149px;" x:str="">Situação / Acompanhamento</td>
 			<td colspan="2" style="width: 212px;" x:str="">Sistema utilizado para registro dos dados (SEI, PICC, outro se houver)</td>
@@ -87,7 +144,15 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 		<tr height="21">
 			<td colspan="2" height="21" style="height:21px;">	</td>
 			<td colspan="4">Reg. # {{registro.id}} - Atividade:
-				{% if registro.atividade_sigla == Null or registro.atividade_sigla == None %}Geral{% else %}{{registro.atividade_sigla}}{% endif %} -
+				{% if registro.atividade_sigla == Null or registro.atividade_sigla == None %}
+					{% if registro.ativ_sigla == Null or registro.ativ_sigla == None %}
+						Geral
+					{% else %}
+						{{registro.ativ_sigla}}
+					{% endif %}
+				{% else %}
+					{{registro.atividade_sigla}}
+				{% endif %} -
 				{% if registro.tipo_registro[0:3] == 'man' %}
           <b>Observação do usuário: </b> {{registro.tipo_registro[5:]}}
         {% else %}
@@ -122,7 +187,7 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 		</tr>
 		<tr height="26">
 			<td colspan="2" height="26" style="height:26px;">&nbsp;</td>
-			<td colspan="17" style="background-color: rgb(204, 204, 204);" x:str=""><strong>4. DECLARA&Ccedil;&Atilde;O SOBRE ATENDIMENTO &Agrave;S VEDA&Ccedil;&Otilde;ES E DISPONIBILIDADE DE RECURSOS</strong></td>
+			<td colspan="17" style="background-color: rgb(204, 204, 204);" x:str=""><strong>5. DECLARA&Ccedil;&Atilde;O SOBRE ATENDIMENTO &Agrave;S VEDA&Ccedil;&Otilde;ES E DISPONIBILIDADE DE RECURSOS</strong></td>
 		</tr>
 		<tr>
 			<td colspan="2">
@@ -134,7 +199,7 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 		</tr>
 		<tr height="49">
 			<td colspan="2" height="49" style="height:49px;">&nbsp;</td>
-			<td colspan="17" x:str="">5. Este formul&aacute;rio dever&aacute; ser assinado eletronicamente pelo(a) servidor(a), pela chefia imediata e pelo respectivo Coordenador-Geral ou Chefe de Gabinete, ou pelo respectivo Diretor quando for o caso.</td>
+			<td colspan="17" x:str="">6. Este formul&aacute;rio dever&aacute; ser assinado eletronicamente pelo(a) servidor(a), pela chefia imediata e pelo respectivo Coordenador-Geral ou Chefe de Gabinete, ou pelo respectivo Diretor quando for o caso.</td>
 		</tr>
 	</tbody>
 </table>
@@ -153,9 +218,9 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 			<td>
 			<p class="Calibre_12_Centralizado">&nbsp;</p>
 			</td>
-			<td>
+			<!-- <td>
 			<p class="Calibre_12_Centralizado">(Assinado eletronicamente)</p>
-			</td>
+			</td> -->
 			<td>
 			<p class="Calibre_12_Centralizado">&nbsp;</p>
 			</td>
@@ -173,9 +238,9 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 			<td>
 			<p class="Calibre_12_Centralizado">&nbsp;</p>
 			</td>
-			<td>
+			<!-- <td>
 			<p class="Calibre_12_Centralizado"><strong>{{coordenador_geral.username}}</strong></p>
-			</td>
+			</td> -->
 			<td>
 			<p class="Calibre_12_Centralizado">&nbsp;</p>
 			</td>
@@ -193,9 +258,9 @@ p.Calibre_12_Centralizado {font-size:12pt;font-family:Calibri;text-align:center;
 			<td>
 			<p class="Calibre_12_Centralizado">&nbsp;</p>
 			</td>
-			<td>
+			<!-- <td>
 			<p class="Calibre_12_Centralizado"><strong>{{ coordenador_geral.cargo_func }}</strong></p>
-			</td>
+			</td> -->
 			<td>&nbsp;</td>
 		</tr>
 	</tbody>

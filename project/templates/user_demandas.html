@@ -3,16 +3,58 @@
 <div class="container">
   <div class="jumbotron">
     <div align = 'center'>
-      <h2>{{qtd}} Demandas {% if filtro == 'conclu'%} concluídas{% endif %} {% if filtro == 'nc'%}(em aberto){% endif %} {% if user != None%}de {{user.username}} - {{user.coord}}{% endif %}</h2>
+      <h2>{{qtd}} Demandas {% if filtro == 'conclu'%} concluídas{% endif %} {% if filtro[0:2] == 'nc'%}(em aberto){% endif %} {% if user != None%}de {{user.username}} - {{user.coord}}{% endif %}</h2>
       <br>
-      {% if filtro != 'nc' and filtro != 'conclu' %}
-        <a href="{{url_for('users.user_posts',username=user.username,filtro='nc')}}" class="btn btn-success">Clique aqui para ver somente as não concluídas</a>
+
+      {% if filtro[0:2] != 'nc' and filtro != 'conclu' %}
+        <div class="form-group row">
+          <div class="form-group col-6">
+            <a href="{{url_for('users.user_posts',username=user.username,filtro='nc')}}"
+              class="btn btn-primary active" role="button" aria-pressed="true">Clique aqui para ver somente as <b>não</b> concluídas</a>
+          </div>
+          <div class="form-group col-6">
+            <a href="{{url_for('users.user_posts',username=user.username,filtro='conclu')}}"
+              class="btn btn-success" role="button" aria-pressed="true">Clique aqui para ver somente as concluídas</a>
+          </div>
+        </div>
       {% endif %}
+
+      {% if filtro[0:2] == 'nc' %}
+        <div class="form-group row">
+          <div class="form-group col-4">
+            {% if filtro[-1] == '1' %}
+              <span class="text-warning"><b>Vendo somente as que aguardam despacho</b></span>
+            {% else %}
+              <a href="{{url_for('users.user_posts',username=user.username,filtro='nc1')}}"
+                class="btn btn-warning" role="button" aria-pressed="true">Ver as que aguardam despacho</a>
+            {% endif %}
+          </div>
+          <div class="form-group col-3">
+            {% if filtro[-1] == '3' %}
+              <span class="text-secondary"><b>Vendo somente as que estão contigo</b></span>
+            {% else %}
+              <a href="{{url_for('users.user_posts',username=user.username,filtro='nc3')}}"
+                class="btn btn-secondary" role="button" aria-pressed="true">Ver as que estão contigo</a>
+            {% endif %}
+          </div>
+          <div class="form-group col-4">
+            {% if filtro[-1] == '2' %}
+              <span class="text-success"><b>Vendo somente as que tem um despacho como último registro</b></span>
+            {% else %}
+              <a href="{{url_for('users.user_posts',username=user.username,filtro='nc2')}}"
+                class="btn btn-success" role="button" aria-pressed="true">Ver as que já estão com despacho</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
     </div>
   </div>
 
-  {% for post in demandas.items %}
-    <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.atividade_sigla}} - {{post.titulo}}</a>
+  {% for post in demandas %}
+
+    {% if filtro[-1] != '1' and filtro[-1] != '2' and filtro[-1] != '3' %}
+    <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.atividade_sigla}} - {{post.titulo}}</a></h5>
       {% if post.necessita_despacho %}
         <span class="bg-warning text-dark">** AGUARDA DESPACHO
           {% if post.data_env_despacho != None %}
@@ -20,39 +62,58 @@
           {% endif %}
         **</span>
       {% endif %}
-      {% if post.necessita_despacho_cg %} <span class="bg-info text-dark">** AGUARDA DESPACHO CG **</span> {% endif %}
-      {% if post.id in com_despacho_novo %} <span class="bg-success text-dark">** VERIFICAR DESPACHO **</span> {% endif %}
-      {% if post.conclu %} <span class="bg-success text-white">** CONCLUÍDO em {{post.data_conclu.strftime('%x')}} **</span> {% endif %}</h5>
-    <p class="text-muted">Registrada em: {{post.data.strftime("%x")}}</p>
-    <p class="text-muted">Referente ao processo: {{post.sei}}</p>
+      {% if post.necessita_despacho_cg %} <span class="bg-info text-dark">** AGUARDA DESPACHO SUPERIOR **</span> {% endif %}
+      {% if post.id in com_despacho_novo %} <span class="bg-success text-white">** VERIFICAR DESPACHO **</span> {% endif %}
+      {% if post.conclu %} <span class="bg-success text-white">** CONCLUÍDA em {{post.data_conclu.strftime('%x')}} **</span> {% endif %}
+    <p class="text-muted">Registrada em: <b>{{post.data.strftime("%x")}}</b> - Referente ao processo: <b>{{post.sei}}</b></p>
     <p>{{post.desc}}</p>
-    <p>{% if post.conclu %}{% if post.nota != -1 %}Nota: {{post.nota}}{% else %}Não aferida{% endif %}{% endif %}</p>
+    <p>{% if post.conclu %}{% if post.nota != -1 and post.nota != None%}Nota: <b>{{post.nota}}</b>{% else %}<b>Não aferida</b>{% endif %}{% endif %}</p>
     <p>...</p>
+
+    {% elif filtro[-1] == '1' %}
+      {% if post.necessita_despacho or post.necessita_despacho_cg %}
+        <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.atividade_sigla}} - {{post.titulo}}</a></h5>
+          {% if post.necessita_despacho %}
+            <span class="bg-warning text-dark">** AGUARDA DESPACHO
+              {% if post.data_env_despacho != None %}
+                desde {{post.data_env_despacho.strftime('%x')}}
+              {% endif %}
+            **</span>
+          {% endif %}
+        {% if post.necessita_despacho_cg %} <span class="bg-info text-dark">** AGUARDA DESPACHO SUPERIOR **</span> {% endif %}
+        <p class="text-muted">Registrada em: <b>{{post.data.strftime("%x")}}</b> - Referente ao processo: <b>{{post.sei}}</b></p>
+        <p>{{post.desc}}</p>
+        <p>{% if post.conclu %}{% if post.nota != -1 and post.nota != None%}Nota: <b>{{post.nota}}</b>{% else %}<b>Não aferida</b>{% endif %}{% endif %}</p>
+        <p>...</p>
+      {% endif %}
+
+      {% elif filtro[-1] == '2' %}
+        {% if post.id in com_despacho_novo %}
+          <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.atividade_sigla}} - {{post.titulo}}</a></h5>
+          {% if post.necessita_despacho_cg %} <span class="bg-info text-dark">** AGUARDA DESPACHO SUPERIOR **</span> {% endif %}
+          <span class="bg-success text-white">** VERIFICAR DESPACHO **</span>
+          <p class="text-muted">Registrada em: <b>{{post.data.strftime("%x")}}</b> - Referente ao processo: <b>{{post.sei}}</b></p>
+          <p>{{post.desc}}</p>
+          <p>{% if post.conclu %}{% if post.nota != -1 and post.nota != None%}Nota: <b>{{post.nota}}</b>{% else %}<b>Não aferida</b>{% endif %}{% endif %}</p>
+          <p>...</p>
+        {% endif %}
+
+      {% elif filtro[-1] == '3' %}
+        {% if post.id not in com_despacho_novo and not post.necessita_despacho and not post.necessita_despacho_cg %}
+          <h5><a href="{{url_for('demandas.demanda',demanda_id = post.id)}}">{{post.id}} - {{post.atividade_sigla}} - {{post.titulo}}</a></h5>
+          <p class="text-muted">Registrada em: <b>{{post.data.strftime("%x")}}</b> - Referente ao processo: <b>{{post.sei}}</b></p>
+          <p>{{post.desc}}</p>
+          <p>{% if post.conclu %}{% if post.nota != -1 and post.nota != None%}Nota: <b>{{post.nota}}</b>{% else %}<b>Não aferida</b>{% endif %}{% endif %}</p>
+          <p>...</p>
+        {% endif %}
+
+    {% endif %}
+
   {% endfor %}
 
 </div>
 
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
 
-    {% for page_num in demandas.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
-      {% if page_num %}
-        {% if demandas.page == page_num %}
-          <li class="page-item disabled">
-            <a class="page-link" href="{{url_for('users.user_posts',username=user.username,filtro=filtro,page=page_num)}}">{{page_num}}</a>
-          </li>
-        {% else %}
-          <li class="page-item">
-            <a class="page-link" href="{{url_for('users.user_posts',username=user.username,filtro=filtro,page=page_num)}}">{{page_num}}</a>
-          </li>
-        {% endif %}
-      {% else %}
-        <span class="page-link">…</span>
-      {% endif %}
-    {% endfor %}
-
-  </ul>
-</nav>
 
 
 {% endblock %}

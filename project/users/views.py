@@ -33,6 +33,7 @@
     * Saída de usuário: logout
     * Atualizar dados do usuário: account
     * Demandas de um usuário: user_posts
+    * Lista plano de trabalho (atividades) de um usuário: user_pt
     * Registrar versão do sistema: admin_reg_ver
     * Visão dos usuários pelo admin: admin_view_users
     * Log de atividades: user_log
@@ -56,7 +57,7 @@ from collections import Counter
 
 from project import db, mail, app
 from project.models import User, Demanda, Despacho, Providencia, Coords, Log_Auto,\
-                           Log_Desc, Plano_Trabalho, Sistema
+                           Log_Desc, Plano_Trabalho, Sistema, RefSICONV
 from project.users.forms import RegistrationForm, LoginForm, UpdateUserForm, EmailForm, PasswordForm, AdminForm,\
                                 LogForm, LogFormMan, VerForm, RelForm
 from project.users.picture_handler import add_profile_pic
@@ -132,6 +133,7 @@ def register():
        |e-mails, pois o aplicativo envia uma mensagem sobre a confirmação do registro.        |
        +--------------------------------------------------------------------------------------+
     """
+
     form = RegistrationForm()
 
     if form.validate_on_submit():
@@ -140,17 +142,32 @@ def register():
 
         form.check_email(form.email)
 
-        version = db.session.query(User.sversion).first()
+        qtd_users = db.session.query(func.count(User.id)).first()
+
+        if qtd_users[0] != 0:
+            version   = db.session.query(User.sversion).first()
+            role_user = 'user'
+        else:
+            version   = [1]
+            role_user = 'admin'
+
+        trab_conv   = db.session.query(Sistema.funcionalidade_conv).first()
+        trab_acordo = db.session.query(Sistema.funcionalidade_acordo).first()
 
         user = User(email                      = form.email.data,
                     username                   = form.username.data,
                     plaintext_password         = form.password.data,
+                    despacha0                  = form.despacha0.data,
                     despacha                   = form.despacha.data,
                     despacha2                  = form.despacha2.data,
                     coord                      = form.coord.data,
+                    role                       = role_user,
                     email_confirmation_sent_on = datetime.now(),
                     ativo                      = False,
-                    sversion = version[0])
+                    sversion                   = version[0],
+                    cargo_func                 = 'a definir',
+                    trab_conv                  = trab_conv[0],
+                    trab_acordo                = trab_acordo[0])
 
         db.session.add(user)
         db.session.commit()
@@ -261,7 +278,7 @@ def reset_with_token(token):
 
         db.session.commit()
 
-        registra_log_auto(current_user.id,None,'sen')
+        registra_log_auto(user.id,None,'sen')
 
         flash('Sua senha foi atualizada!', 'sucesso')
         return redirect(url_for('users.login'))
@@ -483,19 +500,13 @@ def user_posts (username,filtro):
 
     qtd = 0
 
-    page = request.args.get('page',1,type=int)
+    # page = request.args.get('page',1,type=int)
 
     com_despacho_novo = []
 
-    user = None
+    user = User.query.filter_by(username=username).first_or_404()
 
-    if filtro == 'nc':
-
-        user = User.query.filter_by(username=username).first_or_404()
-
-        # demandas = Demanda.query.filter_by(author=user,conclu=False)\
-                         # .order_by(Demanda.data.desc())\
-                         # .paginate(page=page,per_page=10)
+    if filtro[0:2] == 'nc':
 
         demandas = db.session.query(Demanda.id,
                                     Demanda.programa,
@@ -516,12 +527,15 @@ def user_posts (username,filtro):
                                     Demanda.nota,
                                     Plano_Trabalho.atividade_sigla)\
                              .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
-                             .filter(Demanda.author == user, Demanda.conclu == False)\
+                             .filter(Demanda.author == user,
+                                     Demanda.conclu == False)\
                              .order_by(Demanda.data.desc())\
-                             .paginate(page=page,per_page=10)
+                             .all()
+                             # .paginate(page=page,per_page=10)
 
         # verificar se tem despacho novo
-        for demanda in demandas.items:
+        # for demanda in demandas.items:
+        for demanda in demandas:
 
             providencias = db.session.query(Providencia.data,
                                             label('tipo','PROV - '+ Providencia.texto))\
@@ -561,13 +575,13 @@ def user_posts (username,filtro):
                                     Demanda.nota,
                                     Plano_Trabalho.atividade_sigla)\
                                     .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
-                                    .filter(Demanda.conclu == True)\
+                                    .filter(Demanda.author == user,
+                                            Demanda.conclu == True)\
                                     .order_by(Demanda.data_conclu.desc())\
-                                    .paginate(page=page,per_page=10)
+                                    .all()
+                                    # .paginate(page=page,per_page=10)
 
     else:
-
-        user = User.query.filter_by(username=username).first_or_404()
 
         demandas = db.session.query(Demanda.id,
                                     Demanda.programa,
@@ -590,9 +604,11 @@ def user_posts (username,filtro):
                                     .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
                                     .filter(Demanda.author == user)\
                                     .order_by(Demanda.data.desc())\
-                                    .paginate(page=page,per_page=10)
+                                    .all()
+                                    # .paginate(page=page,per_page=10)
 
-    qtd = demandas.total
+    # qtd = demandas.total
+    qtd = len(demandas)
 
     return render_template('user_demandas.html',demandas=demandas,user=user, filtro=filtro, qtd = qtd, com_despacho_novo=com_despacho_novo)
 
@@ -659,7 +675,7 @@ def user_pt (user_id):
 def admin_reg_ver():
     """+--------------------------------------------------------------------------------------+
        |O admin atualiza no banco de dados (tabela Users) a versão do sistema após uma        |
-       |atualização.                                                                          |
+       |atualização e outros parâmetros do sistema.                                           |
        +--------------------------------------------------------------------------------------+
     """
     if current_user.role[0:5] != 'admin':
@@ -667,6 +683,7 @@ def admin_reg_ver():
     else:
         users   = User.query.order_by(User.id).all()
         sistema = Sistema.query.first()
+        inst    = RefSICONV.query.first()
 
         form = VerForm()
 
@@ -675,11 +692,18 @@ def admin_reg_ver():
             for user in users:
 
                 user.sversion = form.ver.data
+                if not form.funcionalidade_conv.data:
+                    user.trab_conv = False
+                if not form.funcionalidade_acordo.data:
+                    user.trab_acordo = False
 
             db.session.commit()
 
-            sistema.nome_sistema = form.nome_sistema.data
-            sistema.descritivo   = form.descritivo.data
+            sistema.nome_sistema          = form.nome_sistema.data
+            sistema.descritivo            = form.descritivo.data
+            sistema.funcionalidade_conv   = form.funcionalidade_conv.data
+            sistema.funcionalidade_acordo = form.funcionalidade_acordo.data
+            inst.cod_inst                 = form.cod_inst.data
 
             registra_log_auto(current_user.id,None,'ver')
 
@@ -690,9 +714,12 @@ def admin_reg_ver():
         # traz a versão atual
         elif request.method == 'GET':
 
-            form.ver.data          = users[0].sversion
-            form.nome_sistema.data = sistema.nome_sistema
-            form.descritivo.data   = sistema.descritivo
+            form.ver.data                   = users[0].sversion
+            form.nome_sistema.data          = sistema.nome_sistema
+            form.descritivo.data            = sistema.descritivo
+            form.funcionalidade_conv.data   = sistema.funcionalidade_conv
+            form.funcionalidade_acordo.data = sistema.funcionalidade_acordo
+            form.cod_inst.data              = inst.cod_inst
 
         return render_template('admin_reg_ver.html', title='Update', form=form)
 
@@ -735,17 +762,30 @@ def admin_update_user(user_id):
     else:
 
         user = User.query.get_or_404(user_id)
+        sistema = Sistema.query.first()
+
+        coords = db.session.query(Coords.sigla)\
+                          .order_by(Coords.sigla).all()
+        lista_coords = [(c[0],c[0]) for c in coords]
+        lista_coords.insert(0,('',''))
 
         form = AdminForm()
 
+        form.coord.choices = lista_coords
+
         if form.validate_on_submit():
 
-            user.coord      = form.coord.data
-            user.despacha   = form.despacha.data
-            user.despacha2  = form.despacha2.data
-            user.role       = form.role.data
-            user.cargo_func = form.cargo_func.data
-            user.ativo      = form.ativo.data
+            user.coord       = form.coord.data
+            user.despacha0   = form.despacha0.data
+            user.despacha    = form.despacha.data
+            user.despacha2   = form.despacha2.data
+            user.role        = form.role.data
+            user.cargo_func  = form.cargo_func.data
+            user.ativo       = form.ativo.data
+            if sistema.funcionalidade_conv:
+                user.trab_conv   = form.trab_conv.data
+            if sistema.funcionalidade_acordo:
+                user.trab_acordo = form.trab_acordo.data
 
             db.session.commit()
 
@@ -758,12 +798,15 @@ def admin_update_user(user_id):
         # traz a informação atual do usuário
         elif request.method == 'GET':
 
-            form.coord.data      = user.coord
-            form.despacha.data   = user.despacha
-            form.despacha2.data  = user.despacha2
-            form.role.data       = user.role
-            form.cargo_func.data = user.cargo_func
-            form.ativo.data      = user.ativo
+            form.coord.data       = user.coord
+            form.despacha0.data   = user.despacha0
+            form.despacha.data    = user.despacha
+            form.despacha2.data   = user.despacha2
+            form.role.data        = user.role
+            form.cargo_func.data  = user.cargo_func
+            form.ativo.data       = user.ativo
+            form.trab_conv.data   = user.trab_conv
+            form.trab_acordo.data = user.trab_acordo
 
         return render_template('admin_update_user.html', title='Update', name=user.username,
                                form=form)
@@ -798,25 +841,35 @@ def user_log (usu):
                                Log_Auto.data_hora,
                                Log_Auto.demanda_id,
                                Log_Auto.tipo_registro,
+                               Log_Auto.atividade,
                                Log_Desc.desc_registro,
-                               User.username)\
+                               User.username,
+                               Demanda.programa,
+                               label('ativ_sigla',Plano_Trabalho.atividade_sigla))\
                         .outerjoin(Log_Desc, Log_Auto.tipo_registro == Log_Desc.tipo_registro)\
                         .join(User, Log_Auto.user_id == User.id)\
+                        .outerjoin(Demanda, Demanda.id == Log_Auto.demanda_id)\
+                        .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Log_Auto.atividade)\
                         .filter(Log_Auto.user_id.like(user_id),
                                 Log_Auto.data_hora >= datetime.combine(data_ini,time.min),
                                 Log_Auto.data_hora <= datetime.combine(data_fim,time.max),
                                 Log_Auto.tipo_registro.like('%'+log_part+'%'))\
-                        .all()
+                        .subquery()
+
+        atividades = db.session.query(log,
+                                      Plano_Trabalho.atividade_sigla)\
+                               .outerjoin(Plano_Trabalho, Plano_Trabalho.id == log.c.programa)\
+                               .all()
 
         # cria lista com ocorrências de tipo de registro
 
-        l_log = [entrada.desc_registro for entrada in log]
+        l_log = [entrada.desc_registro for entrada in atividades]
 
         # conta entradas no log por tipo de registro, gerando um dicionário classificado
 
         agregado = {k: v for k, v in sorted(Counter(l_log).items(), key=lambda item: item[1])}
 
-        return render_template('user_log.html', log=log, name=current_user.username,
+        return render_template('user_log.html', log=log, atividades = atividades, name=current_user.username,
                                form=form, usu=usu, agregado=agregado)
 
 
@@ -827,24 +880,34 @@ def user_log (usu):
                                Log_Auto.data_hora,
                                Log_Auto.demanda_id,
                                Log_Auto.tipo_registro,
+                               Log_Auto.atividade,
                                Log_Desc.desc_registro,
-                               User.username)\
+                               User.username,
+                               Demanda.programa,
+                               label('ativ_sigla',Plano_Trabalho.atividade_sigla))\
                         .outerjoin(Log_Desc, Log_Auto.tipo_registro == Log_Desc.tipo_registro)\
                         .join(User, Log_Auto.user_id == User.id)\
+                        .outerjoin(Demanda, Demanda.id == Log_Auto.demanda_id)\
+                        .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Log_Auto.atividade)\
                         .filter(Log_Auto.user_id.like(user_id),
                                 Log_Auto.data_hora >= (datetime.now()-timedelta(days=1)))\
-                        .all()
+                        .subquery()
+
+        atividades = db.session.query(log,
+                                      Plano_Trabalho.atividade_sigla)\
+                               .outerjoin(Plano_Trabalho, Plano_Trabalho.id == log.c.programa)\
+                               .all()
 
         # cria lista com ocorrências de tipo de registro
 
-        l_log = [entrada.desc_registro for entrada in log]
+        l_log = [entrada.desc_registro for entrada in atividades]
 
         # conta entradas no log por tipo de registro, gerando um dicionário classificado
 
         agregado = {k: v for k, v in sorted(Counter(l_log).items(), key=lambda item: item[1])}
 
 
-        return render_template('user_log.html', log=log, name=current_user.username,
+        return render_template('user_log.html', log=log, atividades=atividades, name=current_user.username,
                            form=form, form2=form2, usu=usu, agregado=agregado)
 
 #
@@ -865,7 +928,14 @@ def user_obs():
 
         if form.entrada_log.data != '':
 
-            registra_log_auto(current_user.id,None,'man: '+form.entrada_log.data)
+            # registra_log_auto(current_user.id,None,'man: '+form.entrada_log.data)
+            reg_log = Log_Auto(data_hora     = datetime.now(),
+                               user_id       = current_user.id,
+                               demanda_id    = None,
+                               tipo_registro = 'man: '+form.entrada_log.data,
+                               atividade     = form.atividade.data)
+            db.session.add(reg_log)
+            db.session.commit()
 
             form.entrada_log.data = ''
 
@@ -889,6 +959,48 @@ def user_rel():
 
     if form.validate_on_submit():
 
+        # levanta dados do plano de Trabalho
+
+        User1 = aliased(User)
+        User2 = aliased(User)
+
+        atividades_1 = db.session.query(Plano_Trabalho.id,
+                                        Plano_Trabalho.atividade_sigla,
+                                        Plano_Trabalho.atividade_desc,
+                                        Plano_Trabalho.natureza,
+                                        Plano_Trabalho.meta,
+                                        label('resp1',User1.username),
+                                        label('resp2',User2.username))\
+                                        .join(User1, Plano_Trabalho.respon_1 == User1.id)\
+                                        .join(User2, Plano_Trabalho.respon_2 == User2.id)\
+                                        .filter(Plano_Trabalho.respon_1 == current_user.id)\
+                                        .order_by(Plano_Trabalho.natureza,Plano_Trabalho.atividade_sigla).all()
+
+        quantidade_1 = len(atividades_1)
+
+        carga_1 = db.session.query(label('total',func.sum(Plano_Trabalho.meta)))\
+                            .filter(Plano_Trabalho.respon_1 == current_user.id).all()
+
+        atividades_2 = db.session.query(Plano_Trabalho.id,
+                                        Plano_Trabalho.atividade_sigla,
+                                        Plano_Trabalho.atividade_desc,
+                                        Plano_Trabalho.natureza,
+                                        Plano_Trabalho.meta,
+                                        label('resp1',User1.username),
+                                        label('resp2',User2.username))\
+                                        .join(User1, Plano_Trabalho.respon_1 == User1.id)\
+                                        .join(User2, Plano_Trabalho.respon_2 == User2.id)\
+                                        .filter(Plano_Trabalho.respon_2 == current_user.id)\
+                                        .order_by(Plano_Trabalho.natureza,Plano_Trabalho.atividade_sigla).all()
+
+        quantidade_2 = len(atividades_2)
+
+        carga_2 = db.session.query(label('total',func.sum(Plano_Trabalho.meta)))\
+                            .filter(Plano_Trabalho.respon_2 == current_user.id).all()
+
+
+        # levanta dados de ações executadas
+
         coordenador = db.session.query(User.username,
                                        User.cargo_func,
                                        User.email)\
@@ -905,14 +1017,17 @@ def user_rel():
                                Log_Auto.data_hora,
                                Log_Auto.demanda_id,
                                Log_Auto.tipo_registro,
+                               Log_Auto.atividade,
                                Log_Desc.desc_registro,
                                User.username,
                                Demanda.programa,
                                Demanda.sei,
-                               Demanda.conclu)\
+                               Demanda.conclu,
+                               label('ativ_sigla',Plano_Trabalho.atividade_sigla))\
                         .outerjoin(Log_Desc, Log_Desc.tipo_registro == Log_Auto.tipo_registro)\
                         .join(User, User.id == Log_Auto.user_id)\
                         .outerjoin(Demanda, Demanda.id == Log_Auto.demanda_id)\
+                        .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Log_Auto.atividade)\
                         .filter(Log_Auto.user_id.like(current_user.id),
                                 Log_Auto.data_hora >= datetime.combine(data_ini,time.min),
                                 Log_Auto.data_hora <= datetime.combine(data_fim,time.max))\
@@ -926,6 +1041,9 @@ def user_rel():
         registra_log_auto(current_user.id,None,'rel')
 
         return render_template('form_atividades.html', log=log, atividades = atividades,
+                                atividades_1=atividades_1, atividades_2=atividades_2,
+                                quantidade_1=quantidade_1, quantidade_2=quantidade_2,
+                                carga_1=carga_1[0][0], carga_2=carga_2[0][0],
                                 data_ini=data_ini.strftime('%x'), data_fim=data_fim.strftime('%x'),
                                 coordenador=coordenador, coordenador_geral=coordenador_geral)
 

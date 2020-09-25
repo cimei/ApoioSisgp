@@ -836,12 +836,16 @@ class User(db.Model, UserMixin):
     ativo                      = db.Column(db.Boolean)
     sversion                   = db.Column(db.String)
     cargo_func                 = db.Column(db.String)
+    trab_conv                  = db.Column(db.Boolean)
+    trab_acordo                = db.Column(db.Boolean)
+    despacha0                  = db.Column(db.Boolean)
 
 
     posts = db.relationship ('Demanda',backref='author',lazy=True)
     desp  = db.relationship ('Despacho',backref='author',lazy=True)
 
-    def __init__(self,email,username,plaintext_password,despacha,coord,despacha2,ativo,sversion,cargo_func,email_confirmation_sent_on=None,role='user'):
+    def __init__(self,email,username,plaintext_password,despacha,coord,despacha2,ativo,sversion,cargo_func,\
+                 trab_conv,trab_acordo,despacha0,email_confirmation_sent_on=None,role='user'):
 
         self.email                      = email
         self.username                   = username
@@ -860,6 +864,9 @@ class User(db.Model, UserMixin):
         self.ativo                      = ativo
         self.sversion                   = sversion
         self.cargo_func                 = cargo_func
+        self.trab_acordo                = trab_acordo
+        self.trab_conv                  = trab_conv
+        self.despacha0                  = despacha0
 
     def check_password (self,plaintext_password):
 
@@ -867,7 +874,7 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
 
-        return f"{self.username};{self.despacha};{self.despacha2};{self.cargo_func}"
+        return f"{self.username};{self.despacha};{self.despacha2};{self.cargo_func};{self.despacha0}"
 #
 ## tabela de registro dos principais commits
 class Log_Auto(db.Model):
@@ -880,13 +887,15 @@ class Log_Auto(db.Model):
     user_id        = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
     demanda_id     = db.Column(db.Integer, db.ForeignKey('demandas.id'))
     tipo_registro  = db.Column(db.Text,nullable=False)
+    atividade      = db.Column(db.Integer,db.ForeignKey('plano_trabalho.id'))
 
-    def __init__(self, data_hora, user_id, demanda_id, tipo_registro):
+    def __init__(self, data_hora, user_id, demanda_id, tipo_registro, atividade):
 
         self.data_hora     = data_hora
         self.user_id       = user_id
         self.demanda_id    = demanda_id
         self.tipo_registro = tipo_registro
+        self.atividade     = atividade
 
 
     def __repr__(self):
@@ -921,33 +930,39 @@ class Sistema(db.Model):
     __bind_key__ = 'demandas_banco'
     __tablename__ = 'sistema'
 
-    id            = db.Column(db.Integer, primary_key=True)
-    nome_sistema  = db.Column(db.String,nullable=False)
-    descritivo    = db.Column(db.Text,nullable=False)
+    id                    = db.Column(db.Integer, primary_key=True)
+    nome_sistema          = db.Column(db.String,nullable=False)
+    descritivo            = db.Column(db.Text,nullable=False)
+    funcionalidade_conv   = db.Column(db.Boolean,default=True)
+    funcionalidade_acordo = db.Column(db.Boolean,default=True)
 
-    def __init__(self, nome_sistema, descritivo):
+    def __init__(self, nome_sistema, descritivo,funcionalidade_conv,funcionalidade_acordo):
 
-        self.nome_sistema = nome_sistema
-        self.descritivo   = tipo_registro
+        self.nome_sistema          = nome_sistema
+        self.descritivo            = tipo_registro
+        self.funcionalidade_conv   = funcionalidade_conv
+        self.funcionalidade_acordo = funcionalidade_acordo
 
     def __repr__(self):
 
         return f"{self.nome_sistema};{self.descritivo}"
 #
-## tabela que guarda as datas de referência em que as planilhas da COSAO foram geradas
+## tabela que guarda a data de referência da carga de dados do SICONV
 class RefSICONV (db.Model):
 
     __tablename__ = "ref_siconv"
 
     id       = db.Column(db.Integer,primary_key=True)
     data_ref = db.Column(db.Date)
+    cod_inst = db.Column(db.String)
 
-    def __init__ (self,data_ref):
+    def __init__ (self,data_ref,cod_inst):
 
         self.data_ref = data_ref
+        self.cod_inst = cod_inst
 
     def __repr__ (self):
-        return f"{self.data_ref}"
+        return f"{self.data_ref};{self.cod_inst}"
 
 #
 ## tabela com as mensagens siconv carregadas em procedimento específico

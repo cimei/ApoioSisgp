@@ -41,9 +41,9 @@
               <h5 class="text-danger">Necessita despacho: Sim</h5>
             {% endif %}
             {% if necessita_despacho_cg == False %}
-              <h5>Necessita despacho CG ou sup.: Não</h5>
+              <h5>Necessita despacho superior: Não</h5>
             {% else %}
-              <h5 class="text-info">Necessita despacho CG ou sup.: Sim</h5>
+              <h5 class="text-info">Necessita despacho superior: Sim</h5>
             {% endif %}
             {% if conclu == False %}
               <h5>Concluído: Não</h5>
@@ -96,12 +96,15 @@
                 <div class="list-group-item list-group-item-action">
                   <p class="card-text">{{item.texto}}</p>
                   {% if item.username[-8:-1] == 'DESPACH' %}
-                    {% if item.despacha2 == True and item.despacha == False %}
+                    {% if item.despacha0 == True %}
                       <p class="card-text"><small class="text-muted"> {{item.data.strftime('%x')}}
-                        <span class="text-danger"><b>({{item.username}})</b></span></small></p>
-                    {% else %}
+                        <span class="text-warning"><b>({{item.username}})</b></span></small></p>
+                    {% elif item.despacha == True%}
                       <p class="card-text"><small class="text-muted"> {{item.data.strftime('%x')}}
                         <span class="text-success"><b>({{item.username}})</b></span></small></p>
+                    {% else %}
+                      <p class="card-text"><small class="text-muted"> {{item.data.strftime('%x')}}
+                        <span class="text-danger"><b>({{item.username}})</b></span></small></p>
                     {% endif %}
                   {% else %}
                     <p class="card-text">

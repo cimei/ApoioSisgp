@@ -91,7 +91,9 @@ def lista_programas_pref():
 
     quantidade = len(progs)
 
-    return render_template('lista_programas_pref.html', progs = progs, quantidade=quantidade)
+    inst = db.session.query(RefSICONV.cod_inst).first()
+
+    return render_template('lista_programas_pref.html', progs = progs, quantidade=quantidade, cod_inst = inst.cod_inst)
 
 #
 ### ATUALIZAR LISTA DE PROGRAMAS PREFERENCIAIS (PROGRAMAS DA COORDENAÇÃO)
@@ -295,15 +297,25 @@ def lista_convenios_SICONV(lista,coord):
 
             form.coord.data = coord
 
-            programa = db.session.query(Proposta.ID_PROPOSTA,
-                                        Proposta.ID_PROGRAMA,
-                                        Proposta.UF_PROPONENTE,
-                                        Programa.COD_PROGRAMA,
-                                        Programa_Interesse.sigla)\
-                                        .join(Programa,Programa.ID_PROGRAMA == Proposta.ID_PROGRAMA)\
-                                        .join(Programa_Interesse,Programa_Interesse.cod_programa == Programa.COD_PROGRAMA)\
-                                        .filter(Programa_Interesse.coord == coord)\
-                                        .subquery()
+            if coord == 'inst':
+                programa = db.session.query(Proposta.ID_PROPOSTA,
+                                            Proposta.ID_PROGRAMA,
+                                            Proposta.UF_PROPONENTE,
+                                            Programa.COD_PROGRAMA,
+                                            Programa_Interesse.sigla)\
+                                            .join(Programa,Programa.ID_PROGRAMA == Proposta.ID_PROGRAMA)\
+                                            .outerjoin(Programa_Interesse,Programa_Interesse.cod_programa == Programa.COD_PROGRAMA)\
+                                            .subquery()
+            else:
+                programa = db.session.query(Proposta.ID_PROPOSTA,
+                                            Proposta.ID_PROGRAMA,
+                                            Proposta.UF_PROPONENTE,
+                                            Programa.COD_PROGRAMA,
+                                            Programa_Interesse.sigla)\
+                                            .join(Programa,Programa.ID_PROGRAMA == Proposta.ID_PROGRAMA)\
+                                            .join(Programa_Interesse,Programa_Interesse.cod_programa == Programa.COD_PROGRAMA)\
+                                            .filter(Programa_Interesse.coord.like('%'+coord+'%'))\
+                                            .subquery()
 
         if lista == 'todos':
 
@@ -460,6 +472,8 @@ def convenio_detalhe(conv):
                                     Chamadas.obs).filter(Chamadas.sei == sei_conv).all()
 
     proposta = db.session.query(Proposta).filter(Proposta.ID_PROPOSTA == convenio.ID_PROPOSTA).first()
+
+    programa = db.session.query(Programa).filter(Programa.ID_PROGRAMA == proposta.ID_PROGRAMA).first()
 #
 
     VL_GLOBAL_CONV              = locale.currency(convenio.VL_GLOBAL_CONV, symbol=False, grouping = True)
@@ -573,7 +587,8 @@ def convenio_detalhe(conv):
                                                    proposta=proposta,
                                                    percent_desemb_repass=percent_desemb_repass,
                                                    percent_ingre_contrap=percent_ingre_contrap,
-                                                   percent_empen_repass=percent_empen_repass)
+                                                   percent_empen_repass=percent_empen_repass,
+                                                   programa=programa)
 
 #
 

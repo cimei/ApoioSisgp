@@ -61,7 +61,7 @@
           <a href="{{url_for('users.user_posts',username=current_user.username,filtro='*')}}" class="btn btn-success">Veja suas demandas</a>
         </div>
 
-        {% if current_user.despacha %}
+        {% if current_user.despacha or current_user.despacha0 %}
           <div class="card-footer text-center">
             <a href="{{url_for('demandas.list_pesquisa',pesq=';;;Não;Todos;;;;;'+current_user.coord+';Todos')}}" class="btn btn-warning">Veja demandas que aguardam despacho</a>
           </div>

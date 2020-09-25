@@ -44,22 +44,56 @@
   </div>
 
   <div class="form-row">
-
     <div class="form-group col-3">
       {{ render_field(form.respon_1,class="form-control",obr=True) }}
     </div>
-
     <div class="form-group col-3">
       {{ render_field(form.respon_2,class="form-control",obr=True) }}
     </div>
   </div>
 
-  <div class="form-group">
-    {{ form.submit(class="btn btn-primary") }}
+  <div class="form-row">
+    <div class="form-group col-9">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+    {% if id != 0 %}
+      <div class="form-group col-2">
+        <button type="button" class="btn btn-danger" data-toggle='modal' data-target='#del_modal'>Excluir</button>
+      </div>
+    {% endif %}
   </div>
 
+  </form>
 
 </div>
+</div>
+
+{# modal para deleção de atividade #}
+
+  <div class="modal" tabindex="-1" role="dialog" id="del_modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="p-3 mb-2 bg-danger text-white">
+        <h5 class="modal-title">Exluir Atividade?</h5>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Deseja realmente excluir esta atividade?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+        <form action="{{url_for('demandas.delete_atividade',atividade_id=id)}}" method="post">
+          <input class="btn btn-danger" type="submit" name="" value="Excluir">
+        </form>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

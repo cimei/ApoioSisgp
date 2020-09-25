@@ -133,7 +133,8 @@ def registra_log_auto(user_id,demanda_id,tipo_registro):
     reg_log = Log_Auto(data_hora     = datetime.now(),
                        user_id       = user_id,
                        demanda_id    = demanda_id,
-                       tipo_registro = tipo_registro)
+                       tipo_registro = tipo_registro,
+                       atividade     = None)
     db.session.add(reg_log)
     db.session.commit()
 
@@ -163,7 +164,7 @@ def plano_trabalho():
                                   label('resp2',User2.username))\
                                   .join(User1, Plano_Trabalho.respon_1 == User1.id)\
                                   .join(User2, Plano_Trabalho.respon_2 == User2.id)\
-                                  .order_by(Plano_Trabalho.natureza,Plano_Trabalho.atividade_sigla).all()
+                                  .order_by(Plano_Trabalho.atividade_sigla).all()
 
     quantidade = len(atividades)
 
@@ -213,7 +214,7 @@ def update_plano_trabalho(id):
         form.respon_1.data        = str(atividade.respon_1)
         form.respon_2.data        = str(atividade.respon_2)
 
-    return render_template('add_atividade.html', form=form)
+    return render_template('add_atividade.html', form=form, id=id)
 
 ### inserir atividade no plano de trabalho
 
@@ -222,7 +223,7 @@ def update_plano_trabalho(id):
 def cria_atividade():
     """
     +---------------------------------------------------------------------------------------+
-    |Permite inseir atividade no plano de trabalho.                                         |
+    |Permite inserir atividade no plano de trabalho.                                        |
     +---------------------------------------------------------------------------------------+
     """
 
@@ -243,8 +244,35 @@ def cria_atividade():
         flash('Atividade inserida no plano de trabalho!')
         return redirect(url_for('demandas.plano_trabalho'))
 
-    return render_template('add_atividade.html', form=form)
+    return render_template('add_atividade.html', form=form, id=0)
 #
+#removendo uma atividade do plano de trabalho
+
+@demandas.route('/<int:atividade_id>/delete', methods=['GET','POST'])
+@login_required
+def delete_atividade(atividade_id):
+    """+----------------------------------------------------------------------+
+       |Permite que o chefe, se logado, a remova uma atividade do plano de    |
+       |trabalho.                                                             |
+       |Recebe o ID da atividade como parâmetro.                              |
+       +----------------------------------------------------------------------+
+
+    """
+    if not current_user.ativo or (not current_user.despacha0 and not current_user.despacha and not current_user.despacha2):
+        abort(403)
+
+    atividade = Plano_Trabalho.query.get_or_404(atividade_id)
+
+    db.session.delete(atividade)
+    db.session.commit()
+
+    registra_log_auto(current_user.id,None,'ipt')
+
+    flash ('Atividade excluída!','sucesso')
+
+    return redirect(url_for('demandas.plano_trabalho'))
+
+
 ## lista tipos de demanda
 
 @demandas.route('/lista_tipos')
@@ -395,6 +423,9 @@ def confirma_cria_demanda(sei,tipo,mensagem):
        |O título tem no máximo 140 caracteres.                                                |
        +--------------------------------------------------------------------------------------+
     """
+
+    sistema = db.session.query(Sistema.funcionalidade_conv,Sistema.funcionalidade_acordo).first()
+
     form = DemandaForm()
 
     if form.validate_on_submit():
@@ -462,7 +493,7 @@ def confirma_cria_demanda(sei,tipo,mensagem):
         if form.conclu.data == True:
 
             chefes_emails = db.session.query(User.email)\
-                                      .filter(User.despacha == True,
+                                      .filter(or_(User.despacha == True,User.despacha0),
                                               User.coord == current_user.coord)
 
             destino = []
@@ -485,7 +516,7 @@ def confirma_cria_demanda(sei,tipo,mensagem):
         if form.necessita_despacho.data == True:
 
             chefes_emails = db.session.query(User.email)\
-                                      .filter(User.despacha == True,
+                                      .filter(or_(User.despacha == True,User.despacha0),
                                               User.coord == current_user.coord)
 
             destino = []
@@ -511,7 +542,7 @@ def confirma_cria_demanda(sei,tipo,mensagem):
     else:
         flash ('OK, favor preencher os demais campos.','sucesso')
 
-    return render_template('add_demanda.html', form = form, sei=sei, tipo=tipo)
+    return render_template('add_demanda.html', form = form, sei=sei, tipo=tipo, sistema=sistema)
 
 
 
@@ -579,6 +610,9 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
        |Atenção para o Título da Demanda que não pode passar de 140 caracteres.               |
        +--------------------------------------------------------------------------------------+
     """
+
+    sistema = db.session.query(Sistema.funcionalidade_conv,Sistema.funcionalidade_acordo).first()
+
     form = DemandaForm()
 
     if form.validate_on_submit():
@@ -628,7 +662,7 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
         if form.conclu.data == True:
 
             chefes_emails = db.session.query(User.email)\
-                                      .filter(User.despacha == True,
+                                      .filter(or_(User.despacha == True,User.despacha0),
                                               User.coord == current_user.coord)
 
             destino = []
@@ -651,7 +685,7 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
         if form.necessita_despacho.data == True:
 
             chefes_emails = db.session.query(User.email)\
-                                      .filter(User.despacha == True,
+                                      .filter(or_(User.despacha == True,User.despacha0),
                                               User.coord == current_user.coord)
 
             destino = []
@@ -690,7 +724,7 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
     else:
         flash ('OK, favor preencher os demais campos.','sucesso')
 
-    return render_template('add_demanda.html', form = form, sei = sei, tipo = tipo)
+    return render_template('add_demanda.html', form = form, sei = sei, tipo = tipo, sistema=sistema)
 
 
 #lendo uma demanda
@@ -749,7 +783,8 @@ def demanda(demanda_id):
                                  Despacho.user_id,
                                  label('username',User.username +' - DESPACHO'),
                                  User.despacha,
-                                 User.despacha2)\
+                                 User.despacha2,
+                                 User.despacha0)\
                                 .filter_by(demanda_id=demanda_id)\
                                 .outerjoin(User, Despacho.user_id == User.id)\
                                 .order_by(Despacho.data.desc()).all()
@@ -760,7 +795,7 @@ def demanda(demanda_id):
     if current_user.is_anonymous:
         leitor_despacha = 'False'
     else:
-        if str(current_user).split(';')[1] == 'True' or str(current_user).split(';')[2] == 'True':
+        if str(current_user).split(';')[1] == 'True' or str(current_user).split(';')[2] == 'True' or str(current_user).split(';')[4] == 'True':
             leitor_despacha = 'True'
         else:
             leitor_despacha = 'False'
@@ -952,7 +987,8 @@ def list_demandas():
                                  Despacho.user_id,
                                  label('username',User.username +' - DESPACHO'),
                                  User.despacha,
-                                 User.despacha2)\
+                                 User.despacha2,
+                                 User.despacha0)\
                                 .outerjoin(User, Despacho.user_id == User.id)\
                                 .order_by(Despacho.data.desc()).all()
 
@@ -1168,6 +1204,7 @@ def update_demanda(demanda_id):
     +---------------------------------------------------------------------------------------+
     """
     demanda = Demanda.query.get_or_404(demanda_id)
+    sistema = db.session.query(Sistema.funcionalidade_conv, Sistema.funcionalidade_acordo).first()
 
     if demanda.author != current_user:
         abort(403)
@@ -1207,7 +1244,7 @@ def update_demanda(demanda_id):
             if demanda.necessita_despacho == False:
 
                 chefes_emails = db.session.query(User.email)\
-                                          .filter(User.despacha == True,
+                                          .filter(or_(User.despacha == True,User.despacha0),
                                                   User.coord == current_user.coord)
 
                 destino = []
@@ -1246,7 +1283,7 @@ def update_demanda(demanda_id):
 
                 # enviar e-mail para chefes sobre demanda concluida
                 chefes_emails = db.session.query(User.email)\
-                                          .filter(User.despacha == True,
+                                          .filter(or_(User.despacha == True,User.despacha0),
                                                   User.coord == current_user.coord)
 
                 destino = []
@@ -1296,7 +1333,7 @@ def update_demanda(demanda_id):
         form.conclu.data                = demanda.conclu
         form.urgencia.data              = str(demanda.urgencia)
 
-    return render_template('atualiza_demanda.html', title='Update',form = form, demanda_id=demanda_id)
+    return render_template('atualiza_demanda.html', title='Update',form = form, demanda_id=demanda_id,sistema=sistema)
 
 #
 #transferir uma demanda para outro responsável
@@ -1431,7 +1468,7 @@ def admin_altera_demanda(demanda_id):
 
 #removendo uma demanda
 
-@demandas.route('/<int:demanda_id>/delete', methods=['GET','POST'])
+@demandas.route('/<int:demanda_id>/delete_demanda', methods=['GET','POST'])
 @login_required
 def delete_demanda(demanda_id):
     """+----------------------------------------------------------------------+
@@ -1441,6 +1478,7 @@ def delete_demanda(demanda_id):
        +----------------------------------------------------------------------+
 
     """
+
     if current_user.ativo == False:
         abort(403)
 
@@ -1626,7 +1664,8 @@ def list_pesquisa(pesq):
                                  Despacho.user_id,
                                  label('username',User.username +' - DESPACHO'),
                                  User.despacha,
-                                 User.despacha2)\
+                                 User.despacha2,
+                                 User.despacha0)\
                                 .outerjoin(User, Despacho.user_id == User.id)\
                                 .order_by(Despacho.data.desc()).all()
 
@@ -1676,7 +1715,7 @@ def cria_despacho(demanda_id):
         if form.necessita_despacho_cg == True:
             demanda.data_env_despacho = datetime.now()
 
-        if current_user.despacha:
+        if current_user.despacha or current_user.despacha0:
             demanda.necessita_despacho = False
 
         if current_user.despacha2 and not current_user.despacha:
@@ -1694,7 +1733,7 @@ def cria_despacho(demanda_id):
 
                 # enviar e-mail para chefes sobre demanda concluida
                 chefes_emails = db.session.query(User.email)\
-                                          .filter(User.despacha == True,
+                                          .filter(or_(User.despacha == True,User.despacha0),
                                                   User.coord == current_user.coord)
 
                 destino = []
@@ -1829,7 +1868,7 @@ def cria_providencia(demanda_id):
             if demanda.necessita_despacho == False:
 
                 chefes_emails = db.session.query(User.email)\
-                                          .filter(User.despacha == True,
+                                          .filter(or_(User.despacha == True,User.despacha0),
                                                   User.coord == current_user.coord)
 
                 destino = []

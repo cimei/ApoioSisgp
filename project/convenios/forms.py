@@ -74,6 +74,8 @@ class ListaForm(FlaskForm):
     coords = db.session.query(distinct(Programa_Interesse.coord))\
                       .order_by(Programa_Interesse.coord).all()
     lista_coords = [(c[0],c[0]) for c in coords]
+
+    lista_coords.insert(0,('inst','Instituição'))
     lista_coords.insert(0,('',''))
 
     coord        = SelectField('Coordenação:',choices= lista_coords)
