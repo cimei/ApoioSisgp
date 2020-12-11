@@ -95,7 +95,7 @@ def send_email(subject, recipients, text_body, html_body):
     thr.start()
 
 # função para registrar comits no log
-def registra_log_auto(user_id,demanda_id,tipo_registro):
+def registra_log_auto(user_id,demanda_id,tipo_registro,atividade=None,duracao=0):
     """
     +---------------------------------------------------------------------------------------+
     |Função que registra ação do usuário na tabela log_auto.                                |
@@ -126,7 +126,10 @@ def registra_log_auto(user_id,demanda_id,tipo_registro):
     |   ver: registro de atualização do sistema                                             |
     |   afe: aferição de demanda pelo coordenador                                           |
     |   ipt: criação ou alteração de atividade no plano de trabalho                         |
+    |   xpt: deleção de atividade do plano de Trabalho                                      |
     |   rel: usuário gerou relatório de atividades                                          |
+    |   itm: inserção ou alteração de dados de instrumento                                  |
+    |   xtm: deleção de instrumento                                                         |
     +---------------------------------------------------------------------------------------+
     """
 
@@ -134,7 +137,8 @@ def registra_log_auto(user_id,demanda_id,tipo_registro):
                        user_id       = user_id,
                        demanda_id    = demanda_id,
                        tipo_registro = tipo_registro,
-                       atividade     = None)
+                       atividade     = atividade,
+                       duracao       = duracao)
     db.session.add(reg_log)
     db.session.commit()
 
@@ -161,9 +165,11 @@ def plano_trabalho():
                                   Plano_Trabalho.natureza,
                                   Plano_Trabalho.meta,
                                   label('resp1',User1.username),
-                                  label('resp2',User2.username))\
-                                  .join(User1, Plano_Trabalho.respon_1 == User1.id)\
-                                  .join(User2, Plano_Trabalho.respon_2 == User2.id)\
+                                  label('resp2',User2.username),
+                                  Plano_Trabalho.respon_1,
+                                  Plano_Trabalho.respon_1)\
+                                  .outerjoin(User1, Plano_Trabalho.respon_1 == User1.id)\
+                                  .outerjoin(User2, Plano_Trabalho.respon_2 == User2.id)\
                                   .order_by(Plano_Trabalho.atividade_sigla).all()
 
     quantidade = len(atividades)
@@ -266,7 +272,7 @@ def delete_atividade(atividade_id):
     db.session.delete(atividade)
     db.session.commit()
 
-    registra_log_auto(current_user.id,None,'ipt')
+    registra_log_auto(current_user.id,None,'xpt')
 
     flash ('Atividade excluída!','sucesso')
 
@@ -483,9 +489,7 @@ def confirma_cria_demanda(sei,tipo,mensagem):
         db.session.add(demanda)
         db.session.commit()
 
-        demanda_criada = db.session.query(Demanda.id,func.MAX(Demanda.data)).filter(Demanda.user_id==current_user.id).first()
-        demanda_id = demanda_criada.id
-        registra_log_auto(current_user.id,demanda_id,'inc')
+        registra_log_auto(current_user.id,demanda.id,'inc')
 
         flash ('Demanda criada!','sucesso')
 
@@ -535,7 +539,7 @@ def confirma_cria_demanda(sei,tipo,mensagem):
 
                 send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
 
-        return redirect(url_for('demandas.list_demandas'))
+        return redirect(url_for('demandas.demanda',demanda_id=demanda.id))
 
     if mensagem != 'OK':
         flash ('ATENÇÃO: Existe uma demanda não concluída para este processo sob o mesmo tipo. Verifique demanda '+mensagem[2:],'perigo')
@@ -652,9 +656,7 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
         db.session.add(demanda)
         db.session.commit()
 
-        demanda_criada = db.session.query(Demanda.id,func.MAX(Demanda.data)).filter(Demanda.user_id==current_user.id).first()
-        demanda_id = demanda_criada.id
-        registra_log_auto(current_user.id,demanda_id,'inc')
+        registra_log_auto(current_user.id,demanda.id,'inc')
 
         flash ('Demanda criada!','sucesso')
 
@@ -704,9 +706,7 @@ def confirma_acordo_convenio_demanda(prog,sei,conv,ano,tipo,mensagem):
 
                 send_email('Demanda ' + str(demanda_id) + ' requer despacho (' + pt.atividade_sigla + ')', destino,'', html)
 
-
-        return redirect(url_for('demandas.list_demandas'))
-        #return redirect(url_for('demandas.demandas'))
+        return redirect(url_for('demandas.demanda',demanda_id=demanda.id))
 
     form.atividade.data       = prog
 
@@ -1366,7 +1366,7 @@ def transfer_demanda(demanda_id):
 
         db.session.commit()
 
-        recebedor = db.session.query(User.username).filter(User.id==int(form.pessoa.data)).first()
+        recebedor = db.session.query(User.username,User.email).filter(User.id==int(form.pessoa.data)).first()
 
         providencia = Providencia(demanda_id = demanda_id,
                                   data       = datetime.now(),
@@ -1380,7 +1380,19 @@ def transfer_demanda(demanda_id):
 
         registra_log_auto(current_user.id,demanda_id,'tra')
 
+        sistema = db.session.query(Sistema.nome_sistema).first()
+
+        destino = []
+        destino.append(recebedor.email)
+        destino.append(current_user.email)
+
+        html = render_template('email_demanda_transf.html',demanda=demanda_id,user=current_user.username,
+                                titulo=demanda.titulo,receb=recebedor.username,sistema=sistema.nome_sistema)
+
+        send_email('A demanda ' + str(demanda_id) + ' foi transferida para você!', destino,'', html)
+
         flash ('Demanda transferida!','sucesso')
+
         return redirect(url_for('demandas.demanda',demanda_id=demanda.id))
 
     return render_template('transfer_demanda.html', title='Update',form = form)
@@ -1514,7 +1526,7 @@ def pesquisa_demanda():
 
     if form.validate_on_submit():
         # a / do campo sei precisou ser trocada por _ para poder ser passado no URL da pesquisa
-        if form.sei.data != '':
+        if str(form.sei.data).find('/') != -1:
 
             pesq = str(form.sei.data).split('/')[0]+'_'+str(form.sei.data).split('/')[1]+';'+\
                    str(form.titulo.data)+';'+\
@@ -1530,7 +1542,7 @@ def pesquisa_demanda():
 
         else:
 
-            pesq = ''+';'+\
+            pesq = str(form.sei.data)+';'+\
                    str(form.titulo.data)+';'+\
                    str(form.tipo.data)+';'+\
                    str(form.necessita_despacho.data)+';'+\
@@ -1565,7 +1577,7 @@ def list_pesquisa(pesq):
     pesq_l = pesq.split(';')
 
     sei = pesq_l[0]
-    if sei != '':
+    if sei.find('_') != -1:
         sei = str(pesq_l[0]).split('_')[0]+'/'+str(pesq_l[0]).split('_')[1]
 
     if pesq_l[2] == 'Todos':
@@ -1862,26 +1874,30 @@ def cria_providencia(demanda_id):
         else:
             registra_log_auto(current_user.id,demanda_id,'pro')
 
+# para o caso da providência exigir um despacho
         if form.necessita_despacho.data == True:
 
-            # enviar e-mail para chefes
+            # enviar e-mail para chefes, user que registrou a providência e dono da demanda
             if demanda.necessita_despacho == False:
 
                 chefes_emails = db.session.query(User.email)\
                                           .filter(or_(User.despacha == True,User.despacha0),
                                                   User.coord == current_user.coord)
 
+                dono_email = db.session.query(User.email).filter(User.id == demanda.user_id).first()
+
                 destino = []
                 for email in chefes_emails:
                     destino.append(email[0])
                 destino.append(current_user.email)
+                destino.append(dono_email.email)
 
                 if len(destino) > 1:
 
                     sistema = db.session.query(Sistema.nome_sistema).first()
 
                     html = render_template('email_pede_despacho.html',demanda=demanda_id,user=current_user.username,
-                                            titulo=demanda.titulo,sistema=sistema.nome_sistema)
+                                            titulo=demanda.titulo,sistema=sistema.nome_sistema,tipo=demanda.tipo)
 
                     pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==demanda.programa).first()
 
@@ -1889,12 +1905,43 @@ def cria_providencia(demanda_id):
 
             demanda.necessita_despacho = True
             demanda.necessita_despacho_cg = False
-            demanda.conclu = False
             demanda.data_env_despacho = datetime.now()
-            db.session.commit()
+
         else:
+
             demanda.necessita_despacho = False
-            db.session.commit()
+
+        if form.conclu.data == True:
+            if demanda.conclu == False:
+                demanda.conclu = True
+                demanda.data_conclu = datetime.now()
+                registra_log_auto(current_user.id,demanda_id,'alt')
+        else:
+            demanda.conclu = False
+            demanda.data_conclu = None
+
+        db.session.commit()
+
+        if demanda.user_id != current_user.id:
+
+            dono_email = db.session.query(User.email).filter(User.id == demanda.user_id).first()
+
+            destino = []
+
+            destino.append(dono_email.email)
+            destino.append(current_user.email)
+
+            if len(destino) > 1:
+
+                sistema = db.session.query(Sistema.nome_sistema).first()
+
+                html = render_template('email_provi_alheia.html',demanda=demanda_id,user=current_user.username,
+                                        titulo=demanda.titulo,sistema=sistema.nome_sistema)
+
+                pt = db.session.query(Plano_Trabalho.atividade_sigla).filter(Plano_Trabalho.id==demanda.programa).first()
+
+                send_email('Demanda ' + str(demanda_id) + ' com providência alheia (' + pt.atividade_sigla + ')', destino,'', html)
+
 
         if programada and form.agenda.data:
 
@@ -1970,11 +2017,15 @@ def cria_providencia(demanda_id):
     form.data_hora.data = datetime.now()
     form.duracao.data   = 15
 
+    if demanda.conclu:
+        form.conclu.data = True
+
     if current_user.despacha and demanda.user_id != current_user.id:
-        flash ('Esta demanda não é sua. Não seria o caso de registrar um DESPACHO?','perigo')
+        flash ('Você tem perfil de chefe e esta demanda não é sua. Não seria o caso de registrar um DESPACHO?','perigo')
 
     return render_template('add_providencia.html',
                             form               = form,
+                            demanda_user_id    = demanda.user_id,
                             sei                = demanda.sei,
                             convênio           = demanda.convênio,
                             ano_convênio       = demanda.ano_convênio,

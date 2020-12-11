@@ -8,6 +8,7 @@
    * AcordoForm: registrar ou atualizar dados de um acordo.
    * Programa_CNPqForm: registrar ou atualizar dados de um programa do CNPq.
    * ArquivoForm: permite escolher o arquivo excel para carga de dados de acordo.
+   * ListaForm: escolher coordenação
 
 **Campos definidos no formulário (todos são obrigatórios):**
 
@@ -34,8 +35,8 @@ class AcordoForm(FlaskForm):
     sei              = StringField('Número SEI:',validators=[DataRequired(message="Informe o Programa!")]) # incluir regex para sei
     epe              = StringField('Sigla da EPE:',validators=[DataRequired(message="Informe a Instituição!")])
     uf               = StringField('UF (sigla):',validators=[DataRequired(message="Informe a sigla da UF!")])
-    data_inicio      = DateField('Data de início do Acordo:',format='%d/%m/%Y',validators=[DataRequired(message="Informe data do início!")])
-    data_fim         = DateField('Data de término do Acordo:',format='%d/%m/%Y',validators=[DataRequired(message="Informe data do término!")])
+    data_inicio      = DateField('Data de início:',format='%d/%m/%Y',validators=[DataRequired(message="Informe data do início!")])
+    data_fim         = DateField('Data de término:',format='%d/%m/%Y',validators=[DataRequired(message="Informe data do término!")])
     valor_cnpq       = StringField('Valor alocado pelo CNPq:',validators=[DataRequired(message="Informe o valor!")])
     valor_epe        = StringField('Valor alocado pela EPE:',validators=[DataRequired(message="Informe o valor!")])
 
@@ -82,7 +83,7 @@ def func_ProcMae_Acordo(programa):
     return ProcMae_Acordo()
 
 #
-# form para escolher a coordenação na lista de convênios
+# form para escolher a coordenação na lista de acordos
 class ListaForm(FlaskForm):
 
     coords = db.session.query(Coords.sigla)\
@@ -91,4 +92,4 @@ class ListaForm(FlaskForm):
     lista_coords.insert(0,('',''))
 
     coord        = SelectField('Coordenação:',choices= lista_coords)
-    submit       = SubmitField('Filtrar')
+    submit       = SubmitField('Filtrar coordenação')

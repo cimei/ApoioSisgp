@@ -18,7 +18,8 @@ from wtforms import StringField, IntegerField, DateField, SubmitField
 from wtforms.validators import DataRequired, Regexp
 
 class BolsaForm(FlaskForm):
-    mod_niv     = StringField('Modalidade-Nível:',validators=[DataRequired(message="Informe modalidade-nível!")])
+    mod         = StringField('Modalidade:',validators=[DataRequired(message="Informe a modalidade!")])
+    niv         = StringField('Nível:',validators=[DataRequired(message="Informe o nível! Se não houver, coloque *.")])
     mensalidade = StringField('Valor da Mensalidade:',validators=[DataRequired(message="Informe o valor!")])
     auxilio     = StringField('Valor dos auxílios:',validators=[DataRequired(message="Informe o valor!")])
     submit      = SubmitField('Registrar')

@@ -153,6 +153,7 @@ def register():
 
         trab_conv   = db.session.query(Sistema.funcionalidade_conv).first()
         trab_acordo = db.session.query(Sistema.funcionalidade_acordo).first()
+        trab_instru = db.session.query(Sistema.funcionalidade_instru).first()
 
         user = User(email                      = form.email.data,
                     username                   = form.username.data,
@@ -167,7 +168,8 @@ def register():
                     sversion                   = version[0],
                     cargo_func                 = 'a definir',
                     trab_conv                  = trab_conv[0],
-                    trab_acordo                = trab_acordo[0])
+                    trab_acordo                = trab_acordo[0],
+                    trab_instru                = trab_instru[0])
 
         db.session.add(user)
         db.session.commit()
@@ -332,7 +334,7 @@ def login():
                 flash('Senha não confere, favor verificar!','erro')
 
         else:
-            flash('E-mail informado não encontradao, favor verificar!','erro')
+            flash('E-mail informado não encontrado, favor verificar!','erro')
 
     return render_template('login.html',form=form)
 
@@ -469,6 +471,48 @@ def account():
         min_pr = min(providencias_12meses)
         mes_min_pr = meses[providencias_12meses.index(min_pr)]
 
+        minutos_dedicados_12meses = [db.session.query(func.sum(Providencia.duracao)).filter(Providencia.data >= mes[1]+'-'+mes[0]+'-01',
+                                                 Providencia.data <= mes[1]+'-'+mes[0]+'-31',
+                                                 Providencia.user_id == current_user.id).all()
+                                                 for mes in meses]
+
+        minutos_log_man_12meses = [db.session.query(func.sum(Log_Auto.duracao)).filter(Log_Auto.data_hora >= mes[1]+'-'+mes[0]+'-01',
+                                                 Log_Auto.data_hora <= mes[1]+'-'+mes[0]+'-31',
+                                                 Log_Auto.user_id == current_user.id).all()
+                                                 for mes in meses]
+
+        hd_p = [min[0][0] if min[0][0] is not None else 0 for min in minutos_dedicados_12meses]
+        hd_l = [min[0][0] if min[0][0] is not None else 0 for min in minutos_log_man_12meses]
+        hd_z = zip(hd_p,hd_l)
+        hd = [x+y for (x,y) in hd_z]
+
+        med_hd = round((sum(hd)/len(hd))/60)
+        max_hd = round(max(hd)/60)
+        mes_max_hd = meses[hd.index(max(hd))]
+        min_hd = round(min(hd)/60)
+        mes_min_hd = meses[hd.index(min(hd))]
+
+        start = hoje - timedelta(days=hoje.weekday())
+        end = start + timedelta(days=6)
+
+        minutos_dedicados_semana_p = db.session.query(func.sum(Providencia.duracao)).filter(Providencia.data >= start,
+                                                 Providencia.data <= end,
+                                                 Providencia.user_id == current_user.id).all()
+
+        minutos_dedicados_semana_l = db.session.query(func.sum(Log_Auto.duracao)).filter(Log_Auto.data_hora >= start,
+                                              Log_Auto.data_hora <= end,
+                                              Log_Auto.user_id == current_user.id).all()
+
+        md_p = minutos_dedicados_semana_p[0][0]
+        md_l = minutos_dedicados_semana_l[0][0]
+
+        if md_p is None:
+            md_p = 0
+
+        if md_l is None:
+            md_l = 0
+
+        horas_dedicadas_semana = round((md_p + md_l) / 60)
 
     return render_template('account.html',form=form,
                                           qtd_demandas=qtd_demandas,
@@ -485,7 +529,13 @@ def account():
                                           max_pr=max_pr,
                                           mes_max_pr=mes_max_pr,
                                           min_pr=min_pr,
-                                          mes_min_pr=mes_min_pr)
+                                          mes_min_pr=mes_min_pr,
+                                          med_hd=med_hd,
+                                          max_hd=max_hd,
+                                          mes_max_hd=mes_max_hd,
+                                          min_hd=min_hd,
+                                          mes_min_hd=mes_min_hd,
+                                          horas=horas_dedicadas_semana)
 
 # lista das demandas de um usuário
 
@@ -500,11 +550,18 @@ def user_posts (username,filtro):
 
     qtd = 0
 
-    # page = request.args.get('page',1,type=int)
-
     com_despacho_novo = []
+    para_despacho = []
+    com_usu = []
 
-    user = User.query.filter_by(username=username).first_or_404()
+    if username == 'todos':
+        user_id = '%'
+        user = None
+    else:
+        user = User.query.filter_by(username=username).first_or_404()
+        user_id = user.id
+
+
 
     if filtro[0:2] == 'nc':
 
@@ -527,14 +584,12 @@ def user_posts (username,filtro):
                                     Demanda.nota,
                                     Plano_Trabalho.atividade_sigla)\
                              .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
-                             .filter(Demanda.author == user,
+                             .filter(Demanda.user_id.like(user_id),
                                      Demanda.conclu == False)\
-                             .order_by(Demanda.data.desc())\
+                             .order_by(Demanda.urgencia,Demanda.data.desc())\
                              .all()
-                             # .paginate(page=page,per_page=10)
 
         # verificar se tem despacho novo
-        # for demanda in demandas.items:
         for demanda in demandas:
 
             providencias = db.session.query(Providencia.data,
@@ -553,6 +608,12 @@ def user_posts (username,filtro):
             if pro_des != []:
                 if pro_des[0].tipo[0:6] == 'DESP -':
                     com_despacho_novo.append(demanda.id)
+
+            if demanda.necessita_despacho or demanda.necessita_despacho_cg:
+                para_despacho.append(demanda.id)
+
+            if demanda.id not in com_despacho_novo and not demanda.necessita_despacho and not demanda.necessita_despacho_cg:
+                com_usu.append(demanda.id)
 
     elif filtro == 'conclu':
 
@@ -575,11 +636,10 @@ def user_posts (username,filtro):
                                     Demanda.nota,
                                     Plano_Trabalho.atividade_sigla)\
                                     .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
-                                    .filter(Demanda.author == user,
+                                    .filter(Demanda.user_id.like(user_id),
                                             Demanda.conclu == True)\
                                     .order_by(Demanda.data_conclu.desc())\
                                     .all()
-                                    # .paginate(page=page,per_page=10)
 
     else:
 
@@ -602,15 +662,15 @@ def user_posts (username,filtro):
                                     Demanda.nota,
                                     Plano_Trabalho.atividade_sigla)\
                                     .outerjoin(Plano_Trabalho, Plano_Trabalho.id == Demanda.programa)\
-                                    .filter(Demanda.author == user)\
-                                    .order_by(Demanda.data.desc())\
+                                    .filter(Demanda.user_id.like(user_id))\
+                                    .order_by(Demanda.urgencia,Demanda.data.desc())\
                                     .all()
-                                    # .paginate(page=page,per_page=10)
 
-    # qtd = demandas.total
     qtd = len(demandas)
 
-    return render_template('user_demandas.html',demandas=demandas,user=user, filtro=filtro, qtd = qtd, com_despacho_novo=com_despacho_novo)
+    return render_template('user_demandas.html',demandas=demandas,user=user, filtro=filtro, qtd = qtd,\
+                            com_despacho_novo=com_despacho_novo, qtd_cdn=len(com_despacho_novo), qtd_pdes=len(para_despacho),\
+                            qtd_com_usu=len(com_usu))
 
 #
 # lista plano de trabalho (atividades) de um usuário
@@ -696,6 +756,8 @@ def admin_reg_ver():
                     user.trab_conv = False
                 if not form.funcionalidade_acordo.data:
                     user.trab_acordo = False
+                if not form.funcionalidade_instru.data:
+                    user.trab_instru = False
 
             db.session.commit()
 
@@ -703,6 +765,7 @@ def admin_reg_ver():
             sistema.descritivo            = form.descritivo.data
             sistema.funcionalidade_conv   = form.funcionalidade_conv.data
             sistema.funcionalidade_acordo = form.funcionalidade_acordo.data
+            sistema.funcionalidade_instru = form.funcionalidade_instru.data
             inst.cod_inst                 = form.cod_inst.data
 
             registra_log_auto(current_user.id,None,'ver')
@@ -719,6 +782,7 @@ def admin_reg_ver():
             form.descritivo.data            = sistema.descritivo
             form.funcionalidade_conv.data   = sistema.funcionalidade_conv
             form.funcionalidade_acordo.data = sistema.funcionalidade_acordo
+            form.funcionalidade_instru.data = sistema.funcionalidade_instru
             form.cod_inst.data              = inst.cod_inst
 
         return render_template('admin_reg_ver.html', title='Update', form=form)
@@ -786,6 +850,8 @@ def admin_update_user(user_id):
                 user.trab_conv   = form.trab_conv.data
             if sistema.funcionalidade_acordo:
                 user.trab_acordo = form.trab_acordo.data
+            if sistema.funcionalidade_instru:
+                user.trab_instru = form.trab_instru.data
 
             db.session.commit()
 
@@ -807,6 +873,7 @@ def admin_update_user(user_id):
             form.ativo.data       = user.ativo
             form.trab_conv.data   = user.trab_conv
             form.trab_acordo.data = user.trab_acordo
+            form.trab_instru.data = user.trab_instru
 
         return render_template('admin_update_user.html', title='Update', name=user.username,
                                form=form)
@@ -933,13 +1000,16 @@ def user_obs():
                                user_id       = current_user.id,
                                demanda_id    = None,
                                tipo_registro = 'man: '+form.entrada_log.data,
-                               atividade     = form.atividade.data)
+                               atividade     = form.atividade.data,
+                               duracao       = form.duracao.data)
             db.session.add(reg_log)
             db.session.commit()
 
             form.entrada_log.data = ''
 
         return redirect(url_for('users.user_log',usu='*'))
+
+    form.duracao.data = 5
 
     return render_template('user_obs.html', form=form)
 

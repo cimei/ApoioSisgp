@@ -32,9 +32,11 @@
     * Pagamento: relação dos pagamento efetuados pela convenente, aqui são armazemados os dados agregados por recebedor
     * Empenho: empenhos realizados conforme o SICONV
     * Desembolso: desembolsost realizados conforme o SICONV
+    * Crono_Desemb: cronograma de desembolso dos convênios
     * Coords: coordenações técnicas
     * RefSICONV: data da carga SICONV
     * MSG_Siconv: mensagens do siconv
+    * Instrumento: demais instrumentos
 
     Abaixo seguem os Modelos e respectivos campos.
 """
@@ -189,7 +191,7 @@ class Processo_Filho (db.Model):
     def __repr__ (self):
         return f"{self.processo};{self.nome};{self.modalidade};{self.nivel}"
 #
-## tabela com as modalidades e valores de cada bolsa
+## tabela com dados dos processos-mãe
 class Processo_Mae (db.Model):
 
     __tablename__ = 'processo_mae'
@@ -220,18 +222,20 @@ class Bolsa (db.Model):
     __tablename__ = 'bolsas'
 
     id          = db.Column(db.Integer,primary_key = True)
-    mod_niv     = db.Column(db.String,nullable=False)
+    mod         = db.Column(db.String,nullable=False)
+    niv         = db.Column(db.String,default='*')
     mensalidade = db.Column(db.Float)
     auxilio     = db.Column(db.Float)
 
 
-    def __init__ (self,mod_niv,mensalidade,auxilio):
-        self.mod_niv     = mod_niv
+    def __init__ (self,mod,niv,mensalidade,auxilio):
+        self.mod         = mod
+        self.niv         = niv
         self.mensalidade = mensalidade
         self.auxilio     = auxilio
 
     def __repr__ (self):
-        return f"Bolsa {self.mod_niv} com R$ {self.mensalidade} de mensalidade e R$ {self.auxílio} de auxílios"
+        return f"Bolsa {self.mod} - {self.niv} com R$ {self.mensalidade} de mensalidade e R$ {self.auxílio} de auxílios"
 
 #
 # programa do CNPq - Utilizado para Acordos
@@ -262,7 +266,7 @@ class Acordo(db.Model):
 
     id               = db.Column(db.Integer,primary_key=True)
     nome             = db.Column(db.String)
-    sei              = db.Column(db.String)
+    sei              = db.Column(db.String,unique=True,index=True)
     epe              = db.Column(db.String)
     uf               = db.Column(db.String)
     data_inicio      = db.Column(db.Date)
@@ -631,6 +635,36 @@ class Desembolso(db.Model):
                  {self.DATA_DESEMBOLSO};{self.ANO_DESEMBOLSO};{self.MES_DESEMBOLSO};{self.NR_SIAFI};\
                  {self.VL_DESEMBOLSADO};{self.ID_EMPENHO}"
 
+#
+# cronograma_desembolso
+
+class Crono_Desemb(db.Model):
+
+    __tablename__ = 'crono_desemb'
+
+    id                             = db.Column(db.Integer,primary_key=True)
+    ID_PROPOSTA                    = db.Column(db.String)
+    NR_CONVENIO                    = db.Column(db.String)
+    NR_PARCELA_CRONO_DESEMBOLSO    = db.Column(db.String)
+    MES_CRONO_DESEMBOLSO           = db.Column(db.String)
+    ANO_CRONO_DESEMBOLSO           = db.Column(db.String)
+    TIPO_RESP_CRONO_DESEMBOLSO     = db.Column(db.String)
+    VALOR_PARCELA_CRONO_DESEMBOLSO = db.Column(db.Float)
+
+    def __init__(self, ID_PROPOSTA, NR_CONVENIO, NR_PARCELA_CRONO_DESEMBOLSO, MES_CRONO_DESEMBOLSO, ANO_CRONO_DESEMBOLSO,
+                 TIPO_RESP_CRONO_DESEMBOLSO, VALOR_PARCELA_CRONO_DESEMBOLSO):
+
+        self.ID_PROPOSTA                    = ID_PROPOSTA
+        self.NR_CONVENIO                    = NR_CONVENIO
+        self.NR_PARCELA_CRONO_DESEMBOLSO    = NR_PARCELA_CRONO_DESEMBOLSO
+        self.MES_CRONO_DESEMBOLSO           = MES_CRONO_DESEMBOLSO
+        self.ANO_CRONO_DESEMBOLSO           = ANO_CRONO_DESEMBOLSO
+        self.TIPO_RESP_CRONO_DESEMBOLSO     = TIPO_RESP_CRONO_DESEMBOLSO
+        self.VALOR_PARCELA_CRONO_DESEMBOLSO = VALOR_PARCELA_CRONO_DESEMBOLSO
+
+    def __repr__ (self):
+        return f"{self.ID_PROPOSTA};{self.NR_CONVENIO};{self.NR_PARCELA_CRONO_DESEMBOLSO};{self.MES_CRONO_DESEMBOLSO};\
+                 {self.ANO_CRONO_DESEMBOLSO};{self.TIPO_RESP_CRONO_DESEMBOLSO};{self.VALOR_PARCELA_CRONO_DESEMBOLSO}"
 
     ##############################################################################################
     ##  banco demandas                                                                          ##
@@ -839,13 +873,14 @@ class User(db.Model, UserMixin):
     trab_conv                  = db.Column(db.Boolean)
     trab_acordo                = db.Column(db.Boolean)
     despacha0                  = db.Column(db.Boolean)
+    trab_instru                = db.Column(db.Boolean)
 
 
     posts = db.relationship ('Demanda',backref='author',lazy=True)
     desp  = db.relationship ('Despacho',backref='author',lazy=True)
 
     def __init__(self,email,username,plaintext_password,despacha,coord,despacha2,ativo,sversion,cargo_func,\
-                 trab_conv,trab_acordo,despacha0,email_confirmation_sent_on=None,role='user'):
+                 trab_conv,trab_acordo,despacha0,trab_instru,email_confirmation_sent_on=None,role='user'):
 
         self.email                      = email
         self.username                   = username
@@ -867,6 +902,7 @@ class User(db.Model, UserMixin):
         self.trab_acordo                = trab_acordo
         self.trab_conv                  = trab_conv
         self.despacha0                  = despacha0
+        self.trab_instru                = trab_instru
 
     def check_password (self,plaintext_password):
 
@@ -888,14 +924,17 @@ class Log_Auto(db.Model):
     demanda_id     = db.Column(db.Integer, db.ForeignKey('demandas.id'))
     tipo_registro  = db.Column(db.Text,nullable=False)
     atividade      = db.Column(db.Integer,db.ForeignKey('plano_trabalho.id'))
+    duracao        = db.Column(db.Integer,default=0)
 
-    def __init__(self, data_hora, user_id, demanda_id, tipo_registro, atividade):
+    def __init__(self, data_hora, user_id, demanda_id, tipo_registro, atividade, duracao):
 
         self.data_hora     = data_hora
         self.user_id       = user_id
         self.demanda_id    = demanda_id
         self.tipo_registro = tipo_registro
         self.atividade     = atividade
+        self.duracao       = duracao
+
 
 
     def __repr__(self):
@@ -935,13 +974,15 @@ class Sistema(db.Model):
     descritivo            = db.Column(db.Text,nullable=False)
     funcionalidade_conv   = db.Column(db.Boolean,default=True)
     funcionalidade_acordo = db.Column(db.Boolean,default=True)
+    funcionalidade_instru = db.Column(db.Boolean,default=True)
 
-    def __init__(self, nome_sistema, descritivo,funcionalidade_conv,funcionalidade_acordo):
+    def __init__(self, nome_sistema, descritivo,funcionalidade_conv,funcionalidade_acordo,funcionalidade_instru):
 
         self.nome_sistema          = nome_sistema
         self.descritivo            = tipo_registro
         self.funcionalidade_conv   = funcionalidade_conv
         self.funcionalidade_acordo = funcionalidade_acordo
+        self.funcionalidade_instru = funcionalidade_instru
 
     def __repr__(self):
 
@@ -985,3 +1026,34 @@ class MSG_Siconv (db.Model):
 
     def __repr__ (self):
         return f"{self.nr_convenio};{self.desc};{self.data_ref};{self.sit}"
+
+#
+# dados dos instrumentos
+class Instrumento(db.Model):
+
+    __bind_key__ = 'demandas_banco'
+    __tablename__ = 'instrumento'
+
+    id           = db.Column(db.Integer,primary_key=True)
+    coord        = db.Column(db.String)
+    nome         = db.Column(db.String)
+    sei          = db.Column(db.String,unique=True,index=True)
+    contraparte  = db.Column(db.String)
+    data_inicio  = db.Column(db.Date)
+    data_fim     = db.Column(db.Date)
+    valor        = db.Column(db.Float)
+    descri       = db.Column(db.String)
+
+    def __init__(self,coord,nome,sei,contraparte,data_inicio,data_fim,valor,descri):
+        self.coord            = coord
+        self.nome             = nome
+        self.sei              = sei
+        self.contraparte      = contraparte
+        self.data_inicio      = data_inicio
+        self.data_fim         = data_fim
+        self.valor            = valor
+        self.descri           = descri
+
+    def __repr__(self):
+
+        return f"{self.coord};{self.nome};{self.sei};{self.contraparte};{self.data_inicio};{self.data_fim};{self.valor};{self.descri}"

@@ -22,7 +22,8 @@
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField,\
+                    DateField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
@@ -111,6 +112,7 @@ class AdminForm(FlaskForm):
     ativo        = BooleanField('Usuário está ativo?')
     trab_conv    = BooleanField('Usuário trabalha com convênios?')
     trab_acordo  = BooleanField('Usuário trabalha com acordos e encomendas?')
+    trab_instru  = BooleanField('Usuário trabalha com instrumentos?')
     submit       = SubmitField('Atualizar')
 
 class LogForm(FlaskForm):
@@ -129,6 +131,7 @@ class LogFormMan(FlaskForm):
 
     atividade   = SelectField('Atividade:',choices= lista_atividades)
     entrada_log = TextAreaField('Entrada no Diário: ')
+    duracao     = IntegerField('Duração (min.): ')
     submit      = SubmitField('Registrar')
 
 class VerForm(FlaskForm):
@@ -139,6 +142,7 @@ class VerForm(FlaskForm):
     descritivo            = TextAreaField('Descritivo: ')
     funcionalidade_conv   = BooleanField('Habilitar funcionalidade convênios?')
     funcionalidade_acordo = BooleanField('Habilitar funcionalidade acordos?')
+    funcionalidade_instru = BooleanField('Habilitar funcionalidade instrumentos?')
     submit                = SubmitField('Registrar')
 
 class RelForm(FlaskForm):

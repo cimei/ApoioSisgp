@@ -24,7 +24,8 @@
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">Modalidade-Nível</p></th>
+        <th scope="col"><p align = "center">Modalidade</p></th>
+        <th scope="col"><p align = "center">Nível</p></th>
         <th scope="col"><p align = "center">Valor Mensalidade</p></th>
         <th scope="col"><p align = "center">Valor Auxílios</p></th>
       </tr>
@@ -40,8 +41,9 @@
                           {% endif %}
                         </p></th>
         <td><p align = "center"> {{bolsa[1]}}</p></td>
-        <td><p align = "right"> {{bolsa[2]}}</p></td>
+        <td><p align = "center"> {{bolsa[2]}}</p></td>
         <td><p align = "right"> {{bolsa[3]}}</p></td>
+        <td><p align = "right"> {{bolsa[4]}}</p></td>
       </tr>
 
       {% endfor %}

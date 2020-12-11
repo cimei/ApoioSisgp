@@ -97,7 +97,7 @@
           <p>Prazo médio dos despachos em suas demandas: <b>{{desp_m}} dias</b></p>
           <p></p>
           <p><ins>Últimos 12 meses</ins></p>
-          <p>Demandas</p>
+          <p>Demandas (quantidades)</p>
           <table class="table table-bordered table-sm">
             <thead>
               <tr>
@@ -115,7 +115,7 @@
             </tbody>
           </table>
 
-          <p>Providências</p>
+          <p>Providências (quantidades)</p>
           <table class="table table-bordered table-sm">
             <thead>
               <tr>
@@ -129,6 +129,24 @@
                 <td><p align = "center"> {{med_pr}} </p></td>
                 <td><p align = "center"> {{max_pr}} em {{mes_max_pr[0]}}/{{mes_max_pr[1]}}</p></td>
                 <td><p align = "center"> {{min_pr}} em {{mes_min_pr[0]}}/{{mes_min_pr[1]}}</p></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Horas dedicadas (<span class="text-primary">Esta semana: {{horas}}</span>)</p>
+          <table class="table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th scope="col"><p align = "center">Média mensal</p></th>
+                <th scope="col"><p align = "center">Maior qtd.</p></th>
+                <th scope="col"><p align = "center">Menor qtd.</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><p align = "center"> {{med_hd}} </p></td>
+                <td><p align = "center"> {{max_hd}} em {{mes_max_hd[0]}}/{{mes_max_hd[1]}}</p></td>
+                <td><p align = "center"> {{min_hd}} em {{mes_min_hd[0]}}/{{mes_min_hd[1]}}</p></td>
               </tr>
             </tbody>
           </table>

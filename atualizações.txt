@@ -1,5 +1,75 @@
 ## Atualizações ##
 
+11/12/2020
+
+Ao inserir uma providência, o dono da demanda poderá terá a opção de concluí-la. v 4.4.7.
+
+10/12/2020
+
+Detalhamento do acordo mostra processos-mãe vinculados. v 4.4.6
+
+08/12/2020
+
+Ao se tranferir uma demanda, o remetente recebe cópia do aviso ao destinatário. O resposável pela demanda passa a ser avisado quando
+outro usuário registrar uma providência. A mensagem sobre necessidade de despacho passa a informar o tipo da demanda.
+Simplificação na consulta/alteração/inclusão de detalhes de um acordo.
+ v 4.4.5
+
+29/11/2020
+
+O cronograma de desembolso, no detalhamento de cada convênio, passa a mostrar a situação de cada parcela, se quitada ou em aberto,
+mostra a quantidade de dias de atraso de desembolso, quando do for o caso, bem como projeção de data final da vigência para prorrogação de ofício.
+v 4.4.4
+
+27/11/2020
+
+Detalhamento de convênio passa a contar com o cronograma de desembolso. v 4.4.3.
+
+23/11/2020
+
+Correções na lista de demandas de cada usuário. Correção de erro em registro de usuário. v 4.4.2
+
+20/11/2020
+
+Lista das demandas do usuário passam a ser exibidas no formato de tabela. Inclusão de favicon.ico. v 4.4.1
+
+18/11/2020
+
+Correções de pequenos problemas e inclusão da funcionalidade Instrumentos. v 4.4.0
+
+11/11/2020
+
+Correção de erro relacionado a dados de Bolsas. v 4.3.3
+
+10/11/2020
+
+Correção de erro relativo a inclusão/alteração de dados de chamadas em convênios. v 4.3.2
+
+09/11/2020
+
+Correção de erro quando da inclusão ou alteração de dados de chamadas em acordos. v 4.3.1
+
+04/11/2020
+
+Quando uma providência requer despacho, dono da demanda também recebe e-mail de aviso. A busca por demandas permiete que seja informada
+parte do nº SEI. A lista de demandas de um usuário está enumerada. O sistema passa a mostrar somente convênios celebrados. v 4.2.23
+
+Consulta a convênios por meio de um mapa do Brasil. Foi necessário alterar a variável ENV nos arquivos \folium\folium.py, \folium\raster_layers.py
+e \branca\element.py (ambiente COPES) bem como o app.spec. v 4.3.0
+
+01/10/2020
+
+O usuário pode informar quantos minutos gastou em uma ação registrada manualmente em seu diário. v 4.2.22
+
+30/09/2020
+
+Informa o usuário sobre sua dedicação semanal em horas, conforme registro das providências. v 4.2.21
+
+28/09/2020
+
+Quando uma demanda for transferida, o destinatário recebera um e-mail de aviso.
+Dados do usuário mostra horas dedicadas em providências. v 4.2.20
+
 25/09/2020
 
 O usuário pode ver, separadamente, demandas concluídas e não concluídas. Nas não concluídas, pode ver, também separadamente,

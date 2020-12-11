@@ -39,7 +39,6 @@
     * Listar acordos por edição do programa: lista_acordos
     * Atualizar dados de um acordo: update
     * Registrar um acordo no sistema: cria_acordo
-    * Visualizar detalhes de um acordo específico: acordo_detalhe
     * Listar demandas de um determinado acordo: acordo_demandas
     * Registrar um programa do CNPq no sistema: cria_programa_cnpq
     * Listar programas do CNPq: lista_programa_cnpq
@@ -290,14 +289,14 @@ def lista_acordos(lista,coord):
         return render_template('lista_acordos.html', acordos=acordos,quantidade=quantidade,lista=lista,form=form)
 
 
-### ATUALIZAR Acordo
+### VISUALIZAR E ATUALIZAR detalhes de Acordo
 
 @acordos.route("/<int:acordo_id>/update", methods=['GET', 'POST'])
 @login_required
 def update(acordo_id):
     """
     +---------------------------------------------------------------------------------------+
-    |Permite atualizar os dados de um acordo selecionado na tela de consulta.               |
+    |Permite ver e atualizar os dados de um acordo selecionado na tela de consulta.         |
     |                                                                                       |
     |Recebe o ID do acordo como parâmetro.                                                  |
     +---------------------------------------------------------------------------------------+
@@ -305,7 +304,12 @@ def update(acordo_id):
 
     acordo = Acordo.query.get_or_404(acordo_id)
 
-    acordo_procmae = Acordo_ProcMae.query.filter(Acordo_ProcMae.acordo_id == acordo_id).all()
+    procs_mae = db.session.query(Processo_Mae.proc_mae,
+                                 Processo_Mae.inic_mae,
+                                 Processo_Mae.term_mae)\
+                          .join(Acordo_ProcMae, Processo_Mae.id == Acordo_ProcMae.proc_mae_id)\
+                          .filter(Acordo_ProcMae.acordo_id == acordo_id)\
+                          .order_by(Processo_Mae.term_mae.desc()).all()
 
     form = AcordoForm(programa_cnpq=acordo.programa_cnpq)
 
@@ -327,8 +331,10 @@ def update(acordo_id):
 
         flash('Acordo atualizado!')
         return redirect(url_for('acordos.lista_acordos',lista='todos',coord = '*'))
+
     # traz a informação atual do acordo
     elif request.method == 'GET':
+
         form.nome.data             = acordo.nome
         form.sei.data              = acordo.sei
         form.epe.data              = acordo.epe
@@ -338,10 +344,47 @@ def update(acordo_id):
         form.valor_cnpq.data       = locale.currency( acordo.valor_cnpq, symbol=False, grouping = True )
         form.valor_epe.data        = locale.currency( acordo.valor_epe, symbol=False, grouping = True )
 
-        #form.programa_cnpq.data    = programa_cnpq
+        programa = db.session.query(Programa_CNPq.SIGLA_PROGRAMA)\
+                             .filter(Programa_CNPq.COD_PROGRAMA == acordo.programa_cnpq)\
+                             .first()
+
+        chamadas = db.session.query(Chamadas.id,
+                                    Chamadas.chamada,
+                                    Chamadas.qtd_projetos,
+                                    Chamadas.vl_total_chamada,
+                                    Chamadas.doc_sei,
+                                    Chamadas.obs).filter(Chamadas.sei == acordo.sei).all()
+
+        valor_cnpq = locale.currency(acordo.valor_cnpq, symbol=False, grouping = True)
+        valor_epe  = locale.currency(acordo.valor_epe, symbol=False, grouping = True)
+
+        chamadas_s = []
+        chamadas_tot = 0
+        qtd_proj = 0
+        for chamada in chamadas:
+            chamadas_s.append([chamada.id,chamada.chamada,chamada.qtd_projetos,
+                              locale.currency(chamada.vl_total_chamada, symbol=False, grouping = True),
+                              chamada.doc_sei,chamada.obs])
+            chamadas_tot += chamada.vl_total_chamada
+            qtd_proj += chamada.qtd_projetos
+        qtd_chamadas = len(chamadas)
+
+        sei = str(acordo.sei).split('/')[0]+'_'+str(acordo.sei).split('/')[1]
 
     return render_template('add_acordo.html', title='Update',
-                           form=form)
+                            chamadas=chamadas_s,
+                            qtd_chamadas=qtd_chamadas,
+                            qtd_proj=qtd_proj,
+                            chamadas_tot=locale.currency(chamadas_tot, symbol=False, grouping = True),
+                            acordo_id=acordo_id,
+                            sei=sei,
+                            prog=programa.SIGLA_PROGRAMA,
+                            edic=acordo.nome,
+                            epe=acordo.epe,
+                            uf=acordo.uf,
+                            procs_mae=procs_mae,
+                            qtd_procs_mae=len(procs_mae),
+                            form=form)
 
 ### CRIAR Acordo
 
@@ -376,56 +419,58 @@ def cria_acordo():
         return redirect(url_for('acordos.resumo_acordos'))
 
 
-    return render_template('add_acordo.html', form=form)
+    return render_template('add_acordo.html',
+                            acordo_id=0,
+                            form=form)
 
 #
 ### visualizar detalhes de um acordo específico
-
-@acordos.route("/<int:acordo_id>/<prog>/<edic>/<epe>/<uf>/acordo_detalhe")
-@login_required
-def acordo_detalhe(acordo_id,prog,edic,epe,uf):
-    """
-    +---------------------------------------------------------------------------------------+
-    |Visualizar os dados de um acordo selecionado na tela de consulta.                      |
-    |                                                                                       |
-    |Recebe o ID do acordo como parâmetro.                                                  |
-    +---------------------------------------------------------------------------------------+
-    """
-    acordo = Acordo.query.get_or_404(acordo_id)
-
-    chamadas = db.session.query(Chamadas.id,
-                                Chamadas.chamada,
-                                Chamadas.qtd_projetos,
-                                Chamadas.vl_total_chamada,
-                                Chamadas.doc_sei,
-                                Chamadas.obs).filter(Chamadas.sei == acordo.sei).all()
-
-    valor_cnpq = locale.currency(acordo.valor_cnpq, symbol=False, grouping = True)
-    valor_epe  = locale.currency(acordo.valor_epe, symbol=False, grouping = True)
-
-    chamadas_s = []
-    chamadas_tot = 0
-    qtd_proj = 0
-    for chamada in chamadas:
-        chamadas_s.append([chamada.id,chamada.chamada,chamada.qtd_projetos,
-                          locale.currency(chamada.vl_total_chamada, symbol=False, grouping = True),
-                          chamada.doc_sei,chamada.obs])
-        chamadas_tot += chamada.vl_total_chamada
-        qtd_proj += chamada.qtd_projetos
-    qtd_chamadas = len(chamadas)
-
-    sei = str(acordo.sei).split('/')[0]+'_'+str(acordo.sei).split('/')[1]
-
-    return render_template('acordo_detalhe.html',acordo = acordo,
-                                                 valor_cnpq=valor_cnpq,
-                                                 valor_epe=valor_epe,
-                                                 chamadas=chamadas_s,
-                                                 qtd_chamadas=qtd_chamadas,
-                                                 qtd_proj=qtd_proj,
-                                                 chamadas_tot=locale.currency(chamadas_tot, symbol=False, grouping = True),
-                                                 sei=sei,
-                                                 acordo_id=acordo_id,prog=prog,edic=edic,epe=epe,uf=uf)
-
+#
+# @acordos.route("/<int:acordo_id>/<prog>/<edic>/<epe>/<uf>/acordo_detalhe")
+# @login_required
+# def acordo_detalhe(acordo_id,prog,edic,epe,uf):
+#     """
+#     +---------------------------------------------------------------------------------------+
+#     |Visualizar os dados de um acordo selecionado na tela de consulta.                      |
+#     |                                                                                       |
+#     |Recebe o ID do acordo como parâmetro.                                                  |
+#     +---------------------------------------------------------------------------------------+
+#     """
+#     acordo = Acordo.query.get_or_404(acordo_id)
+#
+#     chamadas = db.session.query(Chamadas.id,
+#                                 Chamadas.chamada,
+#                                 Chamadas.qtd_projetos,
+#                                 Chamadas.vl_total_chamada,
+#                                 Chamadas.doc_sei,
+#                                 Chamadas.obs).filter(Chamadas.sei == acordo.sei).all()
+#
+#     valor_cnpq = locale.currency(acordo.valor_cnpq, symbol=False, grouping = True)
+#     valor_epe  = locale.currency(acordo.valor_epe, symbol=False, grouping = True)
+#
+#     chamadas_s = []
+#     chamadas_tot = 0
+#     qtd_proj = 0
+#     for chamada in chamadas:
+#         chamadas_s.append([chamada.id,chamada.chamada,chamada.qtd_projetos,
+#                           locale.currency(chamada.vl_total_chamada, symbol=False, grouping = True),
+#                           chamada.doc_sei,chamada.obs])
+#         chamadas_tot += chamada.vl_total_chamada
+#         qtd_proj += chamada.qtd_projetos
+#     qtd_chamadas = len(chamadas)
+#
+#     sei = str(acordo.sei).split('/')[0]+'_'+str(acordo.sei).split('/')[1]
+#
+#     return render_template('acordo_detalhe.html',acordo = acordo,
+#                                                  valor_cnpq=valor_cnpq,
+#                                                  valor_epe=valor_epe,
+#                                                  chamadas=chamadas_s,
+#                                                  qtd_chamadas=qtd_chamadas,
+#                                                  qtd_proj=qtd_proj,
+#                                                  chamadas_tot=locale.currency(chamadas_tot, symbol=False, grouping = True),
+#                                                  sei=sei,
+#                                                  acordo_id=acordo_id,prog=prog,edic=edic,epe=epe,uf=uf)
+#
 
 
     # lista das demandas relacionadas a um acordo

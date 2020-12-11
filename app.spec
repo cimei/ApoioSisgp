@@ -10,10 +10,13 @@ a = Analysis(['app.py'],
                     ('project\\acordos', 'project\\acordos'), ('project\\bolsas', 'project\\bolsas'),\
                     ('project\\core', 'project\\core'),\
                     ('project\\demandas', 'project\\demandas'), ('project\\error_pages', 'project\\error_pages'),\
-                    ('project\\users','project\\users'),\
+                    ('project\\users','project\\users'), ('project\\instrumentos', 'project\\instrumentos'),\
                     ('project\\static','project\\static'), ('project\\convenios', 'project\\convenios'),\
                     ('project\\google_api_python_client-1.9.3.dist-info','google_api_python_client-1.9.3.dist-info'),\
-                    ('client.json','.')],
+                    ('client.json','.'),\
+                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\branca\\*.json","branca"),
+                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\branca\\templates","templates"),
+                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\folium\\templates","templates")],
              hiddenimports=['google-api-python-client'],
              hookspath=[],
              runtime_hooks=[],

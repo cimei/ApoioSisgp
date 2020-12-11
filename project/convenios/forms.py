@@ -79,4 +79,4 @@ class ListaForm(FlaskForm):
     lista_coords.insert(0,('',''))
 
     coord        = SelectField('Coordenação:',choices= lista_coords)
-    submit       = SubmitField('Filtrar')
+    submit       = SubmitField('Filtrar coordenação')

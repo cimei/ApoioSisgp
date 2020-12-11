@@ -23,13 +23,13 @@
 
 from flask import render_template,url_for,flash, redirect,request,Blueprint
 from flask_login import login_required, current_user
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, and_
 from sqlalchemy.sql import label
 from project import db
 from project.models import PagamentosPDCTR, RefCargaPDCTR, Programa, Proposta, Convenio,\
                            Programa_Interesse, Pagamento, Empenho, Desembolso, RefSICONV,\
                            DadosSEI, Chamadas, MSG_Siconv, Acordo, Bolsa, Processo_Mae,\
-                           Processo_Filho, Sistema
+                           Processo_Filho, Sistema, Crono_Desemb
 
 from project.demandas.views import registra_log_auto
 from project.convenios.forms import ChamadaForm
@@ -151,6 +151,10 @@ def cargaPDCTR(entrada):
         # não existindo, grava:
         if bolsista_pagamento == None:
 
+            # coloca '*' no nível, caso ele venha vazio
+            if linha[14] == '' or linha[14] == None:
+                linha[14] = '*'
+
             pagamento = PagamentosPDCTR(processo          = linha[0],
                                         nome              = linha[1],
                                         sexo_proc_filho   = linha[2],
@@ -206,7 +210,7 @@ def cargaPDCTR(entrada):
                                        label('pago_total', func.sum(PagamentosPDCTR.valor_pago)),
                                        label('valor_apagar', Bolsa.mensalidade),
                                        label('max_dt_ult_pag', func.max(PagamentosPDCTR.data_pagamento)))\
-                                       .outerjoin(Bolsa, (PagamentosPDCTR.modalidade+'-'+PagamentosPDCTR.nivel)==Bolsa.mod_niv)\
+                                       .outerjoin(Bolsa, (PagamentosPDCTR.modalidade+PagamentosPDCTR.nivel)==(Bolsa.mod+Bolsa.niv))\
                                        .group_by(PagamentosPDCTR.proc_mae,PagamentosPDCTR.processo).all()
 
 #
@@ -324,17 +328,20 @@ def cargaPDCTR(entrada):
 
 ###########################################################################################################
 
-# função que executa carga de dados SICONV - é executada de forma assíncrona
+#                função que executa carga de dados SICONV - é executada de forma assíncrona
+
+###########################################################################################################
 
 def cargaSICONV():
     ## parâmetros internos de download e carga: default 'sim' (colocar 'não' quando quiser pular fase)
-    pega_e_descompacta  = 'sim'
-    carrega_programas   = 'sim'
-    carrega_propostas   = 'sim'
-    carrega_convenios   = 'sim'
-    carrega_pagamentos  = 'sim'
-    carrega_empenhos    = 'sim'
-    carrega_desembolsos = 'sim'
+    pega_e_descompacta   = 'sim'
+    carrega_programas    = 'sim'
+    carrega_propostas    = 'sim'
+    carrega_convenios    = 'sim'
+    carrega_pagamentos   = 'sim'
+    carrega_empenhos     = 'sim'
+    carrega_desembolsos  = 'sim'
+    carrega_crono_desemb = 'sim'
 
     ## pega arquivos do portal siconv e os descompacta, gerando os respectivos .csv
     print ('*****************************************************************')
@@ -351,7 +358,7 @@ def cargaSICONV():
     # SEM 'siconv_prorroga_oficio.csv' e 'siconv_termo_aditivo.csv'
     arquivos = ['siconv_programa.csv','siconv_programa_proposta.csv','siconv_proposta.csv',
                 'siconv_convenio.csv','siconv_empenho.csv','siconv_desembolso.csv','siconv_pagamento.csv',
-                'siconv_empenho_desembolso.csv','data_carga_siconv.csv']
+                'siconv_empenho_desembolso.csv','siconv_cronograma_desembolso.csv','data_carga_siconv.csv']
 
     ## usando o urlretrieve para pegar os arquivos e o shutil para descompactar
     if pega_e_descompacta == 'sim':
@@ -763,7 +770,48 @@ def cargaSICONV():
             os.remove(arq + '.zip')
             os.remove(arq)
 
-    ##
+    #
+    ##########################################################
+    ##             pegar dados de crono-desembolso          ##
+    ##########################################################
+    if carrega_crono_desemb == 'sim':
+
+        print ('<<',dt.now().isoformat(timespec='minutes'),'>> ','Carregando dados de cronograma_desembolso...')
+
+        # abre csv de cronograma_desembolso e gera a lista data_lines
+
+        db.session.query(Crono_Desemb).delete()
+        db.session.commit()
+
+        arq = 'siconv_cronograma_desembolso'
+        arq = os.path.normpath(pasta_compactados+'/'+arq+'.csv')
+
+        with open(arq, newline='',encoding = 'utf-8-sig') as data:
+            data_lines = csv.DictReader(data,delimiter=';')
+
+            # gera a lista cronograma_desembolso pegando somente os que coincidem com convenios
+            for line in data_lines:
+
+                if line['NR_CONVENIO'] in [convenio[nr_convenio_campo] for convenio in convenios]:
+
+                    crono_desemb = Crono_Desemb(ID_PROPOSTA                    = line['ID_PROPOSTA'],
+                                                NR_CONVENIO                    = line['NR_CONVENIO'],
+                                                NR_PARCELA_CRONO_DESEMBOLSO    = line['NR_PARCELA_CRONO_DESEMBOLSO'],
+                                                MES_CRONO_DESEMBOLSO           = line['MES_CRONO_DESEMBOLSO'],
+                                                ANO_CRONO_DESEMBOLSO           = line['ANO_CRONO_DESEMBOLSO'],
+                                                TIPO_RESP_CRONO_DESEMBOLSO     = line['TIPO_RESP_CRONO_DESEMBOLSO'],
+                                                VALOR_PARCELA_CRONO_DESEMBOLSO = float(valor_banco(line['VALOR_PARCELA_CRONO_DESEMBOLSO'])))
+
+                    db.session.add(crono_desemb)
+
+            db.session.commit()
+
+        if os.path.exists(arq):
+            os.remove(arq + '.zip')
+            os.remove(arq)
+
+
+    #
     ################################################################################################
     ##       ainda decidindo se vale a pena pegar dados de prorroga_oficio e termo_aditivo        ##
     ################################################################################################
@@ -906,9 +954,9 @@ def carregaSICONV():
 #
 ### inserir dados sobre chamadas homologadas
 
-@core.route("/<sei>/criar_chamada", methods=['GET', 'POST'])
+@core.route("/<sei>/<prog>/<edic>/<epe>/<uf>/criar_chamada", methods=['GET', 'POST'])
 @login_required
-def cria_chamada(sei):
+def cria_chamada(sei,prog,edic,epe,uf):
     """
     +---------------------------------------------------------------------------------------+
     |Permite registrar os dados de uma chamada homolada pelo CNPq.                          |
@@ -939,7 +987,7 @@ def cria_chamada(sei):
 
         flash('Chamada homologada registrada!','sucesso')
         if conv == None or conv == ':':
-            return redirect(url_for('acordos.acordo_detalhe', acordo_id=acordo_id[0]))
+            return redirect(url_for('acordos.acordo_detalhe', acordo_id=acordo_id[0],prog=prog,edic=edic,epe=epe,uf=uf))
         else:
             return redirect(url_for('convenios.convenio_detalhe', conv=conv[0]))
     #
@@ -952,9 +1000,9 @@ def cria_chamada(sei):
 #
 ### altera dados de chamada homologada
 
-@core.route("/<int:id>/update_chamada", methods=['GET', 'POST'])
+@core.route("/<int:id>/<prog>/<edic>/<epe>/<uf>/update_chamada", methods=['GET', 'POST'])
 @login_required
-def update_chamada(id):
+def update_chamada(id,prog,edic,epe,uf):
     """
     +---------------------------------------------------------------------------------------+
     |Permite alterar os dados de uma chamada homolada pelo CNPq.                            |
@@ -986,7 +1034,7 @@ def update_chamada(id):
 
         flash('Chamada homologada atualizada!','sucesso')
         if conv == None or conv == ':':
-            return redirect(url_for('acordos.acordo_detalhe', acordo_id=acordo_id[0]))
+            return redirect(url_for('acordos.acordo_detalhe', acordo_id=acordo_id[0],prog=prog,edic=edic,epe=epe,uf=uf))
         else:
             return redirect(url_for('convenios.convenio_detalhe', conv=conv[0]))
     #

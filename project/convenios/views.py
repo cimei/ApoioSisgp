@@ -33,7 +33,8 @@
     * Listar demandas relacinadas aos processos de uma UF: demandas_UF
     * Listar mensagens SICONV previamente carregadas: msg_siconv
     * Mostra quadro de convênios por UF: quadro_convenios
-    * Lista os convênios conforme selecionado no quado de convênios: lista_convenios_quadro
+    * Mostra mapa do Brasil com dados dos convênios: brasil_convenios
+    * Lista os convênios conforme selecionado no quado de convênios: lista_convenios_mapa
     * Lista todos os convênios de uma UF selecionada no quado de convênios: lista_convenios_uf
     * Mostra dados gerais dos programas e seus convênios: resumo_convenios
 
@@ -45,15 +46,22 @@ from flask import render_template,url_for,flash, redirect,request,Blueprint
 from flask_login import current_user,login_required
 from sqlalchemy import func, distinct
 from sqlalchemy.sql import label
+from sqlalchemy.orm import aliased
 from project import db
 from project.models import DadosSEI, Convenio, Demanda, User, Programa_Interesse, RefSICONV, Empenho,\
-                           Desembolso, Pagamento, Chamadas, MSG_Siconv, Proposta, Programa, Coords, Emp_Cap_Cus
+                           Desembolso, Pagamento, Chamadas, MSG_Siconv, Proposta, Programa, Coords, Emp_Cap_Cus, Crono_Desemb
 from project.convenios.forms import SEIForm, ProgPrefForm, ListaForm, NDForm
 from project.demandas.views import registra_log_auto
 
 import locale
 import datetime
 from datetime import date
+from calendar import monthrange
+
+import csv
+from folium import Map, Circle, Popup
+from folium.plugins import FloatImage
+import math
 
 
 convenios = Blueprint('convenios',__name__,
@@ -333,6 +341,7 @@ def lista_convenios_SICONV(lista,coord):
                                         Convenio.VL_CONTRAPARTIDA_CONV,
                                         DadosSEI.id,
                                         Convenio.VL_DESEMBOLSADO_CONV)\
+                                        .filter(Convenio.DIA_PUBL_CONV != '')\
                                         .join(programa, programa.c.ID_PROPOSTA == Convenio.ID_PROPOSTA)\
                                         .outerjoin(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
                                         .order_by(DadosSEI.programa.desc(),Convenio.SIT_CONVENIO,
@@ -379,6 +388,7 @@ def lista_convenios_SICONV(lista,coord):
                                         Convenio.VL_CONTRAPARTIDA_CONV,
                                         DadosSEI.id,
                                         Convenio.VL_DESEMBOLSADO_CONV)\
+                                        .filter(Convenio.DIA_PUBL_CONV != '')\
                                         .join(programa, programa.c.ID_PROPOSTA == Convenio.ID_PROPOSTA)\
                                         .outerjoin(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
                                         .filter(programa.c.sigla == lista[8:])\
@@ -443,8 +453,13 @@ def convenio_detalhe(conv):
                                          .outerjoin(Desembolso, Desembolso.ID_EMPENHO == Empenho.ID_EMPENHO)\
                                          .outerjoin(Emp_Cap_Cus, Emp_Cap_Cus.id_empenho == Empenho.ID_EMPENHO)\
                                          .filter(Empenho.NR_CONVENIO == conv)\
-                                         .order_by(Empenho.DATA_EMISSAO.desc()).all()
+                                         .order_by(Desembolso.DATA_DESEMBOLSO,Empenho.DATA_EMISSAO).all()
 
+    desembolso_agrupado = db.session.query(Desembolso.DATA_DESEMBOLSO,
+                                           label('vl_desemb_agru',func.sum(Desembolso.VL_DESEMBOLSADO)))\
+                                           .filter(Desembolso.NR_CONVENIO == conv)\
+                                           .order_by(Desembolso.DATA_DESEMBOLSO)\
+                                           .group_by(Desembolso.DATA_DESEMBOLSO).all()
 
     empenho = db.session.query(label('emp_tot',func.sum(Empenho.VALOR_EMPENHO)))\
                                .filter(Empenho.NR_CONVENIO == conv)
@@ -474,6 +489,79 @@ def convenio_detalhe(conv):
     proposta = db.session.query(Proposta).filter(Proposta.ID_PROPOSTA == convenio.ID_PROPOSTA).first()
 
     programa = db.session.query(Programa).filter(Programa.ID_PROGRAMA == proposta.ID_PROGRAMA).first()
+
+# pega o cronograma de desembolso do convênio
+
+    crono_desemb = db.session.query(Crono_Desemb.NR_CONVENIO,
+                                    Crono_Desemb.NR_PARCELA_CRONO_DESEMBOLSO,
+                                    Crono_Desemb.MES_CRONO_DESEMBOLSO,
+                                    Crono_Desemb.ANO_CRONO_DESEMBOLSO,
+                                    Crono_Desemb.TIPO_RESP_CRONO_DESEMBOLSO,
+                                    Crono_Desemb.VALOR_PARCELA_CRONO_DESEMBOLSO)\
+                                    .filter(Crono_Desemb.NR_CONVENIO == conv)\
+                                    .order_by(Crono_Desemb.TIPO_RESP_CRONO_DESEMBOLSO,
+                                              Crono_Desemb.ANO_CRONO_DESEMBOLSO,
+                                              Crono_Desemb.MES_CRONO_DESEMBOLSO).all()
+
+# para cada parcela do cronograma, verifica que foi quitada, se houve atraso e projeta data para prorrogação de ofício
+    crono_desemb_l = []
+    acu = 0
+
+    for parcela in crono_desemb:
+
+        data_repasse = date(parcela.ANO_CRONO_DESEMBOLSO,
+                            parcela.MES_CRONO_DESEMBOLSO,
+                            monthrange(parcela.ANO_CRONO_DESEMBOLSO, parcela.MES_CRONO_DESEMBOLSO)[1])
+
+        valor_repasse_acumulado =  parcela.VALOR_PARCELA_CRONO_DESEMBOLSO + float(acu)
+
+        if parcela.TIPO_RESP_CRONO_DESEMBOLSO == 'Concedente':
+            if valor_repasse_acumulado <= convenio.VL_DESEMBOLSADO_CONV:
+                sit = 'Quitada'
+            else:
+                sit = 'Em aberto'
+        else:
+            sit = ''
+
+        data_desemb = None
+
+        desemb_acu = 0
+
+        for desemb in desembolso_agrupado:
+
+            vl_desemb_acu = desemb.vl_desemb_agru + desemb_acu
+
+            if valor_repasse_acumulado <= vl_desemb_acu:
+                data_desemb = desemb.DATA_DESEMBOLSO
+                break
+            else:
+                if sit == 'Em aberto':
+                    data_desemb = data_repasse
+
+            desemb_acu = vl_desemb_acu
+
+        if sit == 'Quitada':
+            data_ref_atraso = data_desemb
+        else:
+            data_ref_atraso = datetime.date.today()
+
+        if data_desemb == None:
+            atraso = 0
+            data_prorrog = None
+        else:
+            atraso       = (data_ref_atraso - data_repasse).days
+            data_prorrog = convenio.DIA_FIM_VIGENC_CONV + datetime.timedelta(days=atraso)
+
+        crono_desemb_l.append([parcela.NR_PARCELA_CRONO_DESEMBOLSO,
+                               data_repasse,
+                               parcela.TIPO_RESP_CRONO_DESEMBOLSO,
+                               locale.currency(parcela.VALOR_PARCELA_CRONO_DESEMBOLSO, symbol=False, grouping = True),
+                               sit,
+                               atraso,
+                               data_prorrog])
+
+        acu = valor_repasse_acumulado
+
 #
 
     VL_GLOBAL_CONV              = locale.currency(convenio.VL_GLOBAL_CONV, symbol=False, grouping = True)
@@ -588,9 +676,9 @@ def convenio_detalhe(conv):
                                                    percent_desemb_repass=percent_desemb_repass,
                                                    percent_ingre_contrap=percent_ingre_contrap,
                                                    percent_empen_repass=percent_empen_repass,
-                                                   programa=programa)
+                                                   programa=programa,
+                                                   crono_desemb=crono_desemb_l)
 
-#
 
 #
 ### altera dados de chamada homologada
@@ -755,14 +843,17 @@ def quadro_convenios():
                                 DadosSEI.programa,
                                 func.sum(Convenio.VL_GLOBAL_CONV),
                                 DadosSEI.uf)\
+                                .filter(Convenio.DIA_PUBL_CONV != '')\
                                 .outerjoin(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
                                 .order_by(DadosSEI.uf,DadosSEI.programa)\
                                 .group_by(DadosSEI.uf)\
                                 .group_by(DadosSEI.programa)\
                                 .all()
 
-    ufs = db.session.query(DadosSEI.uf).filter(DadosSEI.nr_convenio != '')\
-                                       .group_by(DadosSEI.uf).order_by(DadosSEI.uf)
+    ufs = db.session.query(Proposta.UF_PROPONENTE).group_by(Proposta.UF_PROPONENTE).order_by(Proposta.UF_PROPONENTE)
+
+    # ufs = db.session.query(DadosSEI.uf).filter(DadosSEI.nr_convenio != '')\
+                                      # .group_by(DadosSEI.uf).order_by(DadosSEI.uf)
 
     ## lê data de carga dos dados dos convênios
     data_carga = db.session.query(RefSICONV.data_ref).first()
@@ -787,12 +878,12 @@ def quadro_convenios():
             flag = False
             for conv in convenios_s:
 
-                if conv[3] == uf.uf:
+                if conv[3] == uf.UF_PROPONENTE:
                     if conv[1] == prog.programa:
                         linha.append(conv)
                         flag = True
                     else:
-                        item = [0,prog.programa,'',uf.uf]
+                        item = [0,prog.programa,'',uf.UF_PROPONENTE]
 
             if not flag:
                 linha.append(item)
@@ -806,6 +897,130 @@ def quadro_convenios():
     return render_template('quadro_convenios.html', quantidade=quantidade,
                             programas=programas,linhas=linhas,data_carga = str(data_carga[0]))
 
+#
+## convênios no mapa do Brasil
+
+@convenios.route('/brasil_convenios')
+def brasil_convenios():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta um mapa onde se pode verificar os convênios por UF.                          |
+    |Para constar no mapa, o convênio deve ter dados sei.                                   |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    convenios = db.session.query(func.count(Convenio.NR_CONVENIO),
+                                DadosSEI.programa,
+                                func.sum(Convenio.VL_GLOBAL_CONV),
+                                DadosSEI.uf)\
+                                .filter(Convenio.DIA_PUBL_CONV != '')\
+                                .join(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
+                                .order_by(DadosSEI.uf,DadosSEI.programa)\
+                                .group_by(DadosSEI.uf)\
+                                .group_by(DadosSEI.programa)\
+                                .all()
+
+    convenios_s = []
+
+    for conv in convenios:
+
+        conv_s = list(conv)
+        if conv_s[2] is not None:
+            conv_s[2] = locale.currency(conv_s[2], symbol=False, grouping = True)
+
+        convenios_s.append(conv_s)
+
+    linha = []
+
+    gps = {'AC':[-9.977916,-67.826068],
+           'AL':[-9.649433,-35.709335],
+           'AM':[-3.074759,-60.028723],
+           'AP':[0.052334,-51.070093],
+           'BA':[-13.008304,-38.512027],
+           'CE':[-3.795849,-38.497930],
+           'DF':[-15.710702,-47.911077],
+           'ES':[-20.276832,-40.300442],
+           'GO':[-16.680903,-49.250701],
+           'MA':[-2.501711,-44.284316],
+           'MG':[-19.884511,-43.915749],
+           'MS':[-20.447545,-54.603542],
+           'MT':[-15.566057,-56.072258],
+           'PA':[-1.454934,-48.475778],
+           'PB':[-7.205724,-35.921335],
+           'PE':[-8.060426,-34.901544],
+           'PI':[-5.096300,-42.798928],
+           'PR':[-25.446918,-49.245448],
+           'RJ':[-22.904571,-43.173827],
+           'RN':[-5.829595,-35.212017],
+           'RO':[-8.625350,-63.844920],
+           'RR':[2.930872,-60.672953],
+           'RS':[-30.028724,-51.228277],
+           'SC':[-27.571250,-48.509038],
+           'SE':[-10.909057,-37.050032],
+           'SP':[-23.536390,-46.714247],
+           'TO':[-10.182099,-48.331027]}
+
+    progs = {}
+
+    programas = db.session.query(DadosSEI.programa)\
+                          .join(Convenio, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
+                          .order_by(DadosSEI.programa.desc())\
+                          .group_by(DadosSEI.programa)
+
+    for p in programas:
+
+       i = list(programas).index(p)
+       if i == 0:
+           progs[p.programa]=[0,0]
+       else:
+           ang = (i-1)*(2*math.pi/len(list(programas)))
+           x = 0.4*math.cos(ang)
+           y = 0.4*math.sin(ang)
+           progs[p.programa]=[x,y]
+
+    for conv in convenios_s:
+        conv.append(gps[conv[3]])
+        conv.append(progs[conv[1]])
+        linha.append(conv)
+
+    m = Map(location=[-15.7, -47.9],
+            tiles='OpenStreetMap',
+            control_scale = True,
+            zoom_start = 2,
+            min_zoom=2)
+
+    m.fit_bounds([[-34,-74],[3,-34]])
+
+    for l in linha:
+
+        tip = '<b>'+l[3]+' - '+l[1]+'</b>'+'<br>'+str(l[0])+' conv&ecirc;nio(s)'+'<br>'+'Valor Global: '+l[2]
+
+        if l[1] == 'PRONEX':
+            cor = 'blue'
+        elif l[1] == 'PRONEM':
+            cor = 'orange'
+        elif l[1] == 'PPP':
+            cor = 'green'
+        elif l[1] == 'EMENDA':
+            cor = 'purple'
+        else:
+            cor = 'gray'
+
+        #Circulos com raios em metros
+        Circle(location = [float(l[4][0])+float(l[5][0]), float(l[4][1])+float(l[5][1])],
+               #radius = (-2*int(linha[1])+2000),
+               radius = 12000 * int(l[0]),
+               tooltip = tip,
+               popup=Popup('<a href=http://127.0.0.1:5000/convenios/'+l[3]+'/'+l[1]\
+                            +'/lista_convenios_mapa>Listar conv&ecirc;nio(s)<br></a>(Clique com bot&atilde;o direito e abra o link em nova aba)',\
+                            max_width=100),
+               fill = True,
+               fill_opacity = (0.2),
+               color=cor).add_to(m)
+
+
+    return render_template('brasil_convenios.html', m = m._repr_html_())
+    #return m._repr_html_()
 #
 ## lista convênios do quadro por UF e por programa
 
@@ -829,6 +1044,7 @@ def lista_convenios_quadro(uf,programa):
                                 Convenio.DIA_FIM_VIGENC_CONV,
                                 Convenio.VL_GLOBAL_CONV,
                                 DadosSEI.id)\
+                                .filter(Convenio.DIA_PUBL_CONV != '')\
                                 .outerjoin(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
                                 .order_by(Convenio.SIT_CONVENIO,Convenio.DIA_FIM_VIGENC_CONV,DadosSEI.ano.desc())\
                                 .filter(DadosSEI.uf == uf, DadosSEI.programa == programa)\
@@ -880,6 +1096,7 @@ def lista_convenios_uf(uf):
                                 Convenio.DIA_FIM_VIGENC_CONV,
                                 Convenio.VL_GLOBAL_CONV,
                                 DadosSEI.id)\
+                                .filter(Convenio.DIA_PUBL_CONV != '')\
                                 .outerjoin(DadosSEI, Convenio.NR_CONVENIO == DadosSEI.nr_convenio)\
                                 .order_by(DadosSEI.programa,Convenio.SIT_CONVENIO,Convenio.DIA_FIM_VIGENC_CONV,DadosSEI.ano.desc())\
                                 .filter(DadosSEI.uf == uf)\
@@ -938,6 +1155,7 @@ def resumo_convenios():
                                 .join(Programa,Programa.COD_PROGRAMA==Programa_Interesse.cod_programa)\
                                 .join(Proposta,Proposta.ID_PROGRAMA==Programa.ID_PROGRAMA)\
                                 .join(Convenio,Convenio.ID_PROPOSTA==Proposta.ID_PROPOSTA)\
+                                .filter(Convenio.DIA_PUBL_CONV != '')\
                                 .outerjoin(convenios_exec,convenios_exec.c.ID_PROPOSTA==Proposta.ID_PROPOSTA)\
                                 .group_by(Programa_Interesse.sigla)\
                                 .order_by(Programa_Interesse.sigla.desc())\

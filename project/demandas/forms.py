@@ -45,13 +45,14 @@ class Plano_TrabalhoForm(FlaskForm):
                       .order_by(User.username).all()
     lista_pessoas = [(str(p[1]),p[0]) for p in pessoas]
     lista_pessoas.insert(0,('',''))
+    lista_pessoas.insert(1,('*','DESATIVADO'))
 
     atividade_sigla = StringField('Sigla:',validators=[DataRequired(message="Informe a sigla!")])
     atividade_desc  = TextAreaField('Descrição:',validators=[DataRequired(message="Informe a descrição!")])
     natureza        = StringField('Natureza:',validators=[DataRequired(message="Informe a natureza!")])
     horas_semana    = DecimalField('Meta (h/sem):',validators=[DataRequired(message="Informe a meta!")], places=1)
-    respon_1        = SelectField('1º respon.:',choices= lista_pessoas, validators=[DataRequired(message="Escolha alguém!")])
-    respon_2        = SelectField('2º respon.:',choices= lista_pessoas, validators=[DataRequired(message="Escolha alguém!")])
+    respon_1        = SelectField('1º respon.:',choices= lista_pessoas)
+    respon_2        = SelectField('2º respon.:',choices= lista_pessoas)
 
     submit     = SubmitField('Registrar')
 
@@ -138,10 +139,11 @@ class DespachoForm(FlaskForm):
 class ProvidenciaForm(FlaskForm):
 
     data_hora           = DateTimeField('Momento:',format='%d/%m/%Y %H:%M:%S',validators=[DataRequired(message="O momento deve ser informado!")])
-    duracao             = IntegerField('Duração:')
+    duracao             = IntegerField('Tempo (min.):')
     agenda              = BooleanField("Marcar na agenda")
     texto               = TextAreaField('Descrição:',validators=[DataRequired(message="Insira uma descrição!")])
     necessita_despacho  = BooleanField('Necessita despacho?')
+    conclu              = BooleanField('Concluir demanda?')
     submit              = SubmitField('Registrar')
 
 class PesquisaForm(FlaskForm):

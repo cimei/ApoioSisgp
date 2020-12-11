@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <title>Demandas etc</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
 
   </head>
   <body>
@@ -46,6 +47,7 @@
                 <a class="dropdown-item" href="{{url_for('convenios.lista_convenios_SICONV',lista='em execução',coord='*')}}">Em execução</a>
                 <a class="dropdown-item" href="{{url_for('convenios.msg_siconv')}}">Mensagens SICONV</a>
                 <a class="dropdown-item" href="{{url_for('convenios.quadro_convenios')}}">Por UF</a>
+                <a class="dropdown-item" href="{{url_for('convenios.brasil_convenios')}}">Mapa</a>
                 <a class="dropdown-item" href="{{url_for('convenios.resumo_convenios')}}">Resumo por Programa</a>
               </div>
             </li>
@@ -62,6 +64,18 @@
                 <a class="dropdown-item" href="{{url_for('acordos.lista_acordos',lista='em execução',coord='*')}}">Em Execução</a>
                 <a class="dropdown-item" href="{{url_for('acordos.resumo_acordos')}}">Resumo</a>
                 <a class="dropdown-item" href="{{url_for('bolsas.lista_bolsas')}}">Bolsas</a>
+              </div>
+            </li>
+          {% endif %}
+
+          {% if current_user.is_authenticated and current_user.trab_instru %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Instrumentos
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                <a class="dropdown-item" href="{{url_for('instrumentos.lista_instrumentos',lista='todos',coord='*')}}">Todos</a>
+                <a class="dropdown-item" href="{{url_for('instrumentos.lista_instrumentos',lista='em execução',coord='*')}}">Vigentes</a>
               </div>
             </li>
           {% endif %}
@@ -136,7 +150,7 @@
             </div>
           </li>
 
-          {% set ver = namespace(num='4.2.19') %}
+          {% set ver = namespace(num='4.4.7') %}
 
           {% if current_user.is_authenticated and current_user.sversion != ver.num %}
             <li class="nav-item">

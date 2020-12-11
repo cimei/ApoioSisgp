@@ -99,6 +99,8 @@ from project.acordos.views import acordos
 
 from project.convenios.views import convenios
 
+from project.instrumentos.views import instrumentos
+
 app.register_blueprint(core)
 app.register_blueprint(users)
 app.register_blueprint(demandas,url_prefix='/demandas')
@@ -108,3 +110,5 @@ app.register_blueprint(bolsas,url_prefix='/bolsas')
 app.register_blueprint(acordos,url_prefix='/acordos')
 
 app.register_blueprint(convenios,url_prefix='/convenios')
+
+app.register_blueprint(instrumentos,url_prefix='/instrumentos')

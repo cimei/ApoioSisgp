@@ -49,8 +49,16 @@
         <td><p align = "left"> {{atividade.atividade_desc}} </p></td>
         <td><p align = "center"> {{atividade.natureza}} </p></td>
         <td><p align = "center"> {{atividade.meta}} </p></td>
-        <td><p align = "center"> {{atividade.resp1}} </p></td>
-        <td><p align = "center"> {{atividade.resp2}} </p></td>
+        {% if atividade.respon_1 != '*' %}
+          <td><p align = "center"> {{atividade.resp1}} </p></td>
+        {% else %}
+          <td><p align = "center"> DESATIVADO </p></td>
+        {% endif %}
+        {% if atividade.respon_1 != '*' %}
+          <td><p align = "center"> {{atividade.resp2}} </p></td>
+        {% else %}
+          <td><p align = "center"> DESATIVADO </p></td>
+        {% endif %}
       </tr>
 
       {% endfor %}

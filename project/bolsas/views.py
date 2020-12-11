@@ -55,7 +55,8 @@ def update(bolsa_id):
 
     if form.validate_on_submit():
 
-        bolsa.mod_niv     = form.mod_niv.data
+        bolsa.mod         = form.mod.data
+        bolsa.niv         = form.niv.data
         bolsa.mensalidade = float(form.mensalidade.data.replace('.','').replace(',','.'))
         bolsa.auxilio     = float(form.auxilio.data.replace('.','').replace(',','.'))
 
@@ -67,7 +68,8 @@ def update(bolsa_id):
         return redirect(url_for('bolsas.lista_bolsas'))
     # traz a informação atual da bolsa
     elif request.method == 'GET':
-        form.mod_niv.data     = bolsa.mod_niv
+        form.mod.data     = bolsa.mod
+        form.niv.data     = bolsa.niv
         form.mensalidade.data = locale.currency( bolsa.mensalidade, symbol=False, grouping = True )
         form.auxilio.data     = locale.currency( bolsa.auxilio, symbol=False, grouping = True )
 
@@ -88,7 +90,8 @@ def cria_bolsa():
     form = BolsaForm()
 
     if form.validate_on_submit():
-        bolsa = Bolsa(mod_niv     = form.mod_niv.data,
+        bolsa = Bolsa(mod         = form.mod.data,
+                      niv         = form.niv.data,
                       mensalidade = float(form.mensalidade.data.replace('.','').replace(',','.')),
                       auxilio     = float(form.auxilio.data.replace('.','').replace(',','.')),
                       )
@@ -116,7 +119,7 @@ def lista_bolsas():
 
     # traz os dados das bolsas cadastratas
 
-    bolsas = db.session.query(Bolsa.id,Bolsa.mod_niv,Bolsa.mensalidade,Bolsa.auxilio).all()
+    bolsas = db.session.query(Bolsa.id,Bolsa.mod,Bolsa.niv,Bolsa.mensalidade,Bolsa.auxilio).all()
 
     quantidade = len(bolsas)
 
@@ -124,8 +127,8 @@ def lista_bolsas():
     bolsas_s = []
     for bolsa in bolsas:
         bolsa_s = list(bolsa)
-        bolsa_s[2] = locale.currency(bolsa_s[2], symbol=False, grouping = True)
         bolsa_s[3] = locale.currency(bolsa_s[3], symbol=False, grouping = True)
+        bolsa_s[4] = locale.currency(bolsa_s[4], symbol=False, grouping = True)
 
         bolsas_s.append(bolsa_s)
 

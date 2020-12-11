@@ -3,7 +3,12 @@
 <div class="container">
 
 <div class="jumbotron">
-<h1>Inserir/Alterar Acordo</h1>
+
+{% if acordo_id != 0 %}
+<h1>Visualizar/Alterar detalhes do Acordo</h1>
+{% else %}
+<h1>Inserir detalhes de um Acordo</h1>
+{% endif %}
 
 {% macro render_field(field,obr) %}
   {% if obr == True %}
@@ -26,17 +31,17 @@
   {{ form.hidden_tag() }}
 
   <div class="form-row">
-    <div class="col">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.programa_cnpq,class="form-control", placeholder="Escolha um programa",obr=True) }}
       </div>
     </div>
-    <div class="col">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.nome,class="form-control",obr=True) }}
       </div>
     </div>
-    <div class="col">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.sei,class="form-control", placeholder="Entre com o NUP",obr=True) }}
         <small id="seiHelp" class="form-text text-muted">Use o formato 01300.nnnnnn/nnnn-nn.</small>
@@ -45,25 +50,24 @@
   </div>
 
   <div class="form-row">
-    <div class="col">
+    <div class="col-2">
       <div class="form-group">
         {{ render_field(form.epe,class="form-control",obr=True) }}
       </div>
     </div>
-    <div class="col">
+    <div class="col-2">
       <div class="form-group">
         {{ render_field(form.uf,class="form-control",obr=True) }}
       </div>
     </div>
-  </div>
-
-  <div class="form-row">
-    <div class="col">
+    <div class="col-1">
+    </div>
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.data_inicio,class="form-control", placeholder="dd/mm/aaaa",obr=True) }}
       </div>
     </div>
-    <div class="col">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.data_fim,class="form-control", placeholder="dd/mm/aaaa",obr=True) }}
       </div>
@@ -71,18 +75,37 @@
   </div>
 
   <div class="form-row">
-    <div class="col">
+
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.valor_cnpq,class="form-control",obr=True) }}
         <small id="valorCNPqHelp" class="form-text text-muted">Não informar moeda. Use . para separar milhar e , para separar centavos.</small>
       </div>
     </div>
-    <div class="col">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.valor_epe,class="form-control",obr=True) }}
         <small id="valorEPEHelp" class="form-text text-muted">Não informar moeda. Use . para separar milhar e , para separar centavos.</small>
       </div>
     </div>
+    <div class="col-1">
+    </div>
+    {% if qtd_procs_mae > 0 %}
+    <div class="col-4">
+      <div class="form-group">
+        <b>Processos-Mãe vinculados:</b><br>
+        {% for proc in procs_mae %}
+          {{ proc.proc_mae }} ({{ proc.inic_mae.strftime("%x") }} a {{ proc.term_mae.strftime("%x") }})
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="col-4">
+      <div class="form-group">
+        <span class="text-danger font-weight-bold">Não há Processos-Mãe vinculados!</span><br>
+      </div>
+    </div>
+    {% endif %}
 
   </div>
 
@@ -90,10 +113,77 @@
   <div class="form-group">
     {{ form.submit(class="btn btn-primary") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
   </div>
+  <br>
 </form>
 
+{% if acordo_id != 0 %}
+  <div class="container-fluid border border-secondary">
+  <p> </p>
+  <div class="row justify-content-center">
+    <div class="col-4" >
+      <a href="{{url_for('acordos.gasto_mes',acordo_id=acordo_id,prog=prog,edic=edic,epe=epe,uf=uf)}}" class="btn btn-primary active" role="button" aria-pressed="true">Gasto Mensal</a>
+    </div>
+    <div class="col-4" >
+      <button type="button" class="btn btn-warning" data-toggle='modal' data-target='#chamadas_modal'>Chamadas Homologadas</button>
+    </div>
+  </div>
+  <p> </p>
+  </div>
+{% endif %}
 
 </div>
+</div>
+
+
+{# modal para visualizar chamadas homologadas #}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="chamadas_modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h5 class="modal-title">Chamadas Homologadas</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">ID</p></th>
+              <th scope="col"><p align = "center">Chamada</p></th>
+              <th scope="col"><p align = "center">Projetos</p></th>
+              <th scope="col"><p align = "center">Valor Homolog.</p></th>
+              <th scope="col"><p align = "center">Ref. SEI</p></th>
+              <th scope="col"><p align = "center">Obs.</p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for chamada in chamadas %}
+              <tr>
+                <td><p align = "left">  <a href="{{url_for('core.update_chamada', id=chamada[0],prog=prog,edic=edic,epe=epe,uf=uf)}}"><abbr title="Clique aqui atualizar esta chamada">{{chamada[0]}}</abbr></a> </p></td>
+                <td><p align = "left"> {{chamada[1]}} </p></td>
+                <td><p align = "center"> {{chamada[2]}} </p></td>
+                <td><p align = "right"> {{chamada[3]}} </p></td>
+                <td><p align = "center"> {{chamada[4]}} </p></td>
+                <td><p align = "left"> {{chamada[5]}} </p></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <p>{{qtd_chamadas}} registro(s): {{qtd_proj}} projetos, totalizando R$ {{chamadas_tot}}</p>
+        <br>
+        <p><a href="{{url_for('core.cria_chamada',sei=sei,prog=prog,edic=edic,epe=epe,uf=uf)}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir novo</a></p>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
