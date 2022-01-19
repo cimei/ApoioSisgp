@@ -35,15 +35,16 @@ Será necessário criar sob na pasta ApoioSisgp a pasta Instance. Nesta pasta cr
       #DEBUG = True
 
 Em params:
-  <driver> 
+
+<driver> 
       deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
-  <servidor> 
+<servidor> 
         é o local onde o DBSISGP foi instalado
-  <database> 
+<database> 
         é o nome do banco de dados. Se não foi alterado será DBSISGP
-  <uid> 
+<uid> 
         é o usuário que acessa o banco de dados
-  <pwd> 
+<pwd> 
         é a senha deste usuário.
   
 Outra forma de disponibilizar este aplicativo para os que não tem o Python instaldo e por meio do Pyinstaller. Ele agrega o projeot e todas as suas dependências
