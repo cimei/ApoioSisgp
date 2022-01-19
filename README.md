@@ -36,7 +36,7 @@ Será necessário criar sob na pasta ApoioSisgp a pasta Instance. Nesta pasta cr
 
 Em params:
 
-driver  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
+<driver>  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
 
 servidor é o local onde o DBSISGP foi instalado.
 
