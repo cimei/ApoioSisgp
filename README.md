@@ -38,13 +38,13 @@ Em params:
 
 . < driver >  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
 
-. <servidor> é o local onde o DBSISGP foi instalado.
+. < servidor > é o local onde o DBSISGP foi instalado.
 
-. <database> é o nome do banco de dados. Se não foi alterado será DBSISGP.
+. < database > é o nome do banco de dados. Se não foi alterado será DBSISGP.
 
-. <uid> é o usuário que acessa o banco de dados.
+. < uid > é o usuário que acessa o banco de dados.
 
-. <pwd> é a senha deste usuário.
+. < pwd > é a senha deste usuário.
   
 Outra forma de disponibilizar este aplicativo para os que não tem o Python instaldo e por meio do Pyinstaller. Ele agrega o projeot e todas as suas dependências
 em um único arquivo .exe. Com o pyinstaller instalado, crie este .exe com o comando pyinstaller --onefile app.spec.
