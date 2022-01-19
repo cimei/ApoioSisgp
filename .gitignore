@@ -2,11 +2,11 @@
 /dist
 /instance
 /__pycache__
-/project\__pycache__
-/project\core\__pycache__
-/project\error_pages\__pycache__
-/project\padroes\__pycache__
-/project\pessoas\__pycache__
-/project\unidades\__pycache__
+/project/__pycache__
+/project/core/__pycache__
+/project/error_pages/__pycache__
+/project/padroes/__pycache__
+/project/pessoas/__pycache__
+/project/unidades/__pycache__
 
 
