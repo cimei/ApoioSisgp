@@ -4,20 +4,17 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['C:\\Users\\cimeibt\\Documents\\PythonScripts\\SICOPES'],
+             pathex=['C:\\Users\\cimeibt\\Documents\\PythonScripts\\ApoioSisgp'],
              binaries=[],
-             datas=[('instance','var\\project-instance'), ('project\\templates', 'project\\templates'),\
-                    ('project\\acordos', 'project\\acordos'), ('project\\bolsas', 'project\\bolsas'),\
-                    ('project\\core', 'project\\core'),\
-                    ('project\\demandas', 'project\\demandas'), ('project\\error_pages', 'project\\error_pages'),\
-                    ('project\\users','project\\users'), ('project\\instrumentos', 'project\\instrumentos'),\
-                    ('project\\static','project\\static'), ('project\\convenios', 'project\\convenios'),\
-                    ('project\\google_api_python_client-1.9.3.dist-info','google_api_python_client-1.9.3.dist-info'),\
-                    ('client.json','.'),\
-                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\branca\\*.json","branca"),
-                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\branca\\templates","templates"),
-                    ("C:\\Users\\cimeibt\\AppData\\Local\\Continuum\\anaconda3\\envs\\copes\\Lib\\site-packages\\folium\\templates","templates")],
-             hiddenimports=['google-api-python-client'],
+             datas=[('instance','var\\project-instance'),
+                    ('project\\templates', 'project\\templates'),
+                    ('project\\pessoas', 'project\\pessoas'),
+                    ('project\\unidades', 'project\\unidades'),
+                    ('project\\padroes', 'project\\padroes'),
+                    ('project\\core', 'project\\core'),
+                    ('project\\error_pages', 'project\\error_pages'),
+                    ('project\\static','project\\static')],
+             hiddenimports=['sqlalchemy.sql.default_comparator','pyodbc'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],

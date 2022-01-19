@@ -3,61 +3,28 @@
 
 <div class="container">
   <div class="jumbotron">
-    <h3>Sobre este sistema</h3>
-    <p>Uma iniciativa que visa auxiliar o dia a dia no trabalho, trazendo as informações básicas dos Acordos e Convênios sob a
-      responsabilidade da Coordenação. O sitema oferece também uma forma de registrar e acompanhar as demandas tratadas por seus técnicos.
+    <h3>O sistema de apoio aos gestores do SISGP</h3>
+    <p>Uma iniciativa que visa auxiliar o gerenciameno de dados do Sisgp.
     </p>
-    {% if current_user.is_authenticated and current_user.trab_acordo %}
-    <br>
-    <h4>Acordos</h4>
-    <p>No sistema, para que os dados de um Acordo possam ser visulizados, é necessário que o Programa correspondente seja cadastrado.
-       <br>Veja os Programas já cadastrados e como inserir um novo em <a href="{{url_for('acordos.lista_programa_cnpq')}}">Programas CNPq</a>.
-       Estes Programas são os utilizados no CNPq para a criação dos processos mãe e o pagamento das bolsas.
-       <br>Outra providência a ser adotada é verificar se as bolsas pagas no âmbito do Acordo em questão também estão cadastradas no sistema.
-       O cadastro de bolsas é feito em <a href="{{url_for('bolsas.lista_bolsas')}}">Bolsas</a>. Este cadastro é necessário para que seja
-       possível calcular os valores a pagar para cada bolsista.
-       <br>Há também o cadastro do Acordo propriamente dito. Ao visualizar uma lista dos Acordos, como em
-       <a href="{{url_for('acordos.lista_acordos',lista='todos',coord='*')}}">Todos</a>, por exemplo, há no topo da tela o botão "Inserir Novo".
-       Este botão abre a tela onde devem ser informados os dados básicos do Acordo.
-       <br>Finalizando, é necessário informar ao sistema
-       quais são os processos mãe relacionados ao Acordo. Isto é feito nas listas, ao se clicar na quantidade de processos mãe
-       do Acordo. Só é possível associar processos mãe ao Acordo se ele tiver um Programa definido.
-       <br>Com os cadastros em dia, basta carregar em <a href="{{url_for('core.carregaPDCTR')}}">Carrega F. Pag.</a> as planilhas
-       excel de folha de pagamento geradas pela COSAO para que as informações sejam atualizadas.
+    <p>Dados de Unidades e Pessoas podem ser consultados e alterados por meio das opções de menu acima.</p>
+    <p>Os dados de Unidades correspondem ao que é registrado na tabela de banco de dados "Unidade" do banco de 
+      dados do SISGP. Os campos de Tipo, Situação, Nível e Tipo Função da unidades não tem descrição ou associação direta
+      com outras tabelas do banco de dados, desta forma, na lista de unidades aqui apresentada, associamos o Tipo aos 
+      tipos de unidade que temos no CNPq, a saber: Instituição (1), Diretoria (2), Coordenação-Geral (3), Coordenação (4)
+      e Serviço (5). Para o campo Situação, associamos os valores Ativa (1) e Inativa (2). Nível e Tipo Função deixamos 
+      em branco. Caso se deseje atribuir outras descrições para os valores registrados no banco, será necessário Alterar
+      os scripts (views.py) que geram as listas. Já os valores dos campos Chefe e Substitudo do Chefe puderam ser resgatados
+      da tabela Pessoas. 
     </p>
-    {% endif %}
-    {% if current_user.is_authenticated and current_user.trab_conv %}
-    <br>
-    <h4>Convênios</h4>
-    <p>
-       As informações apresentadas pelo sistema sobre Convênios são obtidas de arquivos batch gerados na Plataforma +Brasil (SICONV).
-       <br>Para atuzalizar a informações, basta fazer a carga dos dados disponível no menu superior, dentro de
-       <span class="font-weight-bold text-warning">Carga</span>. <br>Por razões técnicas, a carga pode demorar em torno de meia hora.
-       <br>Caso não seja encontrado um determinado Convênio nas listas disponíveis, verifique se o respectivo Programa deste Convênio
-       está cadastrado no sistema. <br>Em <a href="{{url_for('convenios.lista_programas_pref')}}">Programas Preferenciais</a>,
-       estão os Programas sob a responsabilidade da Coordenação, bem como a opção de cadastrar um novo.
+    <p>Quanto aos dados de Pessoas, que se encontram registrados na tabela Pessoa do banco de dados, os
+      campos de Unidade, Função, Situação e Vínculo de uma Pessoa encontram contrapartes em outras tabelas do banco, 
+      o que torna possível a consulta às respectivas descrições de cada valor para a visualização na lista, no lugar dos 
+      cógigos numéricos. Estes atributos podem ser consultados e alterados no menu Padrões.
     </p>
-    {% endif %}
-    <br>
-    <h4>Demandas</h4>
-    <p>
-       Demandas compreendem tudo aquilo que nos é atribuído na coordenação a título de trabalho. Esta atribuição pode ser feita pelo chefe,
-       por um colega, ou por nós mesmos.
-       <br>O Plano de Trabalho comporta as macro atividades da coordenação, identificando para cada atividade os seus respectivos gestores.
-       <br>Toda a demanda tem relação com o Plano de Trabalho e com um processo. Surgindo uma demanda que não tenha relação com um processo,
-        é o caso de criar um processo que contemple o assunto. A relação demanda-processo, nesta direção, é unívoca, ou seja,
-         não podemos ter uma mesma demanda que corresponda a vários processos, são sempre várias demandas para vários processos.
-         Um processo, contudo, pode ter várias demandas a ele associadas.
-       <br>Quem abre uma demanda tem a incumbência de concluí-la. Em casos excepcionais, como uma ausência prolongada do responsável,
-        o chefe pode encerrar uma demanda.
-       <br>Podemos registrar providências (ações) tomadas nas nossas e nas demandas dos colegas. Para um registro mais sintético,
-       estas providências contam, preferencialmente, com um único verbo.
-       <br>Em princípio, o chefe não deveria registrar providências, pois este é responsável pelos despachos. De qualquer forma, não é vedado,
-       pois o chefe pode gerenciar suas próprias demandas.
-      <br>
-       Sob estas premissas, o sistema permite o regisro, acompanhamento e consulta de demandas, respectivas providências e
-       despachos, fornecendo estatísticas básicas sobre o trabalho realizado e um diário do uso do sistema, o que é bem útil para a
-       elaboração de relatórios de atividades.
+    <p><b>Atenção:</b> Quando for registrar um chefe para uma determinada unidade, lembre-se antes de alterar o 
+      status desta pessoa para a correspondente função que ela detém, ou seja, o campo Função da pessoa
+      deve ser alterado primeiro.
+    </p>
 
 
 

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+<div class="jumbotron">
+<h1>Alterar dados de Unidade</h1>
+
+{% macro render_field(field,obr) %}
+  {% if obr == True %}
+    <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+  {% else %}
+    <dt>{{ field.label(class="form-control-label") }}
+  {% endif %}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+<form class="needs-validation" method='POST' >
+  {{ form.hidden_tag() }}
+
+  <div class = "row">
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.sigla,class="form-control",obr=True) }}
+      </div>
+    </div>
+    <div class="col-10">
+      <div class="form-group">
+        {{ render_field(form.desc,class="form-control", obr=True) }}
+      </div>
+    </div>
+  </div>
+
+  <div class = "row">
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.pai,class="form-control", obr=False) }}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group text-muted">
+        {{ render_field(form.tipo,class="form-control", obr=True) }}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.situ,class="form-control", obr=True) }}
+      </div>
+    </div>
+    <div class="col-1">
+      <div class="form-group">
+        {{ render_field(form.uf,class="form-control", obr=True) }}
+      </div>
+    </div>
+    
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.nivel,class="form-control", obr=False) }}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group text-muted">
+        {{ render_field(form.tipoFun,class="form-control", obr=False) }}
+      </div>
+    </div>
+  </div>
+
+  <div class = "row">  
+    <div class="col-3">
+      <div class="form-group">
+        {{ render_field(form.email,class="form-control", obr=False) }}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.siorg,class="form-control", obr=False) }}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{ render_field(form.chefe,class="form-control", obr=False) }}
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        {{ render_field(form.subs,class="form-control", obr=False) }}
+      </div>
+    </div>
+  </div>  
+
+
+  <div class="form-group">
+    {{ form.submit(class="btn btn-primary") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
+  </div>
+
+</div>
+</div>
+
+{% endblock %}
