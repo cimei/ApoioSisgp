@@ -1,5 +1,5 @@
 # ApoioSisgp
-Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados de Unidades e Pessoas, bem como de tabelas auxiliares.
+Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, bem como de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado).
 
 Considerando que você tem o Python instalado em sua máquina, baixe os arquivos deste repositório. 
 Lembre-se de criar um ambiente para o sistema. Os arquivos requirements.txt ou environment.yml podem ser úteis nisto, mas deverão ser ajustados para o seu caso.
@@ -36,7 +36,7 @@ Será necessário criar sob na pasta ApoioSisgp a pasta Instance. Nesta pasta cr
 
 Em params:
 
-driver  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
+. < driver >  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
 
 servidor é o local onde o DBSISGP foi instalado.
 
