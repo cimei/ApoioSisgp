@@ -11,6 +11,11 @@
     <div class="col">
       <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da pessoa.</small>
     </div>
+    <div class="col">
+      <p class="form-text"><b> Gestor do Sistema: </b>
+        <a href="{{url_for('pessoas.pessoa_update', cod_pes=gestorNome.pessoaId)}}">
+          <span class="text-success"><b>{{ gestorNome.pesNome }}</b></span></a></p>
+    </div>
   </div>
   <br>
 

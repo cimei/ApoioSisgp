@@ -56,6 +56,7 @@ from project.error_pages.handlers import error_pages
 from project.unidades.views import unidades
 from project.pessoas.views import pessoas
 from project.padroes.views import padroes
+from project.consultas.views import consultas
 
 app.register_blueprint(core)
 app.register_blueprint(error_pages)
@@ -65,3 +66,5 @@ app.register_blueprint(unidades,url_prefix='/unidades')
 app.register_blueprint(pessoas,url_prefix='/pessoas')
 
 app.register_blueprint(padroes,url_prefix='/padroes')
+
+app.register_blueprint(consultas,url_prefix='/consultas')

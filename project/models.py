@@ -3,7 +3,7 @@
 
     Os modelos são classes que definem a estrutura das tabelas dos bancos de dados.
 
-    O banco de dados possui os modelos:
+    Os modelos de interesse do banco DBSISGP são os seguintes:
 
     * Unidades: as caixas que compóe a instituição.
     * Pessoas: pessoa da instituição
@@ -11,6 +11,8 @@
     * Tipo_Func_Pessoa: tipo de função exercida pela pessoa
     * Tipo_Vinculo_Pessoa: tipo de vínculo da pessoa
     * Feriados: tabela de feriados
+    * Planos_de_Trabalho: tabela dos programas de gestão de cada unidade
+    * catalogo_dominio: tabela do catálogo de domínios
 
     Abaixo seguem os Modelos e respectivos campos.
 """
@@ -181,3 +183,112 @@ class Feriados(db.Model):
 
     def __repr__ (self):
         return f"{self.ferData};{self.ferFixo};{self.ferDescricao};{self.ufId};"
+
+# Planos de Trabalho
+
+class Planos_de_Trabalho(db.Model):
+
+    __tablename__ = 'PlanoTrabalho'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    planoTrabalhoId      = db.Column(db.String, primary_key = True)
+    unidadeId            = db.Column(db.BigInteger)
+    dataInicio           = db.Column(db.Date)
+    dataFim              = db.Column(db.Date)
+    situacaoId           = db.Column(db.Integer)
+    avaliacaoId          = db.Column(db.String)
+    tempoComparecimento  = db.Column(db.Integer)
+    totalServidoresSetor = db.Column(db.Integer)
+    tempoFaseHabilitacao = db.Column(db.Integer)
+    termoAceite          = db.Column(db.String)
+
+    def __init__(self, unidadeId, dataInicio, dataFim, situacaoId, avaliacaoId, tempoComparecimento,
+                 totalServidoresSetor, tempoFaseHabilitacao, termoAceite):
+
+        self.unidadeId            = unidadeId
+        self.dataInicio           = dataInicio
+        self.dataFim              = dataFim
+        self.situacaoId           = situacaoId
+        self.avaliacaoId          = avaliacaoId
+        self.tempoComparecimento  = tempoComparecimento
+        self.totalServidoresSetor = totalServidoresSetor
+        self.tempoFaseHabilitacao = tempoFaseHabilitacao
+        self.termoAceite          = termoAceite
+
+    def __repr__ (self):
+        return f"{self.unidadeId};{self.dataInicio};{self.dataFim};\
+                 {self.situacaoId};{self.avaliacaoId};{self.tempoComparecimento};\
+                 {self.totalServidoresSetor};{self.tempoFaseHabilitacao};{self.termoAceite};"
+
+# Pactos de Trabalho
+
+class Pactos_de_Trabalho(db.Model):
+
+    __tablename__ = 'PactoTrabalho'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    pactoTrabalhoId          = db.Column(db.String, primary_key = True)
+    planoTrabalhoId          = db.Column(db.String)
+    unidadeId                = db.Column(db.BigInteger)
+    pessoaID                 = db.Column(db.BigInteger)
+    dataInicio               = db.Column(db.Date)
+    dataFim                  = db.Column(db.Date)
+    formaExecucaoId          = db.Column(db.Integer)
+    situacaoId               = db.Column(db.Integer)
+    tempoComparecimento      = db.Column(db.Integer)
+    cargaHorariaDiaria       = db.Column(db.Integer)
+    percentualExecucao       = db.Column(db.Float)
+    relacaoPrevistoRealizado = db.Column(db.Float)
+    avaliacaoId              = db.Column(db.String)
+    tempoTotalDisponivel     = db.Column(db.Integer)
+    termoAceite              = db.Column(db.String)
+
+    def __init__(self, planoTrabalhoId,unidadeId,pessoaId,dataInicio,dataFim,formaExecucaoId,
+                 situacaoId,tempoComparecimento,cargaHorariaDiaria,percentualExecucao,relacaoPrevistoRealizado,
+                 avaliacaoId,tempoTotalDisponivel,termoAceite):
+
+        self.planoTrabalhoId      = planoTrabalhoId
+        self.unidadeId            = unidadeId
+        self.pessoaId             = pessoaId
+        self.dataInicio           = dataInicio
+        self.dataFim              = dataFim
+        self.formaExecucaoId      = formaExecucaoId
+        self.situacaoId           = situacaoId
+        self.tempoComparecimento  = tempoComparecimento
+        self.cargaHorariaDiaria   = cargaHorariaDiaria
+        self.percentualExecucao   = percentualExecucao
+        self.relacaoPrevistoRealizado = relacaoPrevistoRealizado
+        self.avaliacaoId          = avaliacaoId
+        self.tempoComparecimento  = tempoComparecimento
+        self.tempoTotalDisponivel = tempoTotalDisponivel
+        self.termoAceite          = termoAceite
+
+    def __repr__ (self):
+        return f"{self.planoTrabalhoId};{self.unidadeId};{self.pessoaId};{self.dataInicio};{self.dataFim};\
+                 {self.formaExecucaoId};{self.situacaoId};\
+                 {self.tempoComparecimento};{self.cargaHorariaDiaria};\
+                 {self.percentualExecucao};{self.relacaoPrevistoRealizado};{self.avaliacaoId};\
+                 {self.tempoComparecimento};{self.tempoTotalDisponivel};{self.termoAceite};"
+
+# catálogo de domínios
+
+class catdom(db.Model):
+
+    __tablename__ = 'CatalogoDominio'
+    __table_args__ = {"schema": "dbo"}
+
+    catalogoDominioId   = db.Column(db.Integer, primary_key = True)
+    classificacao       = db.Column(db.String)
+    descricao           = db.Column(db.String)
+    ativo               = db.Column(db.Boolean)
+
+    def __init__(self, catalogoDominioId, classificacao, descricao, ativo):
+
+        self.catalogoDominioId = catalogoDominioId
+        self.classificacao     = classificacao
+        self.descricao         = descricao
+        self.ativo             = ativo
+
+    def __repr__ (self):
+        return f"{self.catalogoDominioId};{self.classificacao};{self.descricao};{self.ativo};"
+

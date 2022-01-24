@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+<div class="jumbotron">
+  
+  <h5>Lista das quantidades de pessoas no programa de gestão por unidade</h5>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p><span class="badge badge-pill badge-success">{{qtd_unidades}}</span> unidade(s) na instituição,
+           com <span class="badge badge-pill badge-success">{{qtd_pessoas}}</span> pessoa(s) cadastradas no SISGP.</p>
+        <p><span class="badge badge-pill badge-primary">{{qtd_pt_unidade}}</span> unidade(s) nesta lista,
+           com <span class="badge badge-pill badge-primary">{{qtd_pactos_unidade}}</span> pacto(s) vigentes.</p>
+      </div>
+  </div>
+</caption>
+
+<div style="overflow-y:auto ; height:450px">
+  <table class="table table-striped table-hover table-sm">
+    <caption>Unidades com pessoas em PG</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col"><p align = "center">Sigla</p></th>
+        <th scope="col"><p align = "center">Nome</p></th>
+        <th scope="col"><p align = "center">Programas de Gestão</p></th>
+        <th scope="col"><p align = "center">Pessoas</p></th>
+        <th scope="col"><p align = "center">Pactos Vigentes</p></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for u in pt %}
+
+      <tr>
+        <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
+        <td><p align = "center"> {{ u.undSigla }} </p></td>
+        <td><p align = "center"> {{ u.undDescricao }} </p></td>
+        <td><p align = "center"> {{ u.qtd_pg }} </p></td>
+        <td><p align = "center"> {{ u.totalServidoresSetor }} </p></td>
+        <td><p align = "center"> {% if u.qtd_pactos == None %}0{% else %}{{ u.qtd_pactos }}{% endif %} </p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

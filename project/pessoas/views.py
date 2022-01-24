@@ -18,7 +18,7 @@ from flask import render_template,url_for,flash, redirect,request,Blueprint
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa
+from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom
 from project.pessoas.forms import PessoaForm
 
 import locale
@@ -65,8 +65,16 @@ def lista_pessoas():
 
     quantidade = len(pessoas)
 
+    gestorId = db.session.query(catdom.descricao)\
+                       .filter(catdom.classificacao == 'GestorSistema').first()
 
-    return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade)
+    gestorNome = db.session.query(Pessoas.pesNome,
+                                  Pessoas.pessoaId)\
+                           .filter(Pessoas.pessoaId == gestorId.descricao).first() 
+
+
+    return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
+                                                 gestorNome = gestorNome)
 
 #
 ### atualiza dados de uma pessoa
