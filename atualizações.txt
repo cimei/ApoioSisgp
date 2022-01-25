@@ -1,2 +1,13 @@
 ## Atualizações ##
 
+25/01/2021
+
+Aprimorada a consulta aos PGs e Pactos de uma unidade
+
+23/01/2022
+
+Inserida a opção de Consultas
+
+14/01/20222
+
+Primeira versão do sistema: Unidades, Pessoas e Dados Auxiliares

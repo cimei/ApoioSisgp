@@ -230,7 +230,7 @@ class Pactos_de_Trabalho(db.Model):
     pactoTrabalhoId          = db.Column(db.String, primary_key = True)
     planoTrabalhoId          = db.Column(db.String)
     unidadeId                = db.Column(db.BigInteger)
-    pessoaID                 = db.Column(db.BigInteger)
+    pessoaId                 = db.Column(db.BigInteger)
     dataInicio               = db.Column(db.Date)
     dataFim                  = db.Column(db.Date)
     formaExecucaoId          = db.Column(db.Integer)

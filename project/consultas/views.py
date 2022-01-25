@@ -73,11 +73,29 @@ def pessoas_qtd_pg_unidade():
     qtd_pactos_unidade = Pactos_de_Trabalho.query.filter(Pactos_de_Trabalho.dataFim > hoje,
                                                          Pactos_de_Trabalho.situacaoId == 405).count()
 
+## buscando detalhes dos programas de gestão das unidades e das pessoas com pacto vigente
+
+    dados_pt = db.session.query(Planos_de_Trabalho.planoTrabalhoId,
+                                Planos_de_Trabalho.unidadeId,
+                                Planos_de_Trabalho.dataInicio,
+                                Planos_de_Trabalho.dataFim,
+                                catdom.descricao)\
+                          .join(catdom, Planos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
+                          .all() 
+
+    dados_pessoa_pacto = db.session.query(Pactos_de_Trabalho.pessoaId,
+                                          Pessoas.pesNome,
+                                          Pactos_de_Trabalho.unidadeId,
+                                          Pactos_de_Trabalho.dataInicio,
+                                          Pactos_de_Trabalho.dataFim)\
+                                   .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+                                   .all()                                          
 
 
     return render_template('lista_pessoas_qtd_pg_unidade.html', qtd_unidades=qtd_unidades, pt=pt,
                            qtd_pessoas = qtd_pessoas, qtd_pt_unidade = qtd_pt_unidade,
-                           qtd_pactos_unidade = qtd_pactos_unidade)
+                           qtd_pactos_unidade = qtd_pactos_unidade,
+                           dados_pt = dados_pt, dados_pessoa_pacto = dados_pessoa_pacto)
 
 #
 

@@ -39,9 +39,117 @@
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
         <td><p align = "center"> {{ u.undSigla }} </p></td>
         <td><p align = "center"> {{ u.undDescricao }} </p></td>
-        <td><p align = "center"> {{ u.qtd_pg }} </p></td>
-        <td><p align = "center"> {{ u.totalServidoresSetor }} </p></td>
-        <td><p align = "center"> {% if u.qtd_pactos == None %}0{% else %}{{ u.qtd_pactos }}{% endif %} </p></td>
+        <td><p align = "center" class = "font-weight-bold">
+          <abbr title="Clique aqui para ver dados dos programas de gestão da unidade.">
+
+        {% if u.qtd_pg > 0 %}  
+        
+          <a href="#" data-toggle='modal' data-target='#pt_modal{{u.unidadeId}}'>{{ u.qtd_pg }}</a></abbr>
+            
+            {# modal visualização de programas de gestão da unidade #}
+
+            <div class="modal fade" tabindex="-1" role="dialog" id="pt_modal{{u.unidadeId}}">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Programas de Gestão ({{ u.undSigla }})</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th scope="col"><p align = "center">Início</p></th>
+                          <th scope="col"><p align = "center">Fim</p></th>
+                          <th scope="col"><p align = "center">Situação</p></th>
+                        </tr>
+                      </thead>
+            
+                      <tbody>
+                        {% for d in dados_pt %}
+                          {% if d.unidadeId == u.unidadeId %}
+                            <tr>
+                              <td><p align = "center"> {{ d.dataInicio.strftime('%x') }} </p></td>
+                              <td><p align = "center"> {{ d.dataFim.strftime('%x') }} </p></td>
+                              <td><p align = "center"> {{ d.descricao }} </p></td>
+                            </tr>
+                          {% endif %}  
+                        {% endfor %}
+                      </tbody>
+            
+                    </table>
+
+                  </div>
+                  <div class="modal-footer">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% else %}
+              {{ u.qtd_pg }}
+            {% endif %}
+
+          </p></td>
+          <td><p align = "center" class = "font-weight-bold"> {{ u.totalServidoresSetor }} </p></td>
+
+        <td><p align = "center" class = "font-weight-bold">
+          
+          {% if u.qtd_pactos == None %}0
+          {% else %}
+          
+            <abbr title="Clique aqui para ver dados dos pactos (Em Execução) da unidade.">
+
+            <a href="#" data-toggle='modal' data-target='#pac_modal{{u.unidadeId}}'>{{ u.qtd_pactos }}</a></abbr>
+              
+              {# modal visualização de pactos de uma unidade #}
+
+              <div class="modal fade" tabindex="-1" role="dialog" id="pac_modal{{u.unidadeId}}">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Pactos na unidade {{ u.undSigla }}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      
+                      <table class="table table-striped table-hover table-sm">
+                        <thead>
+                          <tr>
+                            <th scope="col"><p align = "center">Nome</p></th>
+                            <th scope="col"><p align = "center">Início</p></th>
+                            <th scope="col"><p align = "center">Fim</p></th>
+                          </tr>
+                        </thead>
+              
+                        <tbody>
+                          {% for p in dados_pessoa_pacto %}
+                            {% if p.unidadeId == u.unidadeId %}
+                              <tr>
+                                <td><p align = "center"><a href="{{url_for('pessoas.pessoa_update', cod_pes=p.pessoaId)}}"> {{ p.pesNome }} </a></p></td>
+                                <td><p align = "center"> {{ p.dataInicio.strftime('%x') }} </p></td>
+                                <td><p align = "center"> {{ p.dataFim.strftime('%x') }} </p></td>
+                              </tr>
+                            {% endif %}  
+                          {% endfor %}
+                        </tbody>
+              
+                      </table>
+
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+          {% endif %} 
+        </p></td>
       </tr>
 
       {% endfor %}
