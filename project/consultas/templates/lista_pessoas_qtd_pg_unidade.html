@@ -12,8 +12,8 @@
       <div class="col">
         <p><span class="badge badge-pill badge-success">{{qtd_unidades}}</span> unidade(s) na instituição,
            com <span class="badge badge-pill badge-success">{{qtd_pessoas}}</span> pessoa(s) cadastradas no SISGP.</p>
-        <p><span class="badge badge-pill badge-primary">{{qtd_pt_unidade}}</span> unidade(s) nesta lista,
-           com <span class="badge badge-pill badge-primary">{{qtd_pactos_unidade}}</span> pacto(s) vigentes.</p>
+        <p>Nesta lista: <span class="badge badge-pill badge-primary">{{qtd_pt_unidade}}</span> unidade(s).
+                        <span class="badge badge-pill badge-primary">{{qtd_pactos_unidade}}</span> pacto(s) vigente(s).</p>
       </div>
   </div>
 </caption>
@@ -37,7 +37,7 @@
 
       <tr>
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
-        <td><p align = "center"> {{ u.undSigla }} </p></td>
+        <td><p align = "center"><a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{ u.undSigla }} </a></p></td>
         <td><p align = "center"> {{ u.undDescricao }} </p></td>
         <td><p align = "center" class = "font-weight-bold">
           <abbr title="Clique aqui para ver dados dos programas de gestão da unidade.">

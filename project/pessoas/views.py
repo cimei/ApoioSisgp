@@ -40,6 +40,9 @@ def lista_pessoas():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+
+    tipo = "inst"
+
 # Lê tabela pessoas
 
     pessoas = db.session.query(Pessoas.pessoaId,
@@ -74,7 +77,7 @@ def lista_pessoas():
 
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
-                                                 gestorNome = gestorNome)
+                                                 gestorNome = gestorNome, tipo = tipo)
 
 #
 ### atualiza dados de uma pessoa
@@ -251,3 +254,46 @@ def cria_pessoa():
         return redirect(url_for('pessoas.lista_pessoas'))
 
     return render_template('atu_pessoa.html', form=form, tp=tp)
+
+## lista pessoas de uma unidade
+
+@pessoas.route('/<unid>/lista_pessoas_unid')
+def lista_pessoas_unid(unid):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista das pessoas de uma unidade.                                        |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+# Lê tabela pessoas
+
+    tipo = "unid"
+
+    pessoas = db.session.query(Pessoas.pessoaId,
+                             Pessoas.pesNome,
+                             Pessoas.pesCPF,
+                             Pessoas.pesDataNascimento,
+                             Pessoas.pesMatriculaSiape,
+                             Pessoas.pesEmail,
+                             Pessoas.unidadeId,
+                             Unidades.undSigla,
+                             Pessoas.tipoFuncaoId,
+                             Tipo_Func_Pessoa.tfnDescricao,
+                             Pessoas.cargaHoraria,
+                             Pessoas.situacaoPessoaId,
+                             Situ_Pessoa.spsDescricao,
+                             Pessoas.tipoVinculoId,
+                             Tipo_Vinculo_Pessoa.tvnDescricao)\
+                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                            .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                            .filter(Unidades.undSigla == unid)\
+                            .order_by(Pessoas.pesNome).all()
+
+    quantidade = len(pessoas)
+
+    return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
+                                                 gestorNome = None, tipo = tipo)
+
+#

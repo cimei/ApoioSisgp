@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+26/01/2022
+
+Possibilidade de ver pessoas de uma unidade ao se clicar na sigla. v 1.3
+
 25/01/2021
 
 Aprimorada a consulta aos PGs e Pactos de uma unidade

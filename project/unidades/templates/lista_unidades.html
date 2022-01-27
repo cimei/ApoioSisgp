@@ -43,24 +43,24 @@
       </tr>
     </thead>
     <tbody>
-      {% for unid in unids %}
+      {% for u in unids %}
 
       <tr>
         <th scope="row"><abbr title="Acrescentar dados à Unidade.">
-          <p align = "center"><a href="{{url_for('unidades.unidade_update', cod_unid=unid.unidadeId)}}"> {{unids.index(unid) + 1}} </a>
+          <p align = "center"><a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}"> {{unids.index(u) + 1}} </a>
         </p></th>
-        <td><p align = "center"> {{unid.undSigla}} </p></td>
-        <td><p align = "center"> {{unid.undDescricao}} </p></td>
-        <td><p align = "center"> {{unid.Sigla_Pai}} </p></td>
-        <td><p class = "text-muted" align = "center"> {{lista_tipo_unidade[unid.tipoUnidadeId-1][1]}} </p></td>
-        <td><p align = "center"> {{lista_situ_unidade[unid.situacaoUnidadeId-1][1]}} </p></td>
-        <td><p align = "center"> {{unid.ufId}} </p></td>
-        <td><p align = "center"> {% if unid.undNivel == None %}N.I.{% else %}{{unid.undNivel}}{% endif %} </p></td>
-        <td><p class = "text-muted" align = "center"> {% if unid.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{unid.tipoFuncaoUnidadeId}}{% endif %} </p></td>
-        <td><p align = "center"> {% if unid.Email == None or unid.Email == '' %}N.I.{% else %}{{unid.Email}}{% endif %} </p></td>
-        <td><p align = "center"> {% if unid.undCodigoSIORG == 0 %}N.I.{% else %}{{unid.undCodigoSIORG}}{% endif %} </p></td>
-        <td><p align = "center"> {% if unid.pessoaIdChefe == None %}N.I.{% else %}{{unid.Chefe}}{% endif %} </p></td>
-        <td><p align = "center"> {% if unid.pessoaIdChefeSubstituto == None %}N.I.{% else %}{{unid.Subs}}{% endif %} </p></td>
+        <td><p align = "center"> <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{u.undSigla}} </a></p></td>
+        <td><p align = "center"> {{u.undDescricao}} </p></td>
+        <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
+        <td><p class = "text-muted" align = "center"> {{lista_tipo_unidade[u.tipoUnidadeId-1][1]}} </p></td>
+        <td><p align = "center"> {{lista_situ_unidade[u.situacaoUnidadeId-1][1]}} </p></td>
+        <td><p align = "center"> {{u.ufId}} </p></td>
+        <td><p align = "center"> {% if u.undNivel == None %}N.I.{% else %}{{u.undNivel}}{% endif %} </p></td>
+        <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.pessoaIdChefe == None %}N.I.{% else %}{{u.Chefe}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.pessoaIdChefeSubstituto == None %}N.I.{% else %}{{u.Subs}}{% endif %} </p></td>
       </tr>
 
       {% endfor %}

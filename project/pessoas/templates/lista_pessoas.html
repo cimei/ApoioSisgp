@@ -2,7 +2,7 @@
 {% block content %}
 <div class="jumbotron">
   
-  <h5>Lista das Pessoas na Instituição</h5>
+  <h5>Lista das Pessoas {% if tipo == "inst" %}na Instituição{% else %}na Unidade{% endif %}</h5>
 
   <div class = "row">
     <div class="col-1">
@@ -11,25 +11,27 @@
     <div class="col">
       <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da pessoa.</small>
     </div>
-    <div class="col">
-      <p class="form-text"><b> Gestor do Sistema: </b>
-        <a href="{{url_for('pessoas.pessoa_update', cod_pes=gestorNome.pessoaId)}}">
-          <span class="text-success"><b>{{ gestorNome.pesNome }}</b></span></a></p>
-    </div>
+    {% if tipo == "inst" %}
+      <div class="col">
+        <p class="form-text"><b> Gestor do Sistema: </b>
+          <a href="{{url_for('pessoas.pessoa_update', cod_pes=gestorNome.pessoaId)}}">
+            <span class="text-success"><b>{{ gestorNome.pesNome }}</b></span></a></p>
+      </div>
+    {% endif %}  
   </div>
   <br>
 
 <caption>
   <div class="row">
       <div class="col">
-        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> pessoas na Instituição</p>
+        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> pessoas {% if tipo == "inst" %}na Instituição{% else %}na Unidade{% endif %}</p>
       </div>
   </div>
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
   <table class="table table-striped table-hover table-sm">
-    <caption>Pessoas na Instituição</caption>
+    <caption>Pessoas</caption>
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
