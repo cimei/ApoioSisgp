@@ -19,11 +19,18 @@
     <p>Quanto aos dados de Pessoas, que se encontram registrados na tabela Pessoa do banco de dados, os
       campos de Unidade, Função, Situação e Vínculo de uma Pessoa encontram contrapartes em outras tabelas do banco, 
       o que torna possível a consulta às respectivas descrições de cada valor para a visualização na lista, no lugar dos 
-      cógigos numéricos. Estes atributos podem ser consultados e alterados no menu Dados Auxiliares.
+      códigos numéricos. Estes atributos podem ser consultados e alterados no menu Dados Auxiliares.
     <p>O menu Consultas apresenta opções de visualização do Catálogo de Domínio e também de informações
       sobre a implementação e pactuação de Programas de Gestão nas Unidades da Instituição.
     </p>
     </p>
+  </p>A opção de menu Carga permite a carga em lote de dados de Unidades e Pessoas. Os arquivos de entrada tem que
+     ser do tipo csv, o separador é o <b>ponto de vírguja (;)</b> e a primeira linha tem que conter os nomes das colunas idênticos 
+     aos nomes nas tabelas do DBSISGP. Esta carga não deleta registros do banco, mas não permite inserção de dados já 
+     existentes: Com mesma sigla em unidades ou com mesmo cpf em pessoas. Cuidado com o formato de datas,
+     o que tem funcionado é o padrão <b>aaaa-dd-mm</b>. Outro detalhe, deve-se carregar primeiro as unidades e depois as 
+     pessoas, pois cada registro de pessoa deverá conter a unidade em que ela está lotada.
+  </p>
     <p><b>Atenção:</b> Quando for registrar um chefe para uma determinada unidade, lembre-se antes de alterar o 
       status desta pessoa para a correspondente função que ela detém, ou seja, o campo Função da pessoa
       deve ser alterado primeiro.

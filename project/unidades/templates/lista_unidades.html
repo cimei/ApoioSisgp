@@ -49,7 +49,8 @@
         <th scope="row"><abbr title="Acrescentar dados à Unidade.">
           <p align = "center"><a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}"> {{unids.index(u) + 1}} </a>
         </p></th>
-        <td><p align = "center"> <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{u.undSigla}} </a></p></td>
+        <td><p align = "center"> <abbr title="Clique aqui para ver as pessoas da unidade.">
+          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{u.undSigla}} </a></abbr></p></td>
         <td><p align = "center"> {{u.undDescricao}} </p></td>
         <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
         <td><p class = "text-muted" align = "center"> {{lista_tipo_unidade[u.tipoUnidadeId-1][1]}} </p></td>

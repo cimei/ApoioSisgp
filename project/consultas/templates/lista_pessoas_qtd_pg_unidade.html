@@ -37,7 +37,8 @@
 
       <tr>
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
-        <td><p align = "center"><a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{ u.undSigla }} </a></p></td>
+        <td><p align = "center"><abbr title="Clique aqui para ver as pessoas da unidade.">
+          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{ u.undSigla }} </a></abbr></p></td>
         <td><p align = "center"> {{ u.undDescricao }} </p></td>
         <td><p align = "center" class = "font-weight-bold">
           <abbr title="Clique aqui para ver dados dos programas de gestão da unidade.">

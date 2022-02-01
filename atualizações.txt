@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+31/01/2022
+
+Inserida funcionalidade de carga de dados de unidades e pessoas em lote v 1.4
+
 26/01/2022
 
 Possibilidade de ver pessoas de uma unidade ao se clicar na sigla. v 1.3

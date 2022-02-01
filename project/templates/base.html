@@ -75,8 +75,18 @@
               <a class="dropdown-item" href="{{url_for('consultas.pessoas_qtd_pg_unidade')}}">Qtd. pessoas em PG por unidade</a>
             </div>
           </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Carga
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{url_for('core.CarregaUnidades')}}">Unidades</a>
+                <a class="dropdown-item" href="{{url_for('core.CarregaPessoas')}}">Pessoas</a>
+            </div>
+          </li>
           
-          {% set ver = namespace(num='1.3') %}
+          {% set ver = namespace(num='1.4') %}
 
 
         </ul>
