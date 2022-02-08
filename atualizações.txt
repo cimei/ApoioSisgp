@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+08/02/2022
+
+Sistema conta com controle de acesso e registro de log. v 2.0
+
 31/01/2022
 
 Inserida funcionalidade de carga de dados de unidades e pessoas em lote v 1.4

@@ -1,5 +1,5 @@
 # ApoioSisgp
-Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, bem como de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado).
+Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado), além de outras funcionalidades.
 
 Considerando que você tem o Python instalado em sua máquina, baixe os arquivos deste repositório. 
 Lembre-se de criar um ambiente para o sistema. Os arquivos requirements.txt ou environment.yml podem ser úteis nisto, mas deverão ser ajustados para o seu caso.
@@ -11,7 +11,7 @@ Na pasta Instance, há o arquivo flask exemplo.cfg. Este deve ser ajustado para 
 Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no 
 DBSISGP. Abaixo seguem as instruções SQL para tal:
 
-       SCHEMA [Apoio]
+      CREATE SCHEMA [Apoio]
       GO
       
       /****** Object:  Table [Apoio].[User]  e [Apoio].[log_auto]  ******/
@@ -22,34 +22,34 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       GO
       
       CREATE TABLE [Apoio].[User](
-      	[id] [bigint] IDENTITY(1,1) NOT NULL,
-      	[userNome] [varchar](150) NOT NULL,
-      	[userEmail] [varchar](150) NOT NULL,
-      	[password_hash] [varchar](128) NOT NULL,
-	      [email_confirmation_sent_on] [datetime] NULL,
-	      [email_confirmed] [bit] NULL,
-	      [email_confirmed_on] [datetime] NULL,
-	      [registered_on] [datetime] NULL,
-	      [last_logged_in] [datetime] NULL,
-	      [current_logged_in] [datetime] NULL,
-	      [userAtivo] [bit] NULL,
+            [id] [bigint] IDENTITY(1,1) NOT NULL,
+            [userNome] [varchar](150) NOT NULL,
+            [userEmail] [varchar](150) NOT NULL,
+            [password_hash] [varchar](128) NOT NULL,
+            [email_confirmation_sent_on] [datetime] NULL,
+            [email_confirmed] [bit] NULL,
+            [email_confirmed_on] [datetime] NULL,
+            [registered_on] [datetime] NULL,
+            [last_logged_in] [datetime] NULL,
+            [current_logged_in] [datetime] NULL,
+            [userAtivo] [bit] NULL,
        CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)       ON [PRIMARY]
-            ) ON [PRIMARY]
+      ) ON [PRIMARY]
       GO
       
       CREATE TABLE [Apoio].[log_auto](
-	      [id] [bigint] IDENTITY(1,1) NOT NULL,
-	      [data_hora] [datetime] NOT NULL,
-      	[user_id] [bigint] NOT NULL,
-      	[msg] [varchar](150) NOT NULL,
+            [id] [bigint] IDENTITY(1,1) NOT NULL,
+            [data_hora] [datetime] NOT NULL,
+            [user_id] [bigint] NOT NULL,
+            [msg] [varchar](150) NOT NULL,
        CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
-      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)       ON [PRIMARY]
-                  ) ON [PRIMARY]
+      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)     ON [PRIMARY]
+      ) ON [PRIMARY]
       GO
 
       ALTER TABLE [Apoio].[log_auto]  WITH CHECK ADD  CONSTRAINT [FK_log_auto_user_id] FOREIGN KEY([user_id])

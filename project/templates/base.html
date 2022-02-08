@@ -28,35 +28,25 @@
 
         <ul class="navbar-nav mr-auto">
 
-          <li class="nav-item active">
+          <li class="nav-item">
             <a class="nav-link" href="{{url_for('core.index')}}">Início<span class="sr-only">(current)</span></a>
           </li>
 
-          <li class="nav-item active">
+          <li class="nav-item">
             <a class="nav-link" href="{{url_for('core.info')}}">Sobre</a>
           </li>
 
          {% if current_user.is_authenticated and current_user.userAtivo %}
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Unidades
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-              <a class="dropdown-item" href="{{url_for('unidades.lista_unidades')}}">Listar</a>
-            </div>
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url_for('unidades.lista_unidades')}}">Unidades</a>
           </li>
 
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Pessoas
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-              <a class="dropdown-item" href="{{url_for('pessoas.lista_pessoas')}}">Listar</a>
-            </div>
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Dados Auxiliares
             </a>
@@ -68,7 +58,7 @@
             </div>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Consultas
             </a>
@@ -78,7 +68,7 @@
             </div>
           </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Carga
             </a>
@@ -92,7 +82,7 @@
         
         {% if current_user.is_authenticated %}
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle text-success" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{current_user.userNome}}
             </a>
@@ -106,17 +96,17 @@
             </div>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="{{url_for('usuarios.logout')}}"><div class="text-success">Sair</div></a>
           </li>
 
         {% else %}
 
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="{{url_for('usuarios.login')}}"><div class="text-success">Entrar</div></a>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="{{url_for('usuarios.register')}}"><div class="text-success">Registrar-se</div></a>
           </li>
 
@@ -125,7 +115,7 @@
         {% if current_user.is_authenticated and not current_user.userAtivo %}
 
           <li class="nav-item">
-            <span class="navbar-text text-danger">ATENÇÃO! USUÁRIO NÃO ATIVADO!</span>
+            <span class="navbar-text text-danger">    ATENÇÃO! USUÁRIO NÃO ATIVADO!</span>
           </li>
 
         {% endif %}

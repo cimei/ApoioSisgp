@@ -29,6 +29,8 @@ from project.core.forms import ArquivoForm
 from project import db
 from project.models import Unidades, Pessoas
 
+from project.usuarios.views import registra_log_auto
+
 
 core = Blueprint("core",__name__)
 
@@ -182,6 +184,8 @@ def CarregaUnidades():
                         str(qtd) + ' linhas efetivamente inseridas e ' +\
                         str(qtd_exist) + ' linhas ignoradas por conter siglas de unidades já existentes.','perigo')
 
+                registra_log_auto(current_user.id,'Carga em Unidades: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
+                                                 str(qtd) + ' linhas inseridas. ' + str(qtd_exist) + ' linhas ignoradas')
 
             if os.path.exists(arq):
                 os.remove(arq)
@@ -293,6 +297,9 @@ def CarregaPessoas():
                         str(qtd) + ' linhas efetivamente inseridas e ' +\
                         str(qtd_exist) + ' linhas ignoradas por conter cpfs de Pessoas já existentes.','perigo')
             
+                registra_log_auto(current_user.id,'Carga em Pessoas: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
+                                                 str(qtd) + ' linhas inseridas. ' + str(qtd_exist) + ' linhas ignoradas')
+
 
             if os.path.exists(arq):
                 os.remove(arq)        
