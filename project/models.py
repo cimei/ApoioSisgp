@@ -5,6 +5,8 @@
 
     Os modelos de interesse do banco DBSISGP são os seguintes:
 
+    * users: tabela dos usuários que podem executar o ApoioSisgp
+    * log_auto: tabela de log dos principais commits
     * Unidades: as caixas que compóe a instituição.
     * Pessoas: pessoa da instituição
     * Situ_Pessoa: situção das pessoas na instituição
@@ -18,8 +20,77 @@
 """
 # models.py
 import locale
-from project import db
+from project import db, login_manager
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 from datetime import datetime, date
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return users.query.get(user_id)
+
+
+class users(db.Model, UserMixin):
+
+    __tablename__ = 'User'
+    __table_args__ = {"schema": "Apoio"}
+
+    id                         = db.Column(db.Integer,primary_key=True)
+    userNome                   = db.Column(db.String(64),unique=True,index=True)
+    userEmail                  = db.Column(db.String(64),unique=True,index=True)
+    password_hash              = db.Column(db.String(128))
+    email_confirmation_sent_on = db.Column(db.DateTime, nullable=True)
+    email_confirmed            = db.Column(db.Boolean, nullable=True, default=False)
+    email_confirmed_on         = db.Column(db.DateTime, nullable=True)
+    registered_on              = db.Column(db.DateTime, nullable=True)
+    last_logged_in             = db.Column(db.DateTime, nullable=True)
+    current_logged_in          = db.Column(db.DateTime, nullable=True)
+    userAtivo                  = db.Column(db.Boolean)
+
+    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,\
+                 email_confirmation_sent_on=None):
+
+        self.userNome                   = userNome
+        self.userEmail                  = userEmail
+        self.password_hash              = generate_password_hash(plaintext_password)
+        self.email_confirmation_sent_on = email_confirmation_sent_on
+        self.email_confirmed            = False
+        self.email_confirmed_on         = None
+        self.registered_on              = datetime.now()
+        self.last_logged_in             = None
+        self.current_logged_in          = datetime.now()
+        self.userAtivo                  = userAtivo
+
+    def check_password (self,plaintext_password):
+
+        return check_password_hash(self.password_hash,plaintext_password)
+
+    def __repr__(self):
+
+        return f"{self.userNome};"
+
+## tabela de registro dos principais commits
+class Log_Auto(db.Model):
+
+    __tablename__ = 'log_auto'
+    __table_args__ = {"schema": "Apoio"}
+
+    id        = db.Column(db.Integer, primary_key=True)
+    data_hora = db.Column(db.DateTime,nullable=False,default=datetime.now())
+    user_id   = db.Column(db.Integer, db.ForeignKey('Apoio.User.id'),nullable=False)
+    msg       = db.Column(db.String)
+
+
+    def __init__(self, data_hora, user_id, msg):
+
+        self.data_hora = data_hora
+        self.user_id   = user_id
+        self.msg       = msg
+
+    def __repr__(self):
+
+        return f"{self.data_hora};{self.user_id};{self.msg}"        
 
 # unidades
 

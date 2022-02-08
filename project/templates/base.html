@@ -36,6 +36,8 @@
             <a class="nav-link" href="{{url_for('core.info')}}">Sobre</a>
           </li>
 
+         {% if current_user.is_authenticated and current_user.userAtivo %}
+
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Unidades
@@ -85,13 +87,54 @@
                 <a class="dropdown-item" href="{{url_for('core.CarregaPessoas')}}">Pessoas</a>
             </div>
           </li>
-          
-          {% set ver = namespace(num='1.4') %}
 
+        {% endif %}
+        
+        {% if current_user.is_authenticated %}
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-success" href="#" id="navbarDropdown5" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{current_user.userNome}}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
+              <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
+              {% if current_user.userAtivo %}
+                <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Ver Usuários</a>
+                <a class="dropdown-item"  href="{{ url_for('usuarios.gestor') }}">Definir Gestor</a>
+              {% endif %}
+              
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('usuarios.logout')}}"><div class="text-success">Sair</div></a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('usuarios.login')}}"><div class="text-success">Entrar</div></a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('usuarios.register')}}"><div class="text-success">Registrar-se</div></a>
+          </li>
+
+        {% endif %}  
+
+        {% if current_user.is_authenticated and not current_user.userAtivo %}
+
+          <li class="nav-item">
+            <span class="navbar-text text-danger">ATENÇÃO! USUÁRIO NÃO ATIVADO!</span>
+          </li>
+
+        {% endif %}
+
+          {% set ver = namespace(num='2.0') %}
 
         </ul>
 
-        <span class="navbar-text">  V. {{ ver.num }} <small>cbt</small> </span>
+        <span class="navbar-text"> (homologação) V. {{ ver.num }} <small>cbt</small> </span>
 
       </div>
     </nav>

@@ -21,6 +21,7 @@ from flask import render_template,url_for,flash, redirect,request,Blueprint
 import os
 from datetime import datetime as dt
 import tempfile
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 import csv
 
@@ -98,92 +99,100 @@ def CarregaUnidades():
 
     if form.validate_on_submit():
 
-        arq = PegaArquivo(form)
+        if current_user.userAtivo:
 
-        print ('*****************************************************************')
-        print ('<<',dt.now().strftime("%x %X"),'>> ','Carregando dados de Unidades...')
-        print ('*****************************************************************')
+            arq = PegaArquivo(form)
 
-        qtd = 0
-        qtd_exist = 0
-        qtdLinhas = 0
-
-        siglaExistente = db.session.query(Unidades.undSigla).all()
-
-        l_siglaExistente = [s[0] for s in siglaExistente]
-
-        # abre csv e gera a lista data_lines
-        with open(arq, newline='',encoding = 'utf-8-sig') as data:
-            data_lines = csv.DictReader(data,delimiter=';')
-
-            for linha in data_lines:
-
-                qtdLinhas += 1
-
-                if linha['undSigla'] in l_siglaExistente:
-
-                    qtd_exist += 1
-         
-                if linha['undSigla'] != '' and linha['undSigla'] != None and linha['undSigla'] not in l_siglaExistente:
-
-                    if linha['unidadeIdPai'] == '' or linha['unidadeIdPai'] == 0:
-                        pai = None
-                    else:
-                        pai = linha['unidadeIdPai']
-
-                    if linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
-                        chefe = None
-                    else:
-                        chefe = linha['pessoaIdChefe']
-
-                    if linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
-                        subs = None
-                    else:
-                        subs = linha['pessoaIdChefeSubstituto']    
-
-                    unidade_gravar = Unidades(undSigla                = linha['undSigla'],
-                                              undDescricao            = linha['undDescricao'],
-                                              unidadeIdPai            = pai,
-                                              tipoUnidadeId           = linha['tipoUnidadeId'],
-                                              situacaoUnidadeId       = linha['situacaoUnidadeId'],
-                                              ufId                    = linha['ufId'],
-                                              undNivel                = linha['undNivel'],
-                                              tipoFuncaoUnidadeId     = linha['tipoFuncaoUnidadeId'],
-                                              Email                   = linha['Email'],
-                                              undCodigoSIORG          = linha['undCodigoSIORG'],
-                                              pessoaIdChefe           = chefe,
-                                              pessoaIdChefeSubstituto = subs)
-
-                    db.session.add(unidade_gravar)
-
-                    qtd += 1
-
-            db.session.commit()
-
-            print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
-            print ('*** ',qtd,'linhas inseridas na tabela unidade.')
-            print ('*** ',qtd_exist,'linhas com siglas já existentes foram ignoradas.')
+            print ('*****************************************************************')
+            print ('<<',dt.now().strftime("%x %X"),'>> ','Carregando dados de Unidades...')
             print ('*****************************************************************')
 
-            if qtd_exist == 0:
+            qtd = 0
+            qtd_exist = 0
+            qtdLinhas = 0
 
-                flash('Executada carga de unidades no DBSISGP. ' +\
-                    str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                    str(qtd) + ' linhas efetivamente inseridas e ' +\
-                    ' nenhuma linha foi ignorada por conter sigla de unidade já existente.','sucesso')
+            siglaExistente = db.session.query(Unidades.undSigla).all()
 
-            else:
+            l_siglaExistente = [s[0] for s in siglaExistente]
 
-                flash('Executada carga de unidades no DBSISGP. ' +\
-                    str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                    str(qtd) + ' linhas efetivamente inseridas e ' +\
-                    str(qtd_exist) + ' linhas ignoradas por conter siglas de unidades já existentes.','perigo')
+            # abre csv e gera a lista data_lines
+            with open(arq, newline='',encoding = 'utf-8-sig') as data:
+                data_lines = csv.DictReader(data,delimiter=';')
+
+                for linha in data_lines:
+
+                    qtdLinhas += 1
+
+                    if linha['undSigla'] in l_siglaExistente:
+
+                        qtd_exist += 1
+            
+                    if linha['undSigla'] != '' and linha['undSigla'] != None and linha['undSigla'] not in l_siglaExistente:
+
+                        if linha['unidadeIdPai'] == '' or linha['unidadeIdPai'] == 0:
+                            pai = None
+                        else:
+                            pai = linha['unidadeIdPai']
+
+                        if linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
+                            chefe = None
+                        else:
+                            chefe = linha['pessoaIdChefe']
+
+                        if linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
+                            subs = None
+                        else:
+                            subs = linha['pessoaIdChefeSubstituto']    
+
+                        unidade_gravar = Unidades(undSigla                = linha['undSigla'],
+                                                undDescricao            = linha['undDescricao'],
+                                                unidadeIdPai            = pai,
+                                                tipoUnidadeId           = linha['tipoUnidadeId'],
+                                                situacaoUnidadeId       = linha['situacaoUnidadeId'],
+                                                ufId                    = linha['ufId'],
+                                                undNivel                = linha['undNivel'],
+                                                tipoFuncaoUnidadeId     = linha['tipoFuncaoUnidadeId'],
+                                                Email                   = linha['Email'],
+                                                undCodigoSIORG          = linha['undCodigoSIORG'],
+                                                pessoaIdChefe           = chefe,
+                                                pessoaIdChefeSubstituto = subs)
+
+                        db.session.add(unidade_gravar)
+
+                        qtd += 1
+
+                db.session.commit()
+
+                print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
+                print ('*** ',qtd,'linhas inseridas na tabela unidade.')
+                print ('*** ',qtd_exist,'linhas com siglas já existentes foram ignoradas.')
+                print ('*****************************************************************')
+
+                if qtd_exist == 0:
+
+                    flash('Executada carga de unidades no DBSISGP. ' +\
+                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
+                        str(qtd) + ' linhas efetivamente inseridas e ' +\
+                        ' nenhuma linha foi ignorada por conter sigla de unidade já existente.','sucesso')
+
+                else:
+
+                    flash('Executada carga de unidades no DBSISGP. ' +\
+                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
+                        str(qtd) + ' linhas efetivamente inseridas e ' +\
+                        str(qtd_exist) + ' linhas ignoradas por conter siglas de unidades já existentes.','perigo')
 
 
-        if os.path.exists(arq):
-            os.remove(arq)        
+            if os.path.exists(arq):
+                os.remove(arq)
 
-        return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('unidades.lista_unidades'))
 
     return render_template('grab_file.html',form=form, tipo = tipo)
 
@@ -203,90 +212,98 @@ def CarregaPessoas():
 
     if form.validate_on_submit():
 
-        arq = PegaArquivo(form)
+        if current_user.userAtivo:
 
-        print ('*****************************************************************')
-        print ('<<',dt.now().strftime("%x %X"),'>> ','Carregando dados de Pessoas...')
-        print ('*****************************************************************')
+            arq = PegaArquivo(form)
 
-        qtd = 0
-        qtd_exist = 0
-        qtdLinhas = 0
-
-        cpfExistente = db.session.query(Pessoas.pesCPF).all()
-
-        l_cpfExistente = [c[0] for c in cpfExistente]
-
-        # abre csv e gera a lista data_lines
-        with open(arq, newline='',encoding = 'utf-8-sig') as data:
-            data_lines = csv.DictReader(data,delimiter=';')
-
-            for linha in data_lines:
-
-                qtdLinhas += 1
-
-                if linha['pesCPF'] in l_cpfExistente:
-
-                    qtd_exist += 1
-         
-                if linha['pesCPF'] != '' and linha['pesCPF'] != None and linha['pesCPF'] not in l_cpfExistente:
-
-                    if linha['tipoFuncaoId'] == '' or linha['tipoFuncaoId'] == 0:
-                        func = None
-                    else:
-                        func = linha['tipoFuncaoId']
-
-                    if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0:
-                        sit = None
-                    else:
-                        sit = linha['situacaoPessoaId']
-
-                    if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0:
-                        vinc = None
-                    else:
-                        vinc = linha['tipoVinculoId']   
-
-                    pessoa_gravar = Pessoas(pesNome           = linha['pesNome'],
-                                             pesCPF            = linha['pesCPF'],
-                                             pesDataNascimento = linha['pesDataNascimento'],
-                                             pesMatriculaSiape = linha['pesMatriculaSiape'],
-                                             pesEmail          = linha['pesEmail'],
-                                             unidadeId         = linha['unidadeId'],
-                                             tipoFuncaoId      = func,
-                                             cargaHoraria      = linha['cargaHoraria'],
-                                             situacaoPessoaId  = sit,
-                                             tipoVinculoId     = vinc)
-
-                    db.session.add(pessoa_gravar)
-
-                    qtd += 1
-
-            db.session.commit()
-
-            print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
-            print ('*** ',qtd,'linhas inseridas na tabela pessoa.')
-            print ('*** ',qtd_exist,'linhas com cpfs já existentes foram ignoradas.')
+            print ('*****************************************************************')
+            print ('<<',dt.now().strftime("%x %X"),'>> ','Carregando dados de Pessoas...')
             print ('*****************************************************************')
 
-            if qtd_exist == 0:
+            qtd = 0
+            qtd_exist = 0
+            qtdLinhas = 0
 
-                flash('Executada carga de Pessoas no DBSISGP. ' +\
-                    str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                    str(qtd) + ' linhas efetivamente inseridas e ' +\
-                    ' nenhuma linha foi ignorada por conter cpf de Pessoa já existente no banco.','sucesso')
+            cpfExistente = db.session.query(Pessoas.pesCPF).all()
 
-            else:
+            l_cpfExistente = [c[0] for c in cpfExistente]
 
-                flash('Executada carga de Pessoas no DBSISGP. ' +\
-                    str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                    str(qtd) + ' linhas efetivamente inseridas e ' +\
-                    str(qtd_exist) + ' linhas ignoradas por conter cpfs de Pessoas já existentes.','perigo')
-        
+            # abre csv e gera a lista data_lines
+            with open(arq, newline='',encoding = 'utf-8-sig') as data:
+                data_lines = csv.DictReader(data,delimiter=';')
 
-        if os.path.exists(arq):
-            os.remove(arq)        
+                for linha in data_lines:
 
-        return redirect(url_for('pessoas.lista_pessoas'))
+                    qtdLinhas += 1
+
+                    if linha['pesCPF'] in l_cpfExistente:
+
+                        qtd_exist += 1
+            
+                    if linha['pesCPF'] != '' and linha['pesCPF'] != None and linha['pesCPF'] not in l_cpfExistente:
+
+                        if linha['tipoFuncaoId'] == '' or linha['tipoFuncaoId'] == 0:
+                            func = None
+                        else:
+                            func = linha['tipoFuncaoId']
+
+                        if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0:
+                            sit = None
+                        else:
+                            sit = linha['situacaoPessoaId']
+
+                        if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0:
+                            vinc = None
+                        else:
+                            vinc = linha['tipoVinculoId']   
+
+                        pessoa_gravar = Pessoas(pesNome           = linha['pesNome'],
+                                                pesCPF            = linha['pesCPF'],
+                                                pesDataNascimento = linha['pesDataNascimento'],
+                                                pesMatriculaSiape = linha['pesMatriculaSiape'],
+                                                pesEmail          = linha['pesEmail'],
+                                                unidadeId         = linha['unidadeId'],
+                                                tipoFuncaoId      = func,
+                                                cargaHoraria      = linha['cargaHoraria'],
+                                                situacaoPessoaId  = sit,
+                                                tipoVinculoId     = vinc)
+
+                        db.session.add(pessoa_gravar)
+
+                        qtd += 1
+
+                db.session.commit()
+
+                print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
+                print ('*** ',qtd,'linhas inseridas na tabela pessoa.')
+                print ('*** ',qtd_exist,'linhas com cpfs já existentes foram ignoradas.')
+                print ('*****************************************************************')
+
+                if qtd_exist == 0:
+
+                    flash('Executada carga de Pessoas no DBSISGP. ' +\
+                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
+                        str(qtd) + ' linhas efetivamente inseridas e ' +\
+                        ' nenhuma linha foi ignorada por conter cpf de Pessoa já existente no banco.','sucesso')
+
+                else:
+
+                    flash('Executada carga de Pessoas no DBSISGP. ' +\
+                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
+                        str(qtd) + ' linhas efetivamente inseridas e ' +\
+                        str(qtd_exist) + ' linhas ignoradas por conter cpfs de Pessoas já existentes.','perigo')
+            
+
+            if os.path.exists(arq):
+                os.remove(arq)        
+
+            return redirect(url_for('pessoas.lista_pessoas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('pessoas.lista_pessoas'))
 
     return render_template('grab_file.html',form=form, tipo = tipo)
 

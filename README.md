@@ -6,46 +6,59 @@ Lembre-se de criar um ambiente para o sistema. Os arquivos requirements.txt ou e
 Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais pacotes instalados do que o realmente necessário, mas isto não é um impedimento.
 Certifique-se que o pacote pyodbc está instalado: pip install pyodbc
 
-Será necessário criar na pasta ApoioSisgp a pasta Instance. Nesta pasta crie o arquivo flask.cfg.
+Na pasta Instance, há o arquivo flask exemplo.cfg. Este deve ser ajustado para o seu caso e renomeado para flask.cfg.
 
-É neste arquivo que você deverá informar a string de acesso ao seu banco DBSISGP. Veja abaixo o conteúdo mínimo deste arquivo. Altere params para o seu caso:
+Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no 
+DBSISGP. Abaixo seguem as instruções SQL para tal:
 
-      # flask.cfg
+CREATE SCHEMA [Apoio]
+GO
 
-      import urllib
+/****** Object:  Table [Apoio].[User]  e [Apoio].[log_auto]  ******/
+SET ANSI_NULLS ON
+GO
 
-      # Used a random number generator
+SET QUOTED_IDENTIFIER ON
+GO
 
-      SECRET_KEY = '\x8b\xe5\xdb\x17\xe8\x93h\\\xae\xe8\x13e.\xb0\xabU\xdc\xf8q\xf4\xef>~\xce'
+CREATE TABLE [Apoio].[User](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[userNome] [varchar](150) NOT NULL,
+	[userEmail] [varchar](150) NOT NULL,
+	[password_hash] [varchar](128) NOT NULL,
+	[email_confirmation_sent_on] [datetime] NULL,
+	[email_confirmed] [bit] NULL,
+	[email_confirmed_on] [datetime] NULL,
+	[registered_on] [datetime] NULL,
+	[last_logged_in] [datetime] NULL,
+	[current_logged_in] [datetime] NULL,
+	[userAtivo] [bit] NULL,
+ CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 
-      ####################
-      ## SQL DATABASE   ##
-      ####################
+CREATE TABLE [Apoio].[log_auto](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[data_hora] [datetime] NOT NULL,
+	[user_id] [bigint] NOT NULL,
+	[msg] [varchar](150) NOT NULL,
+ CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 
-      params = urllib.parse.quote_plus("DRIVER={< driver >};\
-                                        SERVER=< servidor >;\
-                                        DATABASE=< database >;\
-                                        UID=< uid >;PWD=< pwd >")
+ALTER TABLE [Apoio].[log_auto]  WITH CHECK ADD  CONSTRAINT [FK_log_auto_user_id] FOREIGN KEY([user_id])
+REFERENCES [Apoio].[User] ([id])
+GO
 
-      SQLALCHEMY_DATABASE_URI = "mssql+pyodbc:///?odbc_connect=%s" % params
+ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
+GO
 
-      SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-      DEBUG = False
-      #DEBUG = True
-
-Em params:
-
-. < driver >  deverá corresponder à versão que está instalada em sua máquina. Exemplo: ODBC Driver 17 for SQL Server.
-
-. < servidor > é o local onde o DBSISGP foi instalado.
-
-. < database > é o nome do banco de dados. Se não foi alterado será DBSISGP.
-
-. < uid > é o usuário que acessa o banco de dados.
-
-. < pwd > é a senha deste usuário.
-  
 Outra forma de disponibilizar este aplicativo para os que não tem o Python instalado e por meio do Pyinstaller. Ele agrega o projeto e todas as suas dependências
 em um único arquivo executável. Com o pyinstaller instalado, crie este .exe com o comando pyinstaller --onefile app.spec.
 

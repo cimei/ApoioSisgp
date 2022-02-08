@@ -15,12 +15,16 @@
 # views.py na pasta unidades
 
 from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask_login import current_user, login_required
+
+
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Unidades, Pessoas
 from project.unidades.forms import UnidadeForm
 
+from project.usuarios.views import registra_log_auto
 
 unidades = Blueprint('unidades',__name__, template_folder='templates')
 
@@ -28,6 +32,7 @@ unidades = Blueprint('unidades',__name__, template_folder='templates')
 ## lista unidades da instituição
 
 @unidades.route('/lista_unidades')
+
 def lista_unidades():
     """
     +---------------------------------------------------------------------------------------+
@@ -82,6 +87,7 @@ def lista_unidades():
 ### atualiza dados de uma unidade
 
 @unidades.route("/<int:cod_unid>/update", methods=['GET', 'POST'])
+@login_required
 
 def unidade_update(cod_unid):
     """
@@ -121,24 +127,35 @@ def unidade_update(cod_unid):
 
     if form.validate_on_submit():
 
-        unidade.undSigla                 = form.sigla.data
-        unidade.undDescricao             = form.desc.data
-        unidade.unidadeIdPai             = form.pai.data
-        unidade.tipoUnidadeId            = form.tipo.data
-        unidade.situacaoUnidadeId        = form.situ.data
-        unidade.ufId                     = form.uf.data
-        unidade.undNivel                 = form.nivel.data
-        unidade.tipoFuncaoUnidadeId      = form.tipoFun.data
-        unidade.Email                    = form.email.data
-        unidade.undCodigoSIORG           = form.siorg.data
-        unidade.pessoaIdChefe            = form.chefe.data
-        unidade.pessoaIdChefeSubstituto  = form.subs.data
+        if current_user.userAtivo:
 
-        db.session.commit()
+            unidade.undSigla                 = form.sigla.data
+            unidade.undDescricao             = form.desc.data
+            unidade.unidadeIdPai             = form.pai.data
+            unidade.tipoUnidadeId            = form.tipo.data
+            unidade.situacaoUnidadeId        = form.situ.data
+            unidade.ufId                     = form.uf.data
+            unidade.undNivel                 = form.nivel.data
+            unidade.tipoFuncaoUnidadeId      = form.tipoFun.data
+            unidade.Email                    = form.email.data
+            unidade.undCodigoSIORG           = form.siorg.data
+            unidade.pessoaIdChefe            = form.chefe.data
+            unidade.pessoaIdChefeSubstituto  = form.subs.data
 
-        flash('Unidade atualizada!','sucesso')
+            db.session.commit()
 
-        return redirect(url_for('unidades.lista_unidades'))
+            registra_log_auto(current_user.id,'Unidade '+ str(unidade.unidadeId) +' '+ unidade.undSigla +' teve dados alterados.')
+
+            flash('Unidade atualizada!','sucesso')
+
+            return redirect(url_for('unidades.lista_unidades'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('unidades.lista_unidades'))
+
 
     # traz a informação atual do Unidades
 
@@ -166,6 +183,7 @@ def unidade_update(cod_unid):
 ### insere nova unidade no banco de dados
 
 @unidades.route("/cria_unidade", methods=['GET', 'POST'])
+@login_required
 
 def cria_unidade():
     """
@@ -202,42 +220,50 @@ def cria_unidade():
 
     if form.validate_on_submit():
 
-        print (form.pai.data, form.chefe.data, form.subs.data)
+        if current_user.userAtivo:
 
-        if form.pai.data == 0:
-            pai = None
+            if form.pai.data == 0:
+                pai = None
+            else:
+                pai = form.pai.data
+
+            if form.chefe.data == 0:
+                chefe = None
+            else:
+                chefe = form.chefe.data
+
+            if form.subs.data == 0:
+                subs = None
+            else:
+                subs = form.chefe.data     
+
+            unidade = Unidades(undSigla                = form.sigla.data,
+                               undDescricao            = form.desc.data,
+                               unidadeIdPai            = pai,
+                               tipoUnidadeId           = form.tipo.data,
+                               situacaoUnidadeId       = form.situ.data,
+                               ufId                    = form.uf.data,
+                               undNivel                = form.nivel.data,
+                               tipoFuncaoUnidadeId     = form.tipoFun.data,
+                               Email                   = form.email.data,
+                               undCodigoSIORG          = form.siorg.data,
+                               pessoaIdChefe           = chefe,
+                               pessoaIdChefeSubstituto = subs)
+
+            db.session.add(unidade)
+            db.session.commit()
+
+            registra_log_auto(current_user.id,'Unidade '+ str(unidade.unidadeId) +' '+ unidade.undSigla +' inserida no banco de dados.')
+
+            flash(str('Unidade ' + form.sigla.data +' inserida no banco!'),'sucesso')
+
+            return redirect(url_for('unidades.lista_unidades'))
+
         else:
-            pai = form.pai.data
 
-        if form.chefe.data == 0:
-            chefe = None
-        else:
-            chefe = form.chefe.data
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-        if form.subs.data == 0:
-            subs = None
-        else:
-            subs = form.chefe.data     
+            return redirect(url_for('unidades.lista_unidades'))
 
-        unidade = Unidades(undSigla                 = form.sigla.data,
-                           undDescricao             = form.desc.data,
-                           unidadeIdPai             = pai,
-                           tipoUnidadeId            = form.tipo.data,
-                           situacaoUnidadeId        = form.situ.data,
-                           ufId                     = form.uf.data,
-                           undNivel                 = form.nivel.data,
-                           tipoFuncaoUnidadeId      = form.tipoFun.data,
-                           Email                    = form.email.data,
-                           undCodigoSIORG           = form.siorg.data,
-                           pessoaIdChefe            = chefe,
-                           pessoaIdChefeSubstituto  = subs)
 
-        db.session.add(unidade)
-        db.session.commit()
-
-        flash(str('Unidade ' + form.sigla.data +' inserida no banco!'),'sucesso')
-
-        return redirect(url_for('unidades.lista_unidades'))
-
-    return render_template('atu_unidade.html',
-                           form=form)
+    return render_template('atu_unidade.html', form=form)

@@ -1,6 +1,6 @@
 /build
 /dist
-/instance
+/instance/flask.cfg
 /__pycache__
 /project/__pycache__
 /project/core/__pycache__

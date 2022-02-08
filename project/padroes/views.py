@@ -25,12 +25,16 @@
 # views.py na pasta padroes
 
 from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask_login import current_user, login_required
+
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from sqlalchemy import insert
 from project import db
 from project.models import Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, Feriados
 from project.padroes.forms import Situ_PessoasForm, Func_PessoasForm, Vinc_PessoasForm, FeriadoForm
+
+from project.usuarios.views import registra_log_auto
 
 import locale
 import datetime
@@ -64,6 +68,7 @@ def lista_situ_pessoas():
 ### atualiza dados de situação de pessoas
 
 @padroes.route("/<int:cod_sit>/update", methods=['GET', 'POST'])
+@login_required
 
 def situ_pessoas_update(cod_sit):
     """
@@ -82,13 +87,23 @@ def situ_pessoas_update(cod_sit):
     
     if form.validate_on_submit():
 
-        sit_pes.spsDescricao = form.desc.data
+        if current_user.userAtivo:
 
-        db.session.commit()
+            sit_pes.spsDescricao = form.desc.data
 
-        flash('Situação de Pessoas atualizada!','sucesso')
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_situ_pessoas'))
+            registra_log_auto(current_user.id,'SituacaoPessoa '+ str(sit_pes.situacaoPessoaId) +' teve descrição alterada.')
+
+            flash('Situação de Pessoas atualizada!','sucesso')
+
+            return redirect(url_for('padroes.lista_situ_pessoas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_situ_pessoas'))
 
     # traz a dados atuais da situação
 
@@ -103,6 +118,7 @@ def situ_pessoas_update(cod_sit):
 ### insere nova situação no banco de dados
 
 @padroes.route("/cria_situ_pessoas", methods=['GET', 'POST'])
+@login_required
 
 def cria_situ_pessoas():
     """
@@ -118,14 +134,24 @@ def cria_situ_pessoas():
 
     if form.validate_on_submit():
 
-        sit_pes = Situ_Pessoa(situacaoPessoaId = form.id.data, spsDescricao = form.desc.data)
+        if current_user.userAtivo:
 
-        db.session.add(sit_pes)
-        db.session.commit()
+            sit_pes = Situ_Pessoa(situacaoPessoaId = form.id.data, spsDescricao = form.desc.data)
 
-        flash('Situação '+str(form.desc.data +' inserida no DBSISGP!'),'sucesso')
+            db.session.add(sit_pes)
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_situ_pessoas'))
+            registra_log_auto(current_user.id,'SituacaoPessoa '+ str(sit_pes.situacaoPessoaId) +' '+ sit_pes.spsDescricao +' inserida no banco de dados.')
+
+            flash('Situação '+str(form.desc.data +' inserida no DBSISGP!'),'sucesso')
+
+            return redirect(url_for('padroes.lista_situ_pessoas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_situ_pessoas'))
 
     return render_template('atu_situ_pessoas.html', form=form, tp=tp)
 
@@ -156,6 +182,7 @@ def lista_tipo_funcao():
 ### atualiza dados de um tipo de função
 
 @padroes.route("/<int:cod_func>/atualiza_func", methods=['GET', 'POST'])
+@login_required
 
 def func_pessoas_update(cod_func):
     """
@@ -174,15 +201,25 @@ def func_pessoas_update(cod_func):
     
     if form.validate_on_submit():
 
-        func_pes.tfnDescricao       = form.desc.data
-        func_pes.tfnCodigoFuncao    = form.cod.data
-        func_pes.tfnIndicadorChefia = form.indic.data
+        if current_user.userAtivo:
 
-        db.session.commit()
+            func_pes.tfnDescricao       = form.desc.data
+            func_pes.tfnCodigoFuncao    = form.cod.data
+            func_pes.tfnIndicadorChefia = form.indic.data
 
-        flash('Dados de Função atualizados!','sucesso')
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_tipo_funcao'))
+            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFucaoId) +' '+ func_pes.tfnDescricao +' foi alterada.')
+
+            flash('Dados de Função atualizados!','sucesso')
+
+            return redirect(url_for('padroes.lista_tipo_funcao'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_tipo_funcao'))
 
     # traz a dados atuais da função
 
@@ -199,6 +236,7 @@ def func_pessoas_update(cod_func):
 ### insere nova função de pessoas no banco de dados
 
 @padroes.route("/cria_func_pessoas", methods=['GET', 'POST'])
+@login_required
 
 def cria_func_pessoas():
     """
@@ -214,17 +252,27 @@ def cria_func_pessoas():
 
     if form.validate_on_submit():
 
-        func_pes = Tipo_Func_Pessoa(tipoFuncaoId       = form.id.data, 
-                                    tfnDescricao       = form.desc.data,
-                                    tfnCodigoFuncao    = form.cod.data, 
-                                    tfnIndicadorChefia = form.indic.data)
+        if current_user.userAtivo:
 
-        db.session.add(func_pes)
-        db.session.commit()
+            func_pes = Tipo_Func_Pessoa(tipoFuncaoId       = form.id.data, 
+                                        tfnDescricao       = form.desc.data,
+                                        tfnCodigoFuncao    = form.cod.data, 
+                                        tfnIndicadorChefia = form.indic.data)
 
-        flash('Tipo de função '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+            db.session.add(func_pes)
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_tipo_funcao'))
+            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFucaoId) +' '+ func_pes.tfnDescricao +' foi inserida no banco.')
+
+            flash('Tipo de função '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+
+            return redirect(url_for('padroes.lista_tipo_funcao'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_tipo_funcao'))
 
     return render_template('atu_func_pessoas.html', form=form, tp=tp)
 
@@ -254,6 +302,7 @@ def lista_vinc_pessoas():
 ### atualiza dados de tipo de vínculo
 
 @padroes.route("/<int:cod_vinc>/vinc_update", methods=['GET', 'POST'])
+@login_required
 
 def vinc_pessoas_update(cod_vinc):
     """
@@ -272,13 +321,23 @@ def vinc_pessoas_update(cod_vinc):
     
     if form.validate_on_submit():
 
-        vinc_pes.tvnDescricao = form.desc.data
+        if current_user.userAtivo:
 
-        db.session.commit()
+            vinc_pes.tvnDescricao = form.desc.data
 
-        flash('Tipo de vínculo atualizado!','sucesso')
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_vinc_pessoas'))
+            registra_log_auto(current_user.id,'TipoVinculo '+ str(vinc_pes.tipoVinculoId) +' '+ vinc_pes.tvnDescricao +' foi alterado.')
+
+            flash('Tipo de vínculo atualizado!','sucesso')
+
+            return redirect(url_for('padroes.lista_vinc_pessoas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_vinc_pessoas'))
 
     # traz a dados atuais do vínculo
 
@@ -292,6 +351,7 @@ def vinc_pessoas_update(cod_vinc):
 ### insere nova situação no banco de dados
 
 @padroes.route("/cria_vinc_pessoas", methods=['GET', 'POST'])
+@login_required
 
 def cria_vinc_pessoas():
     """
@@ -307,17 +367,27 @@ def cria_vinc_pessoas():
 
     if form.validate_on_submit():
 
-        vinc_pes = Tipo_Vinculo_Pessoa(tipoVinculoId = form.id.data,
-                                       tvnDescricao = form.desc.data)
+        if current_user.userAtivo:
 
-        #vinc_pes = Tipo_Vinculo_Pessoa(tvnDescricao = form.desc.data)                               
+            vinc_pes = Tipo_Vinculo_Pessoa(tipoVinculoId = form.id.data,
+                                        tvnDescricao = form.desc.data)
 
-        db.session.add(vinc_pes)
-        db.session.commit()
+            #vinc_pes = Tipo_Vinculo_Pessoa(tvnDescricao = form.desc.data)                               
 
-        flash('Vinculo '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+            db.session.add(vinc_pes)
+            db.session.commit()
 
-        return redirect(url_for('padroes.lista_vinc_pessoas'))
+            registra_log_auto(current_user.id,'TipoVinculo '+ str(vinc_pes.tipoVinculoId) +' '+ vinc_pes.tvnDescricao +' foi inserido no banco.')
+
+            flash('Vinculo '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+
+            return redirect(url_for('padroes.lista_vinc_pessoas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('padroes.lista_vinc_pessoas'))
 
     return render_template('atu_vinc_pessoas.html', form=form, tp=tp)
 
@@ -350,6 +420,7 @@ def lista_feriados():
 ### atualiza dados de um feriado
 
 @padroes.route("/<int:cod_fer>/atualiza_fer", methods=['GET', 'POST'])
+@login_required
 
 def feriado_update(cod_fer):
     """
@@ -368,21 +439,33 @@ def feriado_update(cod_fer):
     
     if form.validate_on_submit():
 
-        if form.ufId.data == '':
-            uf = None
+        if current_user.userAtivo:
+
+            if form.ufId.data == '':
+                uf = None
+            else:
+                uf = form.ufId.data
+
+            feriado.ferData      = form.ferData.data
+            feriado.ferFixo      = form.ferFixo.data
+            feriado.ferDescricao = form.ferDescricao.data
+            feriado.ufId         = uf
+
+            db.session.commit()
+
+            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%x'))  +' foi alterado.')
+
+            flash('Dados de Feriado atualizados!','sucesso')
+
+            return redirect(url_for('padroes.lista_feriados'))
+
         else:
-            uf = form.ufId.data
 
-        feriado.ferData      = form.ferData.data
-        feriado.ferFixo      = form.ferFixo.data
-        feriado.ferDescricao = form.ferDescricao.data
-        feriado.ufId         = uf
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-        db.session.commit()
+            return redirect(url_for('padroes.lista_feriados'))
 
-        flash('Dados de Feriado atualizados!','sucesso')
 
-        return redirect(url_for('padroes.lista_feriados'))
 
     # traz dados atuais do feriado
 
@@ -399,6 +482,7 @@ def feriado_update(cod_fer):
 ### insere novo feriado no banco de dados
 
 @padroes.route("/cria_feriado", methods=['GET', 'POST'])
+@login_required
 
 def cria_feriado():
     """
@@ -416,22 +500,32 @@ def cria_feriado():
 
     if form.validate_on_submit():
 
-        if form.ufId.data == '':
-            uf = None
+        if current_user.userAtivo:
+
+            if form.ufId.data == '':
+                uf = None
+            else:
+                uf = form.ufId.data
+
+            feriado = Feriados(ferData      = form.ferData.data, 
+                            ferFixo      = form.ferFixo.data,
+                            ferDescricao = form.ferDescricao.data, 
+                            ufId         = uf)
+
+            db.session.add(feriado)
+            db.session.commit()
+
+            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%x'))  +' foi incluido no banco de dados.')
+
+            flash('Feriado '+str(form.ferDescricao.data +' inserido no DBSISGP!'),'sucesso')
+
+            return redirect(url_for('padroes.lista_feriados'))
+
         else:
-            uf = form.ufId.data
 
-        feriado = Feriados(ferData      = form.ferData.data, 
-                           ferFixo      = form.ferFixo.data,
-                           ferDescricao = form.ferDescricao.data, 
-                           ufId         = uf)
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-        db.session.add(feriado)
-        db.session.commit()
-
-        flash('Feriado '+str(form.ferDescricao.data +' inserido no DBSISGP!'),'sucesso')
-
-        return redirect(url_for('padroes.lista_feriados'))
+            return redirect(url_for('padroes.lista_feriados'))
 
     #form.feriadoId.data = last.feriadoId + 1
 

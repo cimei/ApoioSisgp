@@ -15,11 +15,15 @@
 # views.py na pasta pessoas
 
 from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask_login import current_user, login_required
+
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom
 from project.pessoas.forms import PessoaForm
+
+from project.usuarios.views import registra_log_auto
 
 import locale
 import datetime
@@ -33,6 +37,7 @@ pessoas = Blueprint('pessoas',__name__, template_folder='templates')
 ## lista pessoas da instituição
 
 @pessoas.route('/lista_pessoas')
+
 def lista_pessoas():
     """
     +---------------------------------------------------------------------------------------+
@@ -83,6 +88,7 @@ def lista_pessoas():
 ### atualiza dados de uma pessoa
 
 @pessoas.route("/<int:cod_pes>/update", methods=['GET', 'POST'])
+@login_required
 
 def pessoa_update(cod_pes):
     """
@@ -126,37 +132,47 @@ def pessoa_update(cod_pes):
     
     if form.validate_on_submit():
 
-        if form.func.data == 0:
-            funcPes = None
+        if current_user.userAtivo:
+
+            if form.func.data == 0:
+                funcPes = None
+            else:
+                funcPes = form.func.data
+
+            if form.situ.data == 0:
+                situPes = None
+            else:
+                situPes = form.situ.data
+
+            if form.vinculo.data == 0:
+                vincuPes = None
+            else:
+                vincuPes = form.vinculo.data
+
+            pessoa.pesNome            = form.nome.data
+            pessoa.pesCPF             = form.cpf.data
+            pessoa.pesDataNascimento  = form.nasc.data
+            pessoa.pesMatriculaSiape  = form.siape.data
+            pessoa.pesEmail           = form.email.data
+            pessoa.unidadeId          = form.unidade.data
+            pessoa.tipoFuncaoId       = funcPes
+            pessoa.cargaHoraria       = form.carga.data
+            pessoa.situacaoPessoaId   = situPes
+            pessoa.tipoVinculoId      = vincuPes
+
+            db.session.commit()
+
+            registra_log_auto(current_user.id,'Pessoa '+ str(pessoa.pessoaId) +' '+ pessoa.pesNome +' teve dados alterados.')
+
+            flash('Dados de '+str(form.nome.data) +' atualizados no DBSISGP!','sucesso')
+
+            return redirect(url_for('pessoas.lista_pessoas'))
+
         else:
-            funcPes = form.func.data
 
-        if form.situ.data == 0:
-            situPes = None
-        else:
-            situPes = form.situ.data
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-        if form.vinculo.data == 0:
-            vincuPes = None
-        else:
-            vincuPes = form.vinculo.data
-
-        pessoa.pesNome            = form.nome.data
-        pessoa.pesCPF             = form.cpf.data
-        pessoa.pesDataNascimento  = form.nasc.data
-        pessoa.pesMatriculaSiape  = form.siape.data
-        pessoa.pesEmail           = form.email.data
-        pessoa.unidadeId          = form.unidade.data
-        pessoa.tipoFuncaoId       = funcPes
-        pessoa.cargaHoraria       = form.carga.data
-        pessoa.situacaoPessoaId   = situPes
-        pessoa.tipoVinculoId      = vincuPes
-
-        db.session.commit()
-
-        flash('Dados de '+str(form.nome.data) +' atualizados no DBSISGP!','sucesso')
-
-        return redirect(url_for('pessoas.lista_pessoas'))
+            return redirect(url_for('pessoas.lista_pessoas'))
 
     # traz a informação atual do pessoas
 
@@ -179,6 +195,7 @@ def pessoa_update(cod_pes):
 ### insere nova pessoa no banco de dados
 
 @pessoas.route("/cria_pessoa", methods=['GET', 'POST'])
+@login_required
 
 def cria_pessoa():
     """
@@ -220,38 +237,49 @@ def cria_pessoa():
 
     if form.validate_on_submit():
 
-        if form.func.data == 0:
-            funcPes = None
+        if current_user.userAtivo:
+
+            if form.func.data == 0:
+                funcPes = None
+            else:
+                funcPes = form.func.data
+
+            if form.situ.data == 0:
+                situPes = None
+            else:
+                situPes = form.situ.data
+
+            if form.vinculo.data == 0:
+                vincuPes = None
+            else:
+                vincuPes = form.vinculo.data     
+
+            pessoa = Pessoas(pesNome           = form.nome.data,
+                            pesCPF            = form.cpf.data,
+                            pesDataNascimento = form.nasc.data,
+                            pesMatriculaSiape = form.siape.data,
+                            pesEmail          = form.email.data,
+                            unidadeId         = form.unidade.data,
+                            tipoFuncaoId      = funcPes,
+                            cargaHoraria      = form.carga.data,
+                            situacaoPessoaId  = situPes,
+                            tipoVinculoId     = vincuPes)
+
+            db.session.add(pessoa)
+            db.session.commit()
+
+            registra_log_auto(current_user.id,'Pessoa '+ str(pessoa.pessoaId) +' '+ pessoa.pesNome +' inserida no banco de dados.')
+
+            flash(str(form.nome.data +' inserido(a) no DBSISGP!'),'sucesso')
+
+            return redirect(url_for('pessoas.lista_pessoas'))
+
         else:
-            funcPes = form.func.data
 
-        if form.situ.data == 0:
-            situPes = None
-        else:
-            situPes = form.situ.data
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-        if form.vinculo.data == 0:
-            vincuPes = None
-        else:
-            vincuPes = form.vinculo.data     
+            return redirect(url_for('pessoas.lista_pessoas'))
 
-        pessoa = Pessoas(pesNome           = form.nome.data,
-                         pesCPF            = form.cpf.data,
-                         pesDataNascimento = form.nasc.data,
-                         pesMatriculaSiape = form.siape.data,
-                         pesEmail          = form.email.data,
-                         unidadeId         = form.unidade.data,
-                         tipoFuncaoId      = funcPes,
-                         cargaHoraria      = form.carga.data,
-                         situacaoPessoaId  = situPes,
-                         tipoVinculoId     = vincuPes)
-
-        db.session.add(pessoa)
-        db.session.commit()
-
-        flash(str(form.nome.data +' inserido(a) no DBSISGP!'),'sucesso')
-
-        return redirect(url_for('pessoas.lista_pessoas'))
 
     return render_template('atu_pessoa.html', form=form, tp=tp)
 
