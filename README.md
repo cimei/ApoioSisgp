@@ -22,7 +22,6 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       GO
       
       CREATE TABLE [Apoio].[User](
-<<<<<<< HEAD
             [id] [bigint] IDENTITY(1,1) NOT NULL,
             [userNome] [varchar](150) NOT NULL,
             [userEmail] [varchar](150) NOT NULL,
@@ -34,19 +33,6 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
             [last_logged_in] [datetime] NULL,
             [current_logged_in] [datetime] NULL,
             [userAtivo] [bit] NULL,
-=======
-      	      [id] [bigint] IDENTITY(1,1) NOT NULL,
-      	      [userNome] [varchar](150) NOT NULL,
-      	      [userEmail] [varchar](150) NOT NULL,
-      	      [password_hash] [varchar](128) NOT NULL,
-	      [email_confirmation_sent_on] [datetime] NULL,
-	      [email_confirmed] [bit] NULL,
-	      [email_confirmed_on] [datetime] NULL,
-	      [registered_on] [datetime] NULL,
-	      [last_logged_in] [datetime] NULL,
-	      [current_logged_in] [datetime] NULL,
-	      [userAtivo] [bit] NULL,
->>>>>>> 1f77b425069254ee3c67021a735c06ed922ea46d
        CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
@@ -55,17 +41,10 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       GO
       
       CREATE TABLE [Apoio].[log_auto](
-<<<<<<< HEAD
             [id] [bigint] IDENTITY(1,1) NOT NULL,
             [data_hora] [datetime] NOT NULL,
             [user_id] [bigint] NOT NULL,
             [msg] [varchar](150) NOT NULL,
-=======
-	      [id] [bigint] IDENTITY(1,1) NOT NULL,
-	      [data_hora] [datetime] NOT NULL,
-      	      [user_id] [bigint] NOT NULL,
-      	      [msg] [varchar](150) NOT NULL,
->>>>>>> 1f77b425069254ee3c67021a735c06ed922ea46d
        CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
