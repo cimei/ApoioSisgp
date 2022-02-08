@@ -11,7 +11,7 @@ Na pasta Instance, há o arquivo flask exemplo.cfg. Este deve ser ajustado para 
 Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no 
 DBSISGP. Abaixo seguem as instruções SQL para tal:
 
-       SCHEMA [Apoio]
+      CREATE SCHEMA [Apoio]
       GO
       
       /****** Object:  Table [Apoio].[User]  e [Apoio].[log_auto]  ******/
@@ -22,10 +22,10 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       GO
       
       CREATE TABLE [Apoio].[User](
-      	[id] [bigint] IDENTITY(1,1) NOT NULL,
-      	[userNome] [varchar](150) NOT NULL,
-      	[userEmail] [varchar](150) NOT NULL,
-      	[password_hash] [varchar](128) NOT NULL,
+      	      [id] [bigint] IDENTITY(1,1) NOT NULL,
+      	      [userNome] [varchar](150) NOT NULL,
+      	      [userEmail] [varchar](150) NOT NULL,
+      	      [password_hash] [varchar](128) NOT NULL,
 	      [email_confirmation_sent_on] [datetime] NULL,
 	      [email_confirmed] [bit] NULL,
 	      [email_confirmed_on] [datetime] NULL,
@@ -43,8 +43,8 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       CREATE TABLE [Apoio].[log_auto](
 	      [id] [bigint] IDENTITY(1,1) NOT NULL,
 	      [data_hora] [datetime] NOT NULL,
-      	[user_id] [bigint] NOT NULL,
-      	[msg] [varchar](150) NOT NULL,
+      	      [user_id] [bigint] NOT NULL,
+      	      [msg] [varchar](150) NOT NULL,
        CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
