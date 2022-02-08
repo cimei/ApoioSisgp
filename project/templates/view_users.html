@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+
+  <div class="admin-view-users">
+    <div class="page-header">
+      <h3>Lista dos usuários</h3>
+    </div>
+
+    <div style="overflow-y: auto; height:600px">
+      <table class="table table-striped" id="admin_list_of_users">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+            <th>E-mail</th>
+            <th align="center">Data reg.</th>
+            <th align="center">E-mail conf.?</th>
+            <th align="center">E-mail conf. em</th>
+            <th align="center">Último login</th>
+            <th align="center">Ativo?</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for user in lista %}
+            <tr>
+              <td> <a href="{{url_for('usuarios.update_user', user_id=user.id)}}"><abbr title="Clique aqui atualizar">{{ user.id }} </td>
+              <td> {{ user.userNome }} </td>
+              <td> {{ user.userEmail }} </td>
+              <td align="center"> {% if user.registered_on != None %} {{user.registered_on.strftime('%x')}} {% endif %} </td>
+              <td align="center"> {% if user.email_confirmed == True %} Sim {% else %} Não {% endif %} </td>
+              <td align="center"> {% if user.email_confirmed_on != None %} {{user.email_confirmed_on.strftime('%x')}} {% endif %}</td>
+              <td align="center"> {% if user.current_logged_in != None %} {{user.current_logged_in.strftime('%c')}} {% endif %}</td>
+              <td align="center"> {% if user.userAtivo == True %} Sim {% else %} Não {% endif %} </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -11,53 +11,53 @@ Na pasta Instance, há o arquivo flask exemplo.cfg. Este deve ser ajustado para 
 Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no 
 DBSISGP. Abaixo seguem as instruções SQL para tal:
 
-CREATE SCHEMA [Apoio]
-GO
+       SCHEMA [Apoio]
+      GO
+      
+      /****** Object:  Table [Apoio].[User]  e [Apoio].[log_auto]  ******/
+      SET ANSI_NULLS ON
+      GO
+      
+      SET QUOTED_IDENTIFIER ON
+      GO
+      
+      CREATE TABLE [Apoio].[User](
+      	[id] [bigint] IDENTITY(1,1) NOT NULL,
+      	[userNome] [varchar](150) NOT NULL,
+      	[userEmail] [varchar](150) NOT NULL,
+      	[password_hash] [varchar](128) NOT NULL,
+	      [email_confirmation_sent_on] [datetime] NULL,
+	      [email_confirmed] [bit] NULL,
+	      [email_confirmed_on] [datetime] NULL,
+	      [registered_on] [datetime] NULL,
+	      [last_logged_in] [datetime] NULL,
+	      [current_logged_in] [datetime] NULL,
+	      [userAtivo] [bit] NULL,
+       CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
+      (
+      	[id] ASC
+      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)       ON [PRIMARY]
+            ) ON [PRIMARY]
+      GO
+      
+      CREATE TABLE [Apoio].[log_auto](
+	      [id] [bigint] IDENTITY(1,1) NOT NULL,
+	      [data_hora] [datetime] NOT NULL,
+      	[user_id] [bigint] NOT NULL,
+      	[msg] [varchar](150) NOT NULL,
+       CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
+      (
+      	[id] ASC
+      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)       ON [PRIMARY]
+                  ) ON [PRIMARY]
+      GO
 
-/****** Object:  Table [Apoio].[User]  e [Apoio].[log_auto]  ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE TABLE [Apoio].[User](
-	[id] [bigint] IDENTITY(1,1) NOT NULL,
-	[userNome] [varchar](150) NOT NULL,
-	[userEmail] [varchar](150) NOT NULL,
-	[password_hash] [varchar](128) NOT NULL,
-	[email_confirmation_sent_on] [datetime] NULL,
-	[email_confirmed] [bit] NULL,
-	[email_confirmed_on] [datetime] NULL,
-	[registered_on] [datetime] NULL,
-	[last_logged_in] [datetime] NULL,
-	[current_logged_in] [datetime] NULL,
-	[userAtivo] [bit] NULL,
- CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [Apoio].[log_auto](
-	[id] [bigint] IDENTITY(1,1) NOT NULL,
-	[data_hora] [datetime] NOT NULL,
-	[user_id] [bigint] NOT NULL,
-	[msg] [varchar](150) NOT NULL,
- CONSTRAINT [PK_log_auto] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [Apoio].[log_auto]  WITH CHECK ADD  CONSTRAINT [FK_log_auto_user_id] FOREIGN KEY([user_id])
-REFERENCES [Apoio].[User] ([id])
-GO
-
-ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
-GO
+      ALTER TABLE [Apoio].[log_auto]  WITH CHECK ADD  CONSTRAINT [FK_log_auto_user_id] FOREIGN KEY([user_id])
+      REFERENCES [Apoio].[User] ([id])
+      GO
+      
+      ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
+      GO
 
 Outra forma de disponibilizar este aplicativo para os que não tem o Python instalado e por meio do Pyinstaller. Ele agrega o projeto e todas as suas dependências
 em um único arquivo executável. Com o pyinstaller instalado, crie este .exe com o comando pyinstaller --onefile app.spec.
