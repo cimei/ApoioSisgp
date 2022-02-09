@@ -40,6 +40,7 @@
         <th scope="col"><p align = "center">SIORG</p></th>
         <th scope="col"><p align = "center">Chefe</p></th>
         <th scope="col"><p align = "center">Substituto</p></th>
+        <th scope="col"><p align = "center">Atividades</p></th>
       </tr>
     </thead>
     <tbody>
@@ -60,8 +61,9 @@
         <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.pessoaIdChefe == None %}N.I.{% else %}{{u.Chefe}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.pessoaIdChefeSubstituto == None %}N.I.{% else %}{{u.Subs}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.Chefe == None or u.Chefe == '' %}N.I.{% else %}{{u.Chefe}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.Subs == None or u.Subs == '' %}N.I.{% else %}{{u.Subs}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.qtd_ativs == None %}0{% else %}{{u.qtd_ativs}}{% endif %} </p></td>
       </tr>
 
       {% endfor %}

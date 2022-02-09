@@ -15,6 +15,7 @@
     * Feriados: tabela de feriados
     * Planos_de_Trabalho: tabela dos programas de gestão de cada unidade
     * catalogo_dominio: tabela do catálogo de domínios
+    * unidade_ativ: tabela que relaciona unidade a atividades
 
     Abaixo seguem os Modelos e respectivos campos.
 """
@@ -363,3 +364,20 @@ class catdom(db.Model):
     def __repr__ (self):
         return f"{self.catalogoDominioId};{self.classificacao};{self.descricao};{self.ativo};"
 
+# catálogo (relaciona atividades às unidades)
+
+class unidade_ativ(db.Model):
+
+    __tablename__ = 'Catalogo'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    catalogoId = db.Column(db.String, primary_key = True)
+    unidadeId  = db.Column(db.Integer)
+
+    def __init__(self, catalogoId, unidadeId):
+
+        self.catalogoId = catalogoId
+        self.unidadeId  = unidadeId
+
+    def __repr__ (self):
+        return f"{self.catalogoId};{self.unidadeId};"

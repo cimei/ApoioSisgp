@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+09/02/2022
+
+Lista de unidades mostra quantidade de atividades de cada uma. v 2.1
+
 08/02/2022
 
 Sistema conta com controle de acesso e registro de log. v 2.0

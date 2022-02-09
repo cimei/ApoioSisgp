@@ -17,11 +17,11 @@
 from flask import render_template,url_for,flash, redirect,request,Blueprint
 from flask_login import current_user, login_required
 
-
+from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas
+from project.models import Unidades, Pessoas, unidade_ativ
 from project.unidades.forms import UnidadeForm
 
 from project.usuarios.views import registra_log_auto
@@ -54,7 +54,12 @@ def lista_unidades():
 
     lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço')]
 
-    lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]                                  
+    lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
+
+    ativs = db.session.query(unidade_ativ.unidadeId,
+                             label('qtd_ativs',func.count(unidade_ativ.catalogoId)))\
+                       .group_by(unidade_ativ.unidadeId)\
+                       .subquery()
 
     unids = db.session.query(Unidades.unidadeId,
                              Unidades.undSigla,
@@ -71,10 +76,12 @@ def lista_unidades():
                              Unidades.pessoaIdChefe,
                              chefes.c.pesNome.label("Chefe"),
                              Unidades.pessoaIdChefeSubstituto,
-                             subs.c.pesNome.label("Subs"))\
+                             subs.c.pesNome.label("Subs"),
+                             ativs.c.qtd_ativs)\
                             .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                             .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
                             .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                            .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
                             .order_by(Unidades.undSigla).all()
 
     quantidade = len(unids)
