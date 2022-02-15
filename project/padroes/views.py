@@ -209,7 +209,7 @@ def func_pessoas_update(cod_func):
 
             db.session.commit()
 
-            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFucaoId) +' '+ func_pes.tfnDescricao +' foi alterada.')
+            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFuncaoId) +' '+ func_pes.tfnDescricao +' foi alterada.')
 
             flash('Dados de Função atualizados!','sucesso')
 
@@ -262,7 +262,7 @@ def cria_func_pessoas():
             db.session.add(func_pes)
             db.session.commit()
 
-            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFucaoId) +' '+ func_pes.tfnDescricao +' foi inserida no banco.')
+            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFuncaoId) +' '+ func_pes.tfnDescricao +' foi inserida no banco.')
 
             flash('Tipo de função '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
 

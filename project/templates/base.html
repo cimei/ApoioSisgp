@@ -46,6 +46,10 @@
             <a class="nav-link" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
           </li>
 
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url_for('atividades.lista_atividades')}}">Atividades</a>
+          </li>
+
           <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Dados Auxiliares
@@ -120,7 +124,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num='2.1') %}
+          {% set ver = namespace(num='2.2') %}
 
         </ul>
 

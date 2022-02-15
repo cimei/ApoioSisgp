@@ -26,6 +26,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime, date
 
+from sqlalchemy.dialects.mssql import NUMERIC
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -381,3 +383,58 @@ class unidade_ativ(db.Model):
 
     def __repr__ (self):
         return f"{self.catalogoId};{self.unidadeId};"
+
+# catálogo item catálogo (intermediárna no relacionamento atividades - unidades)
+
+class cat_item_cat(db.Model):
+
+    __tablename__ = 'CatalogoItemCatalogo'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    catalogoItemCatalogoId = db.Column(db.String, primary_key = True)
+    catalogoId             = db.Column(db.String)
+    itemCatalogoId         = db.Column(db.String)
+
+    def __init__(self, catalogoId, itemCatalogoId):
+
+        self.catalogoId      = catalogoId
+        self.itemCatalogoId  = itemCatalogoId
+
+    def __repr__ (self):
+        return f"{self.catalogoId};{self.itemCatalogoId};"
+
+# atividades 
+
+class Atividades(db.Model):
+
+    __tablename__ = 'ItemCatalogo'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    itemCatalogoId        = db.Column(db.String, primary_key = True)
+    titulo                = db.Column(db.String)
+    calculoTempoId        = db.Column(db.Integer)
+    permiteRemoto         = db.Column(db.Boolean)
+    tempoPresencial       = db.Column(db.Numeric(4,1))
+    tempoRemoto           = db.Column(db.Numeric(4,1))
+    descricao             = db.Column(db.String)
+    complexidade          = db.Column(db.String)
+    definicaoComplexidade = db.Column(db.String)
+    entregasEsperadas     = db.Column(db.String)
+
+    def __init__(self, titulo, calculoTempoId, permiteRemoto, tempoPresencial, tempoRemoto, 
+                descricao, complexidade, definicaoComplexidade, entregasEsperadas):
+
+        self.titulo                = titulo
+        self.calculoTempoId        = calculoTempoId
+        self.permiteRemoto         = permiteRemoto
+        self.tempoPresencial       = tempoPresencial
+        self.tempoRemoto           = tempoRemoto
+        self.descricao             = descricao
+        self.complexidade          = complexidade
+        self.definicaoComplexidade = definicaoComplexidade
+        self.entregasEsperadas     = entregasEsperadas
+
+    def __repr__ (self):
+        return f"{self.titulo};{self.calculoTempoId};{self.permiteRemoto};{self.tempoPresencial};\
+                {self.tempoRemoto};{self.descricao};{self.complexidade};{self.definicaoComplexidade};\
+                {self.entregasEsperadas};"

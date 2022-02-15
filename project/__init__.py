@@ -71,6 +71,8 @@ from project.unidades.views import unidades
 from project.pessoas.views import pessoas
 from project.padroes.views import padroes
 from project.consultas.views import consultas
+from project.atividades.views import atividades
+
 
 app.register_blueprint(core)
 app.register_blueprint(usuarios)
@@ -83,3 +85,6 @@ app.register_blueprint(pessoas,url_prefix='/pessoas')
 app.register_blueprint(padroes,url_prefix='/padroes')
 
 app.register_blueprint(consultas,url_prefix='/consultas')
+
+app.register_blueprint(atividades,url_prefix='/atividades')
+

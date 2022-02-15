@@ -21,7 +21,7 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, unidade_ativ
+from project.models import Atividades, Unidades, Pessoas, cat_item_cat, unidade_ativ
 from project.unidades.forms import UnidadeForm
 
 from project.usuarios.views import registra_log_auto
@@ -56,8 +56,18 @@ def lista_unidades():
 
     lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
 
+    ativs_lista = db.session.query(Atividades.titulo,
+                                   cat_item_cat.catalogoId,
+                                   unidade_ativ.unidadeId)\
+                            .join(cat_item_cat, cat_item_cat.itemCatalogoId == Atividades.itemCatalogoId)\
+                            .join(unidade_ativ, unidade_ativ.catalogoId == cat_item_cat.catalogoId)\
+                            .order_by(Atividades.titulo)\
+                            .all()    
+
     ativs = db.session.query(unidade_ativ.unidadeId,
                              label('qtd_ativs',func.count(unidade_ativ.catalogoId)))\
+                       .join(cat_item_cat, cat_item_cat.catalogoId == unidade_ativ.catalogoId)\
+                       .join(Atividades, Atividades.itemCatalogoId == cat_item_cat.itemCatalogoId)\
                        .group_by(unidade_ativ.unidadeId)\
                        .subquery()
 
@@ -87,8 +97,10 @@ def lista_unidades():
     quantidade = len(unids)
 
 
-    return render_template('lista_unidades.html', unids = unids, quantidade=quantidade,
-                                                lista_situ_unidade=lista_situ_unidade, lista_tipo_unidade=lista_tipo_unidade)
+    return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
+                                                lista_situ_unidade = lista_situ_unidade, 
+                                                lista_tipo_unidade = lista_tipo_unidade,
+                                                ativs_lista = ativs_lista)
 
 #
 ### atualiza dados de uma unidade
@@ -168,8 +180,6 @@ def unidade_update(cod_unid):
 
     elif request.method == 'GET':
 
-        value = dict(lista_pais)[unidade.unidadeIdPai]
-               
         form.sigla.data   = unidade.undSigla
         form.desc.data    = unidade.undDescricao
         form.pai.data     = unidade.unidadeIdPai
@@ -183,8 +193,7 @@ def unidade_update(cod_unid):
         form.chefe.data   = unidade.pessoaIdChefe
         form.subs.data    = unidade.pessoaIdChefeSubstituto
 
-    return render_template('atu_unidade.html',
-                           form=form)
+    return render_template('atu_unidade.html', form=form)
 
 #
 ### insere nova unidade no banco de dados

@@ -1,5 +1,13 @@
 ## Atualizações ##
 
+15/02/2022
+
+Menu Atividades para visualização, alteração e inclusão de atividades.
+Lista de unidades mostra atividades relacionadas a cada uma.
+Lista de atividades mostra unidades relacionadas a cada uma.
+É possível fazer associações entre atividades e unidades.
+v 2.2
+
 09/02/2022
 
 Lista de unidades mostra quantidade de atividades de cada uma. v 2.1
