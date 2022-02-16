@@ -1,10 +1,11 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: utf-8 -*-
+
 
 block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['C:\\Users\\cimeibt\\Documents\\PythonScripts\\ApoioSisgp'],
+             pathex=['C:\\Users\\cimeibt\\Documents\\PythonScripts\\ApoioSisgpII'],
              binaries=[],
              datas=[('instance','var\\project-instance'),
                     ('project\\atividades', 'project\\atividades'),
@@ -13,10 +14,10 @@ a = Analysis(['app.py'],
                     ('project\\error_pages', 'project\\error_pages'),
                     ('project\\padroes', 'project\\padroes'),
                     ('project\\pessoas', 'project\\pessoas'),
-                    ('project\\static','project\\static')],
+                    ('project\\static','project\\static'),
                     ('project\\templates', 'project\\templates'),
                     ('project\\unidades', 'project\\unidades'),
-                    ('project\\usuarios', 'project\\usuarios'),
+                    ('project\\usuarios', 'project\\usuarios')],
              hiddenimports=['sqlalchemy.sql.default_comparator','pyodbc'],
              hookspath=[],
              runtime_hooks=[],

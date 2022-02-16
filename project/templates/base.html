@@ -124,11 +124,19 @@
 
         {% endif %}
 
-          {% set ver = namespace(num='2.2') %}
+          {% set ver = namespace(num = '2.2') %}
+          {% set amb = namespace(tipo = 'prod') %}
 
         </ul>
 
-        <span class="navbar-text"> (homologação) V. {{ ver.num }} <small>cbt</small> </span>
+        <span class="navbar-text"> 
+          {% if amb.tipo == 'prod' %}
+            <span class="text-danger">(produção)</span>
+          {% else %}
+          <span class="text-primary">(homologação)</span>
+          {% endif %}
+          V. {{ ver.num }} <small>cbt</small> 
+        </span>
 
       </div>
     </nav>
