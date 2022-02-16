@@ -91,7 +91,7 @@ def atividade_update(cod_ativ):
     |A solução foi dividir os valores por 10 ao resgatá-los para a tela de atualização.            | 
     +----------------------------------------------------------------------------------------------+
     """
-
+    tipo = 'atu'
 
     unids_lista = db.session.query(Unidades.undSigla,
                                    unidade_ativ.unidadeId,
@@ -160,7 +160,7 @@ def atividade_update(cod_ativ):
         form.entregas.data    = ativ.entregasEsperadas 
 
         return render_template('atu_atividade.html', form=form, unids_lista=unids_lista, 
-                            qtd_unids=qtd_unids, titulo = form.titulo.data)
+                            qtd_unids=qtd_unids, titulo = form.titulo.data, tipo = tipo)
 
 #
 ### insere nova atividade no banco de dados
@@ -176,6 +176,7 @@ def cria_atividade():
     |NEWID() do SQL Server para um novo registro.                                                  |     
     +----------------------------------------------------------------------------------------------+
     """
+    tipo = 'ins'
 
     calc_tempo_cat = db.session.query(catdom.catalogoDominioId, catdom.descricao)\
                                .filter(catdom.classificacao == 'FormaCalculoTempoItemCatalogo')\
@@ -229,9 +230,10 @@ def cria_atividade():
             return redirect(url_for('atividades.lista_atividades'))
 
 
-    return render_template('atu_atividade.html', form=form)
+    return render_template('atu_atividade.html', form=form, unids_lista=[], 
+                            qtd_unids=0, titulo = '', tipo = tipo)
 
-    ### insere nova atividade no banco de dados
+### associa atividade com unidade
 
 @atividades.route("/<cod_ativ>/associa_atividade_unidade", methods=['GET', 'POST'])
 @login_required

@@ -24,7 +24,13 @@
 <caption>
   <div class="row">
       <div class="col">
-        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> pessoas {% if tipo == "inst" %}na Instituição{% else %}na Unidade{% endif %}</p>
+        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> pessoas 
+          {% if tipo == "inst" %}
+            na Instituição
+          {% else %}
+            na Unidade {{unid}}
+          {% endif %}
+        </p>
       </div>
   </div>
 </caption>

@@ -3,16 +3,23 @@
 <div class="container">
 
   <div class="jumbotron">
-    <h1 align = "center">Consultar/Alterar dados de Atividade</h1>
+    {% if tipo == 'atu' %}
+      <h1 align = "center">Consultar/Alterar dados de Atividade</h1>
+     {% else %}
+      <h1 align = "center">Registrar nova Atividade</h1>
+     {% endif %}
 
-    <h4 align = "center">A atividade está associada a 
-      {% if qtd_unids == None %}
-        0
-      {% else %}
-        <button data-toggle='modal' data-target='#unids_modal'><abbr title="Clique aqui para ver lista da unidades."> {{qtd_unids}} </abbr></button>
-      {% endif %}
-       Unidade(s)
-    </h4>
+    {% if tipo == 'atu' %}
+      <h4 align = "center">A atividade está associada a 
+        {% if qtd_unids == None %}
+          0
+        {% else %}
+          <button data-toggle='modal' data-target='#unids_modal'><abbr title="Clique aqui para ver lista da unidades."> {{qtd_unids}} </abbr></button>
+        {% endif %}
+        Unidade(s)
+      </h4>
+    {% endif %}
+
 
     {% macro render_field(field,obr) %}
       {% if obr == True %}

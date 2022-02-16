@@ -322,6 +322,6 @@ def lista_pessoas_unid(unid):
     quantidade = len(pessoas)
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
-                                                 gestorNome = None, tipo = tipo)
+                                                 gestorNome = None, tipo = tipo, unid=unid)
 
 #
