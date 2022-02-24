@@ -8,6 +8,8 @@
 
     * Lista quantidades de pessoas em programas de gestão por unidade: pessoas_qtd_pg_unidade
     * Lista o Catálogo de Domínios: catalogo_dominio 
+    * Dados de Pactos de trabalho: pactos
+    * Atividades de um pacto: pacto_atividades
 
 
 """
@@ -19,7 +21,8 @@ from sqlalchemy.sql import label
 from sqlalchemy import func, distinct
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom
+from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
+                           Pactos_de_Trabalho_Atividades, Atividades
 
 import locale
 import datetime
@@ -115,3 +118,88 @@ def catalogo_dominio():
     qtd_itens = len(cat)
 
     return render_template('lista_catalogo_dominio.html', qtd_itens = qtd_itens, cat = cat)
+
+## dados dos pactos de trabalho
+
+@consultas.route('/pactos')
+def pactos():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista dos pactos de trabalho e dados relevantes.                         |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    situacao = db.session.query(catdom.catalogoDominioId,
+                                catdom.descricao)\
+                         .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
+                         .subquery()
+
+    pactos_trabalho = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+                                       Pactos_de_Trabalho.unidadeId,
+                                       Pactos_de_Trabalho.pessoaId,
+                                       Pactos_de_Trabalho.dataInicio,
+                                       Pactos_de_Trabalho.dataFim,
+                                       Pactos_de_Trabalho.formaExecucaoId,
+                                       Pactos_de_Trabalho.situacaoId,
+                                       Pactos_de_Trabalho.percentualExecucao,
+                                       Pactos_de_Trabalho.relacaoPrevistoRealizado,
+                                       Pactos_de_Trabalho.avaliacaoId,
+                                       Unidades.undSigla,
+                                       Pessoas.pesNome,
+                                       label('descricao1',catdom.descricao),
+                                       label('descricao2',situacao.c.descricao))\
+                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                 .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+                                 .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
+                                 .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                 .order_by(Pessoas.pesNome)\
+                                 .all()
+
+    qtd_itens = len(pactos_trabalho)
+
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho)    
+
+
+## lista atividades de um pacto de trabalho
+
+@consultas.route('/<pactoId>/<nome>/pacto_atividades')
+def pacto_atividades(pactoId,nome):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista de dados básicos das atividades relacionadas a um pacto de trabaho.|
+    +---------------------------------------------------------------------------------------+
+    """
+
+    pacto_ativ = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId,
+                                  Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                                  Pactos_de_Trabalho_Atividades.itemCatalogoId,
+                                  Pactos_de_Trabalho_Atividades.quantidade,
+                                  Pactos_de_Trabalho_Atividades.tempoPrevistoPorItem,
+                                  Pactos_de_Trabalho_Atividades.tempoPrevistoTotal,
+                                  Pactos_de_Trabalho_Atividades.dataInicio,
+                                  Pactos_de_Trabalho_Atividades.dataFim,
+                                  Pactos_de_Trabalho_Atividades.tempoRealizado,
+                                  Pactos_de_Trabalho_Atividades.situacaoId,
+                                  Pactos_de_Trabalho_Atividades.tempoHomologado,
+                                  Pactos_de_Trabalho_Atividades.nota,
+                                  Atividades.titulo,
+                                  catdom.descricao)\
+                           .join(Atividades, Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                           .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho_Atividades.situacaoId)\
+                           .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
+                           .order_by(Atividades.titulo)\
+                           .all()
+
+    qtd_itens = len(pacto_ativ)
+
+    pacto_ativ_unic = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId))\
+                                .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
+                                .group_by(Pactos_de_Trabalho_Atividades,Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                                .count()
+
+    print ('**')
+    print (pacto_ativ_unic)
+                         
+
+    return render_template('lista_pacto_atividades.html', qtd_itens = qtd_itens, pacto_ativ = pacto_ativ,
+                                                          nome=nome,pacto_ativ_unic = pacto_ativ_unic)

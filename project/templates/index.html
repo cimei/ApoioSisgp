@@ -4,10 +4,65 @@
 <div class="container">
   <div class="jumbotron">
     <h3><center>Apoio ao SISGP</center></h3>
-    <h3><center>Consultas e manutenções</center></h3>
-    <br>
+    <h3><center>Consultas e Manutenções</center></h3>
     <br>
     <h4><center>Bem vindo!</center></h4>
+  </div>
+</div>
+<div class="container">
+  <div class="jumbotron">
+    <div class="row">
+
+      <div class="col">
+        <div class="card text-center" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{unids}} Unidades</h5>
+            <p class="card-text">{{unids_com_pg}} já criaram algum PG</p>
+            <a href="{{url_for('unidades.lista_unidades')}}" class="card-link">Ver unidades</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card text-center" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{pes}} Pessoas</h5>
+            <p class="card-text">{{pes_pacto}} com pactos vigentes</p>
+            <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card text-center" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ativs}} Atividades</h5>
+            <a href="{{url_for('atividades.lista_atividades')}}" class="card-link">Ver atividades</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card text-center" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{pts}} Programas de Gestão</h5>
+            <p class="card-text">{{pts_exec}} em execução</p>
+            <p class="card-text">veja "Consultas"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card text-center" style="width: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{pactos}} Pactos</h5>
+            <p class="card-text">{{pactos_exec}} em execução</p>
+            <p class="card-text">veja "Consultas"</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 

@@ -25,9 +25,11 @@ from flask_login import current_user
 from werkzeug.utils import secure_filename
 import csv
 
+from sqlalchemy import distinct
+
 from project.core.forms import ArquivoForm
 from project import db
-from project.models import Unidades, Pessoas
+from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho, Pactos_de_Trabalho
 
 from project.usuarios.views import registra_log_auto
 
@@ -74,7 +76,27 @@ def index():
     +---------------------------------------------------------------------------------------+
     """
 
-    return render_template ('index.html',sistema='Apoio SISGP')
+    unids = db.session.query(Unidades).count()
+
+    unids_com_pg = db.session.query(distinct(Planos_de_Trabalho.unidadeId)).count()
+
+    pes = db.session.query(Pessoas).count()
+
+    pes_pacto = db.session.query(distinct(Pactos_de_Trabalho.pessoaId)).filter(Pactos_de_Trabalho.situacaoId == 405).count()
+
+    ativs = db.session.query(Atividades).count()
+
+    pts = db.session.query(Planos_de_Trabalho).count()
+
+    pts_exec = db.session.query(Planos_de_Trabalho).filter(Planos_de_Trabalho.situacaoId == 309).count()
+
+    pactos = db.session.query(Pactos_de_Trabalho).count()
+
+    pactos_exec = db.session.query(Pactos_de_Trabalho).filter(Pactos_de_Trabalho.situacaoId == 405).count()
+
+    return render_template ('index.html',sistema='Apoio SISGP',unids = unids, unids_com_pg = unids_com_pg, pes = pes, 
+                                         pes_pacto = pes_pacto, ativs = ativs,
+                                         pts = pts, pts_exec = pts_exec, pactos = pactos, pactos_exec = pactos_exec)
 
 @core.route('/info')
 def info():

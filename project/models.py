@@ -14,8 +14,12 @@
     * Tipo_Vinculo_Pessoa: tipo de vínculo da pessoa
     * Feriados: tabela de feriados
     * Planos_de_Trabalho: tabela dos programas de gestão de cada unidade
+    * Pactos_de_Trabalho:
     * catalogo_dominio: tabela do catálogo de domínios
     * unidade_ativ: tabela que relaciona unidade a atividades
+    * cat_item_cat:
+    * Atividades:
+    * Pactos_de_Trabalho_Atividades:
 
     Abaixo seguem os Modelos e respectivos campos.
 """
@@ -438,3 +442,53 @@ class Atividades(db.Model):
         return f"{self.titulo};{self.calculoTempoId};{self.permiteRemoto};{self.tempoPresencial};\
                 {self.tempoRemoto};{self.descricao};{self.complexidade};{self.definicaoComplexidade};\
                 {self.entregasEsperadas};"
+
+# Atividades de Pactos de Trabalho 
+
+class Pactos_de_Trabalho_Atividades(db.Model):
+
+    __tablename__ = 'PactoTrabalhoAtividade'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    pactoTrabalhoAtividadeId = db.Column(db.String, primary_key = True)
+    pactoTrabalhoId          = db.Column(db.String)
+    itemCatalogoId           = db.Column(db.String)
+    quantidade               = db.Column(db.Integer)
+    tempoPrevistoPorItem     = db.Column(db.Numeric(4,1))
+    tempoPrevistoTotal       = db.Column(db.Numeric(4,1))
+    dataInicio               = db.Column(db.Date)
+    dataFim                  = db.Column(db.Date)
+    tempoRealizado           = db.Column(db.Numeric(4,1))
+    situacaoId               = db.Column(db.Integer)
+    descricao                = db.Column(db.String)
+    tempoHomologado          = db.Column(db.Numeric(4,1))
+    nota                     = db.Column(db.Numeric(4,2))
+    justificativa            = db.Column(db.String)
+    consideracoesConclusao   = db.Column(db.String)
+    modalidadeExecucaoId     = db.Column(db.Integer)
+
+    def __init__(self,pactoTrabalhoId,itemCatalogoId,quantidade,tempoPrevistoPorItem,tempoPrevistoTotal,
+                dataInicio,dataFim,tempoRealizado,situacaoId,descricao,tempoHomologado,nota,justificativa,
+                consideracoesConclusao,modalidadeExecucaoId):
+
+        self.pactoTrabalhoId        = pactoTrabalhoId
+        self.itemCatalogoId         = itemCatalogoId
+        self.quantidade             = quantidade
+        self.tempoPrevistoPorItem   = tempoPrevistoPorItem
+        self.tempoPrevistoTotal     = tempoPrevistoTotal
+        self.dataInicio             = dataInicio
+        self.dataFim                = dataFim
+        self.tempoRealizado         = tempoRealizado
+        self.situacaoId             = situacaoId
+        self.descricao              = descricao
+        self.tempoHomologado        = tempoHomologado 
+        self.nota                   = nota
+        self.justificativa          = justificativa
+        self.consideracoesConclusao = consideracoesConclusao
+        self.modalidadeExecucaoId   = modalidadeExecucaoId
+
+    def __repr__ (self):
+        return f"{self.pactoTrabalhoId};{self.itemCatalogoId};{self.quantidade};{self.tempoPrevistoPorItem};\
+                 {self.tempoPrevistoTotal};{self.dataInicio};{self.dataFim};{self.tempoRealizado};\
+                 {self.situacaoId};{self.descricao};{self.tempoHomologado};\
+                 {self.nota};{self.justificativa};{self.consideracoesConclusao};{self.modalidadeExecucaoId}"
