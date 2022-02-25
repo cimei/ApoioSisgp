@@ -18,7 +18,9 @@
           <div class="card-body">
             <h5 class="card-title">{{unids}} Unidades</h5>
             <p class="card-text">{{unids_com_pg}} já criaram algum PG</p>
-            <a href="{{url_for('unidades.lista_unidades')}}" class="card-link">Ver unidades</a>
+            {% if current_user.is_authenticated and current_user.userAtivo %}
+              <a href="{{url_for('unidades.lista_unidades')}}" class="card-link">Ver unidades</a>
+            {% endif %}  
           </div>
         </div>
       </div>
@@ -28,7 +30,9 @@
           <div class="card-body">
             <h5 class="card-title">{{pes}} Pessoas</h5>
             <p class="card-text">{{pes_pacto}} com pactos vigentes</p>
-            <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
+            {% if current_user.is_authenticated and current_user.userAtivo %}
+              <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
+            {% endif %}  
           </div>
         </div>
       </div>
@@ -37,7 +41,9 @@
         <div class="card text-center" style="width: 10rem;">
           <div class="card-body">
             <h5 class="card-title">{{ativs}} Atividades</h5>
-            <a href="{{url_for('atividades.lista_atividades')}}" class="card-link">Ver atividades</a>
+            {% if current_user.is_authenticated and current_user.userAtivo %}
+              <a href="{{url_for('atividades.lista_atividades')}}" class="card-link">Ver atividades</a>
+            {% endif %}  
           </div>
         </div>
       </div>
