@@ -45,8 +45,20 @@
         <td><p align = "center"> {{ p.pesNome }} </p></td>
         <td><p align = "center"> {{ p.dataInicio.strftime('%x') }} </p></td>
         <td><p align = "center"> {{ p.dataFim.strftime('%x') }} </p></td>
-        <td><p align = "center"> {{ p.descricao1 }} </p></td>
-        <td><p align = "center"> {{ p.descricao2 }} </p></td>
+        <td><p align = "center"> 
+          {% if p.descricao1 == 'Teletrabalho Parcial' %}  
+            <span class="text-warning">{{ p.descricao1 }} </span>
+          {% else %}  
+            {{ p.descricao1 }}
+          {% endif %} 
+        </p></td>
+        <td><p align = "center"> 
+          {% if p.descricao2 == 'Em execução' %}  
+            <span class="text-primary">{{ p.descricao2 }} </span>
+          {% else %}  
+            {{ p.descricao2 }}
+          {% endif %}
+        </p></td>
         <td><p align = "center"> {% if p.percentualExecucao == None %}N.I.{% else %}{{(p.percentualExecucao/100)|decimal_com_virgula }}{% endif %} </p></td>
         <td><p align = "center"> {% if p.relacaoPrevistoRealizado == None%}N.I.{% else %}{{(p.relacaoPrevistoRealizado/100)|decimal_com_virgula}}{% endif %} </p></td>
         <td><p align = "center"> {% if p.avaliacaoId == None %}N.I.{% else %}p.avaliacaoId{% endif %} </p></td>

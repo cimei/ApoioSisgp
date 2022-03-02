@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+02/03/2022
+
+Cores nas listas de pactos de trabalho e correção na tela inicial.
+v 2.3.1
 
 24/02/2022
 

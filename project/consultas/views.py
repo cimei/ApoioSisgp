@@ -187,7 +187,7 @@ def pacto_atividades(pactoId,nome):
                            .join(Atividades, Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
                            .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho_Atividades.situacaoId)\
                            .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
-                           .order_by(Atividades.titulo)\
+                           .order_by(Atividades.titulo,Pactos_de_Trabalho_Atividades.situacaoId)\
                            .all()
 
     qtd_itens = len(pacto_ativ)
@@ -197,9 +197,6 @@ def pacto_atividades(pactoId,nome):
                                 .group_by(Pactos_de_Trabalho_Atividades,Pactos_de_Trabalho_Atividades.itemCatalogoId)\
                                 .count()
 
-    print ('**')
-    print (pacto_ativ_unic)
-                         
 
     return render_template('lista_pacto_atividades.html', qtd_itens = qtd_itens, pacto_ativ = pacto_ativ,
                                                           nome=nome,pacto_ativ_unic = pacto_ativ_unic)
