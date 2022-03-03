@@ -298,6 +298,80 @@ class Planos_de_Trabalho(db.Model):
                  {self.situacaoId};{self.avaliacaoId};{self.tempoComparecimento};\
                  {self.totalServidoresSetor};{self.tempoFaseHabilitacao};{self.termoAceite};"
 
+# Atividades de Planos de Trabalho
+
+class Planos_de_Trabalho_Ativs(db.Model):
+
+    __tablename__ = 'PlanoTrabalhoAtividade'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    planoTrabalhoAtividadeId = db.Column(db.String, primary_key = True)
+    planoTrabalhoId          = db.Column(db.String)
+    modalidadeExecucaoId     = db.Column(db.Integer)
+    quantidadeColaboradores  = db.Column(db.Integer)
+    descricao                = db.Column(db.String)   
+
+    def __init__(self, planoTrabalhoAtividadeId, planoTrabalhoId, modalidadeExecucaoId,
+                 quantidadeColaboradores, descricao):
+
+        self.planoTrabalhoAtividadeId = planoTrabalhoAtividadeId
+        self.planoTrabalhoId          = planoTrabalhoId
+        self.modalidadeExecucaoId     = modalidadeExecucaoId
+        self.quantidadeColaboradores  = quantidadeColaboradores
+        self.descricao                = descricao   
+
+    def __repr__ (self):
+        return f"{self.planoTrabalhoAtividadeId};{self.planoTrabalhoId};{self.modalidadeExecucaoId};\
+                 {self.quantidadeColaboradores};{self.descricao}"
+
+# Items de Atividades de Planos de Trabalho
+
+class Planos_de_Trabalho_Ativs_Items(db.Model):
+
+    __tablename__ = 'PlanoTrabalhoAtividadeItem'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    planoTrabalhoAtividadeItemId = db.Column(db.String, primary_key = True)
+    planoTrabalhoAtividadeId     = db.Column(db.String)
+    itemCatalogoId               = db.Column(db.String)
+
+    def __init__(self, planoTrabalhoAtividadeId, itemCatalogoId):
+
+        self.planoTrabalhoAtividadeId = planoTrabalhoAtividadeId
+        self.itemCatalogoId           = itemCatalogoId
+
+    def __repr__ (self):
+        return f"{self.planoTrabalhoAtividadeId};{self.itemCatalogoId}"   
+
+
+# HIstórico de Planos de Trabalho
+
+class Planos_de_Trabalho_Hist(db.Model):
+
+    __tablename__ = 'PlanoTrabalhoHistorico'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    planoTrabalhoHistoricoId = db.Column(db.String, primary_key = True)
+    planoTrabalhoId          = db.Column(db.String)
+    situacaoId               = db.Column(db.Integer)
+    observacoes              = db.Column(db.String)
+    responsavelOperacao      = db.Column(db.String)   
+    DataOperacao             = db.Column(db.Date)
+
+    def __init__(self, planoTrabalhoId, situacaoId, observacoes,
+                 responsavelOperacao, DataOperacao):
+
+        self.planoTrabalhoId     = planoTrabalhoId
+        self.situacaoId          = situacaoId
+        self.observacoes         = observacoes
+        self.responsavelOperacao = responsavelOperacao
+        self.DataOperacao        = DataOperacao   
+
+    def __repr__ (self):
+        return f"{self.planoTrabalhoId};{self.situacaoId};{self.observacoes};\
+                 {self.responsavelOperacao};{self.DataOperacao}"
+                 
+                 
 # Pactos de Trabalho
 
 class Pactos_de_Trabalho(db.Model):

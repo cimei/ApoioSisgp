@@ -17,12 +17,15 @@
 # views.py na pasta consultas
 
 from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask_login import current_user
 from sqlalchemy.sql import label
 from sqlalchemy import func, distinct
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
-                           Pactos_de_Trabalho_Atividades, Atividades
+                           Pactos_de_Trabalho_Atividades, Atividades, Planos_de_Trabalho_Ativs,\
+                           Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items
+from project.usuarios.views import registra_log_auto                           
 
 import locale
 import datetime
@@ -200,3 +203,64 @@ def pacto_atividades(pactoId,nome):
 
     return render_template('lista_pacto_atividades.html', qtd_itens = qtd_itens, pacto_ativ = pacto_ativ,
                                                           nome=nome,pacto_ativ_unic = pacto_ativ_unic)
+
+
+## deletar programa de gestão (plano de tragalho e relacionamentos) em rascunho
+
+@consultas.route('/<pgId>/deleta_pg', methods=['GET', 'POST'])
+def deleta_pg(pgId):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Deleta um PG que esteja em rascunho e suas relaçõe próximas:  PlanoTrabalhoAtividade,  |
+    |planoTrabalhoHistorico e PlanoTrabalhoAtividadeItem.                                   |
+    +---------------------------------------------------------------------------------------+
+    """  
+
+    pg_sit = db.session.query(Planos_de_Trabalho.situacaoId,
+                              Planos_de_Trabalho.unidadeId)\
+                       .filter(Planos_de_Trabalho.planoTrabalhoId == pgId)\
+                       .first()
+
+    if pg_sit.situacaoId == 301:
+
+        #deleta histórico
+
+        try:
+            db.session.query(Planos_de_Trabalho_Hist).filter(Planos_de_Trabalho_Hist.planoTrabalhoId == pgId).delete()
+            db.session.commit()
+        except: 
+            print("Não foi possível excluir registro do histórico de planos de trabalho!")    
+
+        #deleta items de atividades do pg
+
+        ativs = db.session.query(Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId)\
+                        .filter(Planos_de_Trabalho_Ativs.planoTrabalhoId == pgId)\
+                        .all()
+
+        for ativ in ativs:
+
+            print ('*** ',ativ.planoTrabalhoAtividadeId)
+
+            db.session.query(Planos_de_Trabalho_Ativs_Items).filter(Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId == ativ.planoTrabalhoAtividadeId).delete()
+            db.session.commit()
+
+        #deleta atividades do pg
+
+        db.session.query(Planos_de_Trabalho_Ativs).filter(Planos_de_Trabalho_Ativs.planoTrabalhoId == pgId).delete()
+        db.session.commit()
+
+        #deleta pg
+
+        db.session.query(Planos_de_Trabalho).filter(Planos_de_Trabalho.planoTrabalhoId == pgId).delete()
+        db.session.commit()
+
+        registra_log_auto(current_user.id,'Um Programa de Gestão da unidade '+ str(pg_sit.unidadeId) +' foi deletado.')
+
+        flash('Um Programa de Gestão da unidade '+ str(pg_sit.unidadeId) +' foi deletado.','sucesso')
+
+    else:
+
+        flash('PG escolhido não está como rascunho!','erro')
+
+    return redirect(url_for('consultas.pessoas_qtd_pg_unidade'))
+

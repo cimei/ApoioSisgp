@@ -2,6 +2,11 @@
 
 02/03/2022
 
+Incluida a possibilidade de exclusão de programa de gestão (PlanoTrabalho) na situação "Rascunho".
+v 2.3.2
+
+02/03/2022
+
 Cores nas listas de pactos de trabalho e correção na tela inicial.
 v 2.3.1
 
