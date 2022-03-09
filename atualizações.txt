@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+09/03/2022
+
+Na carga em lote, registros já existentes são alterados e não mais ignorados.
+v 2.3.3
+
 02/03/2022
 
 Incluida a possibilidade de exclusão de programa de gestão (PlanoTrabalho) na situação "Rascunho".

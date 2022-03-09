@@ -19,6 +19,7 @@
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
+
   <table class="table table-striped table-hover table-sm">
     <caption>Unidades com pessoas em PG</caption>
     <thead>
@@ -31,10 +32,9 @@
         <th scope="col"><p align = "center">Pactos Vigentes</p></th>
       </tr>
     </thead>
+
     <tbody>
-
       {% for u in pt %}
-
       <tr>
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
         <td><p align = "center"><abbr title="Clique aqui para ver as pessoas da unidade.">
