@@ -22,6 +22,7 @@ dependencies:
   - pywin32=228=py39hbaba5e8_1
   - pywin32-ctypes=0.2.0=py39haa95532_1000
   - setuptools=52.0.0=py39haa95532_0
+  - sqlite=3.37.0=h2bbff1b_0
   - tzdata=2021a=h5d7bf9c_0
   - vc=14.2=h21ff451_1
   - vs2015_runtime=14.27.29016=h5e58377_2
@@ -49,6 +50,8 @@ dependencies:
     - protobuf==3.17.3
     - pyasn1==0.4.8
     - pyasn1-modules==0.2.8
+    - pymssql==2.2.3
+    - pyodbc==4.0.32
     - pyparsing==2.4.7
     - python-dateutil==2.8.2
     - requests==2.26.0
@@ -58,4 +61,4 @@ dependencies:
     - uritemplate==3.0.1
     - urllib3==1.26.6
     - wtforms==2.3.3
-prefix: C:\Users\cimeibt\Anaconda3\envs\apoiosisgp
+prefix: C:\Users\cimeibt\Anaconda3\envs\apoiosisgpenv

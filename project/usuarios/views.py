@@ -174,6 +174,24 @@ def register():
 
     return render_template('register.html',form=form)
 
+# gera novo link para confirmação de email
+
+@usuarios.route('/<int:userId>/confirm')
+def confirm(userId):
+    """+--------------------------------------------------------------------------------------+
+       |Gera novo link de confirmação de e-mail para usuário novo.                            |
+       +--------------------------------------------------------------------------------------+
+    """
+    user = db.session.query(users.userEmail).filter(users.id == userId).first()
+
+    send_confirmation_email(user.userEmail)
+
+    registra_log_auto(current_user.id,'Novo e-mail de confirmação enviado para '+ user.userEmail +'.')
+
+    flash('Novo e-mail de confirmação enviado para '+ user.userEmail +'.','sucesso')
+
+    return redirect(url_for('usuarios.view_users'))
+
 # confirmar registro
 
 @usuarios.route('/confirm/<token>')

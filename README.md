@@ -2,14 +2,16 @@
 Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado), além de outras funcionalidades.
 
 Considerando que você tem o Python instalado em sua máquina, baixe os arquivos deste repositório. 
-Lembre-se de criar um ambiente para o sistema. Os arquivos requirements.txt ou environment.yml podem ser úteis nisto, mas deverão ser ajustados para o seu caso.
+Lembre-se de criar um ambiente para o sistema. Para tal user o arquivo environment.yml, no qual o nome do ambiente (name) e sua localização (prefix) deverão ser ajustados para o seu caso. Consulte https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html para detalhes de como lidar com ambientes.
+
 Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais pacotes instalados do que o realmente necessário, mas isto não é um impedimento.
+
 Certifique-se que o pacote pyodbc está instalado: pip install pyodbc
 
-Na pasta Instance, há o arquivo flask exemplo.cfg. Este deve ser ajustado para o seu caso e renomeado para flask.cfg.
+Na pasta Instance, há o arquivo flask exemplo.cfg. Este, depois de ter sido ajustado para o seu caso, deve ser renomeado para flask.cfg. É neste arquivo que residem a de SECRECT_KEY do sistema,
+a string para acesso ao banco de dados do DBSISGP e também os dados da conta de e-mail que o sistema utilizará.
 
-Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no 
-DBSISGP. Abaixo seguem as instruções SQL para tal:
+Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no DBSISGP. Abaixo seguem as instruções SQL para tal:
 
       CREATE SCHEMA [Apoio]
       GO
@@ -59,9 +61,11 @@ DBSISGP. Abaixo seguem as instruções SQL para tal:
       ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
       GO
 
-Outra forma de disponibilizar este aplicativo para os que não tem o Python instalado e por meio do Pyinstaller. Ele agrega o projeto e todas as suas dependências
-em um único arquivo executável. Com o pyinstaller instalado, crie este .exe com o comando pyinstaller --onefile app.spec.
+Uma forma de disponibilizar este aplicativo várias pessoas na unidade, sem que se necessite instalar o Python para cada uma, é por meio do Pyinstaller. Ele agrega o projeto e todas as suas dependências em um único arquivo executável. Consulte https://realpython.com/pyinstaller-python/
+para informações sobre este programa. 
+
+Com o pyinstaller instalado, crie este .exe com o comando pyinstaller --onefile app.spec.
 
 O app.spec neste repositório contém as configurações necessárias para a geração do .exe com sucesso, mas precisa ajustar o pathex para o teu caso.
-Se tudo funcionar, será gerado o arquvo app.exe, na pasta dist. Renomeie ele com o nome que quiser e passe para os demais que irão gerenciar o sistema. 
-Eles deverão ter a mesma versão do driver ODBC que você usou para gerar o executável.
+Se tudo funcionar, será gerado o arquvo app.exe, na pasta dist. Renomeie ele com o nome que quiser e passe para os demais que irão utilizar o ApoioSigp. 
+Atenção para o fato de eles deverão ter a mesma versão do driver ODBC que você usou para gerar o executável.
