@@ -209,6 +209,29 @@ def pacto_atividades(pactoId,nome):
 
     qtd_itens = len(pacto_ativ)
 
+    ##### para conferir cálculo de %execucao (conta por fora não bate com os valores registrados no banco)
+    # pactos = db.session.query(Pessoas.pesNome,  
+    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoPrevistoPorItem).label("total_tempo_item"),
+    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoPrevistoTotal).label("total_tempo_total"),
+    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoRealizado).label("total_tempo_realizado"))\
+    #                    .join(Pactos_de_Trabalho, Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+    #                    .join(Pessoas,Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+    #                    .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,Pactos_de_Trabalho.pessoaId,Pessoas.pesNome)\
+    #                    .all()           
+    
+    # workbook = xlsxwriter.Workbook('totais_pactos.xlsx')
+    # worksheet = workbook.add_worksheet('Lista')
+    # col = 0
+    # row = 0
+    # for p in pactos:
+    #     worksheet.write(row, col, p.pesNome)
+    #     worksheet.write(row, col + 1, p.total_tempo_item)
+    #     worksheet.write(row, col + 2, p.total_tempo_total)
+    #     worksheet.write(row, col + 3, p.total_tempo_realizado)
+    #     row += 1
+    # workbook.close()
+
+
     pacto_ativ_unic = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId))\
                                 .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
                                 .group_by(Pactos_de_Trabalho_Atividades,Pactos_de_Trabalho_Atividades.itemCatalogoId)\
@@ -335,85 +358,88 @@ def relatorioPG():
 
     workbook = xlsxwriter.Workbook(pasta_rel)
     worksheet = workbook.add_worksheet('Lista')
-    worksheet.set_column('A:A', 32)
-    worksheet.set_column('B:B', 50)
-    worksheet.set_column('C:C', 8)
-    worksheet.set_column('D:D', 10)
-    worksheet.set_column('E:E', 10)
-    worksheet.set_column('F:F', 12)
-    worksheet.set_column('G:G', 35)
-    worksheet.set_column('H:H', 10)
-    worksheet.set_column('I:I', 10)
-    worksheet.set_column('J:J', 12)
 
     bold = workbook.add_format({'bold': True})
 
     worksheet.write('A1', 'Dados extraidos em:', bold)
     worksheet.write('B1', hoje.strftime('%x'), bold)
 
-    worksheet.write('D3', 'Sobre Programa de Gestão', bold)
-    worksheet.write('G3', 'Sobre Pactos de Trabalho', bold)
-
     # Start from the first cell. Rows and columns are zero indexed.
     row = 3
     col = 0
 
-    # Monta linha de cabeçalho do xlsx
+    # Monta linha de cabeçalho do xlsx. Descobre o maior nível hierárquico das unidades
+ 
+    niv_max = db.session.query(label('niv',func.max(Unidades.undNivel))).first()
+    col_cab = col + niv_max.niv
 
-    worksheet.write(row, col, 'Sigla', bold)
-    worksheet.write(row, col + 1, 'Nome', bold)
-    worksheet.write(row, col + 2, 'Pessoas', bold)
-    worksheet.write(row, col + 3, 'Início PG', bold)
-    worksheet.write(row, col + 4, 'Fim PG', bold)
-    worksheet.write(row, col + 5, 'Situação PG', bold)
-    worksheet.write(row, col + 6, 'Pessoa', bold)
-    worksheet.write(row, col + 7, 'Início Pacto', bold)
-    worksheet.write(row, col + 8, 'Fim Pacto', bold)
-    worksheet.write(row, col + 9, 'Situação Pacto', bold)
+    worksheet.write(row-1, col_cab+1, 'Sobre Programa de Gestão', bold)
+    worksheet.write(row-1, col_cab + 5, 'Sobre Pactos de Trabalho', bold)
+
+    worksheet.write(row, col, 'Hierarquia', bold)
+    worksheet.write(row, col_cab, 'Nome', bold)
+    worksheet.write(row, col_cab + 1, 'Pessoas', bold)
+    worksheet.write(row, col_cab + 2, 'Início PG', bold)
+    worksheet.write(row, col_cab + 3, 'Fim PG', bold)
+    worksheet.write(row, col_cab + 4, 'Situação PG', bold)
+    worksheet.write(row, col_cab + 5, 'Pessoa', bold)
+    worksheet.write(row, col_cab + 6, 'Início Pacto', bold)
+    worksheet.write(row, col_cab + 7, 'Fim Pacto', bold)
+    worksheet.write(row, col_cab + 8, 'Situação Pacto', bold)
 
     row = 4
-
+ 
     for item in pt:
 
         sigla = item.undSigla
         pai = item.unidadeIdPai
         
+        # monta colunas com hierarquia da unidade no registro
+        worksheet.write(row, niv_max.niv, sigla)
+
+        hier = []
+        hier.append(sigla)
         while pai != None:
             sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
-            sigla = sup.undSigla + '/' + sigla
+            hier.append(sup.undSigla)
             pai = sup.unidadeIdPai
 
-        worksheet.write(row, col, sigla)
+        for i in range(len(hier)-1, -1, -1):
+            worksheet.write(row, col-i+len(hier)-1, hier[i])
 
-        worksheet.write(row, col + 1, item.undDescricao)
+        # preenche demais colunas de detalhe
+        col_det = col_cab - 1
 
-        worksheet.write(row, col + 2, item.totalServidoresSetor)
+        worksheet.write(row, col_det + 1, item.undDescricao)
+
+        worksheet.write(row, col_det + 2, item.totalServidoresSetor)
         
         if item.dataInicio != None:
-            worksheet.write(row, col + 3, item.dataInicio.strftime('%x'))
+            worksheet.write(row, col_det + 3, item.dataInicio.strftime('%x'))
         else:
-            worksheet.write(row, col + 3, 'N.I.')
+            worksheet.write(row, col_det + 3, 'N.I.')
         
         if item.dataFim != None:    
-            worksheet.write(row, col + 4, item.dataFim.strftime('%x'))
+            worksheet.write(row, col_det + 4, item.dataFim.strftime('%x'))
         else:
-            worksheet.write(row, col + 4, 'N.I.')
+            worksheet.write(row, col_det + 4, 'N.I.')
 
-        worksheet.write(row, col + 5, item.descricao)
+        worksheet.write(row, col_det + 5, item.descricao)
 
-        worksheet.write(row, col + 6, item.pesNome)
+        worksheet.write(row, col_det + 6, item.pesNome)
 
         if item.pactoIni != None:
-            worksheet.write(row, col + 7, item.pactoIni.strftime('%x'))
+            worksheet.write(row, col_det + 7, item.pactoIni.strftime('%x'))
         else:
-            worksheet.write(row, col + 7, 'N.I.')
+            worksheet.write(row, col_det + 7, 'N.I.')
 
         if item.pactoFim != None:    
-            worksheet.write(row, col + 8, item.pactoFim.strftime('%x'))
+            worksheet.write(row, col_det + 8, item.pactoFim.strftime('%x'))
         else:
-            worksheet.write(row, col + 8, 'N.I.')
+            worksheet.write(row, col_det + 8, 'N.I.')
 
-        worksheet.write(row, col + 9, item.pactoDesc)
+        worksheet.write(row, col_det + 9, item.pactoDesc)
+
         row += 1
 
     workbook.close()

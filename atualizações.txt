@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+16/03/2022
+
+Ajustes no relatório .xlsx dos planos e pactos.
+v 2.3.5
+
 11/03/2022
 
 Acrescentada opção de geraçaõ de relatório.
