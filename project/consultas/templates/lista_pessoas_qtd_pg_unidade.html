@@ -37,8 +37,7 @@
       {% for u in pt %}
       <tr>
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
-        <td><p align = "center"><abbr title="Clique aqui para ver as pessoas da unidade.">
-          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{ tree[u.unidadeId] }} </a></abbr></p></td>
+        <td><p align = "center"> {{ tree[u.unidadeId] }} </p></td>
         <td><p align = "center"> {{ u.undDescricao }} </p></td>
         <td><p align = "center" class = "font-weight-bold">
           <abbr title="Clique aqui para ver dados dos programas de gestão da unidade.">
@@ -66,6 +65,7 @@
                           <th scope="col"><p align = "center">Início</p></th>
                           <th scope="col"><p align = "center">Fim</p></th>
                           <th scope="col"><p align = "center">Situação</p></th>
+                          <th scope="col"><p align = "center">Pessoas no setor</p></th>
                         </tr>
                       </thead>
             
@@ -76,6 +76,7 @@
                               <td><p align = "center"> {{ d.dataInicio.strftime('%x') }} </p></td>
                               <td><p align = "center"> {{ d.dataFim.strftime('%x') }} </p></td>
                               <td><p align = "center"> {{ d.descricao }} </p></td>
+                              <td><p align = "center"> {{ d.totalServidoresSetor }} </p></td>
                               {% if d.descricao == "Rascunho"%}
                               <td>
                                 <p align = "center">
@@ -136,7 +137,10 @@
             {% endif %}
 
           </p></td>
-          <td><p align = "center" class = "font-weight-bold"> {{ u.totalServidoresSetor }} </p></td>
+          <td><p align = "center" class = "font-weight-bold"><abbr title="Clique aqui para ver as pessoas da unidade.">
+            <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}">
+            {% if u.qtd_pes == None or u.qtd_pes == '' %}<span class="text-danger">0</span>
+            {% else %} {{ u.qtd_pes }} {% endif %}</a></abbr></p></td>
 
         <td><p align = "center" class = "font-weight-bold">
           

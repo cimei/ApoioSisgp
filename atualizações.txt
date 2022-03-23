@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+22/03/2022
+
+Incluío xlsx com hierarquia das unidades, ajustes nas telas de unidade e de consulta de PGs.
+v2.3.6
+
 16/03/2022
 
 Ajustes no relatório .xlsx dos planos e pactos.

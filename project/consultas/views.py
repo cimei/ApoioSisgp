@@ -54,26 +54,31 @@ def pessoas_qtd_pg_unidade():
     qtd_pessoas = Pessoas.query.count()
 
     planos = db.session.query(Planos_de_Trabalho.unidadeId,
-                              Planos_de_Trabalho.totalServidoresSetor,  
                               label('qtd_pg',func.count(Planos_de_Trabalho.unidadeId)))\
-                       .group_by(Planos_de_Trabalho.unidadeId,Planos_de_Trabalho.totalServidoresSetor)\
+                       .group_by(Planos_de_Trabalho.unidadeId)\
                        .subquery()
 
     pactos = db.session.query(Pactos_de_Trabalho.unidadeId,
                               label('qtd_pactos',func.count(Pactos_de_Trabalho.unidadeId)))\
                        .filter(Pactos_de_Trabalho.dataFim > hoje, Pactos_de_Trabalho.situacaoId == 405)\
                        .group_by(Pactos_de_Trabalho.unidadeId)\
-                       .subquery()                 
+                       .subquery()
+
+    pessoas_unid = db.session.query(Pessoas.unidadeId,
+                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                             .group_by(Pessoas.unidadeId)\
+                             .subquery()    
 
     pt = db.session.query(Unidades.unidadeId,
                           Unidades.unidadeIdPai,
                           Unidades.undSigla,
                           Unidades.undDescricao,
                           planos.c.qtd_pg,
-                          planos.c.totalServidoresSetor,
-                          pactos.c.qtd_pactos)\
+                          pactos.c.qtd_pactos,
+                          pessoas_unid.c.qtd_pes)\
                    .join(planos, planos.c.unidadeId == Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.unidadeId == Unidades.unidadeId)\
+                   .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
                    .order_by(Unidades.unidadeId)\
                    .all()
 
@@ -88,7 +93,8 @@ def pessoas_qtd_pg_unidade():
                                 Planos_de_Trabalho.unidadeId,
                                 Planos_de_Trabalho.dataInicio,
                                 Planos_de_Trabalho.dataFim,
-                                catdom.descricao)\
+                                catdom.descricao,
+                                Planos_de_Trabalho.totalServidoresSetor)\
                           .join(catdom, Planos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
                           .all() 
 
@@ -329,7 +335,7 @@ def relatorioPG():
                               label('pactoDesc',catdom.descricao))\
                        .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                        .join(catdom, Pactos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
-                       .subquery()                                    
+                       .subquery()
 
     pt = db.session.query(Unidades.unidadeId,
                           Unidades.unidadeIdPai,
@@ -361,7 +367,7 @@ def relatorioPG():
 
     bold = workbook.add_format({'bold': True})
 
-    worksheet.write('A1', 'Dados extraidos em:', bold)
+    worksheet.write('A1', 'Dados de:', bold)
     worksheet.write('B1', hoje.strftime('%x'), bold)
 
     # Start from the first cell. Rows and columns are zero indexed.
@@ -373,8 +379,8 @@ def relatorioPG():
     niv_max = db.session.query(label('niv',func.max(Unidades.undNivel))).first()
     col_cab = col + niv_max.niv
 
-    worksheet.write(row-1, col_cab+1, 'Sobre Programa de Gestão', bold)
-    worksheet.write(row-1, col_cab + 5, 'Sobre Pactos de Trabalho', bold)
+    worksheet.write(row-1, col_cab+1, 'Programas de Gestão', bold)
+    worksheet.write(row-1, col_cab + 5, 'Pactos de Trabalho', bold)
 
     worksheet.write(row, col, 'Hierarquia', bold)
     worksheet.write(row, col_cab, 'Nome', bold)
@@ -444,8 +450,76 @@ def relatorioPG():
 
     workbook.close()
 
+    registra_log_auto(current_user.id,'Gerado Rel_PG.xlsx.')
+
     flash('Gerado Rel_PG.xlsx. Verifique na sua pasta c:/temp/','sucesso')
 
     return redirect(url_for('consultas.pessoas_qtd_pg_unidade'))
+
+
+## gera xlsx com estrutura hierárquica das unidades 
+
+@consultas.route('/hierarquia')
+def hierarquia():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Monta um relatório (planilha xlsx) com a estrutura hierárquica das unidades.           |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    hoje = date.today()  
+
+    unids = db.session.query(Unidades.undDescricao,
+                             Unidades.undSigla,
+                             Unidades.unidadeIdPai)\
+                      .all()
+
+    # Create a workbook and add a worksheet.
+
+    pasta_rel = os.path.normpath('c:/temp/hierarquia.xlsx')
+
+    if not os.path.exists(os.path.normpath('c:/temp/')):
+        os.makedirs(os.path.normpath('c:/temp/'))
+
+    workbook = xlsxwriter.Workbook(pasta_rel)
+    worksheet = workbook.add_worksheet('Lista')
+
+    bold = workbook.add_format({'bold': True})
+
+    worksheet.write('A1', 'Dados de:', bold)
+    worksheet.write('B1', hoje.strftime('%x'), bold)
+
+    # Start from the first cell. Rows and columns are zero indexed.
+    row = 2
+    col = 1
+
+    for item in unids:
+
+        sigla = item.undSigla
+        pai = item.unidadeIdPai
+        
+        # monta colunas com hierarquia da unidade no registro
+
+        worksheet.write(row,0,item.undDescricao)
+
+        hier = []
+        hier.append(sigla)
+        while pai != None:
+            sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
+            hier.append(sup.undSigla)
+            pai = sup.unidadeIdPai
+
+        for i in range(len(hier)-1, -1, -1):
+            worksheet.write(row, col-i+len(hier)-1, hier[i])  
+
+        row += 1
+
+    workbook.close()
+
+    registra_log_auto(current_user.id,'Gerado hierarquia.xlsx.')
+
+    flash('Gerado hierarquia.xlsx. Verifique na sua pasta c:/temp/','sucesso')
+
+    return redirect(url_for('core.index'))    
 
 

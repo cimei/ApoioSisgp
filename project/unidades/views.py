@@ -71,6 +71,11 @@ def lista_unidades():
                        .group_by(unidade_ativ.unidadeId)\
                        .subquery()
 
+    pessoas_unid = db.session.query(Pessoas.unidadeId,
+                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                             .group_by(Pessoas.unidadeId)\
+                             .subquery()                   
+
     unids = db.session.query(Unidades.unidadeId,
                              Unidades.undSigla,
                              Unidades.undDescricao,
@@ -87,11 +92,13 @@ def lista_unidades():
                              chefes.c.pesNome.label("Chefe"),
                              Unidades.pessoaIdChefeSubstituto,
                              subs.c.pesNome.label("Subs"),
-                             ativs.c.qtd_ativs)\
+                             ativs.c.qtd_ativs,
+                             pessoas_unid.c.qtd_pes)\
                             .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                             .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
                             .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                             .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
+                            .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
                             .order_by(Unidades.undSigla).all()
 
     quantidade = len(unids)

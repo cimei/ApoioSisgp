@@ -40,6 +40,7 @@
         <th scope="col"><p align = "center">SIORG</p></th>
         <th scope="col"><p align = "center">Chefe</p></th>
         <th scope="col"><p align = "center">Substituto</p></th>
+        <th scope="col"><p align = "center">Pessoas</p></th>
         <th scope="col"><p align = "center">Atividades</p></th>
       </tr>
     </thead>
@@ -50,8 +51,7 @@
         <th scope="row"><abbr title="Acrescentar dados à Unidade.">
           <p align = "center"><a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}"> {{unids.index(u) + 1}} </a>
         </p></th>
-        <td><p align = "center"> <abbr title="Clique aqui para ver as pessoas da unidade.">
-          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> {{u.undSigla}} </a></abbr></p></td>
+        <td><p align = "center"> {{u.undSigla}} </p></td>
         <td><p align = "center"> {{u.undDescricao}} </p></td>
         <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
         <td><p class = "text-muted" align = "center"> {{lista_tipo_unidade[u.tipoUnidadeId-1][1]}} </p></td>
@@ -63,6 +63,9 @@
         <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.Chefe == None or u.Chefe == '' %}N.I.{% else %}{{u.Chefe}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.Subs == None or u.Subs == '' %}N.I.{% else %}{{u.Subs}}{% endif %} </p></td>
+        <td><p align = "center"> <abbr title="Clique aqui para ver as pessoas da unidade.">
+          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> 
+          {% if u.qtd_pes == None or u.qtd_pes == '' %}<span class="text-danger">0</span>{% else %}{{u.qtd_pes}}{% endif %} </a></abbr></p></td>
         <td><p align = "center"> {% if u.qtd_ativs == None %}0{% else %}
           <button data-toggle='modal' data-target='#ativs_modal{{u.unidadeId}}'>{{u.qtd_ativs}}</button>
 
