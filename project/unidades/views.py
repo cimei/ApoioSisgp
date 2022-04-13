@@ -290,3 +290,64 @@ def cria_unidade():
 
 
     return render_template('atu_unidade.html', form=form)
+
+
+## lista atividades de uma unidade
+
+@unidades.route('/<int:unid_id>/lista_atividades_unidade')
+
+def lista_atividades_unidade(unid_id):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista das atividades de uma unidade.                                     |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """   
+
+    unid = db.session.query(Unidades.unidadeId, Unidades.undSigla).filter(Unidades.unidadeId == unid_id).first() 
+
+    ativs_lista = db.session.query(Atividades.titulo,
+                                   cat_item_cat.catalogoId,
+                                   unidade_ativ.unidadeId)\
+                            .join(cat_item_cat, cat_item_cat.itemCatalogoId == Atividades.itemCatalogoId)\
+                            .join(unidade_ativ, unidade_ativ.catalogoId == cat_item_cat.catalogoId)\
+                            .filter(unidade_ativ.unidadeId == unid_id)\
+                            .order_by(Atividades.titulo)\
+                            .all() 
+
+
+    quantidade = len(ativs_lista)
+
+    return render_template('lista_atividades_unidade.html', unid=unid, quantidade = quantidade,
+                                                ativs_lista = ativs_lista)
+
+
+## desassocia atividade de uma unidade
+
+@unidades.route('/<cat_id>/<int:unid_id>/desassocia_ativ', methods=['GET', 'POST'])
+
+def desassocia_ativ(cat_id,unid_id):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Desassocia atividades de uma unidade.                                                  |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    unid = db.session.query(Unidades.undSigla).filter(Unidades.unidadeId == unid_id).first() 
+
+    #deleta registro na tabela Catalogo_Item_Catalogo
+
+    db.session.query(cat_item_cat).filter(cat_item_cat.catalogoId == cat_id).delete()
+    db.session.commit()
+
+    #deleta registro na tabela Catalogo
+
+    db.session.query(unidade_ativ).filter(unidade_ativ.catalogoId == cat_id).delete()
+    db.session.commit()
+
+    registra_log_auto(current_user.id,'Uma atividade foi desassociada da unidade ' + unid.undSigla + '.')
+
+    flash('Uma atividade foi desassociada com sucesso.','sucesso')
+
+    return redirect(url_for('unidades.lista_atividades_unidade',unid_id=unid_id)) 

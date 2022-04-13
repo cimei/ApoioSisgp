@@ -67,7 +67,9 @@
           <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> 
           {% if u.qtd_pes == None or u.qtd_pes == '' %}<span class="text-danger">0</span>{% else %}{{u.qtd_pes}}{% endif %} </a></abbr></p></td>
         <td><p align = "center"> {% if u.qtd_ativs == None %}0{% else %}
-          <button data-toggle='modal' data-target='#ativs_modal{{u.unidadeId}}'>{{u.qtd_ativs}}</button>
+          <a href="{{url_for('unidades.lista_atividades_unidade', unid_id=u.unidadeId)}}"> {{u.qtd_ativs}} </a>
+
+          <!-- <button data-toggle='modal' data-target='#ativs_modal{{u.unidadeId}}'>{{u.qtd_ativs}}</button>
 
           {# modal para visualizar atividades de uma unidade #}
 
@@ -105,7 +107,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
           {% endif %} </p></td>
       </tr>

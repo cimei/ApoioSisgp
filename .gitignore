@@ -3,10 +3,11 @@
 /instance/flask.cfg
 /__pycache__
 /project/__pycache__
+/project/atividades/__pycache__
+/project/consultas/__pycache__
 /project/core/__pycache__
 /project/error_pages/__pycache__
 /project/padroes/__pycache__
 /project/pessoas/__pycache__
 /project/unidades/__pycache__
 /project/usuarios/__pycache__
-/project/atividades/__pycache__
