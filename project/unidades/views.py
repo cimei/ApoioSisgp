@@ -307,6 +307,7 @@ def lista_atividades_unidade(unid_id):
     unid = db.session.query(Unidades.unidadeId, Unidades.undSigla).filter(Unidades.unidadeId == unid_id).first() 
 
     ativs_lista = db.session.query(Atividades.titulo,
+                                   Atividades.itemCatalogoId, 
                                    cat_item_cat.catalogoId,
                                    unidade_ativ.unidadeId)\
                             .join(cat_item_cat, cat_item_cat.itemCatalogoId == Atividades.itemCatalogoId)\
@@ -324,9 +325,9 @@ def lista_atividades_unidade(unid_id):
 
 ## desassocia atividade de uma unidade
 
-@unidades.route('/<cat_id>/<int:unid_id>/desassocia_ativ', methods=['GET', 'POST'])
+@unidades.route('/<item_cat_id>/<cat_id>/<int:unid_id>/desassocia_ativ', methods=['GET', 'POST'])
 
-def desassocia_ativ(cat_id,unid_id):
+def desassocia_ativ(item_cat_id,cat_id,unid_id):
     """
     +---------------------------------------------------------------------------------------+
     |Desassocia atividades de uma unidade.                                                  |
@@ -338,13 +339,12 @@ def desassocia_ativ(cat_id,unid_id):
 
     #deleta registro na tabela Catalogo_Item_Catalogo
 
-    db.session.query(cat_item_cat).filter(cat_item_cat.catalogoId == cat_id).delete()
+    db.session.query(cat_item_cat)\
+              .filter(cat_item_cat.catalogoId == cat_id, cat_item_cat.itemCatalogoId == item_cat_id)\
+              .delete()
+
     db.session.commit()
 
-    #deleta registro na tabela Catalogo
-
-    db.session.query(unidade_ativ).filter(unidade_ativ.catalogoId == cat_id).delete()
-    db.session.commit()
 
     registra_log_auto(current_user.id,'Uma atividade foi desassociada da unidade ' + unid.undSigla + '.')
 
