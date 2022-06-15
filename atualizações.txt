@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+15/06/2022
+
+Lista das unidades mostra quatidade de pessoas diretamente viculadas e também de pessoas sob a hierarquia da mesma.
+v2.3.8
+
 13/04/2022
 
 Possibilidade de se desassociar uma atividade de uma unidade.

@@ -74,7 +74,8 @@ def lista_unidades():
     pessoas_unid = db.session.query(Pessoas.unidadeId,
                                     label('qtd_pes',func.count(Pessoas.unidadeId)))\
                              .group_by(Pessoas.unidadeId)\
-                             .subquery()                   
+                             .subquery() 
+
 
     unids = db.session.query(Unidades.unidadeId,
                              Unidades.undSigla,
@@ -103,11 +104,55 @@ def lista_unidades():
 
     quantidade = len(unids)
 
+    ## calcula quantidade de pessoas sob cada unidade, considerando a estrutura hierárquica de cada uma
+    
+    qtd_geral = {}
+    tree = {}
+
+    for item in unids:
+
+        total_pessoas = 0
+        pai = [item.unidadeId]
+        tree[item.undSigla] = [item.undSigla]
+
+        while pai != []:
+
+            prox_pai = []
+
+            for p in pai:
+
+                filhos = Unidades.query.filter(Unidades.unidadeIdPai==p).all()
+
+                for unid in filhos:
+
+                    prox_pai.append(unid.unidadeId)
+
+                    pessoas = db.session.query(Pessoas.unidadeId,
+                                                label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                                    .group_by(Pessoas.unidadeId)\
+                                    .filter(Pessoas.unidadeId == unid.unidadeId)\
+                                    .first()
+
+                    if pessoas is not None:
+                        total_pessoas += pessoas.qtd_pes
+
+                    tree[item.undSigla].append(unid.undSigla)    
+
+            pai =  prox_pai
+
+        if item.qtd_pes == None or item.qtd_pes == '':
+            pes = 0
+        else:
+            pes = item.qtd_pes
+        
+        qtd_geral[item.undSigla] = total_pessoas + pes
 
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
                                                 lista_situ_unidade = lista_situ_unidade, 
                                                 lista_tipo_unidade = lista_tipo_unidade,
-                                                ativs_lista = ativs_lista)
+                                                ativs_lista = ativs_lista,
+                                                qtd_geral = qtd_geral,
+                                                tree = tree)
 
 #
 ### atualiza dados de uma unidade

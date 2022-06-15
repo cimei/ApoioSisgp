@@ -297,6 +297,10 @@ def lista_pessoas_unid(unid):
 
     tipo = "unid"
 
+    r_unid = unid.replace('[','').replace(']','').replace(' ','').replace("'","")
+
+    l_unid = r_unid.split(',')
+
     pessoas = db.session.query(Pessoas.pessoaId,
                              Pessoas.pesNome,
                              Pessoas.pesCPF,
@@ -316,8 +320,8 @@ def lista_pessoas_unid(unid):
                             .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                            .filter(Unidades.undSigla == unid)\
-                            .order_by(Pessoas.pesNome).all()
+                            .filter(Unidades.undSigla.in_(l_unid))\
+                            .order_by(Pessoas.unidadeId,Pessoas.pesNome).all()
 
     quantidade = len(pessoas)
 
