@@ -49,8 +49,8 @@
         <td><p align = "left"> <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;"> {{a.titulo}}</span></abbr></p></td>
         <td><p align = "center"> {{a.descricao}} </p></td>
         <td><p align = "center"> {% if a.permiteRemoto %}Sim{% else %}Não{% endif %} </p></td>
-        <td><p align = "center"> {{(a.tempoPresencial/10)|decimal_com_virgula}} </p></td>
-        <td><p align = "center"> {{(a.tempoRemoto/10)|decimal_com_virgula}} </p></td>
+        <td><p align = "center"> {{(a.tempoPresencial)|decimal_com_virgula}} </p></td>
+        <td><p align = "center"> {{(a.tempoRemoto)|decimal_com_virgula}} </p></td>
         <td><p align = "center"> {{a.complexidade}} </p></td>
         <td><p align = "center"> <a href="{{url_for('atividades.associa_atividade_unidade', cod_ativ=a.itemCatalogoId)}}">{% if a.qtd_unids == None %} 0 {% else %} {{a.qtd_unids}} {% endif %}</a></p></td>
 

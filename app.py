@@ -8,11 +8,17 @@ import locale
 #
 @app.template_filter('converte_para_real')
 def converte_para_real(valor):
-    return locale.currency(valor, symbol=False, grouping = True )
+    if valor == None or valor == '':
+        return 0
+    else:
+        return locale.currency(valor, symbol=False, grouping = True )
 
 @app.template_filter('decimal_com_virgula')
 def decimal_com_virgula(valor):
-    return locale.format_string('%.1f',valor,grouping=True)
+    if valor == None or valor == '':
+        return 0
+    else:
+        return locale.format_string('%.1f',valor,grouping=True)
 
 @app.route('/')
 def index():

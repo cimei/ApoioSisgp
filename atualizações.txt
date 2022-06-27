@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+27/06/2022
+
+Ajuste no pyodbc para pegar valores numeric de forma correta. Acerto na lista de pactos em execução em Consultas.
+
 15/06/2022
 
 Lista das unidades mostra quatidade de pessoas diretamente viculadas e também de pessoas sob a hierarquia da mesma.

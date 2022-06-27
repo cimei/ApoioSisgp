@@ -10,6 +10,8 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 
+import pyodbc
+
 from shutil import rmtree
 import time
 import glob
@@ -27,6 +29,8 @@ def deleteOldPyinstallerFolders(time_threshold = 3600): # Por deefault remove de
     for item in mei_folders:
         if (time.time()-os.path.getctime(item)) > time_threshold:
             rmtree(item)
+
+pyodbc.setDecimalSeparator('.')
 
 TOP_LEVEL_DIR = os.path.abspath(os.curdir)
 frozen = ' não '

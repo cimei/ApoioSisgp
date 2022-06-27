@@ -43,11 +43,11 @@
         <th scope="row"><p align = "center"> {{pacto_ativ.index(p) + 1}} </p></th>
         <td><p align = "center"> <abbr title="{{p.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 120px;"> {{p.titulo}}</span></abbr> </p></td>
         <td><p align = "center"> {{ p.quantidade }} </p></td>
-        <td><p align = "center"> {% if p.tempoPrevistoPorItem == None %}N.I.{% else %}{{ (p.tempoPrevistoPorItem/10)|decimal_com_virgula }}{% endif %} </p></td>
-        <td><p align = "center"> {% if p.tempoPrevistoTotal == None %}N.I.{% else %}{{ (p.tempoPrevistoTotal/10)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoPrevistoPorItem == None %}N.I.{% else %}{{ (p.tempoPrevistoPorItem)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoPrevistoTotal == None %}N.I.{% else %}{{ (p.tempoPrevistoTotal)|decimal_com_virgula }}{% endif %} </p></td>
         <td><p align = "center"> {% if p.dataInicio == None %}N.I.{% else %}{{ p.dataInicio.strftime('%x') }}{% endif %} </p></td>
         <td><p align = "center"> {% if p.dataFim == None %}N.I.{% else %}{{ p.dataFim.strftime('%x') }}{% endif %} </p></td>
-        <td><p align = "center"> {% if p.tempoRealizado == None %}N.I.{% else %}{{ (p.tempoRealizado/10)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoRealizado == None %}N.I.{% else %}{{ (p.tempoRealizado)|decimal_com_virgula }}{% endif %} </p></td>
         <td><p align = "center">
           {% if p.descricao == 'Concluída'%} 
             <span class="text-success">{{ p.descricao }} </span>
@@ -57,8 +57,8 @@
             {{ p.descricao }}
           {% endif %}    
         </p></td>
-        <td><p align = "center"> {% if p.tempoHomologado == None %}N.I.{% else %}{{ (p.tempoHomologado/10)|decimal_com_virgula }}{% endif %} </p></td>
-        <td><p align = "center"> {% if p.nota == None %}N.I.{% else %}{{(p.nota/100)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoHomologado == None %}N.I.{% else %}{{ (p.tempoHomologado)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.nota == None %}N.I.{% else %}{{(p.nota)|decimal_com_virgula }}{% endif %} </p></td>
       </tr>
 
       {% endfor %}

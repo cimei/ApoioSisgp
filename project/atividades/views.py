@@ -152,8 +152,8 @@ def atividade_update(cod_ativ):
         form.titulo.data      = ativ.titulo 
         form.calc_temp.data   = ativ.calculoTempoId
         form.remoto.data      = ativ.permiteRemoto
-        form.tempo_pres.data  = locale.format_string('%.1f',ativ.tempoPresencial/10,grouping=True)
-        form.tempo_rem.data   = locale.format_string('%.1f',ativ.tempoRemoto/10,grouping=True)
+        form.tempo_pres.data  = locale.format_string('%.1f',ativ.tempoPresencial,grouping=True)
+        form.tempo_rem.data   = locale.format_string('%.1f',ativ.tempoRemoto,grouping=True)
         form.descricao.data   = ativ.descricao   
         form.complex.data     = ativ.complexidade  
         form.def_complex.data = ativ.definicaoComplexidade

@@ -47,8 +47,6 @@ def pessoas_qtd_pg_unidade():
     +---------------------------------------------------------------------------------------+
     """
 
-    hoje = date.today()
-
     qtd_unidades = Unidades.query.count()
 
     qtd_pessoas = Pessoas.query.count()
@@ -60,7 +58,7 @@ def pessoas_qtd_pg_unidade():
 
     pactos = db.session.query(Pactos_de_Trabalho.unidadeId,
                               label('qtd_pactos',func.count(Pactos_de_Trabalho.unidadeId)))\
-                       .filter(Pactos_de_Trabalho.dataFim > hoje, Pactos_de_Trabalho.situacaoId == 405)\
+                       .filter(Pactos_de_Trabalho.situacaoId == 405)\
                        .group_by(Pactos_de_Trabalho.unidadeId)\
                        .subquery()
 
@@ -84,8 +82,7 @@ def pessoas_qtd_pg_unidade():
 
     qtd_pt_unidade = len(pt)
 
-    qtd_pactos_unidade = Pactos_de_Trabalho.query.filter(Pactos_de_Trabalho.dataFim > hoje,
-                                                         Pactos_de_Trabalho.situacaoId == 405).count()
+    qtd_pactos_unidade = Pactos_de_Trabalho.query.filter(Pactos_de_Trabalho.situacaoId == 405).count()
 
     ## buscando detalhes dos programas de gestão das unidades e das pessoas com pacto vigente
 
@@ -104,6 +101,7 @@ def pessoas_qtd_pg_unidade():
                                           Pactos_de_Trabalho.dataInicio,
                                           Pactos_de_Trabalho.dataFim)\
                                    .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+                                   .filter(Pactos_de_Trabalho.situacaoId == 405)\
                                    .all()                                          
 
     # montando estrutura hierárquica de cada unidade com pg

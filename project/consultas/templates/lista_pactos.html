@@ -61,8 +61,8 @@
             {{ p.descricao2 }}
           {% endif %}
         </p></td>
-        <td><p align = "center"> {% if p.percentualExecucao == None %}N.I.{% else %}{{(p.percentualExecucao/100)|decimal_com_virgula }}{% endif %} </p></td>
-        <td><p align = "center"> {% if p.relacaoPrevistoRealizado == None%}N.I.{% else %}{{(p.relacaoPrevistoRealizado/100)|decimal_com_virgula}}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.percentualExecucao == None %}N.I.{% else %}{{(p.percentualExecucao)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.relacaoPrevistoRealizado == None%}N.I.{% else %}{{(p.relacaoPrevistoRealizado)|decimal_com_virgula}}{% endif %} </p></td>
         <td><p align = "center"> {% if p.avaliacaoId == None %}N.I.{% else %}p.avaliacaoId{% endif %} </p></td>
       </tr>
 
