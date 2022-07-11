@@ -26,6 +26,8 @@ from project.atividades.forms import AtividadeForm, UnidForm
 
 import locale
 
+import uuid
+
 from project.usuarios.views import registra_log_auto
 
 atividades = Blueprint('atividades',__name__, template_folder='templates')
@@ -172,8 +174,6 @@ def cria_atividade():
     """
     +----------------------------------------------------------------------------------------------+
     |Inserção de uma nova atividade no sistema.                                                    |
-    |Aqui a iserção é feita com SQL, pois a chave da tabela é unique identifier, o que demanda o   |
-    |NEWID() do SQL Server para um novo registro.                                                  |     
     +----------------------------------------------------------------------------------------------+
     """
     tipo = 'ins'
@@ -197,24 +197,37 @@ def cria_atividade():
             else:
                 remoto = 0
 
-            tabela = "[ProgramaGestao].[ItemCatalogo]"
-            colunas = ["[itemCatalogoId]", "[titulo]", "[calculoTempoId]", "[permiteRemoto]",
-                       "[tempoPresencial]", "[tempoRemoto]", "[descricao]", "[complexidade]",\
-                       "[definicaoComplexidade]", "[entregasEsperadas]"]
-            valores = ["(NEWID(), \'"+str(form.titulo.data) +"\', "+\
-                             str(form.calc_temp.data) +", "+\
-                             str(remoto) +", "+\
-                             str(form.tempo_pres.data) +", "+\
-                             str(form.tempo_rem.data) +", \'"+\
-                             str(form.descricao.data) +"\', \'"+\
-                             str(form.complex.data) +"\', \'"+\
-                             str(form.def_complex.data) +"\', \'"+\
-                             str(form.entregas.data) +"\')"]
-            s_cols = ', '.join(colunas)
-            s_vals = ', '.join(valores)
+            # tabela = "[ProgramaGestao].[ItemCatalogo]"
+            # colunas = ["[itemCatalogoId]", "[titulo]", "[calculoTempoId]", "[permiteRemoto]",
+            #            "[tempoPresencial]", "[tempoRemoto]", "[descricao]", "[complexidade]",\
+            #            "[definicaoComplexidade]", "[entregasEsperadas]"]
+            # valores = ["(NEWID(), \'"+str(form.titulo.data) +"\', "+\
+            #                  str(form.calc_temp.data) +", "+\
+            #                  str(remoto) +", "+\
+            #                  str(form.tempo_pres.data) +", "+\
+            #                  str(form.tempo_rem.data) +", \'"+\
+            #                  str(form.descricao.data) +"\', \'"+\
+            #                  str(form.complex.data) +"\', \'"+\
+            #                  str(form.def_complex.data) +"\', \'"+\
+            #                  str(form.entregas.data) +"\')"]
+            # s_cols = ', '.join(colunas)
+            # s_vals = ', '.join(valores)
 
-            ativ = db.session.execute(f"INSERT INTO {tabela} ({s_cols}) VALUES {s_vals}")                             
+            # ativ = db.session.execute(f"INSERT INTO {tabela} ({s_cols}) VALUES {s_vals}")   
 
+            nova_ativ = Atividades(itemCatalogoId        = uuid.uuid4(),
+                                   titulo                = form.titulo.data,
+                                   calculoTempoId        = form.calc_temp.data,
+                                   permiteRemoto         = remoto,
+                                   tempoPresencial       = form.tempo_pres.data,
+                                   tempoRemoto           = form.tempo_rem.data,
+                                   descricao             = form.descricao.data,
+                                   complexidade          = form.complex.data,
+                                   definicaoComplexidade = form.def_complex.data,
+                                   entregasEsperadas     = form.entregas.data)                          
+
+            db.session.add(nova_ativ)
+            
             db.session.commit()
 
             registra_log_auto(current_user.id,'Atividade '+ str(form.titulo.data)[:12] +'... inserida no banco de dados.')
@@ -286,13 +299,18 @@ def associa_atividade_unidade(cod_ativ):
             if ver_unid is None or len(ver_unid) == 0:
 
                 # insere relacionamento na tabela Catalogo
-                tab   = "[ProgramaGestao].[Catalogo]"
-                cols1 = ["[catalogoId]", "[unidadeId]"]
-                vals1 = ["(NEWID(), "+str(form.unid.data) +")"]
-                s_cols = ', '.join(cols1)
-                s_vals = ', '.join(vals1)
+                # tab   = "[ProgramaGestao].[Catalogo]"
+                # cols1 = ["[catalogoId]", "[unidadeId]"]
+                # vals1 = ["(NEWID(), "+str(form.unid.data) +")"]
+                # s_cols = ', '.join(cols1)
+                # s_vals = ', '.join(vals1)
 
-                ins1 = db.session.execute(f"INSERT INTO {tab} ({s_cols}) VALUES {s_vals}")
+                # ins1 = db.session.execute(f"INSERT INTO {tab} ({s_cols}) VALUES {s_vals}")
+
+                ins1 = unidade_ativ(catalogoId = uuid.uuid4(),
+                                    unidadeId  = form.unid.data)
+
+                db.session.add(ins1)                    
 
                 db.session.commit()
 
@@ -312,13 +330,19 @@ def associa_atividade_unidade(cod_ativ):
                         rel_criado = True
 
                         # insere relacionamento na tabela CatalogoItemCatalogo
-                        tab   = "[ProgramaGestao].[CatalogoItemCatalogo]"
-                        cols2 = ["[catalogoItemCatalogoId]","[catalogoId]", "[itemCatalogoId]"]
-                        vals2 = ["(NEWID(), \'"+str(pk1) + "\', \'"+ str(ativ.itemCatalogoId) +"\')"]
-                        s_cols = ', '.join(cols2)
-                        s_vals = ', '.join(vals2)
+                        # tab   = "[ProgramaGestao].[CatalogoItemCatalogo]"
+                        # cols2 = ["[catalogoItemCatalogoId]","[catalogoId]", "[itemCatalogoId]"]
+                        # vals2 = ["(NEWID(), \'"+str(pk1) + "\', \'"+ str(ativ.itemCatalogoId) +"\')"]
+                        # s_cols = ', '.join(cols2)
+                        # s_vals = ', '.join(vals2)
 
-                        ins2 = db.session.execute(f"INSERT INTO {tab} ({s_cols}) VALUES {s_vals}")
+                        # ins2 = db.session.execute(f"INSERT INTO {tab} ({s_cols}) VALUES {s_vals}")
+
+                        ins2 = cat_item_cat(catalogoItemCatalogoId = uuid.uuid4(),
+                                            catalogoId             = pk1,
+                                            itemCatalogoId         = ativ.itemCatalogoId)
+
+                        db.session.add(ins2)
 
                         db.session.commit()
 

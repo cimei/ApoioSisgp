@@ -1,8 +1,13 @@
 ## Atualizações ##
 
+28/06/2022
+
+Trocada a solução NEWID() por uuid.uuid4() na inserção de registros.
+
 27/06/2022
 
 Ajuste no pyodbc para pegar valores numeric de forma correta. Acerto na lista de pactos em execução em Consultas.
+v2.3.9
 
 15/06/2022
 

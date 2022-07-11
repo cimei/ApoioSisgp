@@ -473,13 +473,14 @@ class cat_item_cat(db.Model):
     catalogoId             = db.Column(db.String)
     itemCatalogoId         = db.Column(db.String)
 
-    def __init__(self, catalogoId, itemCatalogoId):
+    def __init__(self, catalogoItemCatalogoId, catalogoId, itemCatalogoId):
 
-        self.catalogoId      = catalogoId
-        self.itemCatalogoId  = itemCatalogoId
+        self.catalogoItemCatalogoId = catalogoItemCatalogoId
+        self.catalogoId             = catalogoId
+        self.itemCatalogoId         = itemCatalogoId
 
     def __repr__ (self):
-        return f"{self.catalogoId};{self.itemCatalogoId};"
+        return f"{self.catalogoItemCatalogoId};{self.catalogoId};{self.itemCatalogoId};"
 
 # atividades 
 
@@ -499,9 +500,10 @@ class Atividades(db.Model):
     definicaoComplexidade = db.Column(db.String)
     entregasEsperadas     = db.Column(db.String)
 
-    def __init__(self, titulo, calculoTempoId, permiteRemoto, tempoPresencial, tempoRemoto, 
+    def __init__(self, itemCatalogoId, titulo, calculoTempoId, permiteRemoto, tempoPresencial, tempoRemoto, 
                 descricao, complexidade, definicaoComplexidade, entregasEsperadas):
 
+        self.itemCatalogoId        = itemCatalogoId
         self.titulo                = titulo
         self.calculoTempoId        = calculoTempoId
         self.permiteRemoto         = permiteRemoto
@@ -513,7 +515,7 @@ class Atividades(db.Model):
         self.entregasEsperadas     = entregasEsperadas
 
     def __repr__ (self):
-        return f"{self.titulo};{self.calculoTempoId};{self.permiteRemoto};{self.tempoPresencial};\
+        return f"{self.itemCatalogoId};{self.titulo};{self.calculoTempoId};{self.permiteRemoto};{self.tempoPresencial};\
                 {self.tempoRemoto};{self.descricao};{self.complexidade};{self.definicaoComplexidade};\
                 {self.entregasEsperadas};"
 
