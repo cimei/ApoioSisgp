@@ -1,4 +1,4 @@
-# ApoioSisgp
+# ApoioSisgp (o branch verII corresponde a uma versão com mais funcionalidades)
 Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, bem como de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado).
 
 Considerando que você tem o Python instalado em sua máquina, baixe os arquivos deste repositório. 
