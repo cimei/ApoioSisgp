@@ -11,16 +11,16 @@
 # forms.py dentro de pessoas
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, SelectField, DateField
+from wtforms import StringField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Optional, Email
-from wtforms.fields.html5 import EmailField
+from wtforms.fields.html5 import EmailField, DateField
 
 
 class PessoaForm(FlaskForm):
 
    nome   = StringField('Nome:', validators=[DataRequired(message="Informe o nome completo!")])
    cpf    = StringField('CPF:',validators=[DataRequired(message="Informe o CPF!")])
-   nasc   = DateField('Dt Nasc.:',format='%d/%m/%Y',validators=[DataRequired(message="Informe a data de nascimento!")])
+   nasc   = DateField('Dt Nasc.:',format='%Y-%m-%d',validators=[DataRequired(message="Informe a data de nascimento!")])
    siape  = StringField('Matrícula SIAPE:')
    email  = EmailField('E-mail:', validators = [Email('Informar um e-mail'), Optional()])
    unidade= SelectField('Unidade:',validators=[DataRequired(message="Escolha a unidade!")],coerce=int)

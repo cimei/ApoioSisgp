@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+12/07/2022
+
+Ajustes nos procedimentos de carga, melhoria na entradad de datas e atualização da cartilha.
+v 2.4.0
+
 28/06/2022
 
 Trocada a solução NEWID() por uuid.uuid4() na inserção de registros.

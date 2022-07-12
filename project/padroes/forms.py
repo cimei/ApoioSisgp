@@ -14,8 +14,9 @@
 # forms.py dentro de pessoas
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, BooleanField, DateField
+from wtforms import StringField, IntegerField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
+from wtforms.fields.html5 import DateField
 
 class Situ_PessoasForm(FlaskForm):
 
@@ -42,7 +43,7 @@ class Vinc_PessoasForm(FlaskForm):
 
 class FeriadoForm(FlaskForm):
 
-   ferData      = DateField('Data:',format='%d/%m/%Y', validators=[DataRequired(message="Informe a data!")])
+   ferData      = DateField('Data:',format='%Y-%m-%d', validators=[DataRequired(message="Informe a data!")])
    ferDescricao = StringField('Descrição:', validators=[DataRequired(message="Informe a descrição!")])
    ferFixo      = BooleanField('Feriado é fixo?')
    ufId         = StringField('UF:')
