@@ -1,8 +1,13 @@
 ## Atualizações ##
 
+27/07/2022
+
+Inseridos menus "Estatísticas" e "PGs e PTs no período" em Consultas.
+v2.4.1
+
 12/07/2022
 
-Ajustes nos procedimentos de carga, melhoria na entradad de datas e atualização da cartilha.
+Ajustes nos procedimentos de carga, melhoria na entrada de datas e atualização da cartilha.
 v 2.4.0
 
 28/06/2022

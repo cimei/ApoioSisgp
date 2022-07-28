@@ -42,7 +42,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ativs}} Atividades</h5>
             {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('atividades.lista_atividades')}}" class="card-link">Ver atividades</a>
+              <a href="{{url_for('atividades.lista_atividades',lista='Todas')}}" class="card-link">Ver atividades</a>
             {% endif %}  
           </div>
         </div>

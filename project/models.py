@@ -568,3 +568,44 @@ class Pactos_de_Trabalho_Atividades(db.Model):
                  {self.tempoPrevistoTotal};{self.dataInicio};{self.dataFim};{self.tempoRealizado};\
                  {self.situacaoId};{self.descricao};{self.tempoHomologado};\
                  {self.nota};{self.justificativa};{self.consideracoesConclusao};{self.modalidadeExecucaoId}"
+
+# Solicitações nos Pactos de Trabalho 
+
+class Pactos_de_Trabalho_Solic(db.Model):
+
+    __tablename__ = 'PactoTrabalhoSolicitacao'
+    __table_args__ = {"schema": "ProgramaGestao"}
+
+    pactoTrabalhoSolicitacaoId = db.Column(db.String, primary_key = True)
+    pactoTrabalhoId            = db.Column(db.String)
+    tipoSolicitacaoId          = db.Column(db.Integer)
+    dataSolicitacao            = db.Column(db.Date)
+    solicitante                = db.Column(db.String)
+    dadosSolicitacao           = db.Column(db.String)
+    observacoesSolicitante     = db.Column(db.String)
+    analisado                  = db.Column(db.Boolean)
+    dataAnalise                = db.Column(db.Date)
+    analista                   = db.Column(db.String)
+    aprovado                   = db.Column(db.Boolean)
+    observacoesAnalista        = db.Column(db.String)
+
+    def __init__(self,pactoTrabalhoSolicitacaoId,pactoTrabalhoId,tipoSolicitacaoId,dataSolicitacao,solicitante,dadosSolicitacao,
+                observacoesSolicitante,analisado,dataAnalise,analista,aprovado,observacoesAnalista):
+
+        self.pactoTrabalhoSolicitacaoId = pactoTrabalhoSolicitacaoId
+        self.pactoTrabalhoId            = pactoTrabalhoId
+        self.tipoSolicitacaoId          = tipoSolicitacaoId
+        self.dataSolicitacao            = dataSolicitacao
+        self.solicitante                = solicitante
+        self.dadosSolicitacao           = dadosSolicitacao
+        self.observacoesSolicitante     = observacoesSolicitante
+        self.analisado                  = analisado
+        self.dataAnalise                = dataAnalise
+        self.analista                   = analista
+        self.aprovado                   = aprovado
+        self.observacoesAnalista        = observacoesAnalista 
+
+    def __repr__ (self):
+        return f"{self.pactoTrabalhoSolicitacaoId};{self.pactoTrabalhoId};{self.tipoSolicitacaoId};{self.dataSolicitacao};{self.solicitante};\
+                 {self.dadosSolicitacao};{self.observacoesSolicitante};{self.analisado};{self.dataAnalise};\
+                 {self.analista};{self.aprovado};{self.observacoesAnalista}" 

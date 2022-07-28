@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container pt-3">
+
+<div class="jumbotron">
+
+<h5 align = "center"><b>Quantidades de Programas de Gestão e Planos de Trabalhos por período</b>
+<br><br>
+
+{% macro render_field(field,obr) %}
+  {% if obr == True %}
+    <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+  {% else %}
+    <dt>{{ field.label(class="form-control-label") }}
+  {% endif %}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+<div class="row">
+
+  <div class="col small">
+    <form class="form-group" method='POST'>
+      {{ form.hidden_tag() }}
+        <div class="form-group row align-items-center">
+          <div class="col"></div>
+          <div class="form-group col-2">
+            {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+          </div>
+          <div class="form-group col-2">
+            {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+          </div>
+          <div class="form-group col-2">
+            {{ form.submit(class="btn btn-outline-primary btn-sm") }}
+          </div>
+          <div class="col"></div>
+        </div>
+    </form>    
+  </div>
+
+</div>
+
+{% if form.data_ini.data != None and form.data_fim.data != None %}
+
+  <h6 align = "center"><b>Com início e final de vigência compreendidos no período informado</b></h6>
+
+  <div class="row">
+
+    <div class="col-6">
+      <div class="card bg-transparent border-dark">
+
+        <div class="card-header bg-transparent">
+          <p align = "center"><b>Programas de Gestão</b></p>
+        </div>
+
+        <div class="card-body bg-transparent">
+          <table class="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col"><p align = "center">Situação</p></th>
+                <th scope="col"><p align = "right">qtd</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pg in programas_de_gestao %}
+                <tr>
+                  <td><p align = "center"> {{ pg.descricao }} </p></td>
+                  <td><p align = "right"> {{ pg.qtd_pg }} </p></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          </div>
+
+        <div class="card-footer bg-transparent">
+          <p align = "right">Total: {{ programas_de_gestao|sum(attribute='qtd_pg') }}</p>
+        </div>
+        
+      </div>    
+    </div>
+
+    <div class="col-6">
+      <div class="card bg-transparent border-dark">
+
+        <div class="card-header bg-transparent">
+          <p align = "center"><b>Planos de Trabalho</b></p>
+        </div>
+
+        <div class="card-body bg-transparent">
+          <table class="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col"><p align = "center">Forma - Situação</p></th>
+                <th scope="col"><p align = "right">qtd</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pl in planos_de_trabalho_fs %}
+                <tr>
+                  <td><p align = "left"> 
+                    {{ pl.forma }} - {{ pl.sit }} </p></td>
+                  <td><p align = "right"> {{ pl.qtd_planos }} </p></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-footer bg-transparent">
+        <p align = "right">Total: {{ planos_de_trabalho_fs|sum(attribute='qtd_planos') }}</p>
+        </div>
+
+      </div>    
+    </div>
+
+
+  </div>
+
+  <br>
+
+  <h6 align = "center"><b>Vigentes no período informado</b></h6>
+
+  <div class="row">
+
+    <div class="col-6">
+      <div class="card bg-transparent border-dark">
+
+        <div class="card-header bg-transparent">
+          <p align = "center"><b>Programas de Gestão</b></p>
+        </div>
+
+        <div class="card-body bg-transparent">
+          <table class="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col"><p align = "center">Situação</p></th>
+                <th scope="col"><p align = "right">qtd</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pg in programas_de_gestao_v %}
+                <tr>
+                  <td><p align = "center"> {{ pg.descricao }} </p></td>
+                  <td><p align = "right"> {{ pg.qtd_pg }} </p></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          </div>
+
+        <div class="card-footer bg-transparent">
+          <p align = "right">Total: {{ programas_de_gestao_v|sum(attribute='qtd_pg') }}</p>
+        </div>
+        
+      </div>    
+    </div>
+
+    <div class="col-6">
+      <div class="card bg-transparent border-dark">
+
+        <div class="card-header bg-transparent">
+          <p align = "center"><b>Planos de Trabalho</b></p>
+        </div>
+
+        <div class="card-body bg-transparent">
+          <table class="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col"><p align = "center">Forma - Situação</p></th>
+                <th scope="col"><p align = "right">qtd</p></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pl in planos_de_trabalho_fs_v %}
+                <tr>
+                  <td><p align = "left"> 
+                    {{ pl.forma }} - {{ pl.sit }} </p></td>
+                  <td><p align = "right"> {{ pl.qtd_planos }} </p></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-footer bg-transparent">
+        <p align = "right">Total: {{ planos_de_trabalho_fs_v|sum(attribute='qtd_planos') }}</p>
+        </div>
+
+      </div>    
+    </div>
+
+
+  </div>
+
+{% endif %}
+
+</div>
+</div>
+{% endblock %}

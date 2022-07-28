@@ -17,7 +17,11 @@
 <caption>
   <div class="row">
       <div class="col">
-        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> atividades da Instituição</p>
+        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
+          {% if lista == 'Todas'%} atividades da Instituição
+          {% else %} atividades utilizadas em planos de Trabalho
+          {% endif %}  
+        </p>
       </div>
   </div>
 </caption>

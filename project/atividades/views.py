@@ -21,7 +21,7 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, unidade_ativ, cat_item_cat, Atividades, catdom
+from project.models import Unidades, Pessoas, unidade_ativ, cat_item_cat, Atividades, catdom,Pactos_de_Trabalho_Atividades
 from project.atividades.forms import AtividadeForm, UnidForm
 
 import locale
@@ -35,16 +35,14 @@ atividades = Blueprint('atividades',__name__, template_folder='templates')
 
 ## lista atividades da instituição
 
-@atividades.route('/lista_atividades')
+@atividades.route('/lista_atividades/<lista>')
 
-def lista_atividades():
+def lista_atividades(lista):
     """
     +-----------------------------------------------------------------------------------------------+
     |Apresenta uma lista das atividades da instituição.                                             |
     |                                                                                               |
-    |Aqui há uma gambiarra. Os valores de tempo presencial e remoto, no banco, estão como           | 
-    |number(4,1), contudo eles chegam para o aplicativo sem a posição decimal definida.             | 
-    |A solução foi dividir os valores por 10 no template que apresenta a lista.                     |    
+    |Recebe o tipo de lista como parâmetro.                                                         |    
     +-----------------------------------------------------------------------------------------------+
     """
 # Lê tabela atividades
@@ -55,7 +53,9 @@ def lista_atividades():
                        .group_by(cat_item_cat.itemCatalogoId)\
                        .subquery()
 
-    ativs = db.session.query(Atividades.itemCatalogoId,
+    if lista == 'Todas':
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
                              Atividades.titulo,
                              catdom.descricao,
                              Atividades.permiteRemoto,
@@ -69,11 +69,29 @@ def lista_atividades():
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .order_by(Atividades.titulo).all()
 
+    else:
+
+        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()                   
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                Atividades.titulo,
+                                catdom.descricao,
+                                Atividades.permiteRemoto,
+                                Atividades.tempoPresencial,
+                                Atividades.tempoRemoto,
+                                Atividades.complexidade,
+                                Atividades.definicaoComplexidade,
+                                Atividades.entregasEsperadas,
+                                unids.c.qtd_unids)\
+                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .order_by(Atividades.titulo).all()
+
 
     quantidade = len(ativs)
 
-
-    return render_template('lista_atividades.html', ativs=ativs, quantidade=quantidade)
+    return render_template('lista_atividades.html', ativs=ativs, quantidade=quantidade,lista=lista)
 
 #
 ### atualiza dados de uma atividade

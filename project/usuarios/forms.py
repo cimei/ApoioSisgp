@@ -20,7 +20,9 @@
 """
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField,\
-                    DateField, TextAreaField, IntegerField
+                    TextAreaField, IntegerField
+from wtforms.fields.html5 import DateField
+
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
 from flask import flash
@@ -89,8 +91,8 @@ class AdminForm(FlaskForm):
 
 class LogForm(FlaskForm):
 
-    data_ini = DateField('Data Inicial: ', format='%d/%m/%Y')
-    data_fim = DateField('Data Final: ', format='%d/%m/%Y')
+    data_ini = DateField('Data Inicial: ', format='%Y-%m-%d')
+    data_fim = DateField('Data Final: ', format='%Y-%m-%d')
     submit   = SubmitField('Procurar')
 
 class DefGestor(FlaskForm):

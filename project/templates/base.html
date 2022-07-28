@@ -47,7 +47,7 @@
           </li>
 
           <li class="nav-item active">
-            <a class="nav-link" href="{{url_for('atividades.lista_atividades')}}">Atividades</a>
+            <a class="nav-link" href="{{url_for('atividades.lista_atividades',lista='Todas')}}">Atividades</a>
           </li>
 
           <li class="nav-item dropdown active">
@@ -70,6 +70,8 @@
               <a class="dropdown-item" href="{{url_for('consultas.catalogo_dominio')}}">Catálogo de Domínios</a>
               <a class="dropdown-item" href="{{url_for('consultas.pessoas_qtd_pg_unidade')}}">Qtd. pessoas em PG por unidade</a>
               <a class="dropdown-item" href="{{url_for('consultas.pactos')}}">Pactos de Trabaho</a>
+              <a class="dropdown-item" href="{{url_for('consultas.estatisticas')}}">Estatisticas</a>
+              <a class="dropdown-item" href="{{url_for('consultas.periodo')}}">PGs e PTs no período</a>
               <a class="dropdown-item" href="{{url_for('consultas.relatorioPG')}}">xlsx PGs e Pactos</a>
               <a class="dropdown-item" href="{{url_for('consultas.hierarquia')}}">xlsx hierarquia unidades</a>
             </div>
@@ -127,8 +129,8 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '2.4.0') %}
-          {% set amb = namespace(tipo = 'testes') %}
+          {% set ver = namespace(num = '2.4.1') %}
+          {% set amb = namespace(tipo = 'prod') %}
 
         </ul>
 
