@@ -20,7 +20,7 @@
 from flask import render_template,url_for,flash, redirect,request,Blueprint
 from flask_login import current_user
 from sqlalchemy.sql import label
-from sqlalchemy import func, distinct
+from sqlalchemy import and_, func, distinct, or_
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
@@ -666,86 +666,84 @@ def periodo():
         data_ini = form.data_ini.data
         data_fim = form.data_fim.data
 
-        # quantitativos de programas de gestão e de planos de trabalho iniciados e finalizados no período
-        programas_de_gestao = db.session.query(catdom.descricao, 
+        # quantitativos de programas de gestão iniciados e finalizados no período
+        programas_de_gestao_d = db.session.query(catdom.descricao, 
                                             label('qtd_pg',func.count(Planos_de_Trabalho.planoTrabalhoId)))\
                                         .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
-                                        .filter(Planos_de_Trabalho.dataInicio >= datetime.combine(data_ini,time.min),
-                                                Planos_de_Trabalho.dataFim <= datetime.combine(data_fim,time.max))\
+                                        .filter(Planos_de_Trabalho.dataInicio > datetime.combine(data_ini,time.min),
+                                                Planos_de_Trabalho.dataFim < datetime.combine(data_fim,time.max))\
                                         .group_by(catdom.descricao)\
                                         .all()
 
-        planos_de_trabalho = db.session.query(catdom.descricao,
-                                            label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
-                                    .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                    .filter(Pactos_de_Trabalho.dataInicio >= datetime.combine(data_ini,time.min),
-                                            Pactos_de_Trabalho.dataFim <= datetime.combine(data_fim,time.max))\
-                                    .group_by(catdom.descricao)\
-                                    .all()
-
-        planos_de_trabalho_forma = db.session.query(catdom.descricao,
-                                            label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
-                                    .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                    .filter(Pactos_de_Trabalho.dataInicio >= datetime.combine(data_ini,time.min),
-                                            Pactos_de_Trabalho.dataFim <= datetime.combine(data_fim,time.max))\
-                                    .group_by(catdom.descricao)\
-                                    .all()
-
-        # quantidades de planos de trabalho por forma e situação
-        planos_de_trabalho_fs = db.session.query(label('forma',catdom.descricao),
+        # quantidades de planos de trabalho iniciados e finalizados no período
+        planos_de_trabalho_d = db.session.query(label('forma',catdom.descricao),
                                                  label('sit',catdom_sit.c.descricao),   
                                                  label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
                                           .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                           .join(catdom_sit,catdom_sit.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                          .filter(Pactos_de_Trabalho.dataInicio >= datetime.combine(data_ini,time.min),
-                                                  Pactos_de_Trabalho.dataFim <= datetime.combine(data_fim,time.max))\
+                                          .filter(Pactos_de_Trabalho.dataInicio > datetime.combine(data_ini,time.min),
+                                                  Pactos_de_Trabalho.dataFim < datetime.combine(data_fim,time.max))\
                                           .group_by(catdom.descricao,catdom_sit.c.descricao)\
                                           .order_by(catdom.descricao,catdom_sit.c.descricao)\
-                                          .all()                            
+                                          .all()
 
-        # quantitativos de programas de gestão e de planos de trabalho com vigência no período
+        #################
+
+        # quantitativos de programas de gestão com vigêntes no período
         programas_de_gestao_v = db.session.query(catdom.descricao, 
                                                  label('qtd_pg',func.count(Planos_de_Trabalho.planoTrabalhoId)))\
                                           .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
-                                          .filter(Planos_de_Trabalho.dataInicio <= datetime.combine(data_ini,time.min),
-                                                  Planos_de_Trabalho.dataFim >= datetime.combine(data_fim,time.max))\
+                                          .filter(Planos_de_Trabalho.dataInicio <= datetime.combine(data_fim,time.min),
+                                                  Planos_de_Trabalho.dataFim >= datetime.combine(data_ini,time.max))\
                                           .group_by(catdom.descricao)\
                                           .all()
 
-        planos_de_trabalho_v = db.session.query(catdom.descricao,
-                                                label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
-                                      .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                      .filter(Pactos_de_Trabalho.dataInicio <= datetime.combine(data_ini,time.min),
-                                              Pactos_de_Trabalho.dataFim >= datetime.combine(data_fim,time.max))\
-                                      .group_by(catdom.descricao)\
-                                      .all()
-
-        planos_de_trabalho_forma_v = db.session.query(catdom.descricao,
-                                                      label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
-                                               .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                               .filter(Pactos_de_Trabalho.dataInicio <= datetime.combine(data_ini,time.min),
-                                                       Pactos_de_Trabalho.dataFim >= datetime.combine(data_fim,time.max))\
-                                               .group_by(catdom.descricao)\
-                                               .all()
-
-        # quantidades de planos de trabalho por forma e situação
-        planos_de_trabalho_fs_v = db.session.query(label('forma',catdom.descricao),
+        # quantidades de planos de trabalho vigentes no período
+        planos_de_trabalho_v = db.session.query(label('forma',catdom.descricao),
                                                    label('sit',catdom_sit.c.descricao),   
                                                    label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
                                             .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                             .join(catdom_sit,catdom_sit.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                            .filter(Pactos_de_Trabalho.dataInicio <= datetime.combine(data_ini,time.min),
-                                                    Pactos_de_Trabalho.dataFim >= datetime.combine(data_fim,time.max))\
+                                            .filter(Pactos_de_Trabalho.dataInicio <= datetime.combine(data_fim,time.min),
+                                                    Pactos_de_Trabalho.dataFim >= datetime.combine(data_ini,time.max))\
                                             .group_by(catdom.descricao,catdom_sit.c.descricao)\
                                             .order_by(catdom.descricao,catdom_sit.c.descricao)\
-                                            .all()                                           
+                                            .all()   
 
-        return render_template('pg_pt_por_periodo.html', form=form, programas_de_gestao=programas_de_gestao, planos_de_trabalho=planos_de_trabalho,
-                                                         planos_de_trabalho_forma=planos_de_trabalho_forma,
-                                                         programas_de_gestao_v=programas_de_gestao_v, planos_de_trabalho_v=planos_de_trabalho_v,
-                                                         planos_de_trabalho_forma_v=planos_de_trabalho_forma_v,
-                                                         planos_de_trabalho_fs=planos_de_trabalho_fs,
-                                                         planos_de_trabalho_fs_v=planos_de_trabalho_fs_v)
+        ###############
+
+        # quantitativos de programas de gestão com vigência fora do período
+        programas_de_gestao_f = db.session.query(catdom.descricao, 
+                                            label('qtd_pg',func.count(Planos_de_Trabalho.planoTrabalhoId)))\
+                                        .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
+                                        .filter(or_(and_(Planos_de_Trabalho.dataInicio < datetime.combine(data_ini,time.min),\
+                                                         Planos_de_Trabalho.dataFim    < datetime.combine(data_ini,time.max)),\
+                                                    and_(Planos_de_Trabalho.dataInicio > datetime.combine(data_fim,time.min),\
+                                                         Planos_de_Trabalho.dataFim    > datetime.combine(data_fim,time.max))))\
+                                        .group_by(catdom.descricao)\
+                                        .all()
+
+        # quantidades de planos de trabalho com vigência fora do período
+        planos_de_trabalho_f = db.session.query(label('forma',catdom.descricao),
+                                                 label('sit',catdom_sit.c.descricao),   
+                                                 label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
+                                          .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
+                                          .join(catdom_sit,catdom_sit.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                          .filter(or_(and_(Pactos_de_Trabalho.dataInicio < datetime.combine(data_ini,time.min),\
+                                                           Pactos_de_Trabalho.dataFim    < datetime.combine(data_ini,time.max)),\
+                                                      and_(Pactos_de_Trabalho.dataInicio > datetime.combine(data_fim,time.min),\
+                                                           Pactos_de_Trabalho.dataFim    > datetime.combine(data_fim,time.max))))\
+                                          .group_by(catdom.descricao,catdom_sit.c.descricao)\
+                                          .order_by(catdom.descricao,catdom_sit.c.descricao)\
+                                          .all()                                                                             
+
+        return render_template('pg_pt_por_periodo.html', form=form, 
+                                                         programas_de_gestao_f = programas_de_gestao_f,
+                                                         planos_de_trabalho_f  = planos_de_trabalho_f,
+                                                         programas_de_gestao_d = programas_de_gestao_d,
+                                                         planos_de_trabalho_d  = planos_de_trabalho_d,
+                                                         programas_de_gestao_v = programas_de_gestao_v,
+                                                         planos_de_trabalho_v  = planos_de_trabalho_v)
 
 
     return render_template('pg_pt_por_periodo.html', form=form)
