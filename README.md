@@ -33,6 +33,7 @@ Como este sistema faz controle de acesso e registra o log dos commits realizados
             [last_logged_in] [datetime] NULL,
             [current_logged_in] [datetime] NULL,
             [userAtivo] [bit] NULL,
+            [avaliadorId] [bigint] NULL,
        CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC
