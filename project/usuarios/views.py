@@ -51,7 +51,7 @@ from project import db, mail, app
 from project.models import users, Log_Auto, catdom, Pessoas
 
 from project.usuarios.forms import RegistrationForm, LoginForm, EmailForm, PasswordForm, AdminForm,\
-                                LogForm, DefGestor
+                                LogForm
                                 
 
 usuarios = Blueprint('usuarios',__name__)
@@ -461,61 +461,7 @@ def log ():
 
 #
 
-# define usuário gestor
 
-@usuarios.route("/gestor", methods=['GET', 'POST'])
-@login_required
-def gestor():
-    """+--------------------------------------------------------------------------------------+
-       |Altera o usuário gestor do sistema.                                                   |
-       |                                                                                      |
-       +--------------------------------------------------------------------------------------+
-    """
-
-    gestorAtual = db.session.query(catdom.descricao,
-                                   Pessoas.pesNome)\
-                             .join(Pessoas, Pessoas.pessoaId == catdom.descricao)\
-                             .filter(catdom.classificacao == 'GestorSistema').first()
-
-    comis = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
-                      .filter(Pessoas.tipoFuncaoId != None)\
-                      .order_by(Pessoas.pesNome).all()
-    lista_comis = [(int(c.pessoaId),c.pesNome) for c in comis]
-    lista_comis.insert(0,(0,''))
-
-    form = DefGestor()
-
-    form.gestor.choices = lista_comis
-
-    gestor_catdom = catdom.query.filter(catdom.classificacao == 'GestorSistema').first_or_404()
-
-    if form.validate_on_submit():
-
-        if current_user.userAtivo:
-
-            gestor_catdom.descricao = form.gestor.data
-
-            db.session.commit()
-
-            novoGestor = Pessoas.query.filter(Pessoas.pessoaId==form.gestor.data).first_or_404()
-
-            registra_log_auto(current_user.id, 'Gestor alterado para ' +novoGestor.pesNome+'.')
-
-            flash('Gestor do SISGP redefinido!','sucesso')
-
-            return redirect(url_for('pessoas.lista_pessoas'))
-
-        else:
-
-            flash('O seu usuário precisa ser ativado para esta operação!','erro')
-
-            return redirect(url_for('pessoas.lista_pessoas'))
-
-    elif request.method == 'GET':
-
-        form.gestor.data = gestorAtual.pesNome
-
-    return render_template('atu_gestor.html', form=form, gestorAtual=gestorAtual)
 
 
 

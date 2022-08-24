@@ -254,19 +254,30 @@ def cria_func_pessoas():
 
         if current_user.userAtivo:
 
-            func_pes = Tipo_Func_Pessoa(tipoFuncaoId       = form.id.data, 
-                                        tfnDescricao       = form.desc.data,
-                                        tfnCodigoFuncao    = form.cod.data, 
-                                        tfnIndicadorChefia = form.indic.data)
+            verifica = db.session.query(Tipo_Func_Pessoa).filter(Tipo_Func_Pessoa.tipoFuncaoId==form.id.data).first()
 
-            db.session.add(func_pes)
-            db.session.commit()
+            if verifica == None:
 
-            registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFuncaoId) +' '+ func_pes.tfnDescricao +' foi inserida no banco.')
+                func_pes = Tipo_Func_Pessoa(tipoFuncaoId       = form.id.data, 
+                                            tfnDescricao       = form.desc.data,
+                                            tfnCodigoFuncao    = form.cod.data, 
+                                            tfnIndicadorChefia = form.indic.data)
 
-            flash('Tipo de função '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+                db.session.add(func_pes)
+                db.session.commit()
 
-            return redirect(url_for('padroes.lista_tipo_funcao'))
+                registra_log_auto(current_user.id,'TipoFuncao '+ str(func_pes.tipoFuncaoId) +' '+ func_pes.tfnDescricao +' foi inserida no banco.')
+
+                flash('Tipo de função '+str(form.desc.data +' inserido no DBSISGP!'),'sucesso')
+
+                return redirect(url_for('padroes.lista_tipo_funcao'))
+
+            else:
+
+                flash('ID informado já existe no DBSISGP!','erro')
+
+                return render_template('atu_func_pessoas.html', form=form, tp=tp)
+
 
         else:
 

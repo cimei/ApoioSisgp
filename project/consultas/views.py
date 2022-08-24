@@ -522,6 +522,30 @@ def hierarquia():
 
     return redirect(url_for('core.index'))    
 
+## atividades em planos de trabalho
+
+@consultas.route('/lista_ativs_planos')
+def lista_ativs_planos():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Lista as atividades em planos por situação                                             |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    # quantidades de atividades em planos (pactos)
+    ativs = db.session.query(catdom.descricao,
+                             Atividades.titulo, 
+                             label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                      .join(Atividades, Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                      .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho_Atividades.situacaoId)\
+                      .group_by(catdom.descricao, Atividades.titulo)\
+                      .all()
+
+    return render_template('lista_ativs_planos.html', ativs=ativs)                  
+
+
+
 ## alguns números
 
 @consultas.route('/estatisticas')
@@ -560,7 +584,7 @@ def estatisticas():
 
     # atividades top5 em planos de trabalho
     ativs_sub = db.session.query(Atividades.titulo,
-                                      func.count(Pactos_de_Trabalho_Atividades.itemCatalogoId).label('qtd_ativs'))\
+                                 func.count(Pactos_de_Trabalho_Atividades.itemCatalogoId).label('qtd_ativs'))\
                             .join(Pactos_de_Trabalho_Atividades,Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
                             .group_by(Atividades.titulo)\
                             .subquery()

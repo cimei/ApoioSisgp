@@ -99,7 +99,6 @@
               <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
               {% if current_user.userAtivo %}
                 <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Ver Usuários</a>
-                <a class="dropdown-item"  href="{{ url_for('usuarios.gestor') }}">Definir Gestor</a>
               {% endif %}
               
             </div>
@@ -129,17 +128,12 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '2.4.1') %}
-          {% set amb = namespace(tipo = 'prod') %}
+          {% set ver = namespace(num = '2.5.0') %}
 
         </ul>
 
         <span class="navbar-text"> 
-          {% if amb.tipo == 'prod' %}
-            <span class="text-danger">(produção)</span>
-          {% else %}
-          <span class="text-primary">(homologação)</span>
-          {% endif %}
+          <span class="text-primary">({{'DB_SERVER'|verifica_serv_bd}})</span>
           V. {{ ver.num }} <small>cbt</small> 
         </span>
 
@@ -150,9 +144,11 @@
       {% if erros %}
 
         {% for message in erros %}
-          <div class="alert alert-warning">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{message}}
+          <div class="container">
+            <div class="alert alert-warning">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{message}}
+            </div>
           </div>
         {% endfor %}
 
@@ -163,9 +159,11 @@
       {% if sucessos %}
 
         {% for message in sucessos %}
-          <div class="alert alert-primary">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{message}}
+          <div class="container">
+            <div class="alert alert-primary">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{message}}
+            </div>
           </div>
         {% endfor %}
 
@@ -176,9 +174,11 @@
       {% if perigos %}
 
         {% for message in perigos %}
-          <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{message}}
+          <div class="container">
+            <div class="alert alert-danger">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{message}}
+            </div>
           </div>
         {% endfor %}
 

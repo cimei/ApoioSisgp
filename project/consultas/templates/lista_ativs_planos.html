@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+<div class="jumbotron">
+  
+  <h5>Lista de Atividades em Planos de Trabalho</h5>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p><span class="badge badge-pill badge-success">{{qtd_itens}}</span> Atividade(s).
+        </p>
+      </div>
+  </div>
+</caption>
+
+<div style="overflow-y:auto ; height:450px">
+  <table class="table table-striped table-hover table-sm">
+    <caption>Atividades do Pacto</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col"><p align = "center">Situação</p></th>
+        <th scope="col"><p align = "center">Titulo</p></th>
+        <th scope="col"><p align = "center">Qtd</p></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for a in ativs %}
+
+      <tr>
+        <th scope="row"><p align = "center"> {{pacto_ativ.index(p) + 1}} </p></th>
+        <td><p align = "center"> <abbr title="{{p.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 120px;"> {{p.titulo}}</span></abbr> </p></td>
+        <td><p align = "center"> {{ p.quantidade }} </p></td>
+        <td><p align = "center"> {% if p.tempoPrevistoPorItem == None %}N.I.{% else %}{{ (p.tempoPrevistoPorItem)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoPrevistoTotal == None %}N.I.{% else %}{{ (p.tempoPrevistoTotal)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.dataInicio == None %}N.I.{% else %}{{ p.dataInicio.strftime('%x') }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.dataFim == None %}N.I.{% else %}{{ p.dataFim.strftime('%x') }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.tempoRealizado == None %}N.I.{% else %}{{ (p.tempoRealizado)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center">
+          {% if p.descricao == 'Concluída'%} 
+            <span class="text-success">{{ p.descricao }} </span>
+          {% elif p.descricao == 'Em execução' %}  
+            <span class="text-primary">{{ p.descricao }} </span>
+          {% else %}  
+            {{ p.descricao }}
+          {% endif %}    
+        </p></td>
+        <td><p align = "center"> {% if p.tempoHomologado == None %}N.I.{% else %}{{ (p.tempoHomologado)|decimal_com_virgula }}{% endif %} </p></td>
+        <td><p align = "center"> {% if p.nota == None %}N.I.{% else %}{{(p.nota)|decimal_com_virgula }}{% endif %} </p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

@@ -17,6 +17,7 @@
 from flask import render_template,url_for,flash, redirect,request,Blueprint
 from flask_login import current_user, login_required
 
+from sqlalchemy import cast, String
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
@@ -73,16 +74,57 @@ def lista_pessoas():
 
     quantidade = len(pessoas)
 
-    gestorId = db.session.query(catdom.descricao)\
-                       .filter(catdom.classificacao == 'GestorSistema').first()
-
-    gestorNome = db.session.query(Pessoas.pesNome,
-                                  Pessoas.pessoaId)\
-                           .filter(Pessoas.pessoaId == gestorId.descricao).first() 
+    gestorQtd = db.session.query(catdom.descricao)\
+                       .filter(catdom.classificacao == 'GestorSistema').count()
 
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
-                                                 gestorNome = gestorNome, tipo = tipo)
+                                                 gestorQtd = gestorQtd, tipo = tipo)
+
+## lista gestores do SISGP
+
+@pessoas.route('/lista_gestores_sisgp')
+
+def lista_gestores_sisgp():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista das pessoas que foram cadastratas como gestores do sisgp.          |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    tipo = "gest"
+
+# Lê tabela pessoas
+
+    gestores = db.session.query(Pessoas.pessoaId,
+                             Pessoas.pesNome,
+                             Pessoas.pesCPF,
+                             Pessoas.pesDataNascimento,
+                             Pessoas.pesMatriculaSiape,
+                             Pessoas.pesEmail,
+                             Pessoas.unidadeId,
+                             Unidades.undSigla,
+                             Pessoas.tipoFuncaoId,
+                             Tipo_Func_Pessoa.tfnDescricao,
+                             Pessoas.cargaHoraria,
+                             Pessoas.situacaoPessoaId,
+                             Situ_Pessoa.spsDescricao,
+                             Pessoas.tipoVinculoId,
+                             Tipo_Vinculo_Pessoa.tvnDescricao)\
+                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                            .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                            .outerjoin(catdom, catdom.descricao == cast(Pessoas.pessoaId,String))\
+                            .filter(catdom.classificacao == 'GestorSistema')\
+                            .order_by(Pessoas.pesNome).all()
+
+    quantidade = len(gestores)
+
+
+    return render_template('lista_pessoas.html', pessoas = gestores, quantidade=quantidade,
+                                                 gestorQtd = quantidade, tipo = tipo)
 
 #
 ### atualiza dados de uma pessoa
@@ -102,6 +144,8 @@ def pessoa_update(cod_pes):
     tp = 'atu'
 
     pessoa = Pessoas.query.filter(Pessoas.pessoaId==cod_pes).first_or_404()
+
+    gestor = db.session.query(catdom).filter(catdom.descricao == str(cod_pes), catdom.classificacao == 'GestorSistema')
 
     unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
                       .order_by(Unidades.undSigla).all()
@@ -129,7 +173,7 @@ def pessoa_update(cod_pes):
     form.situ.choices    = lista_situ
     form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
-    
+  
     if form.validate_on_submit():
 
         if current_user.userAtivo:
@@ -162,6 +206,22 @@ def pessoa_update(cod_pes):
 
             db.session.commit()
 
+            if gestor.first() == None and form.gestor.data == True:
+
+                last_cat_dom = db.session.query(catdom).order_by(catdom.catalogoDominioId.desc()).first()
+
+                novo_gestor = catdom(catalogoDominioId = last_cat_dom.catalogoDominioId + 1,
+                                     classificacao='GestorSistema',
+                                     descricao = pessoa.pessoaId,
+                                     ativo = True)
+                db.session.add(novo_gestor)
+                db.session.commit()
+                registra_log_auto(current_user.id, pessoa.pesNome + 'colocada como gestora do SISGP.')
+            
+            if gestor != None and form.gestor.data == False:
+                gestor.delete()
+                db.session.commit()
+
             registra_log_auto(current_user.id,'Pessoa '+ str(pessoa.pessoaId) +' '+ pessoa.pesNome +' teve dados alterados.')
 
             flash('Dados de '+str(form.nome.data) +' atualizados no DBSISGP!','sucesso')
@@ -188,6 +248,11 @@ def pessoa_update(cod_pes):
         form.carga.data   = pessoa.cargaHoraria  
         form.situ.data    = pessoa.situacaoPessoaId 
         form.vinculo.data = pessoa.tipoVinculoId 
+
+        if gestor.first() != None:
+            form.gestor.data = True
+        else:
+            form.gestor.data = False 
 
     return render_template('atu_pessoa.html', form=form, tp=tp)
 

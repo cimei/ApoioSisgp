@@ -2,20 +2,22 @@
 {% block content %}
 <div class="jumbotron">
   
-  <h5>Lista das Pessoas {% if tipo == "inst" %}na Instituição{% else %}na Unidade{% endif %}</h5>
+  <h5>Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição {% elif tipo == "inst" %}na Instituição {% else %}na Unidade{% endif %}</h5>
 
   <div class = "row">
-    <div class="col-1">
-      <a href="{{url_for('pessoas.cria_pessoa')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
-    </div>
-    <div class="col">
-      <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da pessoa.</small>
-    </div>
+    {% if tipo != "gest" %}
+      <div class="col-1">
+        <a href="{{url_for('pessoas.cria_pessoa')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
+      </div>
+      <div class="col">
+        <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da pessoa.</small>
+      </div>
+    {% endif %}
     {% if tipo == "inst" %}
       <div class="col">
-        <p class="form-text"><b> Gestor do Sistema: </b>
-          <a href="{{url_for('pessoas.pessoa_update', cod_pes=gestorNome.pessoaId)}}">
-            <span class="text-success"><b>{{ gestorNome.pesNome }}</b></span></a></p>
+        <p class="form-text"><b> Gestores do Sistema (quantidade): </b>
+          <abbr title="Clique aqui para ver lista dos gestores"><a href="{{url_for('pessoas.lista_gestores_sisgp')}}">
+            <span class="text-success"><b>{{ gestorQtd }}</b></span></a></abbr></p>
       </div>
     {% endif %}  
   </div>

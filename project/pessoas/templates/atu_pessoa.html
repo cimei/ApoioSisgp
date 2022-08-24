@@ -26,7 +26,7 @@
   {{ form.hidden_tag() }}
 
   <div class = "row">
-    <div class="col-8">
+    <div class="col-6">
       <div class="form-group">
         {{ render_field(form.nome,class="form-control",obr=True) }}
       </div>
@@ -34,6 +34,11 @@
     <div class="col-2">
       <div class="form-group">
         {{ render_field(form.cpf,class="form-control", obr=True) }}
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="form-group">
+        {{ render_field(form.gestor,class="form-control") }}
       </div>
     </div>
   </div>

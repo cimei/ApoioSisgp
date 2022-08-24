@@ -1,7 +1,9 @@
 /build
 /dist
-/instance/flask.cfg
+/instance/flask exemplo.cfg
+/instance/flask local.cfg
 /__pycache__
+/app.spec
 /project/__pycache__
 /project/atividades/__pycache__
 /project/consultas/__pycache__

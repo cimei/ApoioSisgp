@@ -54,8 +54,9 @@ class users(db.Model, UserMixin):
     last_logged_in             = db.Column(db.DateTime, nullable=True)
     current_logged_in          = db.Column(db.DateTime, nullable=True)
     userAtivo                  = db.Column(db.Boolean)
+    avaliadorId                = db.Column(db.Integer)
 
-    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,\
+    def __init__(self,userNome,userEmail,plaintext_password,userAtivo, avaliadorId,\
                  email_confirmation_sent_on=None):
 
         self.userNome                   = userNome
@@ -68,6 +69,7 @@ class users(db.Model, UserMixin):
         self.last_logged_in             = None
         self.current_logged_in          = datetime.now()
         self.userAtivo                  = userAtivo
+        self.avaliadorId                = avaliadorId
 
     def check_password (self,plaintext_password):
 
@@ -429,7 +431,7 @@ class catdom(db.Model):
     __tablename__ = 'CatalogoDominio'
     __table_args__ = {"schema": "dbo"}
 
-    catalogoDominioId   = db.Column(db.Integer, primary_key = True)
+    catalogoDominioId   = db.Column(db.Integer, primary_key = True, autoincrement=False)
     classificacao       = db.Column(db.String)
     descricao           = db.Column(db.String)
     ativo               = db.Column(db.Boolean)
@@ -442,7 +444,7 @@ class catdom(db.Model):
         self.ativo             = ativo
 
     def __repr__ (self):
-        return f"{self.catalogoDominioId};{self.classificacao};{self.descricao};{self.ativo};"
+        return f"{self.classificacao};{self.descricao};{self.ativo};"
 
 # catálogo (relaciona atividades às unidades)
 

@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+24/082022
+
+Possibilidade de marcar pessoas como gestores SISGP. Passa a ser executado em contêiner docker.
+
 27/07/2022
 
 Inseridos menus "Estatísticas" e "PGs e PTs no período" em Consultas.

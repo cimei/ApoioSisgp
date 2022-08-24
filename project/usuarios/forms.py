@@ -95,8 +95,3 @@ class LogForm(FlaskForm):
     data_fim = DateField('Data Final: ', format='%Y-%m-%d')
     submit   = SubmitField('Procurar')
 
-class DefGestor(FlaskForm):
-
-    gestor = SelectField('Gestor do SISGP:',coerce=int)
-    
-    submit = SubmitField('Submeter')

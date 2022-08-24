@@ -3,9 +3,14 @@ from flask import render_template
 import webbrowser
 from threading import Timer
 import locale
+import os
 
-# filtro cusomizado para o jinja
+# filtros cusomizado para o jinja
 #
+@app.template_filter('verifica_serv_bd')
+def verifica_serv_bd(chave):
+    return os.getenv(chave)
+
 @app.template_filter('converte_para_real')
 def converte_para_real(valor):
     if valor == None or valor == '':
