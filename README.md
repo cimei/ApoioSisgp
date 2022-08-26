@@ -9,6 +9,8 @@ Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais
 
 Na pasta Instance, há o arquivo flask.cfg onde podem ser verificadas as varíaveis de ambiente necessárias quando da execução do contêiner. Atente para a chave SECRECT_KEY do sistema, é recomendável usar uma chave aletória.
 
+A pasta build/html tem a documentação do aplicativo gerada automaticamente via Sphinx.
+
 Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no DBSISGP, conforme instruções SQL:
 
       CREATE SCHEMA [Apoio]
