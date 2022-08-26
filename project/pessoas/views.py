@@ -6,9 +6,11 @@
 
 .. topic:: Ações relacionadas às pessoas
 
-    * Lista pessoas: lista_pessoas
-    * Atualiza pessoa: pessoa_update
-    * Acrescenta uma pessoa: cria_pessoa
+    * lista_pessoas: Lista pessoas
+    * lista_gestores_sisgp: pessoas que estão como GestorSistema
+    * pessoa_update: Atualiza pessoa
+    * cria_pessoa: Acrescenta uma pessoa
+    * lista_pessoas_unid: Pessoas de uma unidade
 
 """
 
@@ -42,7 +44,7 @@ pessoas = Blueprint('pessoas',__name__, template_folder='templates')
 def lista_pessoas():
     """
     +---------------------------------------------------------------------------------------+
-    |Apresenta uma lista das pessoas da instituição.                                       |
+    |Apresenta uma lista das pessoas da instituição.                                        |
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
@@ -135,9 +137,9 @@ def lista_gestores_sisgp():
 def pessoa_update(cod_pes):
     """
     +----------------------------------------------------------------------------------------------+
-    |Permite atualizar os dados de uma pessoa                                                     |
+    |Permite atualizar os dados de uma pessoa                                                      |
     |                                                                                              |
-    |Recebe o código da pessoa como parâmetro.                                                    |
+    |Recebe o código da pessoa como parâmetro.                                                     |
     +----------------------------------------------------------------------------------------------+
     """
 
@@ -265,7 +267,7 @@ def pessoa_update(cod_pes):
 def cria_pessoa():
     """
     +----------------------------------------------------------------------------------------------+
-    |Inserção de uma nova pessoa no sistema                                                       |
+    |Inserção de uma nova pessoa no sistema                                                        |
     |                                                                                              |
     +----------------------------------------------------------------------------------------------+
     """

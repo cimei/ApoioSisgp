@@ -5,6 +5,7 @@
    Formulários de alteração da dados de atividades.
 
    * AtividadeForm: utilizado registrar ou atualizar dados de uma atividade.
+   * UnidForm: utilizado para associar uma atividade a uma unidade.
 
 """
 

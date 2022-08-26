@@ -6,19 +6,18 @@
 
 .. topic:: Ações relacionadas às pessoas
 
-    * Lista situações de pessoas: lista_situ_pessoas
-    * situ_pessoas_update
-    * cria_situ_pessoas
-    * Lista tipos de funções utilizadas na instituição: lista_tipo_funcao
-    * Atualilza função: func_pessoas_update
-    * Cria função: cria_func_pessoas
-    * Lista tipos de vínculo: lista_vinc_pessoas
-    * Atualiza tipo de vínculo: vinc_pessoas_update
-    * Cria tipo de vínculo: cria_vinc_pessoas
-    * Lista feriados: lista_feriados 
-    * Atualizada dados de um feriado: feriado_update
-    * Adiciona feriado no banco: cria_feriado
-
+    * lista_situ_pessoas: Lista situações de pessoas
+    * situ_pessoas_update: Atualiza dados de situação de pessoas
+    * cria_situ_pessoas: Insere nova situação para pessoas no banco de dados
+    * lista_tipo_funcao: Lista tipos de funções utilizadas na instituição
+    * func_pessoas_update: Atualiza dados de um tipo de função para pessoas
+    * cria_func_pessoas: Cria função para pessoas
+    * lista_vinc_pessoas: Lista tipos de vínculo
+    * vinc_pessoas_update: Atualiza tipo de vínculo
+    * cria_vinc_pessoas: Cria tipo de vínculo
+    * lista_feriados: Lista feriados 
+    * feriado_update: Atualizar dados de um feriado
+    * cria_feriado: Adiciona feriado no banco
 
 """
 
@@ -73,9 +72,9 @@ def lista_situ_pessoas():
 def situ_pessoas_update(cod_sit):
     """
     +----------------------------------------------------------------------------------------------+
-    |Permite atualizar os dados de uma pessoa                                                     |
+    |Permite atualizar os dados de situação de pessoas                                             |
     |                                                                                              |
-    |Recebe o código da pessoa como parâmetro.                                                    |
+    |Recebe o código da pessoa como parâmetro.                                                     |
     +----------------------------------------------------------------------------------------------+
     """
 

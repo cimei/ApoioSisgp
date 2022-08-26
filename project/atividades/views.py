@@ -6,9 +6,10 @@
 
 .. topic:: Ações relacionadas às Atividades
 
-    * Lista atividades: lista_atividades
-    * Atualiza unidade: unidade_update
-    * Acrescenta unidade: cria_unidade
+    * Lista atividades: lista as atividades cadastradas no SISGP
+    * atividade_update: altera dadados de uma atividade
+    * cria_atividade: inserir nova atividade
+    * associa_atividade_unidade: relaciona uma atividade a uma unidade
 
 """
 
@@ -106,9 +107,6 @@ def atividade_update(cod_ativ):
     |                                                                                              |
     |Recebe o código da atividade como parâmetro.                                                  |
     |                                                                                              |
-    |Aqui há uma gambiarra. Os valores de tempo presencial e remoto, no banco, estão como          | 
-    |number(4,1), contudo eles chegam para o aplicativo sem a posição decimal definida.            | 
-    |A solução foi dividir os valores por 10 ao resgatá-los para a tela de atualização.            | 
     +----------------------------------------------------------------------------------------------+
     """
     tipo = 'atu'

@@ -1,14 +1,18 @@
 """
 .. topic:: Unidades (views)
 
-    Os Unidades as caixas na estrutura da instituição.
+    As Unidades na estrutura da instituição.
+    Este sistema restringe os tipos aos valores (1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro').
+    Para situação, ou é (1,'Ativa'), ou (2,'Inativa').
 
 
 .. topic:: Ações relacionadas às Unidades
 
-    * Lista unidades: lista_unidades
-    * Atualiza unidade: unidade_update
-    * Acrescenta unidade: cria_unidade
+    * lista_unidades: Lista unidades
+    * unidade_update: Atualiza unidade
+    * cria_unidade: Acrescenta unidade
+    * lista_atividades_unidade: atividades associadas a uma unidade
+    * desassocia_ativ: desassocia atividade de uma unidade
 
 """
 
@@ -52,7 +56,7 @@ def lista_unidades():
                        .filter(Pessoas.tipoFuncaoId != None)\
                        .order_by(Pessoas.pesNome).subquery()    
 
-    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço')]
+    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
 
     lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
 

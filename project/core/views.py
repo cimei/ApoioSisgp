@@ -7,10 +7,10 @@
 
 .. topic:: Ações relacionadas aos bolsistas
 
-    * Tela inicial: index
-    * Tela de informações: info
-    * Carrega dados de unidade em lote: CarregaUnidades
-    * Carrega dados de pessoa em lote: CarregaPessoas
+    * index: Tela inicial
+    * info: Tela de informações
+    * CarregaUnidades: Carrega dados de unidade em lote
+    * CarregaPessoas: Carrega dados de pessoa em lote
 
 """
 
@@ -295,7 +295,7 @@ def CarregaUnidades():
 def CarregaPessoas():
     """
     +---------------------------------------------------------------------------------------+
-    |Executa o procedimento de carga dos dados de Pessoas                                  |
+    |Executa o procedimento de carga dos dados de Pessoas                                   |
     +---------------------------------------------------------------------------------------+
 
     """

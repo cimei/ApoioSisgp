@@ -16,22 +16,22 @@
 .. topic:: Ações relacionadas aos usuários:
 
     * Funções auxiliares:
-        * Envia e-mail de forma assincrona: send_async_email
-        * Prepara e-mail: send_email
-        * Dados para e-mail de confirmação: send_confirmation_email
-        * Dados para e-mail de troca de senha: send_password_reset_email
-    * Registro de usuário: register
-    * Trata retorno da confirmação: confirm_email
-    * Trata pedido de troca de senha: reset
-    * Realiza troca de senha: reset_with_token
-    * Entrada de usuário: login
-    * Saída de usuário: logout
-    * Atualizar dados do usuário: account
-    * Visão dos usuários: view_users
-    * Log de atividades: user_log
-    * Registro de observações do usuário no log: user_obs
-    * Ver lista de usuários ativos da coordenação: coord_view_users
-
+        * registra_log_auto: Registra principais ações do usuário.
+        * send_async_email: Envia e-mail de forma assincrona
+        * send_email: Prepara e-mail
+        * send_confirmation_email: Dados para e-mail de confirmação
+        * send_password_reset_email: Dados para e-mail de troca de senha
+    * register: Registro de usuário
+    * confirm: Gera novo link de confirmação de e-mail para usuário novo.
+    * confirm_email: Trata retorno da confirmação
+    * reset: Trata pedido de troca de senha
+    * reset_with_token: Realiza troca de senha
+    * login: Entrada de usuário
+    * logout: Saída de usuário
+    * view_users: Visão dos usuários
+    * update_user: Atualizar dados do usuário
+    * log: Log de atividades
+        
 """
 # views.py na pasta users
 

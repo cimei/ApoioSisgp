@@ -6,12 +6,16 @@
 
 .. topic:: Ações relacionadas às pessoas
 
-    * Lista quantidades de pessoas em programas de gestão por unidade: pessoas_qtd_pg_unidade
-    * Lista o Catálogo de Domínios: catalogo_dominio 
-    * Dados de Pactos de trabalho: pactos
-    * Atividades de um pacto: pacto_atividades
-    * Alguns números: estatisticas
-
+    * pessoas_qtd_pg_unidade: Lista quantidades de pessoas em programas de gestão por unidade
+    * catalogo_dominio: Lista o Catálogo de Domínios 
+    * pactos: Dados de Pactos de trabalho
+    * pacto_atividades: Atividades de um pacto: pacto_atividades
+    * deleta_pg: permite remover PGs em rascunho
+    * relatorioPG: relatório de PGs no formato xlsx
+    * hierarquia: relatório da estrutura hierárquica da instituição no formato xlsx
+    * lista_ativs_planos: lista das atividades em planos por situação
+    * estatisticas: Alguns números
+    * periodo: quantidades de PGs e PTs em um perídodo informado
 
 """
 
