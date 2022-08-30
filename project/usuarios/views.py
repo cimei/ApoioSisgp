@@ -153,11 +153,17 @@ def register():
 
         form.check_email(form.email)
 
+        # primeiro usuário é cadastrado como ativo
+        if users.query.count() == 0:
+            ativo = True
+        else:
+            ativo = False
+
         user = users(userNome                   = form.username.data,
                     userEmail                  = form.email.data,
                     plaintext_password         = form.password.data,
                     email_confirmation_sent_on = datetime.now(),
-                    userAtivo                  = False)
+                    userAtivo                  = ativo)
 
         db.session.add(user)
         db.session.commit()

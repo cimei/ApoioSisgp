@@ -2,7 +2,7 @@
 
 30/08/2022
 
-Coreção de erro na associação de atividade à uma unidade.
+Coreção de erro na associação de atividade à uma unidade. Correção no cadastro de usuário.
 v2.5.1
 
 24/082022

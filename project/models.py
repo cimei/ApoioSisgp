@@ -54,10 +54,9 @@ class users(db.Model, UserMixin):
     last_logged_in             = db.Column(db.DateTime, nullable=True)
     current_logged_in          = db.Column(db.DateTime, nullable=True)
     userAtivo                  = db.Column(db.Boolean)
-    avaliadorId                = db.Column(db.Integer)
+    avaliadorId                = db.Column(db.Integer, nullable=True)
 
-    def __init__(self,userNome,userEmail,plaintext_password,userAtivo, avaliadorId,\
-                 email_confirmation_sent_on=None):
+    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,email_confirmation_sent_on=None):
 
         self.userNome                   = userNome
         self.userEmail                  = userEmail
@@ -69,7 +68,7 @@ class users(db.Model, UserMixin):
         self.last_logged_in             = None
         self.current_logged_in          = datetime.now()
         self.userAtivo                  = userAtivo
-        self.avaliadorId                = avaliadorId
+        self.avaliadorId                = None
 
     def check_password (self,plaintext_password):
 
