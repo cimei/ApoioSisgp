@@ -1,8 +1,14 @@
 ## Atualizações ##
 
+30/08/2022
+
+Coreção de erro na associação de atividade à uma unidade.
+v2.5.1
+
 24/082022
 
 Possibilidade de marcar pessoas como gestores SISGP. Passa a ser executado em contêiner docker.
+v2.5.0
 
 27/07/2022
 
