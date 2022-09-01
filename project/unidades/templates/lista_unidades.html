@@ -55,8 +55,19 @@
         <td><p align = "center"> {{u.undSigla}} </p></td>
         <td><p align = "center"> {{u.undDescricao}} </p></td>
         <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
-        <td><p class = "text-muted" align = "center"> {{lista_tipo_unidade[u.tipoUnidadeId-1][1]}} </p></td>
-        <td><p align = "center"> {{lista_situ_unidade[u.situacaoUnidadeId-1][1]}} </p></td>
+        <td><p class = "text-muted" align = "center"> 
+          {% if  u.tipoUnidadeId in dic_tipo_unidade.keys() %}
+            {{dic_tipo_unidade[u.tipoUnidadeId]}} 
+          {% else %}
+            {{u.tipoUnidadeId}}
+          {% endif %}
+        </p></td>
+        <td><p class = "text-muted" align = "center"> 
+          {% if  u.situacaoUnidadeId in dic_situ_unidade.keys() %}
+            {{dic_situ_unidade[u.situacaoUnidadeId]}} 
+          {% else %}
+            {{u.situacaoUnidadeId}}
+          {% endif %}
         <td><p align = "center"> {{u.ufId}} </p></td>
         <td><p align = "center"> {% if u.undNivel == None %}N.I.{% else %}{{u.undNivel}}{% endif %} </p></td>
         <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>

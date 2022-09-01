@@ -56,9 +56,9 @@ def lista_unidades():
                        .filter(Pessoas.tipoFuncaoId != None)\
                        .order_by(Pessoas.pesNome).subquery()    
 
-    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
+    dic_tipo_unidade = {1:'Instituição',2:'Diretoria',3:'Coordenação-Geral',4:'Coordenação',5:'Serviço',6:'Outro'}
 
-    lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
+    dic_situ_unidade = {1:'Ativa',2:'Inativa'}
 
     ativs_lista = db.session.query(Atividades.titulo,
                                    cat_item_cat.catalogoId,
@@ -129,18 +129,21 @@ def lista_unidades():
 
                 for unid in filhos:
 
-                    prox_pai.append(unid.unidadeId)
+                    if unid.unidadeId == p:
+                        prox_pai = []
+                    else:
+                        prox_pai.append(unid.unidadeId)
 
-                    pessoas = db.session.query(Pessoas.unidadeId,
-                                                label('qtd_pes',func.count(Pessoas.unidadeId)))\
-                                    .group_by(Pessoas.unidadeId)\
-                                    .filter(Pessoas.unidadeId == unid.unidadeId)\
-                                    .first()
+                        pessoas = db.session.query(Pessoas.unidadeId,
+                                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                                        .group_by(Pessoas.unidadeId)\
+                                        .filter(Pessoas.unidadeId == unid.unidadeId)\
+                                        .first()
 
-                    if pessoas is not None:
-                        total_pessoas += pessoas.qtd_pes
+                        if pessoas is not None:
+                            total_pessoas += pessoas.qtd_pes
 
-                    tree[item.undSigla].append(unid.undSigla)    
+                        tree[item.undSigla].append(unid.undSigla)    
 
             pai =  prox_pai
 
@@ -152,8 +155,8 @@ def lista_unidades():
         qtd_geral[item.undSigla] = total_pessoas + pes
 
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
-                                                lista_situ_unidade = lista_situ_unidade, 
-                                                lista_tipo_unidade = lista_tipo_unidade,
+                                                dic_situ_unidade = dic_situ_unidade, 
+                                                dic_tipo_unidade = dic_tipo_unidade,
                                                 ativs_lista = ativs_lista,
                                                 qtd_geral = qtd_geral,
                                                 tree = tree)

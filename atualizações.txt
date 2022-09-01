@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+01/09/2022
+
+Resolvido problema na tela unidades quando uma unidade é pai dela mesma. Cartilha atualizada.
+v2.5.2
+
 30/08/2022
 
 Coreção de erro na associação de atividade à uma unidade. Correção no cadastro de usuário.
