@@ -5,6 +5,8 @@ A partir da versão 2.5.0, o aplicativo está preparado para a instalação via 
 
 Imagem disponível em https://hub.docker.com/r/cimei/apoiosisgp.
 
+O histórico de atualizações está disponível em atualizações.txt.
+
 Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais pacotes instalados do que o realmente necessário, mas isto não é um impedimento.
 
 Na pasta Instance, há o arquivo flask.cfg onde podem ser verificadas as varíaveis de ambiente necessárias quando da execução do contêiner. Atente para a chave SECRECT_KEY do sistema, é recomendável usar uma chave aletória.
