@@ -21,26 +21,35 @@
 
 # views.py na pasta consultas
 
-from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
 from flask_login import current_user
+
 from sqlalchemy.sql import label
 from sqlalchemy import and_, func, distinct, or_
 from sqlalchemy.orm import aliased
+
 from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
                            Pactos_de_Trabalho_Atividades, Atividades, Planos_de_Trabalho_Ativs,\
-                           Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items, Pactos_de_Trabalho_Solic
+                           Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items, Pactos_de_Trabalho_Solic,\
+                           VW_Unidades
 from project.usuarios.views import registra_log_auto                           
 
 from project.consultas.forms import PeriodoForm
 
-import locale
+from werkzeug.utils import secure_filename
+
+import requests
 from datetime import datetime, date, timedelta, time
 import os.path
 import xlsxwriter
 
 consultas = Blueprint('consultas',__name__, template_folder='templates')
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ['xlsx']
 
 ## lista quatidade de pessoas no plano de gestão por unidade 
 
@@ -311,7 +320,7 @@ def deleta_pg(pgId):
 
 ## gera xlsx com dados dos plano de gestão nas unidades 
 
-@consultas.route('/relatorioPG')
+@consultas.route('/relatorioPG', methods = ['GET', 'POST'])
 def relatorioPG():
     """
     +---------------------------------------------------------------------------------------+
@@ -327,9 +336,9 @@ def relatorioPG():
                                 Planos_de_Trabalho.dataInicio,
                                 Planos_de_Trabalho.dataFim,
                                 catdom.descricao)\
-                          .join(catdom, Planos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
-                          .subquery()                  
-                      
+                         .join(catdom, Planos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
+                         .subquery()                  
+                    
     pactos = db.session.query(Pactos_de_Trabalho.planoTrabalhoId,
                               Pactos_de_Trabalho.pessoaId,
                               Pessoas.pesNome,
@@ -344,6 +353,7 @@ def relatorioPG():
     pt = db.session.query(Unidades.unidadeId,
                           Unidades.unidadeIdPai,
                           Unidades.undSigla,
+                          VW_Unidades.undSiglaCompleta,
                           Unidades.undDescricao,
                           dados_pt.c.totalServidoresSetor,
                           dados_pt.c.dataInicio,
@@ -354,17 +364,20 @@ def relatorioPG():
                           pactos.c.pactoFim,
                           pactos.c.pactoDesc)\
                    .join(dados_pt, dados_pt.c.unidadeId == Unidades.unidadeId)\
+                   .join(VW_Unidades, VW_Unidades.id_unidade == Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.planoTrabalhoId == dados_pt.c.planoTrabalhoId)\
                    .order_by(Unidades.unidadeId)\
                    .all()
 
     # montando estrutura hierárquica de cada unidade com pg e gravando tudo num xlsx
 
-    # Create a workbook and add a worksheet.
+    # Criando o workbook e adicionando a worksheet.
 
-    pasta_rel = os.path.normpath('c:/temp/Rel_PG.xlsx')
-    if not os.path.exists(os.path.normpath('c:/temp/')):
-        os.makedirs(os.path.normpath('c:/temp/'))
+    pasta_rel = os.path.normpath('/app/project/static/Rel_PG.xlsx')
+    # pasta_rel = os.path.normpath('c:/temp/Rel_PG.xlsx')
+
+    # if not os.path.exists(os.path.normpath('/uploads/')):
+    #     os.makedirs(os.path.normpath('/uploads/'))
 
     workbook = xlsxwriter.Workbook(pasta_rel)
     worksheet = workbook.add_worksheet('Lista')
@@ -374,63 +387,68 @@ def relatorioPG():
     worksheet.write('A1', 'Dados de:', bold)
     worksheet.write('B1', hoje.strftime('%x'), bold)
 
-    # Start from the first cell. Rows and columns are zero indexed.
+    # Começando da primeira célula. Linhas e colunas são "zero indexed".
     row = 3
     col = 0
 
     # Monta linha de cabeçalho do xlsx. Descobre o maior nível hierárquico das unidades
- 
-    niv_max = db.session.query(label('niv',func.max(Unidades.undNivel))).first()
-    col_cab = col + niv_max.niv
+
+    # niv_max = db.session.query(label('niv',func.max(Unidades.undNivel))).first()
+    # col_cab = col + niv_max.niv
+
+    # A view VW_Unidades traz a hierarquia da unidade, o que dispensa a consulta comentada acima
+    col_cab = col
 
     worksheet.write(row-1, col_cab+1, 'Programas de Gestão', bold)
-    worksheet.write(row-1, col_cab + 5, 'Pactos de Trabalho', bold)
+    worksheet.write(row-1, col_cab + 5, 'Planos de Trabalho', bold)
 
-    worksheet.write(row, col, 'Hierarquia', bold)
-    worksheet.write(row, col_cab, 'Nome', bold)
-    worksheet.write(row, col_cab + 1, 'Pessoas', bold)
-    worksheet.write(row, col_cab + 2, 'Início PG', bold)
-    worksheet.write(row, col_cab + 3, 'Fim PG', bold)
-    worksheet.write(row, col_cab + 4, 'Situação PG', bold)
-    worksheet.write(row, col_cab + 5, 'Pessoa', bold)
-    worksheet.write(row, col_cab + 6, 'Início Pacto', bold)
-    worksheet.write(row, col_cab + 7, 'Fim Pacto', bold)
-    worksheet.write(row, col_cab + 8, 'Situação Pacto', bold)
+    worksheet.write(row, col, 'Sigla Completa', bold)
+    worksheet.write(row, col_cab + 1, 'Nome', bold)
+    worksheet.write(row, col_cab + 2, 'Pessoas', bold)
+    worksheet.write(row, col_cab + 3, 'Início PG', bold)
+    worksheet.write(row, col_cab + 4, 'Fim PG', bold)
+    worksheet.write(row, col_cab + 5, 'Situação PG', bold)
+    worksheet.write(row, col_cab + 6, 'Pessoa', bold)
+    worksheet.write(row, col_cab + 7, 'Início Plano', bold)
+    worksheet.write(row, col_cab + 8, 'Fim Plano', bold)
+    worksheet.write(row, col_cab + 9, 'Situação Plano', bold)
 
     row = 4
- 
+
     for item in pt:
 
-        sigla = item.undSigla
-        pai = item.unidadeIdPai
+        # sigla = item.undSigla
+        # pai = item.unidadeIdPai
         
-        # monta colunas com hierarquia da unidade no registro
-        worksheet.write(row, niv_max.niv, sigla)
+        # # monta colunas com hierarquia da unidade no registro
+        # worksheet.write(row, niv_max.niv, sigla)
 
-        hier = []
-        hier.append(sigla)
-        while pai != None:
-            sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
-            hier.append(sup.undSigla)
-            pai = sup.unidadeIdPai
+        # hier = []
+        # hier.append(sigla)
+        # while pai != None:
+        #     sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
+        #     hier.append(sup.undSigla)
+        #     pai = sup.unidadeIdPai
 
-        for i in range(len(hier)-1, -1, -1):
-            worksheet.write(row, col-i+len(hier)-1, hier[i])
+        # for i in range(len(hier)-1, -1, -1):
+        #     worksheet.write(row, col-i+len(hier)-1, hier[i])
 
-        # preenche demais colunas de detalhe
-        col_det = col_cab - 1
+        # preenche demais colunas de detalhe, sem a necessidade de montar a hierarquia (código comentado acima)
+        col_det = col
+
+        worksheet.write(row, col_det, item.undSiglaCompleta)
 
         worksheet.write(row, col_det + 1, item.undDescricao)
 
         worksheet.write(row, col_det + 2, item.totalServidoresSetor)
         
         if item.dataInicio != None:
-            worksheet.write(row, col_det + 3, item.dataInicio.strftime('%x'))
+            worksheet.write(row, col_det + 3, item.dataInicio.strftime('%d/%m/%Y'))
         else:
             worksheet.write(row, col_det + 3, 'N.I.')
         
         if item.dataFim != None:    
-            worksheet.write(row, col_det + 4, item.dataFim.strftime('%x'))
+            worksheet.write(row, col_det + 4, item.dataFim.strftime('%d/%m/%Y'))
         else:
             worksheet.write(row, col_det + 4, 'N.I.')
 
@@ -439,12 +457,12 @@ def relatorioPG():
         worksheet.write(row, col_det + 6, item.pesNome)
 
         if item.pactoIni != None:
-            worksheet.write(row, col_det + 7, item.pactoIni.strftime('%x'))
+            worksheet.write(row, col_det + 7, item.pactoIni.strftime('%d/%m/%Y'))
         else:
             worksheet.write(row, col_det + 7, 'N.I.')
 
         if item.pactoFim != None:    
-            worksheet.write(row, col_det + 8, item.pactoFim.strftime('%x'))
+            worksheet.write(row, col_det + 8, item.pactoFim.strftime('%d/%m/%Y'))
         else:
             worksheet.write(row, col_det + 8, 'N.I.')
 
@@ -454,11 +472,15 @@ def relatorioPG():
 
     workbook.close()
 
-    registra_log_auto(current_user.id,'Gerado Rel_PG.xlsx.')
+    # o comandinho mágico que permite fazer o download de um arquivo
+    send_from_directory('/app/project/static', 'Rel_PG.xlsx')
 
-    flash('Gerado Rel_PG.xlsx. Verifique na sua pasta c:/temp/','sucesso')
+    registra_log_auto(current_user.id,'Consulta à Relatório de PGs e PTs.')
 
-    return redirect(url_for('consultas.pessoas_qtd_pg_unidade'))
+
+    # return render_template('download.html')
+    return render_template('lista_relatorio.html', pt=pt)
+
 
 
 ## gera xlsx com estrutura hierárquica das unidades 

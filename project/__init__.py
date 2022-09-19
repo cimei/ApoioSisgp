@@ -16,7 +16,7 @@ pyodbc.setDecimalSeparator('.')
 
 TOP_LEVEL_DIR = os.path.abspath(os.curdir)
 
-app = Flask (__name__, static_url_path=None, instance_relative_config=True)
+app = Flask (__name__, static_url_path=None, instance_relative_config=True, static_folder='/app/project/static')
 
 app.config.from_pyfile('flask.cfg')
 

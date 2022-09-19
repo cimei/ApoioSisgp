@@ -1,9 +1,21 @@
 ## Atualizações ##
 
+18/09/2021
+
+Resolvido problema na geração de arquio xlsx para usuário, ajustes na terminologia e disponibilização 
+da cartilha na tela "Sobre".
+v 2.5.5
+
+09/08/2022
+
+Tratado erro no registro e na atualização de usuário.
+v2.5.4
+
 02/09/2022
 
 Retirada variável de ambiente MAIL_USE_SSL. Para o flask-mail ela tem por default o valor False. Isto resolveu o erro de
 wrong version number (_ssl.c:1129).
+v2.5.3
 
 01/09/2022
 

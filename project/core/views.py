@@ -16,7 +16,7 @@
 
 # core/views.py
 
-from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
 
 import os
 from datetime import datetime as dt
@@ -105,6 +105,9 @@ def info():
     |Apresenta a tela de informações do aplicativo.                                         |
     +---------------------------------------------------------------------------------------+
     """
+
+    # o comandinho mágico que permite fazer o download de um arquivo
+    send_from_directory('/app/project/static', 'Cartilha_do_ApoioSisgp.pdf')
 
     return render_template('info.html')
 
@@ -428,7 +431,7 @@ def CarregaPessoas():
                 print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
                 print ('*** ',qtd,'linhas inseridas na tabela pessoa.')
                 print ('*** ',qtd_exist,'registros preexistentes alterados.')
-                print ('*** ',qtd_sem_unid,'não inseridas por não encotrar undSigla correspondente na tabela Unidades.')
+                print ('*** ',qtd_sem_unid,'não inseridas por não encontrar undSigla correspondente na tabela Unidades.')
                 print ('***********************************************************************************')
 
                 if qtd_exist == 0:
@@ -436,7 +439,7 @@ def CarregaPessoas():
                     flash('Executada carga de Pessoas no DBSISGP. ' +\
                         str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
                         str(qtd) +' linha(s) efetivamente inserida(s). ' +\
-                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encotrar undSigla correspondente na tabela Unidades.','sucesso')
+                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','sucesso')
 
                 else:
 
@@ -444,7 +447,7 @@ def CarregaPessoas():
                         str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
                         str(qtd) +' registro(s) efetivamente inserido(s) e ' +\
                         str(qtd_exist) +' registros alterado(s). ' +\
-                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encotrar undSigla correspondente na tabela Unidades.','perigo')
+                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','perigo')
             
                 registra_log_auto(current_user.id,'Carga em Pessoas: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
                                                  str(qtd) + ' registros inseridos. ' + str(qtd_exist) + ' registros alterados.')

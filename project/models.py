@@ -144,6 +144,30 @@ class Unidades(db.Model):
                  {self.tipoFuncaoUnidadeId};{self.Email};{self.undCodigoSIORG};\
                  {self.pessoaIdChefe};{self.pessoaIdChefeSubstituto};"
 
+# view que monta a sigla completa das unidades
+
+class VW_Unidades(db.Model):
+
+    __tablename__ = 'VW_UNIDADE'
+    __table_args__ = {"schema": "dbo"}
+
+    id_unidade       = db.Column(db.BigInteger, primary_key = True)
+    undDescricao     = db.Column(db.String)
+    undSiglaCompleta = db.Column(db.String)
+    undCodigoSIORG   = db.Column(db.Integer)
+
+    def __init__(self, undDescricao, undSiglaCompleta, undCodigoSIORG):
+
+        self.undDescricao     = undDescricao
+        self.undSiglaCompleta = undSiglaCompleta
+        self.undCodigoSIORG   = undCodigoSIORG
+
+
+    def __repr__ (self):
+        return f"{self.undDescricao};{self.undSiglaCompleta};{self.undCodigoSIORG}"
+
+
+
 # pessoas
 
 class Pessoas(db.Model):

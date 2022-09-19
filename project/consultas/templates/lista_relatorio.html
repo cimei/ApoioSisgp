@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+<div class="jumbotron">
+  
+  <h5>Relatório de Programas de Gestão e de Planos de Trabalho</h5>
+
+  <div class = "row justify-content-end">
+
+      <a href=/static/Rel_PG.xlsx class="btn btn-primary" role="button" aria-pressed="true">Gerar xlsx</a>
+
+  </div>  
+
+<br>
+
+<div style="overflow-y:auto ; height:450px">
+  <table class="table table-striped table-hover table-sm">
+    <caption>PGs e PTs</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">Sigla Completa</p></th>
+        <th scope="col"><p align = "center">Nome</p></th>
+        <th scope="col"><p align = "center">qtd pessoas</p></th>
+        <th scope="col"><p align = "center">Início PG</p></th>
+        <th scope="col"><p align = "center">Fim PG</p></th>
+        <th scope="col"><p align = "center">Situação PG</p></th>
+        <th scope="col"><p align = "center">Pessoa</p></th>
+        <th scope="col"><p align = "center">Início PT</p></th>
+        <th scope="col"><p align = "center">Fim PT</p></th>
+        <th scope="col"><p align = "center">Situação PT</p></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for p in pt %}
+
+      <tr>
+        <td><p align = "center"> {{ p.undSiglaCompleta }} </p></td>
+        <td><p align = "center"> {{ p.undDescricao }} </p></td>
+        <td><p align = "center"> {{ p.totalServidoresSetor }} </p></td>
+        <td><p align = "center"> {% if p.dataInicio == None %} {% else %} {{ p.dataInicio.strftime('%d/%m/%Y') }} {% endif %}  </p></td>
+        <td><p align = "center"> {% if p.dataFim == None %} {% else %} {{ p.dataFim.strftime('%d/%m/%Y') }} {% endif %} </p></td>
+        <td><p align = "center"> {{ p.descricao }} </p></td>
+        <td><p align = "center"> {% if p.pesNome == None %} {% else %} {{ p.pesNome }} {% endif %} </p></td>
+        <td><p align = "center"> {% if p.pactoIni == None %} {% else %} {{ p.pactoIni.strftime('%d/%m/%Y') }} {% endif %} </p></td>
+        <td><p align = "center"> {% if p.pactoFim == None %} {% else %} {{ p.pactoFim.strftime('%d/%m/%Y') }} {% endif %} </p></td>
+        <td><p align = "center"> {% if p.pactoDesc == None %} {% else %} {{ p.pactoDesc }} {% endif %} </p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

@@ -149,34 +149,32 @@ def register():
 
     if form.validate_on_submit():
 
-        form.check_username(form.username)
+        if form.check_username(form.username) and form.check_email(form.email):
 
-        form.check_email(form.email)
+            # primeiro usuário é cadastrado como ativo
+            if users.query.count() == 0:
+                ativo = True
+            else:
+                ativo = False
 
-        # primeiro usuário é cadastrado como ativo
-        if users.query.count() == 0:
-            ativo = True
-        else:
-            ativo = False
+            user = users(userNome                   = form.username.data,
+                        userEmail                  = form.email.data,
+                        plaintext_password         = form.password.data,
+                        email_confirmation_sent_on = datetime.now(),
+                        userAtivo                  = ativo)
 
-        user = users(userNome                   = form.username.data,
-                    userEmail                  = form.email.data,
-                    plaintext_password         = form.password.data,
-                    email_confirmation_sent_on = datetime.now(),
-                    userAtivo                  = ativo)
+            db.session.add(user)
+            db.session.commit()
 
-        db.session.add(user)
-        db.session.commit()
+            last_id = db.session.query(users.id).order_by(users.id.desc()).first()
 
-        last_id = db.session.query(users.id).order_by(users.id.desc()).first()
+            registra_log_auto(last_id[0],'Usuário '+ form.username.data +' registrado.')
 
-        registra_log_auto(last_id[0],'Usuário '+ form.username.data +' registrado.')
-
-        send_confirmation_email(user.userEmail)
-        
-        flash('Usuário '+ form.username.data +' registrado! Verifique sua caixa de e-mail para confirmar o endereço.','sucesso')
-        
-        return redirect(url_for('core.index'))
+            send_confirmation_email(user.userEmail)
+            
+            flash('Usuário '+ form.username.data +' registrado! Verifique sua caixa de e-mail para confirmar o endereço.','sucesso')
+            
+            return redirect(url_for('core.index'))
 
     return render_template('register.html',form=form)
 

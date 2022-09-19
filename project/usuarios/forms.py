@@ -19,13 +19,12 @@
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField,\
-                    TextAreaField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.fields.html5 import DateField
 
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
-from flask import flash
+from flask import flash, render_template
 
 from flask_login import current_user
 from project import db
@@ -47,13 +46,17 @@ class RegistrationForm(FlaskForm):
 
     def check_email(self,field):
         if users.query.filter_by(userEmail=field.data).first():
-            flash('Este e-mail já foi registrado!','erro')
-            raise ValidationError('Este e-mail já foi registrado!')
+            flash('O e-mail ' + field.data + ' já foi registrado!','erro')
+            return False
+        else:
+            return True    
 
     def check_username(self,field):
         if users.query.filter_by(userNome=field.data).first():
-            flash('Este nome de usuário já foi registrado! Por favor, escolha outro.','erro')
-            raise ValidationError('Este nome de usuário já foi registrado!')
+            flash('Nome de usuário ' + field.data + ' já foi registrado! Por favor, escolha outro.','erro')
+            return False
+        else:
+            return True
 
 
 class UpdateUserForm(FlaskForm):
@@ -64,13 +67,17 @@ class UpdateUserForm(FlaskForm):
 
     def validate_email(self,field):
         if users.query.filter_by(userEmail=field.data).first() and field.data != current_user.userEmail:
-            flash('Este e-mail já foi registrado!','erro')
-            raise ValidationError('Este e-mail já foi registrado!')
+            flash('O e-mail ' + field.data + ' já foi registrado!','erro')
+            return False
+        else:
+            return True
 
     def validate_username(self,field):
         if users.query.filter_by(userNome=field.data).first() and field.data != current_user.userNome:
-            flash('Este nome de usuário já foi registrado! Por favor, escolha outro.','erro')
-            raise ValidationError('Este nome de usuário já foi registrado!')
+            flash('Nome de usuário ' + field.data + ' já foi registrado! Por favor, escolha outro.','erro')
+            return False
+        else:
+            return True
 
 class EmailForm(FlaskForm):
 
