@@ -27,18 +27,26 @@
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
-  <table class="table table-striped table-hover table-sm">
+  <table id="table"
+        data-toggle="table"
+        data-filter-control="true"
+        data-show-search-clear-button="true"
+        data-sortable="true"
+        classes="table-sm"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        class="table table-striped table-hover table-sm">
     <caption>Atividades</caption>
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">Título</p></th>
-        <th scope="col"><p align = "center">Calculo do Tempo</p></th>
-        <th scope="col"><p align = "center">Permite Remoto</p></th>
-        <th scope="col"><p align = "center">Tempo Presencial</p></th>
-        <th scope="col"><p align = "center">Tempo Remoto</p></th>
-        <th scope="col"><p align = "center">Complexidade</p></th>
-        <th scope="col"><p align = "center">Unidades</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Título</p></th>
+        <th scope="col" data-field="descricao" data-filter-control="input" data-sortable="true"><p align = "center">Calculo do Tempo</p></th>
+        <th scope="col" data-field="permiteRemoto" data-filter-control="input" data-sortable="true"><p align = "center">Permite Remoto</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Tempo Presencial</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Tempo Remoto</p></th>
+        <th scope="col" data-field="complexidade" data-filter-control="input" data-sortable="true"><p align = "center">Complexidade</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Unidades</p></th>
   
       </tr>
     </thead>

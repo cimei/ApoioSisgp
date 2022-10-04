@@ -17,15 +17,23 @@
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
-  <table class="table table-striped table-hover table-sm">
+  <table  id="table"
+        data-toggle="table"
+        data-filter-control="true"
+        data-show-search-clear-button="true"
+        data-sortable="true"
+        classes="table-sm"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        class="table table-striped table-hover table-sm">
     <caption>Catálogo de Domínios</caption>
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">Cód.</p></th>
-        <th scope="col"><p align = "center">Classificação</p></th>
-        <th scope="col"><p align = "center">Descrição</p></th>
-        <th scope="col"><p align = "center">Ativo?</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Cód.</p></th>
+        <th scope="col" data-field="classificacao" data-filter-control="input" data-sortable="true"><p align = "center">Classificação</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
+        <th scope="col" data-field="ativo" data-filter-control="input" data-sortable="true"><p align = "center">Ativo?</p></th>
       </tr>
     </thead>
     <tbody>

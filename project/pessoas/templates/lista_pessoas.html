@@ -38,21 +38,29 @@
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
-  <table class="table table-striped table-hover table-sm">
+  <table id="table"
+        data-toggle="table"
+        data-filter-control="true"
+        data-show-search-clear-button="true"
+        data-sortable="true"
+        classes="table-sm"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        class="table table-striped table-hover table-sm">
     <caption>Pessoas</caption>
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">Nome</p></th>
-        <th scope="col"><p align = "center">CPF</p></th>
-        <th scope="col"><p align = "center">Data Nasc.</p></th>
-        <th scope="col"><p align = "center">Siape</p></th>
-        <th scope="col"><p align = "center">E-mail</p></th>
-        <th scope="col"><p align = "center">Unidade</p></th>
-        <th scope="col"><p align = "center">Função</p></th>
-        <th scope="col"><p align = "center">Carga Hor.</p></th>
-        <th scope="col"><p align = "center">Situação</p></th>
-        <th scope="col"><p align = "center">Vínculo</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Nome</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">CPF</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Data Nasc.</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Siape</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
+        <th scope="col" data-field="undSigla" data-filter-control="input" data-sortable="true"><p align = "center">Unidade</p></th>
+        <th scope="col" data-field="tfnDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Função</p></th>
+        <th scope="col" data-field="cargaHoraria" data-filter-control="input" data-sortable="true"><p align = "center">Carga Hor.</p></th>
+        <th scope="col" data-field="spsDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Situação</p></th>
+        <th scope="col" data-field="tvnDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Vínculo</p></th>
       </tr>
     </thead>
     <tbody>

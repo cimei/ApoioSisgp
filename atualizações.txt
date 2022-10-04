@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+04/10/2022
+Algumas tabelas contam com filtro e ordenação
+v 2.5.6
+
 18/09/2021
 
 Resolvido problema na geração de arquio xlsx para usuário, ajustes na terminologia e disponibilização 

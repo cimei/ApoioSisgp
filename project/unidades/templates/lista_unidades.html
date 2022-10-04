@@ -23,26 +23,34 @@
 </caption>
 
 <div style="overflow-y:auto ; height:450px">
-  <table class="table table-striped table-hover table-sm">
+  <table id="table"
+        data-toggle="table"
+        data-filter-control="true"
+        data-show-search-clear-button="true"
+        data-sortable="true"
+        classes="table-sm"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        class="table table-striped table-hover table-sm">
     <caption>Unidades da Instituição</caption>
     <thead>
       <tr>
         <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">Sigla</p></th>
-        <th scope="col"><p align = "center">Descrição</p></th>
-        <th scope="col"><p align = "center">Pai</p></th>
-        <th scope="col"><p class = "text-muted" align = "center">Tipo</p></th>
-        <th scope="col"><p align = "center">Situação</p></th>
-        <th scope="col"><p align = "center">UF</p></th>
-        <th scope="col"><p align = "center">Nível</p></th>
-        <th scope="col"><p class = "text-muted" align = "center">TipoFunc</p></th>
-        <th scope="col"><p align = "center">E-mail</p></th>
-        <th scope="col"><p align = "center">SIORG</p></th>
-        <th scope="col"><p align = "center">Chefe</p></th>
-        <th scope="col"><p align = "center">Substituto</p></th>
-        <th scope="col"><p align = "center">Pessoas (niv. 0)</p></th>
-        <th scope="col"><p align = "center">Pessoas (hierarq.)</p></th>
-        <th scope="col"><p align = "center">Atividades</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Sigla</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
+        <th scope="col" data-field="Sigla_Pai" data-filter-control="input" data-sortable="true"><p align = "center">Pai</p></th>
+        <th scope="col" data-field="tipoUnidadeId" data-filter-control="input" data-sortable="true"><p class = "text-muted" align = "center">Tipo</p></th>
+        <th scope="col" data-field="situacaoUnidadeId" data-filter-control="input" data-sortable="true"><p align = "center">Situação</p></th>
+        <th scope="col" data-field="ufId" data-filter-control="input" data-sortable="true"><p align = "center">UF</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Nível</p></th>
+        <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Chefe</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Pessoas (niv. 0)</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Pessoas (hierarq.)</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Atividades</p></th>
       </tr>
     </thead>
     <tbody>
