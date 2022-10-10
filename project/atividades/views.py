@@ -56,6 +56,8 @@ def lista_atividades(lista):
 
     if lista == 'Todas':
 
+        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()
+
         ativs = db.session.query(Atividades.itemCatalogoId,
                              Atividades.titulo,
                              catdom.descricao,
@@ -65,13 +67,15 @@ def lista_atividades(lista):
                              Atividades.complexidade,
                              Atividades.definicaoComplexidade,
                              Atividades.entregasEsperadas,
-                             unids.c.qtd_unids)\
+                             unids.c.qtd_unids,
+                             label('util',ativs_utilizadas.c.itemCatalogoId))\
                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                       .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .order_by(Atividades.titulo).all()
 
     else:
-
+        # pega atividades que constam em algum plano de trabalho (pacto)    
         ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()                   
 
         ativs = db.session.query(Atividades.itemCatalogoId,
@@ -83,7 +87,8 @@ def lista_atividades(lista):
                                 Atividades.complexidade,
                                 Atividades.definicaoComplexidade,
                                 Atividades.entregasEsperadas,
-                                unids.c.qtd_unids)\
+                                unids.c.qtd_unids,
+                                label('util',ativs_utilizadas.c.itemCatalogoId))\
                         .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\

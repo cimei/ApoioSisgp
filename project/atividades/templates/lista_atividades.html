@@ -54,11 +54,15 @@
 
       {% for a in ativs %}
 
-      <tr>
+      <tr {% if a.util == None%} class="text-secondary" {% endif %}>
         <th scope="row"><abbr title="Atualizar atividade.">
           <p align = "center" ><a href="{{url_for('atividades.atividade_update', cod_ativ=a.itemCatalogoId)}}"> {{ativs.index(a) + 1}} </a>
         </p></th>
-        <td><p align = "left"> <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;"> {{a.titulo}}</span></abbr></p></td>
+        <td>
+          <p align = "left"> 
+            <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;"> {{a.titulo}}</span></abbr>
+          </p>
+        </td>
         <td><p align = "center"> {{a.descricao}} </p></td>
         <td><p align = "center"> {% if a.permiteRemoto %}Sim{% else %}Não{% endif %} </p></td>
         <td><p align = "center"> {{(a.tempoPresencial)|decimal_com_virgula}} </p></td>

@@ -11,6 +11,7 @@
     * info: Tela de informações
     * CarregaUnidades: Carrega dados de unidade em lote
     * CarregaPessoas: Carrega dados de pessoa em lote
+    * CarregaAtividades: Carreg daddos de atividaes e lote
 
 """
 
@@ -24,12 +25,14 @@ import tempfile
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 import csv
+import uuid
 
 from sqlalchemy import distinct
 
 from project.core.forms import ArquivoForm
 from project import db
-from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho, Pactos_de_Trabalho
+from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
+                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ
 
 from project.usuarios.views import registra_log_auto
 
@@ -466,6 +469,148 @@ def CarregaPessoas():
 
     return render_template('grab_file.html',form=form, tipo = tipo)
 
+
+@core.route('/carregaAtividades', methods=['GET', 'POST'])
+def CarregaAtividades():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Executa o procedimento de carga dos dados de Atividades                                |
+    +---------------------------------------------------------------------------------------+
+
+    """
+
+    tipo = "ati"
+
+    form = ArquivoForm()
+
+    if form.validate_on_submit():
+
+        if current_user.userAtivo:
+
+            arq = PegaArquivo(form)
+
+            print ('*****************************************************************')
+            print ('<<',dt.now().strftime("%x %X"),'>> ','Carregando dados de Atividades...')
+            print ('*****************************************************************')
+
+            qtd = 0
+            qtd_atu = 0
+            qtd_inval = 0
+            qtdLinhas = 0
+            qtd_sem_unid = 0
+
+            # abre csv e gera a lista data_lines
+            with open(arq, newline='',encoding = 'utf-8-sig') as data:
+                data_lines = csv.DictReader(data,delimiter=';')
+
+                for linha in data_lines:
+
+                    qtdLinhas += 1
+
+                    # a atividade contendo um título é gravada no banco    
+                    if linha['titulo'] != '' and linha['titulo'] != None:
+                        
+                        if linha['calc_temp'] == 'Por atividade':
+                            calculoTempoId = 202
+                        else:
+                            calculoTempoId = 201
+
+                        if linha['permite_remoto'].lower() == 'sim':
+                            remoto = True
+                        else:
+                            remoto = False
+
+                        # se o título não existe no banco, grava, se sim, atualiza
+                        verifica_ativ = db.session.query(Atividades).filter(Atividades.titulo==linha['titulo']).first()    
+
+                        if not verifica_ativ:    
+                            ativ_gravar = Atividades(itemCatalogoId        = uuid.uuid4(),
+                                                    titulo                = linha['titulo'],
+                                                    calculoTempoId        = calculoTempoId,
+                                                    permiteRemoto         = remoto,
+                                                    tempoPresencial       = linha['tempo_presencial'].replace(',','.'),
+                                                    tempoRemoto           = linha['tempo_remoto'].replace(',','.'),
+                                                    descricao             = linha['descricao'],
+                                                    complexidade          = linha['complexidade'],
+                                                    definicaoComplexidade = linha['def_complexidade'],
+                                                    entregasEsperadas     = linha['entrega'])
+
+                            db.session.add(ativ_gravar)
+                                
+                            qtd += 1
+
+                        else:
+                            verifica_ativ.calculoTempoId        = calculoTempoId
+                            verifica_ativ.permiteRemoto         = remoto
+                            verifica_ativ.tempoPresencial       = linha['tempo_presencial'].replace(',','.')
+                            verifica_ativ.tempoRemoto           = linha['tempo_remoto'].replace(',','.')
+                            verifica_ativ.descricao             = linha['descricao']
+                            verifica_ativ.complexidade          = linha['complexidade']
+                            verifica_ativ.definicaoComplexidade = linha['def_complexidade']
+                            verifica_ativ.entregasEsperadas     = linha['entrega']
+
+                            qtd_atu += 1
+
+                        db.session.commit()
+
+                        # verifica se a unidade que acompanha a atividade nova existe no banco
+                        unid = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla == linha['undSigla']).first()
+
+                        if unid != None:
+                            # faz o primeiro relacionamento atividade-unidade
+                            unid_ativ = db.session.query(unidade_ativ).filter(unidade_ativ.unidadeId == unid.unidadeId).first()                    
+                            if not unid_ativ:
+                                rel1 = unidade_ativ(catalogoId = uuid.uuid4(),
+                                                    unidadeId  = unid.unidadeId)
+                                db.session.add(rel1)                    
+                                db.session.commit()
+                                catalogoId = rel1.catalogoId
+                            else:
+                                catalogoId = unid_ativ.catalogoId
+
+                            # faz o segundo relacionamento atividade-unidade   
+                            rel2 = cat_item_cat(catalogoItemCatalogoId = uuid.uuid4(),
+                                                catalogoId             = catalogoId,
+                                                itemCatalogoId         = ativ_gravar.itemCatalogoId)
+                            db.session.add(rel2)                    
+                            db.session.commit()     
+                        else:
+                            # adiciona 1 no contador de registros sem unidade válida
+                            qtd_sem_unid += 1
+
+                    else:
+                        qtd_inval += 1
+
+                print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
+                print ('*** ',qtd_inval,'linhas no arquivo são inválidas (sem título).')
+                print ('*** ',qtd_atu,'linhas atualizadas na tabela ItemCatalogo.')
+                print ('*** ',qtd,'linhas inseridas na tabela ItemCatalogo.')
+                print ('*** ',qtd_sem_unid,'das linhas inseridas não foram associadas a uma Unidade.')
+                print ('***********************************************************************************')
+
+                flash('Executada carga de Atividades no DBSISGP. ' +\
+                        str(qtdLinhas) +' linha(s) no arquivo de entrada. ' +\
+                        str(qtd_inval) +' linha(s) inválida(s) (sem título). ' +\
+                        str(qtd_atu) +' linha(s) atualizada(s). ' +\
+                        str(qtd) +' linha(s) efetivamente inserida(s). ' +\
+                        str(qtd_sem_unid) +' da(s) atividade(s) inserida(s) não foram associadas a uma Unidade.','sucesso')
+
+            
+                registra_log_auto(current_user.id,'Carga em Atividades: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
+                                                   str(qtd) + ' registros inseridos.')
+
+            if os.path.exists(arq):
+                os.remove(arq)        
+
+            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+
+        else:
+
+            flash('O seu usuário precisa ser ativado para esta operação!','erro')
+
+            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+
+    return render_template('grab_file.html',form=form, tipo = tipo)
 
 
 

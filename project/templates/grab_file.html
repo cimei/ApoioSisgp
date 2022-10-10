@@ -13,7 +13,9 @@
             {% if tipo == 'unid' %}
               <span class="text-primary"><b>Unidades</b></span>
             {% elif tipo == 'pes' %}
-            <span class="text-success"><b>Pessoas</b></span>
+              <span class="text-success"><b>Pessoas</b></span>
+            {% elif tipo == 'ati' %}
+              <span class="text-info"><b>Atividades</b></span>
             {% else %}
               <b>?</b>
             {% endif %}</p>
@@ -47,6 +49,7 @@
               <p>1. Selecione o arquivo com dados de 
                 {% if tipo == 'unid' %}  <b>Unidades</b>
                 {% elif tipo == 'pes' %} <b>Pessoas</b>
+                {% elif tipo == 'ati' %} <b>Atividades</b>
                 {% else %} <b>?</b>
                 {% endif %}
                 (.csv):</p>
