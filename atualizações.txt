@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+11/10/2022
+Ajustes em Estatísticas
+v 2.6.1
+
 09/11/2022
 Inserido menu para carga de atividades em lote
 v 2.6.0

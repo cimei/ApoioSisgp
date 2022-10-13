@@ -22,7 +22,7 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, unidade_ativ, cat_item_cat, Atividades, catdom,Pactos_de_Trabalho_Atividades
+from project.models import Planos_de_Trabalho_Ativs_Items, Unidades, Pessoas, unidade_ativ, cat_item_cat, Atividades, catdom,Pactos_de_Trabalho_Atividades
 from project.atividades.forms import AtividadeForm, UnidForm
 
 import locale
@@ -73,6 +73,28 @@ def lista_atividades(lista):
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .order_by(Atividades.titulo).all()
+
+    elif lista == 'pgs':
+
+        # pega atividades que constam em algum programa de gestão (plano)    
+        ativs_utilizadas = db.session.query(Planos_de_Trabalho_Ativs_Items.itemCatalogoId).distinct().subquery()                   
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                Atividades.titulo,
+                                catdom.descricao,
+                                Atividades.permiteRemoto,
+                                Atividades.tempoPresencial,
+                                Atividades.tempoRemoto,
+                                Atividades.complexidade,
+                                Atividades.definicaoComplexidade,
+                                Atividades.entregasEsperadas,
+                                unids.c.qtd_unids,
+                                label('util',ativs_utilizadas.c.itemCatalogoId))\
+                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .order_by(Atividades.titulo).all()
+
 
     else:
         # pega atividades que constam em algum plano de trabalho (pacto)    

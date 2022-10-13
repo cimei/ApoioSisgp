@@ -19,6 +19,7 @@
       <div class="col">
         <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
           {% if lista == 'Todas'%} atividades da Instituição
+          {% elif lista == 'pgs' %} atividades utilizadas em programas de gestão
           {% else %} atividades utilizadas em planos de Trabalho
           {% endif %}  
         </p>

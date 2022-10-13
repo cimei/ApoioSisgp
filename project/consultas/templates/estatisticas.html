@@ -5,7 +5,14 @@
 
 <div class="jumbotron">
   
-  <h5 align = "center"><b>Alguns números do PGD em {{hoje.strftime('%x')}} </b>({{vida_pgd}} meses desde o primeiro Programa de Gestão)</h5>
+  <h5 align = "center"><b>Alguns números do PGD em {{hoje.strftime('%x')}} </b> <br>
+    {% if vida_pgd == vida_plano %}
+      ({{vida_pgd}} meses desde o primeiro Programa de Gestão e início do primeiro Plano de Trabalho)
+    {% else %}
+      ({{vida_pgd}} meses desde o primeiro Programa de Gestão,
+      {{vida_plano}} meses desde o início do primeiro Plano de Trabalho)
+    {% endif %}  
+  </h5>
   <br>
 
   <div class="row">
@@ -42,12 +49,16 @@
   
         <div class="card-body bg-transparent" align = "center">
           <dl>
-          <dt>Atividades: <abbr title="Clique aqui para ver a lista de pessoas.">
+          <dt>Atividades: <abbr title="Clique aqui para ver a lista de todas as atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='Todas')}}">{{qtd_ativs}}</a></abbr></dt>
             <br>
-          <dd>&nbsp;Utilizadas em Planos: <abbr title="Clique aqui para ver a lista de pessoas.">
+          <dd>&nbsp;Distintas em Planos: <abbr title="Clique aqui para ver a lista destas atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='*')}}">{{ativs_utilizadas}}</a></abbr>
             ({{((100 * ativs_utilizadas / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
+            <br>
+          <dd>&nbsp;Distintas em PGs: <abbr title="Clique aqui para ver a lista destas atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='pgs')}}">{{ativs_utilizadas_pgs}}</a></abbr>
+            ({{((100 * ativs_utilizadas_pgs / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
           </dl>  
         </div>    
       </div>
@@ -91,7 +102,48 @@
           <p align = "right">Total: {{ programas_de_gestao|sum(attribute='qtd_pg') }}</p>
         </div>
         
-      </div>    
+      </div>  
+      
+<br>
+
+      <div class="row">
+
+        <div class="col">
+          <div class="card bg-transparent border-dark">
+    
+            <div class="card-header bg-transparent">
+              <p align = "center"><b>Atividades em Programas de Gestão</b></p>
+            </div>
+    
+            <div class="card-body bg-transparent">
+              <table class="table table-striped table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col"><p align = "center">Situação</p></th>
+                    <th scope="col"><p align = "right">qtd</p></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for a in ativs_pgs %}
+                    <tr>
+                      <td><p align = "center">{{ a.descricao }} </p></td>
+                      <td><p align = "right"> {{ a.qtd_ativs }} </p></td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+    
+            <div class="card-footer bg-transparent">
+            <p align = "right">Total: {{ ativs_pgs|sum(attribute='qtd_ativs') }}</p>
+            </div>
+    
+          </div>    
+        </div>
+
+
+      </div>
+
     </div>
 
     <div class="col-6">

@@ -586,7 +586,7 @@ def estatisticas():
 
     catdom_sit = db.session.query(catdom).subquery()
 
-    # quantidades de unidades, pessoas, atividades e atividades utilizadas em planos
+    # quantidades de unidades, pessoas, atividades, atividades utilizadas em planos e atividades utilizadas em pgs
     qtd_unidades = Unidades.query.count()
 
     qtd_pessoas = Pessoas.query.count()
@@ -595,10 +595,28 @@ def estatisticas():
 
     ativs_utilizadas = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId)).count()
 
+    ativs_utilizadas_pgs = db.session.query(distinct(Planos_de_Trabalho_Ativs_Items.itemCatalogoId))\
+                                     .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+                                     .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
+                                     .count()
+
     # o primeiro pg
     primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
     # meses desde o primeito pg
     vida_pgd = (hoje.year - primeiro_pg[0].dataInicio.year) * 12 + hoje.month - primeiro_pg[0].dataInicio.month
+
+    # o primeiro plano
+    primeiro_plano = db.session.query(Pactos_de_Trabalho.dataInicio).order_by(Pactos_de_Trabalho.dataInicio).limit(1)
+    # meses desde o primeito plano
+    vida_plano = (hoje.year - primeiro_plano[0].dataInicio.year) * 12 + hoje.month - primeiro_plano[0].dataInicio.month
+
+    # quantidade de atividades em pgs (planos)
+    ativs_pgs = db.session.query(catdom.descricao, 
+                             label('qtd_ativs',func.count(Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeItemId)))\
+                      .join(Planos_de_Trabalho_Ativs,Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId==Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+                      .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho_Ativs.modalidadeExecucaoId)\
+                      .group_by(catdom.descricao)\
+                      .all()
 
     # quantidades de atividades em planos (pactos)
     ativs = db.session.query(catdom.descricao, 
@@ -688,13 +706,17 @@ def estatisticas():
                                                 planos_de_trabalho_fs=planos_de_trabalho_fs, 
                                                 qtd_ativs=qtd_ativs, qtd_pessoas=qtd_pessoas, qtd_unidades=qtd_unidades,
                                                 qtd_pes_max=qtd_pes_max, qtd_pes_min=qtd_pes_min, qtd_pes_avg=qtd_pes_avg,
-                                                ativs_utilizadas=ativs_utilizadas,hoje=hoje,
+                                                ativs_utilizadas=ativs_utilizadas,
+                                                ativs_utilizadas_pgs=ativs_utilizadas_pgs,
+                                                hoje=hoje,
                                                 ativs_top=ativs_top,
                                                 unids_top=unids_top,
                                                 unids_pt_top=unids_pt_top,
                                                 vida_pgd=vida_pgd,
+                                                vida_plano=vida_plano,
                                                 ativs=ativs,
-                                                solicit=solicit)
+                                                solicit=solicit,
+                                                ativs_pgs=ativs_pgs)
 
 
 # qtd pgs e pts em um período log
