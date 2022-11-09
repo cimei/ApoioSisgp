@@ -168,7 +168,15 @@ def CarregaUnidades():
                         if linha['unidadeIdPai'] == 'NULL' or linha['unidadeIdPai'] == '':
                             unid_exist.unidadeIdPai = None
                         else:
-                            unid_exist.unidadeIdPai = linha['unidadeIdPai']
+                            if type(linha['unidadeIdPai']) == str:
+                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
+                                if not cod_pai:
+                                    flash('Sigla de unidade pai inexistente: '+ linha['unidadeIdPai'],'erro' )
+                                    unid_exist.unidadeIdPai = None
+                                else:    
+                                    unid_exist.unidadeIdPai = cod_pai.unidadeId
+                            else:    
+                                unid_exist.unidadeIdPai = linha['unidadeIdPai']
 
                         unid_exist.tipoUnidadeId           = linha['tipoUnidadeId']
                         unid_exist.situacaoUnidadeId       = linha['situacaoUnidadeId']
@@ -211,7 +219,15 @@ def CarregaUnidades():
                         if linha['unidadeIdPai'] == '' or linha['unidadeIdPai'] == 0:
                             pai = None
                         else:
-                            pai = linha['unidadeIdPai']
+                            if type(linha['unidadeIdPai']) == str:
+                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
+                                if not cod_pai:
+                                    flash('Sigla de unidade pai inexistente: '+ linha['unidadeIdPai'],'erro' )
+                                    pai = None
+                                else:    
+                                    pai = cod_pai.unidadeId
+                            else:    
+                                pai = linha['unidadeIdPai']
                         
                         if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
                             niv = None
@@ -286,13 +302,13 @@ def CarregaUnidades():
             if os.path.exists(arq):
                 os.remove(arq)
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
     return render_template('grab_file.html',form=form, tipo = tipo)
 

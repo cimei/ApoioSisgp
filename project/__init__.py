@@ -51,6 +51,7 @@ from project.pessoas.views import pessoas
 from project.padroes.views import padroes
 from project.consultas.views import consultas
 from project.atividades.views import atividades
+from project.envio.views import envio
 
 
 app.register_blueprint(core)
@@ -66,4 +67,6 @@ app.register_blueprint(padroes,url_prefix='/padroes')
 app.register_blueprint(consultas,url_prefix='/consultas')
 
 app.register_blueprint(atividades,url_prefix='/atividades')
+
+app.register_blueprint(envio,url_prefix='/envio')
 

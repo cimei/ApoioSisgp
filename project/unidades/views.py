@@ -35,16 +35,17 @@ unidades = Blueprint('unidades',__name__, template_folder='templates')
 
 ## lista unidades da instituição
 
-@unidades.route('/lista_unidades')
+@unidades.route('<lista>/lista_unidades')
 
-def lista_unidades():
+def lista_unidades(lista):
     """
     +---------------------------------------------------------------------------------------+
     |Apresenta uma lista das unidades da instituição.                                       |
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
-    """
-# Lê tabela unidades
+    """ 
+    
+    # Lê tabela unidades
 
     unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
 
@@ -81,30 +82,57 @@ def lista_unidades():
                              .subquery() 
 
 
-    unids = db.session.query(Unidades.unidadeId,
-                             Unidades.undSigla,
-                             Unidades.undDescricao,
-                             Unidades.unidadeIdPai,
-                             unids_pai.c.undSigla.label("Sigla_Pai"),
-                             Unidades.tipoUnidadeId,
-                             Unidades.situacaoUnidadeId,
-                             Unidades.ufId,
-                             Unidades.undNivel,
-                             Unidades.tipoFuncaoUnidadeId,
-                             Unidades.Email,
-                             Unidades.undCodigoSIORG,
-                             Unidades.pessoaIdChefe,
-                             chefes.c.pesNome.label("Chefe"),
-                             Unidades.pessoaIdChefeSubstituto,
-                             subs.c.pesNome.label("Subs"),
-                             ativs.c.qtd_ativs,
-                             pessoas_unid.c.qtd_pes)\
-                            .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                            .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                            .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                            .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
-                            .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
-                            .order_by(Unidades.undSigla).all()
+    if lista == 'ativas':
+        unids = db.session.query(Unidades.unidadeId,
+                                Unidades.undSigla,
+                                Unidades.undDescricao,
+                                Unidades.unidadeIdPai,
+                                unids_pai.c.undSigla.label("Sigla_Pai"),
+                                Unidades.tipoUnidadeId,
+                                Unidades.situacaoUnidadeId,
+                                Unidades.ufId,
+                                Unidades.undNivel,
+                                Unidades.tipoFuncaoUnidadeId,
+                                Unidades.Email,
+                                Unidades.undCodigoSIORG,
+                                Unidades.pessoaIdChefe,
+                                chefes.c.pesNome.label("Chefe"),
+                                Unidades.pessoaIdChefeSubstituto,
+                                subs.c.pesNome.label("Subs"),
+                                ativs.c.qtd_ativs,
+                                pessoas_unid.c.qtd_pes)\
+                                .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
+                                .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                                .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
+                                .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
+                                .filter(Unidades.situacaoUnidadeId == 1)\
+                                .order_by(Unidades.undSigla).all()
+    elif lista == 'todas':
+        unids = db.session.query(Unidades.unidadeId,
+                                Unidades.undSigla,
+                                Unidades.undDescricao,
+                                Unidades.unidadeIdPai,
+                                unids_pai.c.undSigla.label("Sigla_Pai"),
+                                Unidades.tipoUnidadeId,
+                                Unidades.situacaoUnidadeId,
+                                Unidades.ufId,
+                                Unidades.undNivel,
+                                Unidades.tipoFuncaoUnidadeId,
+                                Unidades.Email,
+                                Unidades.undCodigoSIORG,
+                                Unidades.pessoaIdChefe,
+                                chefes.c.pesNome.label("Chefe"),
+                                Unidades.pessoaIdChefeSubstituto,
+                                subs.c.pesNome.label("Subs"),
+                                ativs.c.qtd_ativs,
+                                pessoas_unid.c.qtd_pes)\
+                                .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
+                                .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                                .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
+                                .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
+                                .order_by(Unidades.undSigla).all()
 
     quantidade = len(unids)
 
@@ -159,7 +187,8 @@ def lista_unidades():
                                                 dic_tipo_unidade = dic_tipo_unidade,
                                                 ativs_lista = ativs_lista,
                                                 qtd_geral = qtd_geral,
-                                                tree = tree)
+                                                tree = tree,
+                                                lista = lista)
 
 #
 ### atualiza dados de uma unidade
@@ -177,7 +206,7 @@ def unidade_update(cod_unid):
     """
 
     pais = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
-                         .filter(Unidades.tipoUnidadeId < 5)\
+                         .filter(Unidades.situacaoUnidadeId == 1)\
                          .order_by(Unidades.undSigla).all()
     lista_pais = [(int(p.unidadeId),p.undSigla) for p in pais]
     lista_pais.insert(0,(0,''))
@@ -188,7 +217,7 @@ def unidade_update(cod_unid):
     lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
     lista_chefes.insert(0,(0,''))
 
-    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço')]
+    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
 
     lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
 
@@ -226,13 +255,13 @@ def unidade_update(cod_unid):
 
             flash('Unidade atualizada!','sucesso')
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
 
     # traz a informação atual do Unidades
@@ -269,7 +298,7 @@ def cria_unidade():
     """
 
     pais = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
-                         .filter(Unidades.tipoUnidadeId < 5)\
+                         .filter(Unidades.situacaoUnidadeId == 1)\
                          .order_by(Unidades.undSigla).all()
     lista_pais = [(int(p.unidadeId),p.undSigla) for p in pais]
     lista_pais.insert(0,(0,''))
@@ -280,7 +309,7 @@ def cria_unidade():
     lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
     lista_chefes.insert(0,(0,''))
 
-    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço')]
+    lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
 
     lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
 
@@ -332,13 +361,13 @@ def cria_unidade():
 
             flash(str('Unidade ' + form.sigla.data +' inserida no banco!'),'sucesso')
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('unidades.lista_unidades'))
+            return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
 
     return render_template('atu_unidade.html', form=form)

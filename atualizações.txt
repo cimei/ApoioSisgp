@@ -1,5 +1,11 @@
 ## Atualizações ##
 
+09/11/2022
+
+Lista unidade mostra somente ativas, mas com opção de ver todas. 
+Incluída possibilidade e envio de planos.
+v 3.0.0
+
 11/10/2022
 Ajustes em Estatísticas
 v 2.6.1

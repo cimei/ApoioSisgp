@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+  <div class="jumbotron">
+
+    <div class="row">
+      <div class="col-10">
+        {% if lista == 'n_enviados' %}
+          <h5><b>Lista de Planos de Trabalho APTOS AO ENVIO</b> (Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h5>
+        {% else %}
+          <h5><b>Lista de Planos de Trabalho ENVIADOS</b> (Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h5>
+        {% endif %}  
+        <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> plano(s) nesta lista</p>
+      </div>
+      <div class="col-2">
+        {% if lista == 'n_enviados' and demandas_count != 0 %}
+          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar Planos</button>
+        {% endif %}  
+      </div>
+    </div>
+
+      {# modal confirmar envio de Planos de Trabalho #}
+
+      <div class="modal" tabindex="-1" role="dialog" id="envia_modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div class="p-3 mb-2 bg-danger text-white">
+              <h5 class="modal-title">Enviar Planos de Trabalho?</h5>
+              </div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Deseja enviar todos os Planos de Trabalho desta lista?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+              <form action="{{url_for('envio.enviar_planos',n_enviados=n_enviados)}}" method="post">
+                <input class="btn btn-danger" type="submit" name="" value="Executar">
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="container" style="overflow-y:auto;">
+
+        <table id="table"
+              data-toggle="table"
+              data-filter-control="true"
+              data-show-search-clear-button="true"
+              data-sortable="true"
+              classes="table-sm"
+              data-show-columns="true"
+              data-show-columns-toggle-all="true"
+              class="table table-striped table-hover table-sm">
+          <caption>Planos de Trabalho</caption>
+          <thead>
+            <tr>
+              <th scope="col"><p align = "center">#</p></th>
+              <th scope="col" data-field="Unidade" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Unidade</p></th>
+              <th scope="col" data-field="Responsável" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Resposável</p></th>
+              <th scope="col" data-sortable="true"><p align = "center">Início</p></th>
+              <th scope="col" data-sortable="true"><p align = "center">Fim</p></th>
+              <th scope="col" data-field="Forma" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Forma</p></th>
+              <th scope="col"><p align = "center">Situação</p></th>
+              <th scope="col"><p align = "center"><abbr title="Percentual de execução">% exec.</abbr></p></th>
+              <th scope="col"><p align = "center"><abbr title="Relação Previsto/Realizado">p/r</abbr></p></th>
+              <th scope="col"><p align = "center"><abbr title="Enviar plano específico.">Ação</abbr></p></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for demanda in demandas %}
+              <tr>
+                <th scope="row"><p align = "center"> {{demandas.index(demanda) + 1}} </p></th>
+                <td><p align = "center"> {{demanda.undSigla}} </p></td>
+                <td><p align = "center"> {{demanda.pesNome}} </p></td>
+                <td><p align = "center"> {{demanda.dataInicio.strftime('%d/%m/%Y')}} </p></td>
+                <td><p align = "center"> {{demanda.dataFim.strftime('%d/%m/%Y')}} </p></td> 
+                <td><p align = "center"> {{demanda.forma}} </p></td>
+                <td><p align = "center"> {{demanda.descricao}} </p></td>
+                <td><p align = "center"> {% if demanda.percentualExecucao == None %}N.C.{% else %} {{demanda.percentualExecucao|string()|replace(".",",")}} {% endif %} </p></td> 
+                <td><p align = "center"> {% if demanda.relacaoPrevistoRealizado == None %}N.C.{% else %} {{demanda.relacaoPrevistoRealizado|string()|replace(".",",")}} {% endif %} </p></td> 
+                <td><p align = "center"> <a class="" href="{{url_for('envio.enviar_um_plano',plano_id=demanda.pactoTrabalhoId,lista=lista)}}">
+                    {% if lista == 'n_enviados' %} Enviar {% else %} Reenviar {% endif %}</a> </p></td>
+               </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}

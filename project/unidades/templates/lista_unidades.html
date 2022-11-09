@@ -2,7 +2,14 @@
 {% block content %}
 <div class="jumbotron">
   
-  <h5>Lista das Unidades</h5>
+  <div class = "row">
+    <div class="col-2">
+      <h5>Lista das Unidades {% if lista == 'ativas' %} Ativas {% elif lista == 'todas' %} Ativas e Inativas {% endif %}</h5>
+    </div>
+    <div class="col">
+      <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a>
+    </div>
+  </div>
 
   <div class = "row">
     <div class="col-1">

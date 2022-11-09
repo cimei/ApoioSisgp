@@ -463,7 +463,7 @@ def feriado_update(cod_fer):
 
             db.session.commit()
 
-            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%x'))  +' foi alterado.')
+            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%d/%m/%Y'))  +' foi alterado.')
 
             flash('Dados de Feriado atualizados!','sucesso')
 
@@ -525,7 +525,7 @@ def cria_feriado():
             db.session.add(feriado)
             db.session.commit()
 
-            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%x'))  +' foi incluido no banco de dados.')
+            registra_log_auto(current_user.id,'Feriado '+ str(feriado.ferData.strftime('%d/%m/%Y'))  +' foi incluido no banco de dados.')
 
             flash('Feriado '+str(form.ferDescricao.data +' inserido no DBSISGP!'),'sucesso')
 

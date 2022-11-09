@@ -19,7 +19,7 @@
             <h5 class="card-title">{{unids}} Unidades</h5>
             <p class="card-text">{{unids_com_pg}} já criaram algum PG</p>
             {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('unidades.lista_unidades')}}" class="card-link">Ver unidades</a>
+              <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}" class="card-link">Ver unidades</a>
             {% endif %}  
           </div>
         </div>
