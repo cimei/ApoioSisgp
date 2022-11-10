@@ -147,40 +147,28 @@ def CarregaUnidades():
             # monta uma lista com as siglas das unidades já existentes
             l_siglaExistente = [s[0] for s in siglaExistente]
 
-            # abre csv e gera a lista data_lines
+            # primeira rodada, grava registros mas mantém Pais nulos
+            # abre csv, gera a lista data_lines e grava registros no banco de dados
             with open(arq, newline='',encoding = 'utf-8-sig') as data:
-                data_lines = csv.DictReader(data,delimiter=';')
 
+                data_lines = csv.DictReader(data,delimiter=';')     
                 for linha in data_lines:
 
                     qtdLinhas += 1
 
+                    # se a unidade (sigla) já existir, atualiza os registros (sobreescreve)
                     if linha['undSigla'] in l_siglaExistente:
 
                         qtd_exist += 1
 
                         unid_exist = db.session.query(Unidades).filter(Unidades.undSigla == linha['undSigla']).first()
 
-                        unid_exist.undSigla = linha['undSigla']
-
-                        unid_exist.undDescricao = linha['undDescricao']
-
-                        if linha['unidadeIdPai'] == 'NULL' or linha['unidadeIdPai'] == '':
-                            unid_exist.unidadeIdPai = None
-                        else:
-                            if type(linha['unidadeIdPai']) == str:
-                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
-                                if not cod_pai:
-                                    flash('Sigla de unidade pai inexistente: '+ linha['unidadeIdPai'],'erro' )
-                                    unid_exist.unidadeIdPai = None
-                                else:    
-                                    unid_exist.unidadeIdPai = cod_pai.unidadeId
-                            else:    
-                                unid_exist.unidadeIdPai = linha['unidadeIdPai']
-
-                        unid_exist.tipoUnidadeId           = linha['tipoUnidadeId']
-                        unid_exist.situacaoUnidadeId       = linha['situacaoUnidadeId']
-                        unid_exist.ufId                    = linha['ufId']
+                        unid_exist.undSigla          = linha['undSigla']
+                        unid_exist.undDescricao      = linha['undDescricao']
+                        unid_exist.unidadeIdPai      = None
+                        unid_exist.tipoUnidadeId     = linha['tipoUnidadeId']
+                        unid_exist.situacaoUnidadeId = linha['situacaoUnidadeId']
+                        unid_exist.ufId              = linha['ufId']
 
                         if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
                             unid_exist.undNivel = None
@@ -214,20 +202,10 @@ def CarregaUnidades():
 
                         db.session.commit()
             
+                    # não encontrando a unidade(sigla) no banco, cria um novo registro
                     elif linha['undSigla'] != '' and linha['undSigla'] != None :
 
-                        if linha['unidadeIdPai'] == '' or linha['unidadeIdPai'] == 0:
-                            pai = None
-                        else:
-                            if type(linha['unidadeIdPai']) == str:
-                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
-                                if not cod_pai:
-                                    flash('Sigla de unidade pai inexistente: '+ linha['unidadeIdPai'],'erro' )
-                                    pai = None
-                                else:    
-                                    pai = cod_pai.unidadeId
-                            else:    
-                                pai = linha['unidadeIdPai']
+                        pai = None
                         
                         if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
                             niv = None
@@ -259,24 +237,54 @@ def CarregaUnidades():
                         else:
                             subs = linha['pessoaIdChefeSubstituto']    
 
-                        unidade_gravar = Unidades(undSigla              = linha['undSigla'],
-                                                undDescricao            = linha['undDescricao'],
-                                                unidadeIdPai            = pai,
-                                                tipoUnidadeId           = linha['tipoUnidadeId'],
-                                                situacaoUnidadeId       = linha['situacaoUnidadeId'],
-                                                ufId                    = linha['ufId'],
-                                                undNivel                = niv,
-                                                tipoFuncaoUnidadeId     = func,
-                                                Email                   = email,
-                                                undCodigoSIORG          = siorg,
-                                                pessoaIdChefe           = chefe,
-                                                pessoaIdChefeSubstituto = subs)
+                        unidade_gravar = Unidades(undSigla                = linha['undSigla'],
+                                                  undDescricao            = linha['undDescricao'],
+                                                  unidadeIdPai            = pai,
+                                                  tipoUnidadeId           = linha['tipoUnidadeId'],
+                                                  situacaoUnidadeId       = linha['situacaoUnidadeId'],
+                                                  ufId                    = linha['ufId'],
+                                                  undNivel                = niv,
+                                                  tipoFuncaoUnidadeId     = func,
+                                                  Email                   = email,
+                                                  undCodigoSIORG          = siorg,
+                                                  pessoaIdChefe           = chefe,
+                                                  pessoaIdChefeSubstituto = subs)
 
                         db.session.add(unidade_gravar)
 
                         qtd += 1
 
                         db.session.commit()
+
+            # segunda rodada, para atualizar as unidades pai de cada registro
+            # abre novamente o csv, gera a lista data_lines e grava registros no banco de dados
+            with open(arq, newline='',encoding = 'utf-8-sig') as data:            
+                
+                data_lines = csv.DictReader(data,delimiter=';')
+                for linha in data_lines: 
+
+                    unid_exist = db.session.query(Unidades).filter(Unidades.undSigla == linha['undSigla']).first()
+
+                    if unid_exist:
+
+                        if linha['unidadeIdPai'] == 'NULL' or linha['unidadeIdPai'] == '':
+                            unid_exist.unidadeIdPai = None
+                        else:
+                            if linha['unidadeIdPai'].isnumeric():
+                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.unidadeId==linha['unidadeIdPai']).first()
+                                if not cod_pai:
+                                    flash('Id informado como unidade pai inexistente no banco de dados: '+ linha['unidadeIdPai'],'erro' )
+                                    unid_exist.unidadeIdPai = None
+                                else:    
+                                    unid_exist.unidadeIdPai = linha['unidadeIdPai']
+                            else:    
+                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
+                                if not cod_pai:
+                                    flash('Sigla informada como unidade pai inexistente no banco de dados: '+ linha['unidadeIdPai'],'erro' )
+                                    unid_exist.unidadeIdPai = None
+                                else:    
+                                    unid_exist.unidadeIdPai = cod_pai.unidadeId 
+                db.session.commit()                          
 
                 print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
                 print ('*** ',qtd,'linhas inseridas na tabela unidade -> Unidades novas.')

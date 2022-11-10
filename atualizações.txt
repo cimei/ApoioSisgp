@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+10/11/2022
+
+Correção no procedimento de carga de unidades. Atualização da cartilha.
+v 3.0.1
+
 09/11/2022
 
 Lista unidade mostra somente ativas, mas com opção de ver todas. 
