@@ -1,15 +1,19 @@
 # ApoioSisgp
 Aplicativo de apoio à gestão do SISGP. Permite visualizar e atualizar dados das tabelas Unidade e Pessoa, de tabelas auxiliares (SituacaoPessoa, TipoFuncao, TipoVinculo e Feriado), além de outras funcionalidades.
 
-A partir da versão 2.5.0, o aplicativo está preparado para a instalação via contêiner Docker, usando o gunicorn como WSGI.
+A partir da versão 3.0.0, é possível o envio de dados ao órgão central do SIPEC via API correspondente.
 
-Imagem disponível em https://hub.docker.com/r/cimei/apoiosisgp.
+O sistema está configurado para a instalação via contêiner Docker, usando o gunicorn como WSGI.
 
-O histórico de atualizações está disponível em atualizações.txt.
+Imagem disponível em https://hub.docker.com/r/cimei/apoiosisgp. Atenção para a tag que se deseja utilizar, bem como para as respectivas variáveis
+de ambiente que devem ser informadas no momento da execução (run) do contêiner.
+
+Para verificar o que foi incorporado/corrigido em cada versão, veja o arquivo de histórico de atualizações, disponível em atualizações.txt.
 
 Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais pacotes instalados do que o realmente necessário, mas isto não é um impedimento.
 
-Na pasta Instance, há o arquivo flask.cfg onde podem ser verificadas as varíaveis de ambiente necessárias quando da execução do contêiner. Atente para a chave SECRECT_KEY do sistema, é recomendável usar uma chave aletória.
+Na pasta Instance, o arquivo flask.cfg contem as configurações básicas, como, por exemplo, as varíaveis de ambiente necessárias para a execução 
+do contêiner. Atente para a chave SECRECT_KEY do sistema, é recomendável usar uma chave aletória.
 
 A pasta build/html tem a documentação do aplicativo gerada automaticamente via Sphinx.
 
