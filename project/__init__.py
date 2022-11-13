@@ -8,11 +8,11 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 
-import pyodbc
+# import pyodbc
 
 from shutil import rmtree
 
-pyodbc.setDecimalSeparator('.')
+# pyodbc.setDecimalSeparator('.')
 
 TOP_LEVEL_DIR = os.path.abspath(os.curdir)
 

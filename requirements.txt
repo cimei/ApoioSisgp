@@ -32,8 +32,8 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycryptodome==3.10.1
 pyinstaller==3.6
-pymssql==2.2.3
-pyodbc==4.0.32
+# pymssql==2.2.3
+# pyodbc==4.0.32
 pyparsing==2.4.7
 python-dateutil==2.8.2
 requests==2.26.0
@@ -50,3 +50,4 @@ wtforms==2.3.3
 xlsxwriter==3.0.3
 zipp==3.5.0
 gunicorn==20.1.0
+psycopg2-binary==2.9.5

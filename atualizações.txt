@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+11/11/2022
+
+Ajustes para camada ORM do sistema para suportar conexão com banco de dados PostgreSQL.
+v 3.0.2
+
 10/11/2022
 
 Correção no procedimento de carga de unidades. Atualização da cartilha.
