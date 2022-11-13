@@ -2,7 +2,7 @@
 
 FROM python:3.9-bullseye
 
-LABEL vendor="ApoioSisgp" maintainer="Cimei" description="Aplicativo Python-Flask de apoio à gestão do SISGP" version="3.5.0"
+LABEL vendor="ApoioSisgp" maintainer="Cimei" description="Aplicativo Python-Flask de apoio à gestão do SISGP" version="3.0.2"
 
 WORKDIR /app
 
