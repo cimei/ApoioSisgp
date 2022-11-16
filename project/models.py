@@ -104,7 +104,7 @@ class Log_Auto(db.Model):
 
 class Unidades(db.Model):
 
-    __tablename__ = 'unidade'
+    __tablename__ = 'Unidade'
     __table_args__ = {"schema": "dbo"}
 
     unidadeId                = db.Column(db.BigInteger, primary_key = True)
@@ -172,7 +172,7 @@ class VW_Unidades(db.Model):
 
 class Pessoas(db.Model):
 
-    __tablename__ = 'pessoa'
+    __tablename__ = 'Pessoa'
     __table_args__ = {"schema": "dbo"}
 
     pessoaId          = db.Column(db.BigInteger, primary_key = True)
