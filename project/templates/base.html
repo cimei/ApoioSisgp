@@ -112,8 +112,8 @@
               <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
               {% if current_user.userAtivo %}
                 <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Ver Usuários</a>
+                <a class="dropdown-item"  href="{{ url_for('usuarios.troca_senha') }}">Trocar senha</a>
               {% endif %}
-              
             </div>
           </li>
 
@@ -141,7 +141,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '3.0.1') %}
+          {% set ver = namespace(num = '3.0.3') %}
 
         </ul>
 

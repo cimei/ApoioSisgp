@@ -90,6 +90,13 @@ class PasswordForm(FlaskForm):
     pass_confirm = PasswordField('Confirmar senha: ', validators=[DataRequired(message="Confirme a senha!")])
     submit       = SubmitField('Enviar')
 
+class TrocaPasswordForm(FlaskForm):
+
+    password_atual = PasswordField('Senha atual: ', validators=[DataRequired(message="Forneça uma senha!")])
+    password_nova  = PasswordField('Senha nova: ', validators=[DataRequired(message="Forneça uma senha!"),EqualTo('pass_confirm',message='Senhas devem ser iguais!')])
+    pass_confirm   = PasswordField('Confirmar senha: ', validators=[DataRequired(message="Confirme a senha!")])
+    submit         = SubmitField('Enviar') 
+
 class AdminForm(FlaskForm):
 
     ativo        = BooleanField('Usuário está ativo?')

@@ -27,6 +27,7 @@
     * reset: Trata pedido de troca de senha
     * reset_with_token: Realiza troca de senha
     * login: Entrada de usuário
+    * primeiro_user: registro do primeiro usuário de forma direta
     * logout: Saída de usuário
     * view_users: Visão dos usuários
     * update_user: Atualizar dados do usuário
@@ -51,7 +52,7 @@ from project import db, mail, app
 from project.models import users, Log_Auto, catdom, Pessoas
 
 from project.usuarios.forms import RegistrationForm, LoginForm, EmailForm, PasswordForm, AdminForm,\
-                                LogForm
+                                LogForm, TrocaPasswordForm
                                 
 
 usuarios = Blueprint('usuarios',__name__)
@@ -293,6 +294,40 @@ def reset_with_token(token):
     return render_template('troca_senha_com_token.html', form=form, token=token)
 
 
+# trocar ou gerar nova senha via app
+
+@usuarios.route('/troca_senha', methods=["GET", "POST"])
+def troca_senha():
+    """+--------------------------------------------------------------------------------------+
+       |Abre tela para o usuário informar nova senha.                                         |
+       +--------------------------------------------------------------------------------------+
+    """
+
+    form = TrocaPasswordForm()
+
+    if form.validate_on_submit():
+
+        if current_user.ativo != 1:
+            flash('Usuário deve ser ativado antes de poder trocar senha!', 'erro')
+            return redirect(url_for('users.login'))
+
+        if current_user.check_password(form.password_atual.data):    
+
+            current_user.password_hash = generate_password_hash(form.password_nova.data)
+
+            db.session.commit()
+
+            registra_log_auto(current_user.id,None,'sen')
+
+            logout_user()
+
+            flash('Sua senha foi atualizada!', 'sucesso')
+            return redirect(url_for('users.login'))
+
+    return render_template('troca_senha.html', form=form)
+
+
+
 # login
 
 @usuarios.route('/login', methods=['GET','POST'])
@@ -304,6 +339,9 @@ def login():
        |para poder fazer o login, conforme mensagem enviada.                                  |
        +--------------------------------------------------------------------------------------+
     """
+    
+    usuarios_qtd = users.query.count()
+    
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -340,7 +378,57 @@ def login():
         else:
             flash('E-mail informado não encontrado, favor verificar!','erro')
 
+    if usuarios_qtd == 0:
+        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','erro')
+        return redirect(url_for('usuarios.primeiro_user'))
+    
     return render_template('login.html',form=form)
+
+# procedimentos para o primeiro usuário
+
+@usuarios.route('/primeiro_user', methods=['GET','POST'])
+def primeiro_user():
+    """+--------------------------------------------------------------------------------------+
+       |Opção de cadastro do primeiro usuário no caso em que a mensageria não esteja          |
+       |Funcionando. Verifica-se se a tabela users está vazia e permite o cadastro do         |
+       |usuáro a acessar o sistema após sua instalação.                                       |
+       +--------------------------------------------------------------------------------------+
+    """
+
+    usuarios_qtd = users.query.count()
+
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+
+        if usuarios_qtd == 0:
+
+            user = users(userNome                  = form.username.data,
+                        userEmail                  = form.email.data,
+                        plaintext_password         = form.password.data,
+                        email_confirmation_sent_on = datetime.now(),
+                        userAtivo                  = True)
+
+            db.session.add(user)
+            db.session.commit()
+
+            user.email_confirmed = True
+            user.email_confirmed_on = datetime.now()
+
+            db.session.commit()
+
+            registra_log_auto(user.id,'Primeiro usuário '+ user.userNome +' registrado e confirmado de forma direta.')
+        
+            flash('Primeiro usuário '+ user.userNome +' registrado e confirmado de forma direta!','sucesso')
+            
+            return redirect(url_for('usuarios.login'))
+
+        else:
+            flash('Já existem usuários registrados!','erro')
+            return redirect(url_for('core.index'))
+
+    return render_template('register.html',form=form)
+
 
 # logout
 
@@ -358,7 +446,6 @@ def logout():
 
 @usuarios.route('/view_users')
 @login_required
-
 def view_users():
     """+--------------------------------------------------------------------------------------+
        |Mostra lista dos usuários cadastrados.                                                |

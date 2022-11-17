@@ -32,7 +32,7 @@ from sqlalchemy import distinct
 from project.core.forms import ArquivoForm
 from project import db
 from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
-                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ
+                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users
 
 from project.usuarios.views import registra_log_auto
 
@@ -97,9 +97,12 @@ def index():
 
     pactos_exec = db.session.query(Pactos_de_Trabalho).filter(Pactos_de_Trabalho.situacaoId == 405).count()
 
+    ativos = db.session.query(users).filter(users.userAtivo == True).count()
+
     return render_template ('index.html',sistema='Apoio SISGP',unids = unids, unids_com_pg = unids_com_pg, pes = pes, 
                                          pes_pacto = pes_pacto, ativs = ativs,
-                                         pts = pts, pts_exec = pts_exec, pactos = pactos, pactos_exec = pactos_exec)
+                                         pts = pts, pts_exec = pts_exec, pactos = pactos, pactos_exec = pactos_exec,
+                                         ativos = ativos)
 
 @core.route('/info')
 def info():

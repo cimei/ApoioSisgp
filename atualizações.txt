@@ -1,5 +1,14 @@
 ## Atualizações ##
 
+16/11/2022
+No primeiro acesso, caso não existam usuários registrados, é permitido o registro direto
+do primeiro usuário.
+v 3.0.3
+
+16/11/2022
+Possibilidade de trocar senha dentro do aplicativo.
+v 3.0.2
+
 10/11/2022
 
 Correção no procedimento de carga de unidades. Atualização da cartilha.
