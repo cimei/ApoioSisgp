@@ -369,7 +369,9 @@ def enviar_um_plano(plano_id,lista):
             flash('Erro na tentativa de reenvio do Plano: ' + str(plano_id),'erro') 
         elif lista == 'n_enviados':
             registra_log_auto(current_user.id, 'Erro na tentativa de envio do Plano: ' + str(plano_id))
-            flash('Erro na tentativa de envio do Plano: ' + str(plano_id),'erro')     
+            flash('Erro na tentativa de envio do Plano: ' + str(plano_id),'erro')   
+
+    print(json.dumps(dic_envio, skipkeys=True, allow_nan=True, indent=4))          
 
     if lista == 'n_enviados':
         return redirect (url_for('envio.lista_a_enviar'))

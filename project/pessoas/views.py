@@ -7,6 +7,7 @@
 .. topic:: Ações relacionadas às pessoas
 
     * lista_pessoas: Lista pessoas
+    * lista_pessoas_filtro: Lista pessoas de acordo com filtro aplicado
     * lista_gestores_sisgp: pessoas que estão como GestorSistema
     * pessoa_update: Atualiza pessoa
     * cria_pessoa: Acrescenta uma pessoa
@@ -24,7 +25,7 @@ from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom
-from project.pessoas.forms import PessoaForm
+from project.pessoas.forms import PessoaForm, PesquisaForm
 
 from project.usuarios.views import registra_log_auto
 
@@ -40,7 +41,6 @@ pessoas = Blueprint('pessoas',__name__, template_folder='templates')
 ## lista pessoas da instituição
 
 @pessoas.route('/lista_pessoas')
-
 def lista_pessoas():
     """
     +---------------------------------------------------------------------------------------+
@@ -82,6 +82,171 @@ def lista_pessoas():
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
                                                  gestorQtd = gestorQtd, tipo = tipo)
+
+
+## lista pessoas da instituição conforme filtro aplicado
+
+@pessoas.route('/lista_pessoas_filtro', methods=['GET','POST'])
+def lista_pessoas_filtro():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista das pessoas da instituição via filtro                              |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    tipo = "pesq"
+
+    form = PesquisaForm()
+
+    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
+    lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
+    lista_unids.insert(0,(0,'Todas'))                
+
+    situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao).order_by(Situ_Pessoa.spsDescricao).all()
+    lista_situ = [(s.situacaoPessoaId,s.spsDescricao) for s in situ]
+    lista_situ.insert(0,(0,'Todas'))
+
+    func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao).order_by(Tipo_Func_Pessoa.tfnDescricao).all()
+    lista_func = [(f.tipoFuncaoId,f.tfnDescricao) for f in func]
+    lista_func.insert(0,(-1,'Sem função'))
+    lista_func.insert(0,(0,'Todas'))
+
+    vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao).order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
+    lista_vinc = [(v.tipoVinculoId,v.tvnDescricao) for v in vinc]
+    lista_vinc.insert(0,(0,'Todos'))
+
+    form.func.choices    = lista_func
+    form.situ.choices    = lista_situ
+    form.vinculo.choices = lista_vinc
+    form.unidade.choices = lista_unids
+
+    if form.validate_on_submit():
+
+        if int(form.unidade.data) == 0:
+            p_unidade_pattern = '%'
+        else:
+            p_unidade_pattern = form.unidade.data
+
+        if int(form.vinculo.data) == 0:
+            p_vinculo_pattern = '%'
+        else:
+            p_vinculo_pattern = form.vinculo.data
+
+        # if int(form.func.data) == 0:
+        #     p_func_pattern = '%'
+        # else:
+        #     p_func_pattern = form.func.data
+
+        if int(form.situ.data) == 0:
+            p_situ_pattern = '%'
+        else:
+            p_situ_pattern = form.situ.data   
+
+        # pega valores utilizados como filtro para exibição na tela da lista
+        p_vinculo = dict(form.vinculo.choices).get(int(form.vinculo.data))
+        p_func    = dict(form.func.choices).get(int(form.func.data))
+        p_situ    = dict(form.situ.choices).get(int(form.situ.data))
+        p_unid    = dict(form.unidade.choices).get(int(form.unidade.data)) 
+
+        if int(form.func.data) == -1:
+
+            pessoas = db.session.query(Pessoas.pessoaId,
+                                Pessoas.pesNome,
+                                Pessoas.pesCPF,
+                                Pessoas.pesDataNascimento,
+                                Pessoas.pesMatriculaSiape,
+                                Pessoas.pesEmail,
+                                Pessoas.unidadeId,
+                                Unidades.undSigla,
+                                Pessoas.tipoFuncaoId,
+                                Tipo_Func_Pessoa.tfnDescricao,
+                                Pessoas.cargaHoraria,
+                                Pessoas.situacaoPessoaId,
+                                Situ_Pessoa.spsDescricao,
+                                Pessoas.tipoVinculoId,
+                                Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                        Pessoas.unidadeId.like(p_unidade_pattern),
+                                        Pessoas.tipoFuncaoId.is_(None),
+                                        Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                        Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                .order_by(Pessoas.pesNome).all()
+
+            quantidade = len(pessoas)
+
+        elif int(form.func.data) == 0:
+
+            pessoas = db.session.query(Pessoas.pessoaId,
+                                    Pessoas.pesNome,
+                                    Pessoas.pesCPF,
+                                    Pessoas.pesDataNascimento,
+                                    Pessoas.pesMatriculaSiape,
+                                    Pessoas.pesEmail,
+                                    Pessoas.unidadeId,
+                                    Unidades.undSigla,
+                                    Pessoas.tipoFuncaoId,
+                                    Tipo_Func_Pessoa.tfnDescricao,
+                                    Pessoas.cargaHoraria,
+                                    Pessoas.situacaoPessoaId,
+                                    Situ_Pessoa.spsDescricao,
+                                    Pessoas.tipoVinculoId,
+                                    Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                    .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                    .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                    .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                    .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                            Pessoas.unidadeId.like(p_unidade_pattern),
+                                            Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                            Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                    .order_by(Pessoas.pesNome).all()
+
+            quantidade = len(pessoas)
+
+        else:
+
+            pessoas = db.session.query(Pessoas.pessoaId,
+                                    Pessoas.pesNome,
+                                    Pessoas.pesCPF,
+                                    Pessoas.pesDataNascimento,
+                                    Pessoas.pesMatriculaSiape,
+                                    Pessoas.pesEmail,
+                                    Pessoas.unidadeId,
+                                    Unidades.undSigla,
+                                    Pessoas.tipoFuncaoId,
+                                    Tipo_Func_Pessoa.tfnDescricao,
+                                    Pessoas.cargaHoraria,
+                                    Pessoas.situacaoPessoaId,
+                                    Situ_Pessoa.spsDescricao,
+                                    Pessoas.tipoVinculoId,
+                                    Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                    .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                    .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                    .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                    .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                            Pessoas.unidadeId.like(p_unidade_pattern),
+                                            Pessoas.tipoFuncaoId == form.func.data,
+                                            Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                            Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                    .order_by(Pessoas.pesNome).all()
+
+            quantidade = len(pessoas)
+
+        gestorQtd = db.session.query(catdom.descricao)\
+                        .filter(catdom.classificacao == 'GestorSistema').count()
+
+
+        return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
+                                                    gestorQtd = gestorQtd, tipo = tipo,
+                                                    p_vinculo = p_vinculo, p_func = p_func,
+                                                    p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data)
+
+    return render_template('pesquisa_pessoas.html', form = form)                                                
 
 ## lista gestores do SISGP
 

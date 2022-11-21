@@ -33,7 +33,7 @@
         <div class="card text-center" style="width: 10rem;">
           <div class="card-body">
             <h5 class="card-title">{{pes}} Pessoas</h5>
-            <p class="card-text">{{pes_pacto}} com pactos vigentes</p>
+            <p class="card-text">{{pes_pacto}} com planos vigentes</p>
             {% if current_user.is_authenticated and current_user.userAtivo %}
               <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
             {% endif %}  

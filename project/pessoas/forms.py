@@ -32,3 +32,15 @@ class PessoaForm(FlaskForm):
    gestor  = BooleanField('Gestor(a) SISGP?')
     
    submit  = SubmitField('Submeter')
+
+
+class PesquisaForm(FlaskForm):
+
+   nome    = StringField('Nome:')
+   unidade = SelectField('Unidade:')
+   func    = SelectField('Função:')
+   situ    = SelectField('Situação:')
+   vinculo = SelectField('Tipo vínculo:')
+   
+   submit              = SubmitField('Pesquisar')
+

@@ -2,7 +2,11 @@
 {% block content %}
 <div class="jumbotron">
   
-  <h5>Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição {% elif tipo == "inst" %}na Instituição {% else %}na Unidade{% endif %}</h5>
+  <h5>Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição 
+                        {% elif tipo == "inst" %}na Instituição
+                        {% elif tipo == "pesq" %} - Filtro aplicado: Nome <b>"{{p_nome}}"</b>, Unidade <b>"{{p_unid}}"</b>, Função <b>"{{p_func}}"</b>, Situação <b>"{{p_situ}}"</b>, Tipo vínculo <b>"{{p_vinculo}}"</b>
+                        {% else %}na Unidade
+                        {% endif %}</h5>
 
   <div class = "row">
     {% if tipo != "gest" %}
@@ -13,7 +17,7 @@
         <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da pessoa.</small>
       </div>
     {% endif %}
-    {% if tipo == "inst" %}
+    {% if tipo == "inst" or tipo == 'pesq' %}
       <div class="col">
         <p class="form-text"><b> Gestores do Sistema (quantidade): </b>
           <abbr title="Clique aqui para ver lista dos gestores"><a href="{{url_for('pessoas.lista_gestores_sisgp')}}">
@@ -22,6 +26,7 @@
     {% endif %}  
   </div>
   <br>
+  
 
 <caption>
   <div class="row">
@@ -29,6 +34,8 @@
         <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> pessoas 
           {% if tipo == "inst" %}
             na Instituição
+          {% elif itpo == "pesq" %}
+            conforme filtro aplicado  
           {% else %}
             na Unidade {{unid}}
           {% endif %}

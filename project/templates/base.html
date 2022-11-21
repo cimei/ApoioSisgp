@@ -41,12 +41,23 @@
 
          {% if current_user.is_authenticated and current_user.userAtivo %}
 
-          <li class="nav-item active">
-            <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Unidades</a>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownU" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Unidades</a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownU">
+              <a class="dropdown-item" href="{{url_for('unidades.lista_unidades_filtro',lista='pesq')}}">Filtro</a>
+              <a class="dropdown-item" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Lista completa</a>
+            </div>
           </li>
 
-          <li class="nav-item active">
-            <a class="nav-link" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownP" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Pessoas
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownP">
+              <a class="dropdown-item" href="{{url_for('pessoas.lista_pessoas_filtro')}}">Filtro</a>
+              <a class="dropdown-item" href="{{url_for('pessoas.lista_pessoas')}}">Lista completa</a>
+            </div>
           </li>
 
           <li class="nav-item active">
@@ -141,7 +152,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '3.0.3') %}
+          {% set ver = namespace(num = '3.0.4') %}
 
         </ul>
 

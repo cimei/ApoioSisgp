@@ -3,7 +3,26 @@
 <div class="container">
 
 <div class="jumbotron">
-<h1>Alterar dados de Unidade</h1>
+{% if id != None %}
+  <h3>Visualizar/Alterar dados de Unidade</h3>
+  <div class = "row">
+    <div class="col text-center">
+      <abbr title="Clique aqui para ver as atividades associadas à unidade.">
+      <a href="{{url_for('unidades.lista_atividades_unidade', unid_id=id)}}"> Atividades ({{qtd_ativs}})</a></abbr>
+    </div>  
+    <div class="col text-center">
+      <abbr title="Clique aqui para ver as pessoas diretamente vinculadas à unidade.">
+      <a href="{{url_for('pessoas.lista_pessoas_unid', unid=sigla)}}"> Pessoas na unidade ({{qtd_pes}}) </a></abbr>
+    </div>  
+    <div class="col text-center">  
+      <abbr title="Clique aqui para ver as pessoas sob a unidade, considerando a hierarquia desta.">
+      <a href="{{url_for('pessoas.lista_pessoas_unid', unid=tree[sigla])}}"> Pessoas na hierarquia ({{qtd_geral[sigla]}}) </a></abbr>  
+    </div>  
+  </div>
+{% else %}
+  <h3>Cadastrar Unidade</h3>
+{% endif %}    
+
 
 {% macro render_field(field,obr) %}
   {% if obr == True %}

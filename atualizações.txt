@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+21/11/2022
+Ajustes nas listas de pessoas e de unidades. Passa a contar com opção de filtro.
+v 3.0.4
+
 16/11/2022
 No primeiro acesso, caso não existam usuários registrados, é permitido o registro direto
 do primeiro usuário.

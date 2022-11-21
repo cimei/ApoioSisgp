@@ -17,17 +17,27 @@ from wtforms.fields.html5 import EmailField
 
 class UnidadeForm(FlaskForm):
 
-    sigla   = StringField('Sigla:', validators=[DataRequired(message="Informe a Sigla!")])
-    desc    = StringField('Nome:',validators=[DataRequired(message="Informe o nome por extenso!")])
-    pai     = SelectField('Pai:',coerce=int)
-    tipo    = SelectField('Tipo:',validators=[DataRequired(message="Escolha o tipo!")],coerce=int)
-    situ    = SelectField('Situação:',validators=[DataRequired(message="Escolha a situação!")],coerce=int)
-    uf      = StringField('UF:',validators=[DataRequired(message="Escolha a UF!")])
-    nivel   = StringField('Nível:')
-    tipoFun = StringField('Tipo Função:')
-    email   = EmailField('E-mail:', validators = [Email('Informar um e-mail'), Optional()])
-    siorg   = StringField('SIORG:')
-    chefe   = SelectField('Chefe:',coerce=int)
-    subs    = SelectField('Substituto:',coerce=int)
+   sigla   = StringField('Sigla:', validators=[DataRequired(message="Informe a Sigla!")])
+   desc    = StringField('Nome:',validators=[DataRequired(message="Informe o nome por extenso!")])
+   pai     = SelectField('Pai:',coerce=int)
+   tipo    = SelectField('Tipo:',validators=[DataRequired(message="Escolha o tipo!")],coerce=int)
+   situ    = SelectField('Situação:',validators=[DataRequired(message="Escolha a situação!")],coerce=int)
+   uf      = StringField('UF:',validators=[DataRequired(message="Escolha a UF!")])
+   nivel   = StringField('Nível:')
+   tipoFun = StringField('Tipo Função:')
+   email   = EmailField('E-mail:', validators = [Email('Informar um e-mail'), Optional()])
+   siorg   = StringField('SIORG:')
+   chefe   = SelectField('Chefe:',coerce=int)
+   subs    = SelectField('Substituto:',coerce=int)
     
-    submit  = SubmitField('Submeter')
+   submit  = SubmitField('Submeter')
+
+class PesquisaUnidForm(FlaskForm):
+
+   sigla   = SelectField('Sigla:')
+   desc    = StringField('Nome:')
+   pai     = SelectField('Pai:')
+   tipo    = SelectField('Tipo:')
+   uf      = StringField('UF:')
+   
+   submit  = SubmitField('Pesquisar')

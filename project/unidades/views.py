@@ -26,7 +26,7 @@ from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
 from project.models import Atividades, Unidades, Pessoas, cat_item_cat, unidade_ativ
-from project.unidades.forms import UnidadeForm
+from project.unidades.forms import UnidadeForm, PesquisaUnidForm
 
 from project.usuarios.views import registra_log_auto
 
@@ -49,38 +49,9 @@ def lista_unidades(lista):
 
     unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
 
-    chefes = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
-                       .filter(Pessoas.tipoFuncaoId != None)\
-                       .order_by(Pessoas.pesNome).subquery()
-
-    subs = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
-                       .filter(Pessoas.tipoFuncaoId != None)\
-                       .order_by(Pessoas.pesNome).subquery()    
-
     dic_tipo_unidade = {1:'Instituição',2:'Diretoria',3:'Coordenação-Geral',4:'Coordenação',5:'Serviço',6:'Outro'}
 
     dic_situ_unidade = {1:'Ativa',2:'Inativa'}
-
-    ativs_lista = db.session.query(Atividades.titulo,
-                                   cat_item_cat.catalogoId,
-                                   unidade_ativ.unidadeId)\
-                            .join(cat_item_cat, cat_item_cat.itemCatalogoId == Atividades.itemCatalogoId)\
-                            .join(unidade_ativ, unidade_ativ.catalogoId == cat_item_cat.catalogoId)\
-                            .order_by(Atividades.titulo)\
-                            .all()    
-
-    ativs = db.session.query(unidade_ativ.unidadeId,
-                             label('qtd_ativs',func.count(unidade_ativ.catalogoId)))\
-                       .join(cat_item_cat, cat_item_cat.catalogoId == unidade_ativ.catalogoId)\
-                       .join(Atividades, Atividades.itemCatalogoId == cat_item_cat.itemCatalogoId)\
-                       .group_by(unidade_ativ.unidadeId)\
-                       .subquery()
-
-    pessoas_unid = db.session.query(Pessoas.unidadeId,
-                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
-                             .group_by(Pessoas.unidadeId)\
-                             .subquery() 
-
 
     if lista == 'ativas':
         unids = db.session.query(Unidades.unidadeId,
@@ -94,18 +65,8 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                Unidades.pessoaIdChefe,
-                                chefes.c.pesNome.label("Chefe"),
-                                Unidades.pessoaIdChefeSubstituto,
-                                subs.c.pesNome.label("Subs"),
-                                ativs.c.qtd_ativs,
-                                pessoas_unid.c.qtd_pes)\
+                                Unidades.undCodigoSIORG)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                                .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                                .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
-                                .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
                                 .filter(Unidades.situacaoUnidadeId == 1)\
                                 .order_by(Unidades.undSigla).all()
     elif lista == 'todas':
@@ -120,75 +81,129 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                Unidades.pessoaIdChefe,
-                                chefes.c.pesNome.label("Chefe"),
-                                Unidades.pessoaIdChefeSubstituto,
-                                subs.c.pesNome.label("Subs"),
-                                ativs.c.qtd_ativs,
-                                pessoas_unid.c.qtd_pes)\
+                                Unidades.undCodigoSIORG)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                                .outerjoin(chefes,chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(subs,subs.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                                .outerjoin(ativs,ativs.c.unidadeId == Unidades.unidadeId)\
-                                .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
                                 .order_by(Unidades.undSigla).all()
 
     quantidade = len(unids)
 
-    ## calcula quantidade de pessoas sob cada unidade, considerando a estrutura hierárquica de cada uma
-    
-    qtd_geral = {}
-    tree = {}
-
-    for item in unids:
-
-        total_pessoas = 0
-        pai = [item.unidadeId]
-        tree[item.undSigla] = [item.undSigla]
-
-        while pai != []:
-
-            prox_pai = []
-
-            for p in pai:
-
-                filhos = Unidades.query.filter(Unidades.unidadeIdPai==p).all()
-
-                for unid in filhos:
-
-                    if unid.unidadeId == p:
-                        prox_pai = []
-                    else:
-                        prox_pai.append(unid.unidadeId)
-
-                        pessoas = db.session.query(Pessoas.unidadeId,
-                                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
-                                        .group_by(Pessoas.unidadeId)\
-                                        .filter(Pessoas.unidadeId == unid.unidadeId)\
-                                        .first()
-
-                        if pessoas is not None:
-                            total_pessoas += pessoas.qtd_pes
-
-                        tree[item.undSigla].append(unid.undSigla)    
-
-            pai =  prox_pai
-
-        if item.qtd_pes == None or item.qtd_pes == '':
-            pes = 0
-        else:
-            pes = item.qtd_pes
-        
-        qtd_geral[item.undSigla] = total_pessoas + pes
-
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
                                                 dic_situ_unidade = dic_situ_unidade, 
                                                 dic_tipo_unidade = dic_tipo_unidade,
-                                                ativs_lista = ativs_lista,
-                                                qtd_geral = qtd_geral,
-                                                tree = tree,
                                                 lista = lista)
+
+
+## lista unidades da instituição
+
+@unidades.route('<lista>/lista_unidades_filtro', methods=['GET','POST'])
+
+def lista_unidades_filtro(lista):
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista das unidades da instituição de acordo com filtro aplicado.         |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """ 
+
+    form = PesquisaUnidForm()
+
+    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
+    lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
+    lista_unids.insert(0,(0,'Todas'))                
+
+    dic_situ_unidade = {1:'Ativa',2:'Inativa'}
+    lista_situ = [(s,dic_situ_unidade[s]) for s in dic_situ_unidade]
+    lista_situ.insert(0,(0,'Todas'))
+
+    dic_tipo_unidade = {1:'Instituição',2:'Diretoria',3:'Coordenação-Geral',4:'Coordenação',5:'Serviço',6:'Outro'}
+    lista_tipo = [(t,dic_tipo_unidade[t]) for t in dic_tipo_unidade]
+    lista_tipo.insert(0,(0,'Todos'))
+
+    form.sigla.choices = lista_unids
+    form.pai.choices   = lista_unids
+    form.tipo.choices  = lista_tipo
+
+    if form.validate_on_submit():
+
+        if int(form.sigla.data) == 0:
+            p_sigla_pattern = '%'
+        else:
+            p_sigla_pattern = form.sigla.data
+
+        if int(form.pai.data) == 0:
+            p_pai_pattern = '%'
+        else:
+            p_pai_pattern = form.pai.data
+
+        if int(form.tipo.data) == 0:
+            p_tipo_pattern = '%'
+        else:
+            p_tipo_pattern = form.tipo.data    
+
+        # pega valores utilizados como filtro para exibição na tela da lista
+        p_sigla = dict(form.sigla.choices).get(int(form.sigla.data))
+        p_pai   = dict(form.pai.choices).get(int(form.pai.data))
+        p_tipo  = dict(form.tipo.choices).get(int(form.tipo.data))
+    
+        # Lê tabela unidades
+
+        unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
+
+        if int(form.pai.data) == 0:
+            unids = db.session.query(Unidades.unidadeId,
+                                     Unidades.undSigla,
+                                     Unidades.undDescricao,
+                                     Unidades.unidadeIdPai,
+                                     unids_pai.c.undSigla.label("Sigla_Pai"),
+                                     Unidades.tipoUnidadeId,
+                                     Unidades.situacaoUnidadeId,
+                                     Unidades.ufId,
+                                     Unidades.undNivel,
+                                     Unidades.tipoFuncaoUnidadeId,
+                                     Unidades.Email,
+                                     Unidades.undCodigoSIORG)\
+                              .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
+                              .filter(Unidades.unidadeId.like(p_sigla_pattern),
+                                      Unidades.undDescricao.like('%'+form.desc.data+'%'),
+                                      Unidades.tipoUnidadeId.like(p_tipo_pattern),
+                                      Unidades.ufId.like('%'+form.uf.data+'%'))\
+                              .order_by(Unidades.undSigla)\
+                              .all()
+        else:
+            unids = db.session.query(Unidades.unidadeId,
+                                    Unidades.undSigla,
+                                    Unidades.undDescricao,
+                                    Unidades.unidadeIdPai,
+                                    unids_pai.c.undSigla.label("Sigla_Pai"),
+                                    Unidades.tipoUnidadeId,
+                                    Unidades.situacaoUnidadeId,
+                                    Unidades.ufId,
+                                    Unidades.undNivel,
+                                    Unidades.tipoFuncaoUnidadeId,
+                                    Unidades.Email,
+                                    Unidades.undCodigoSIORG)\
+                              .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
+                              .filter(Unidades.unidadeId.like(p_sigla_pattern),
+                                      Unidades.undDescricao.like('%'+form.desc.data+'%'),
+                                      Unidades.unidadeIdPai.like(p_pai_pattern),
+                                      Unidades.tipoUnidadeId.like(p_tipo_pattern),
+                                      Unidades.ufId.like('%'+form.uf.data+'%'))\
+                              .order_by(Unidades.undSigla)\
+                              .all()
+
+        quantidade = len(unids)
+
+        return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
+                                                    dic_situ_unidade = dic_situ_unidade, 
+                                                    dic_tipo_unidade = dic_tipo_unidade,
+                                                    lista = lista,
+                                                    p_sigla = p_sigla,
+                                                    p_pai = p_pai,
+                                                    p_tipo = p_tipo,
+                                                    p_nome = form.desc.data,
+                                                    p_uf = form.uf.data)
+
+    return render_template('pesquisa_unidades.html', form = form)
 
 #
 ### atualiza dados de uma unidade
@@ -264,7 +279,7 @@ def unidade_update(cod_unid):
             return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
 
-    # traz a informação atual do Unidades
+    # traz a informação atual da Unidade
 
     elif request.method == 'GET':
 
@@ -281,7 +296,75 @@ def unidade_update(cod_unid):
         form.chefe.data   = unidade.pessoaIdChefe
         form.subs.data    = unidade.pessoaIdChefeSubstituto
 
-    return render_template('atu_unidade.html', form=form)
+        # quantidade de atividade da unidade
+        ativs = db.session.query(unidade_ativ.unidadeId,
+                                 label('qtd_ativs',func.count(unidade_ativ.catalogoId)))\
+                          .join(cat_item_cat, cat_item_cat.catalogoId == unidade_ativ.catalogoId)\
+                          .join(Atividades, Atividades.itemCatalogoId == cat_item_cat.itemCatalogoId)\
+                          .group_by(unidade_ativ.unidadeId)\
+                          .filter(unidade_ativ.unidadeId == cod_unid)\
+                          .first()
+
+        if ativs:
+            qtd_ativs = ativs.qtd_ativs
+        else:
+            qtd_ativs = 0                  
+        
+        # quantide de pessoas na unidade
+        pessoas_unid = db.session.query(Pessoas.unidadeId,
+                                        label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                                 .group_by(Pessoas.unidadeId)\
+                                 .filter(Pessoas.unidadeId == cod_unid)\
+                                 .first()
+
+        # quantidade de pessoas sob as unidades da unidade e sob ela mesma
+        qtd_geral = {}
+        tree = {}
+        total_pessoas = 0
+        pai = [unidade.unidadeId]
+        tree[unidade.undSigla] = [unidade.undSigla]
+
+        while pai != []:
+
+            prox_pai = []
+
+            for p in pai:
+
+                filhos = Unidades.query.filter(Unidades.unidadeIdPai==p).all()
+
+                for unid in filhos:
+
+                    if unid.unidadeId == p:
+                        prox_pai = []
+                    else:
+                        prox_pai.append(unid.unidadeId)
+
+                        pessoas = db.session.query(Pessoas.unidadeId,
+                                                    label('qtd_pes',func.count(Pessoas.unidadeId)))\
+                                        .group_by(Pessoas.unidadeId)\
+                                        .filter(Pessoas.unidadeId == unid.unidadeId)\
+                                        .first()
+
+                        if pessoas is not None:
+                            total_pessoas += pessoas.qtd_pes
+
+                        tree[unidade.undSigla].append(unid.undSigla)    
+
+            pai =  prox_pai
+
+        qtd_pes = pessoas_unid.qtd_pes
+        
+        qtd_geral[unidade.undSigla] = total_pessoas + qtd_pes
+                             
+
+
+        return render_template('atu_unidade.html', form = form,
+                                                   id = cod_unid,
+                                                   qtd_ativs = qtd_ativs,
+                                                   qtd_pes = qtd_pes,
+                                                   sigla = unidade.undSigla,
+                                                   qtd_geral = qtd_geral,
+                                                   tree = tree)
 
 #
 ### insere nova unidade no banco de dados
@@ -370,7 +453,9 @@ def cria_unidade():
             return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
 
-    return render_template('atu_unidade.html', form=form)
+    return render_template('atu_unidade.html', form=form,
+                                               id = None,
+                                               sigla = None)
 
 
 ## lista atividades de uma unidade

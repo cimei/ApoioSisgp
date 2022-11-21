@@ -1,14 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="jumbotron">
-  
   <div class = "row">
-    <div class="col-2">
-      <h5>Lista das Unidades {% if lista == 'ativas' %} Ativas {% elif lista == 'todas' %} Ativas e Inativas {% endif %}</h5>
-    </div>
-    <div class="col">
-      <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a>
-    </div>
+    {% if lista == 'pesq' %}
+      <h5>Lista das Unidades  
+      - Filtro aplicado: Sigla <b>"{{p_sigla}}"</b>, Nome <b>"{{p_nome}}"</b>, Pai <b>"{{p_pai}}"</b>, Tipo <b>"{{p_tipo}}"</b>, UF <b>"{{p_uf}}"</b>   
+      </h5>
+    {% else %}
+      <div class="col-2">
+        <h5>Lista das Unidades {% if lista == 'ativas' %}
+                                Ativas 
+                              {% elif lista == 'todas' %} 
+                                  Ativas e Inativas
+                              {% endif %}</h5>
+      </div>
+      <div class="col">
+        <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a>
+      </div>
+    {% endif %}  
   </div>
 
   <div class = "row">
@@ -24,7 +33,7 @@
 <caption>
   <div class="row">
       <div class="col">
-        <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span> unidades da Instituição</p>
+        <p><span class="badge badge-pill badge-primary">{{quantidade}}</span> unidade(s) nesta lista</p>
       </div>
   </div>
 </caption>
@@ -53,11 +62,6 @@
         <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
         <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
         <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Chefe</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Pessoas (niv. 0)</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Pessoas (hierarq.)</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Atividades</p></th>
       </tr>
     </thead>
     <tbody>
@@ -88,19 +92,6 @@
         <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.Chefe == None or u.Chefe == '' %}N.I.{% else %}{{u.Chefe}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.Subs == None or u.Subs == '' %}N.I.{% else %}{{u.Subs}}{% endif %} </p></td>
-        <td><p align = "center"> <abbr title="Clique aqui para ver as pessoas diretamente vinculadas à unidade.">
-          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=u.undSigla)}}"> 
-          {% if u.qtd_pes == None or u.qtd_pes == '' %}<span class="text-danger">0</span>{% else %}{{u.qtd_pes}}{% endif %} </a></abbr></p></td>
-        
-        <td><p align = "center"> <abbr title="Clique aqui para ver as pessoas sob a unidade, considerando a hierarquia desta.">
-          <a href="{{url_for('pessoas.lista_pessoas_unid', unid=tree[u.undSigla])}}"> 
-           {{qtd_geral[u.undSigla]}} </a></abbr></p></td>
-
-        <td><p align = "center"> {% if u.qtd_ativs == None %}0{% else %}
-          <a href="{{url_for('unidades.lista_atividades_unidade', unid_id=u.unidadeId)}}"> {{u.qtd_ativs}} </a>
-          {% endif %} </p></td>
       </tr>
 
       {% endfor %}
