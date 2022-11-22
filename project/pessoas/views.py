@@ -122,10 +122,39 @@ def lista_pessoas_filtro():
 
     if form.validate_on_submit():
 
-        if int(form.unidade.data) == 0:
+        tree = []
+
+        if int(form.rel_unid.data) == 1:
+            if int(form.unidade.data) == 0:
+                p_unidade_pattern = '%'
+            else:
+                p_unidade_pattern = form.unidade.data
+        elif int(form.rel_unid.data) == 2 and int(form.unidade.data) == 0:        
             p_unidade_pattern = '%'
-        else:
-            p_unidade_pattern = form.unidade.data
+        elif int(form.rel_unid.data) == 2 and int(form.unidade.data) != 0:
+            # sub hierarquia da unidade selecionada
+            tree = []
+            pai = [int(form.unidade.data)]
+            tree.append(int(form.unidade.data))
+
+            while pai != []:
+
+                prox_pai = []
+
+                for p in pai:
+
+                    filhos = Unidades.query.filter(Unidades.unidadeIdPai==p).all()
+
+                    for unid in filhos:
+
+                        if unid.unidadeId == p:
+                            prox_pai = []
+                        else:
+                            prox_pai.append(unid.unidadeId)
+                            tree.append(unid.unidadeId)    
+
+                pai =  prox_pai
+
 
         if int(form.vinculo.data) == 0:
             p_vinculo_pattern = '%'
@@ -143,44 +172,17 @@ def lista_pessoas_filtro():
             p_situ_pattern = form.situ.data   
 
         # pega valores utilizados como filtro para exibição na tela da lista
-        p_vinculo = dict(form.vinculo.choices).get(int(form.vinculo.data))
-        p_func    = dict(form.func.choices).get(int(form.func.data))
-        p_situ    = dict(form.situ.choices).get(int(form.situ.data))
-        p_unid    = dict(form.unidade.choices).get(int(form.unidade.data)) 
+        p_vinculo  = dict(form.vinculo.choices).get(int(form.vinculo.data))
+        p_func     = dict(form.func.choices).get(int(form.func.data))
+        p_situ     = dict(form.situ.choices).get(int(form.situ.data))
+        p_unid     = dict(form.unidade.choices).get(int(form.unidade.data)) 
+        p_rel_unid = dict(form.rel_unid.choices).get(int(form.rel_unid.data)) 
 
-        if int(form.func.data) == -1:
+        if len(tree) == 0:   ### consulta pessoas diretamente associadas à unidade
+        
+            if int(form.func.data) == -1:
 
-            pessoas = db.session.query(Pessoas.pessoaId,
-                                Pessoas.pesNome,
-                                Pessoas.pesCPF,
-                                Pessoas.pesDataNascimento,
-                                Pessoas.pesMatriculaSiape,
-                                Pessoas.pesEmail,
-                                Pessoas.unidadeId,
-                                Unidades.undSigla,
-                                Pessoas.tipoFuncaoId,
-                                Tipo_Func_Pessoa.tfnDescricao,
-                                Pessoas.cargaHoraria,
-                                Pessoas.situacaoPessoaId,
-                                Situ_Pessoa.spsDescricao,
-                                Pessoas.tipoVinculoId,
-                                Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                        Pessoas.unidadeId.like(p_unidade_pattern),
-                                        Pessoas.tipoFuncaoId.is_(None),
-                                        Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                        Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                .order_by(Pessoas.pesNome).all()
-
-            quantidade = len(pessoas)
-
-        elif int(form.func.data) == 0:
-
-            pessoas = db.session.query(Pessoas.pessoaId,
+                pessoas = db.session.query(Pessoas.pessoaId,
                                     Pessoas.pesNome,
                                     Pessoas.pesCPF,
                                     Pessoas.pesDataNascimento,
@@ -201,15 +203,77 @@ def lista_pessoas_filtro():
                                     .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
                                             Pessoas.unidadeId.like(p_unidade_pattern),
+                                            Pessoas.tipoFuncaoId.is_(None),
                                             Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                             Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
                                     .order_by(Pessoas.pesNome).all()
 
-            quantidade = len(pessoas)
+                quantidade = len(pessoas)
 
-        else:
+            elif int(form.func.data) == 0:
 
-            pessoas = db.session.query(Pessoas.pessoaId,
+                pessoas = db.session.query(Pessoas.pessoaId,
+                                        Pessoas.pesNome,
+                                        Pessoas.pesCPF,
+                                        Pessoas.pesDataNascimento,
+                                        Pessoas.pesMatriculaSiape,
+                                        Pessoas.pesEmail,
+                                        Pessoas.unidadeId,
+                                        Unidades.undSigla,
+                                        Pessoas.tipoFuncaoId,
+                                        Tipo_Func_Pessoa.tfnDescricao,
+                                        Pessoas.cargaHoraria,
+                                        Pessoas.situacaoPessoaId,
+                                        Situ_Pessoa.spsDescricao,
+                                        Pessoas.tipoVinculoId,
+                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                                Pessoas.unidadeId.like(p_unidade_pattern),
+                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                        .order_by(Pessoas.pesNome).all()
+
+                quantidade = len(pessoas)
+
+            else:
+
+                pessoas = db.session.query(Pessoas.pessoaId,
+                                        Pessoas.pesNome,
+                                        Pessoas.pesCPF,
+                                        Pessoas.pesDataNascimento,
+                                        Pessoas.pesMatriculaSiape,
+                                        Pessoas.pesEmail,
+                                        Pessoas.unidadeId,
+                                        Unidades.undSigla,
+                                        Pessoas.tipoFuncaoId,
+                                        Tipo_Func_Pessoa.tfnDescricao,
+                                        Pessoas.cargaHoraria,
+                                        Pessoas.situacaoPessoaId,
+                                        Situ_Pessoa.spsDescricao,
+                                        Pessoas.tipoVinculoId,
+                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                                Pessoas.unidadeId.like(p_unidade_pattern),
+                                                Pessoas.tipoFuncaoId == form.func.data,
+                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                        .order_by(Pessoas.pesNome).all()
+
+                quantidade = len(pessoas)
+
+        else:   ### consulta pessoas sob a unidade e suas subordinadas
+
+            if int(form.func.data) == -1:
+
+                pessoas = db.session.query(Pessoas.pessoaId,
                                     Pessoas.pesNome,
                                     Pessoas.pesCPF,
                                     Pessoas.pesDataNascimento,
@@ -229,13 +293,74 @@ def lista_pessoas_filtro():
                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                     .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                            Pessoas.unidadeId.like(p_unidade_pattern),
-                                            Pessoas.tipoFuncaoId == form.func.data,
+                                            Pessoas.unidadeId.in_(tree),
+                                            Pessoas.tipoFuncaoId.is_(None),
                                             Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                             Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
                                     .order_by(Pessoas.pesNome).all()
 
-            quantidade = len(pessoas)
+                quantidade = len(pessoas)
+
+            elif int(form.func.data) == 0:
+
+                pessoas = db.session.query(Pessoas.pessoaId,
+                                        Pessoas.pesNome,
+                                        Pessoas.pesCPF,
+                                        Pessoas.pesDataNascimento,
+                                        Pessoas.pesMatriculaSiape,
+                                        Pessoas.pesEmail,
+                                        Pessoas.unidadeId,
+                                        Unidades.undSigla,
+                                        Pessoas.tipoFuncaoId,
+                                        Tipo_Func_Pessoa.tfnDescricao,
+                                        Pessoas.cargaHoraria,
+                                        Pessoas.situacaoPessoaId,
+                                        Situ_Pessoa.spsDescricao,
+                                        Pessoas.tipoVinculoId,
+                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                                Pessoas.unidadeId.in_(tree),
+                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                        .order_by(Pessoas.pesNome).all()
+
+                quantidade = len(pessoas)
+
+            else:
+
+                pessoas = db.session.query(Pessoas.pessoaId,
+                                        Pessoas.pesNome,
+                                        Pessoas.pesCPF,
+                                        Pessoas.pesDataNascimento,
+                                        Pessoas.pesMatriculaSiape,
+                                        Pessoas.pesEmail,
+                                        Pessoas.unidadeId,
+                                        Unidades.undSigla,
+                                        Pessoas.tipoFuncaoId,
+                                        Tipo_Func_Pessoa.tfnDescricao,
+                                        Pessoas.cargaHoraria,
+                                        Pessoas.situacaoPessoaId,
+                                        Situ_Pessoa.spsDescricao,
+                                        Pessoas.tipoVinculoId,
+                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                                Pessoas.unidadeId.in_(tree),
+                                                Pessoas.tipoFuncaoId == form.func.data,
+                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
+                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
+                                        .order_by(Pessoas.pesNome).all()
+
+                quantidade = len(pessoas)
+
+
 
         gestorQtd = db.session.query(catdom.descricao)\
                         .filter(catdom.classificacao == 'GestorSistema').count()
@@ -244,7 +369,8 @@ def lista_pessoas_filtro():
         return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
                                                     gestorQtd = gestorQtd, tipo = tipo,
                                                     p_vinculo = p_vinculo, p_func = p_func,
-                                                    p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data)
+                                                    p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data,
+                                                    p_rel_unid = p_rel_unid)
 
     return render_template('pesquisa_pessoas.html', form = form)                                                
 

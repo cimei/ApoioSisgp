@@ -311,11 +311,9 @@ def unidade_update(cod_unid):
             qtd_ativs = 0                  
         
         # quantide de pessoas na unidade
-        pessoas_unid = db.session.query(Pessoas.unidadeId,
-                                        label('qtd_pes',func.count(Pessoas.unidadeId)))\
-                                 .group_by(Pessoas.unidadeId)\
+        qtd_pes = db.session.query(Pessoas)\
                                  .filter(Pessoas.unidadeId == cod_unid)\
-                                 .first()
+                                 .count()
 
         # quantidade de pessoas sob as unidades da unidade e sob ela mesma
         qtd_geral = {}
@@ -352,12 +350,8 @@ def unidade_update(cod_unid):
 
             pai =  prox_pai
 
-        qtd_pes = pessoas_unid.qtd_pes
-        
         qtd_geral[unidade.undSigla] = total_pessoas + qtd_pes
                              
-
-
         return render_template('atu_unidade.html', form = form,
                                                    id = cod_unid,
                                                    qtd_ativs = qtd_ativs,

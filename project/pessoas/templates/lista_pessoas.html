@@ -4,7 +4,7 @@
   
   <h5>Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição 
                         {% elif tipo == "inst" %}na Instituição
-                        {% elif tipo == "pesq" %} - Filtro aplicado: Nome <b>"{{p_nome}}"</b>, Unidade <b>"{{p_unid}}"</b>, Função <b>"{{p_func}}"</b>, Situação <b>"{{p_situ}}"</b>, Tipo vínculo <b>"{{p_vinculo}}"</b>
+                        {% elif tipo == "pesq" %} - Filtro aplicado: Nome <b>"{{p_nome}}"</b>, Unidade <b>"{{p_unid}}"</b>, Subord. <b>"{{p_rel_unid}}"</b>, Função <b>"{{p_func}}"</b>, Situação <b>"{{p_situ}}"</b>, Tipo vínculo <b>"{{p_vinculo}}"</b>
                         {% else %}na Unidade
                         {% endif %}</h5>
 
