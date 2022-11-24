@@ -215,7 +215,7 @@ def pessoa_update(cod_pes):
                 novo_gestor = catdom(catalogoDominioId = last_cat_dom.catalogoDominioId + 1,
                                      classificacao='GestorSistema',
                                      descricao = pessoa.pessoaId,
-                                     ativo = True)
+                                     ativo = 1 if type(catdom.ativo) is int else True) # para tipos int, bigint, smallint no postgres
                 db.session.add(novo_gestor)
                 db.session.commit()
                 registra_log_auto(current_user.id, pessoa.pesNome + 'colocada como gestora do SISGP.')

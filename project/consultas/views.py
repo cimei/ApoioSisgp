@@ -600,7 +600,7 @@ def estatisticas():
                                      .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
                                      .count()
 
-    if ativs_utilizadas_pgs is not 0:
+    if ativs_utilizadas_pgs != 0:
     
         # o primeiro pg
         primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
