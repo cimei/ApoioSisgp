@@ -236,6 +236,13 @@ def unidade_update(cod_unid):
 
         if current_user.userAtivo:
 
+            form.tipo.data      = form.tipo.data if form.tipo.data          != '' else 0 # apenas uso susep (saneamento das tabelas para o PGD)
+            form.tipoFun.data   = form.tipoFun.data if form.tipoFun.data    != '' else None # apenas uso susep (saneamento das tabelas para o PGD)
+            form.email.data     = form.email.data if form.email.data    != '' else None 
+            form.siorg.data     = form.siorg.data if form.siorg.data    != '' else None 
+            form.chefe.data     = form.chefe.data if form.chefe.data    != '' else None 
+            form.subs.data      = form.subs.data  if form.subs.data     != '' else None 
+
             unidade.undSigla                 = form.sigla.data
             unidade.undDescricao             = form.desc.data
             unidade.unidadeIdPai             = form.pai.data
