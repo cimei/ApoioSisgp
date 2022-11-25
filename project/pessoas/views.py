@@ -441,6 +441,7 @@ def pessoa_update(cod_pes):
     gestor = db.session.query(catdom).filter(catdom.descricao == str(cod_pes), catdom.classificacao == 'GestorSistema')
 
     unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
+                      .filter(Unidades.situacaoUnidadeId == 1)\
                       .order_by(Unidades.undSigla).all()
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))                
@@ -566,6 +567,7 @@ def cria_pessoa():
     tp = 'ins'
 
     unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
+                      .filter(Unidades.situacaoUnidadeId == 1)\
                       .order_by(Unidades.undSigla).all()
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))

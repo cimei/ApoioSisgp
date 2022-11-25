@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+25/11/2022
+Correções diversas. Caracterizçaõ de Atividades não válidas. Ajustes em Estatísticas.
+v3.0.6
+
 22/11/2022
 Correção de erro e filtro de pessoas permite buscar pessoa pela subhierarquia da unidade.
 v3.0.5

@@ -15,7 +15,7 @@ Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais
 Na pasta Instance, o arquivo flask.cfg contem as configurações básicas, como, por exemplo, as varíaveis de ambiente necessárias para a execução 
 do contêiner. Atente para a chave SECRECT_KEY do sistema, é recomendável usar uma chave aletória.
 
-A pasta build/html tem a documentação do aplicativo gerada automaticamente via Sphinx.
+A pasta build/html tem a documentação do aplicativo gerada via Sphinx.
 
 Como este sistema faz controle de acesso e registra o log dos commits realizados, é necessário criar duas tabelas no DBSISGP, conforme instruções SQL:
 
@@ -68,5 +68,5 @@ Como este sistema faz controle de acesso e registra o log dos commits realizados
       ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
       GO
 
-
+Outro detalhe sobre o banco de dados: Como o sistema conta com a funcionalidade de envio de dados, ele utiliza as views da API de Envio de Planos de Trabalho do Programa de Gestão (CADE/ME). O script de geração destas views está disponível no github do SISGP (https://github.com/spbgovbr/Sistema_Programa_de_Gestao_Susep).
 

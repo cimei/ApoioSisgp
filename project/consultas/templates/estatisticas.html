@@ -22,8 +22,10 @@
 
         <div class="card-body bg-transparent" align = "center">
           <dl>
-            <dt>Unidades: <abbr title="Clique aqui para ver lista de unidades.">
-              <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}">{{qtd_unidades}}</a></abbr></dt> 
+             <dt>Unidades ativas: <abbr title="Clique aqui para ver lista de unidades.">
+                <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}">{{qtd_unidades_ativas}}</a></abbr></dt>
+              <dt>Unidades (geral): <abbr title="Clique aqui para ver lista de unidades.">
+                <a href="{{url_for('unidades.lista_unidades',lista='todas')}}">{{qtd_unidades}}</a></abbr></dt>
             </dl>
         </div>    
       </div>
@@ -49,15 +51,24 @@
   
         <div class="card-body bg-transparent" align = "center">
           <dl>
-          <dt>Atividades: <abbr title="Clique aqui para ver a lista de todas as atividades.">
-            <a href="{{url_for('atividades.lista_atividades',lista='Todas')}}">{{qtd_ativs}}</a></abbr></dt>
+          <dt>Atividades: <abbr title="Clique aqui para ver a lista das atividades válidas.">
+            <a href="{{url_for('atividades.lista_atividades',lista='ativas')}}">{{qtd_ativs_validas}}</a></abbr>(válidas) 
+            <abbr title="Clique aqui para ver a lista de todas as atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='Todas')}}"> {{qtd_ativs}}</a></abbr>(geral)</dt>
             <br>
-          <dd>&nbsp;Distintas em Planos: <abbr title="Clique aqui para ver a lista destas atividades.">
-            <a href="{{url_for('atividades.lista_atividades',lista='*')}}">{{ativs_utilizadas}}</a></abbr>
+          <dd>&nbsp;Distintas em Planos:</dd>
+          <dd><abbr title="Clique aqui para ver a lista destas atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='planos_v')}}">{{ativs_utilizadas_validas}}</a></abbr> válidas 
+            ({{((100 * ativs_utilizadas_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            <abbr title="Clique aqui para ver a lista destas atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='planos_g')}}">{{ativs_utilizadas}}</a></abbr> geral 
             ({{((100 * ativs_utilizadas / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
-            <br>
-          <dd>&nbsp;Distintas em PGs: <abbr title="Clique aqui para ver a lista destas atividades.">
-            <a href="{{url_for('atividades.lista_atividades',lista='pgs')}}">{{ativs_utilizadas_pgs}}</a></abbr>
+          <dd>&nbsp;Distintas em PGs:</dd>
+          <dd><abbr title="Clique aqui para ver a lista destas atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='pgs_v')}}">{{ativs_utilizadas_pgs_validas}}</a></abbr> válidas
+            ({{((100 * ativs_utilizadas_pgs_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            <abbr title="Clique aqui para ver a lista destas atividades.">
+            <a href="{{url_for('atividades.lista_atividades',lista='pgs_g')}}">{{ativs_utilizadas_pgs}}</a></abbr> geral 
             ({{((100 * ativs_utilizadas_pgs / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
           </dl>  
         </div>    

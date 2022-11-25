@@ -61,7 +61,7 @@
           </li>
 
           <li class="nav-item active">
-            <a class="nav-link" href="{{url_for('atividades.lista_atividades',lista='Todas')}}">Atividades</a>
+            <a class="nav-link" href="{{url_for('atividades.lista_atividades',lista='ativas')}}">Atividades</a>
           </li>
 
           <li class="nav-item dropdown active">
@@ -152,7 +152,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '3.0.5') %}
+          {% set ver = namespace(num = '3.0.6') %}
 
         </ul>
 

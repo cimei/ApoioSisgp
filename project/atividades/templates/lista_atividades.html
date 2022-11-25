@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="jumbotron">
-  
-  <h5>Lista das Atividades</h5>
+  {% if lista == 'ativas' %}
+    <div class = "row">
+      <div class = "col-2">
+        <span class="align-baseline"><h5>Lista das Atividades Válidas</h5></span>
+      </div>                        
+      <div class = "col">
+        <span class="align-baseline"><a class="nav-link" href="{{url_for('atividades.lista_atividades',lista='Todas')}}">(Ver todas as Atividades)</a></h5></span>
+      </div> 
+    </div>
+  {% else %} 
+    <h5>Lista das Atividades</h5>   
+  {% endif %}                       
 
   <div class = "row">
     <div class="col-1">
@@ -15,16 +25,13 @@
   <br>
 
 <caption>
-  <div class="row">
-      <div class="col">
         <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
-          {% if lista == 'Todas'%} atividades da Instituição
-          {% elif lista == 'pgs' %} atividades utilizadas em programas de gestão
+          {% if lista == 'Todas'%} atividades da Instituição (TODAS)
+          {% elif lista == 'pgs_g' or lista == 'pgs_v' %} atividades utilizadas em programas de gestão
+          {% elif lista == 'ativas' %} atividades da Instituição (VÁLIDAS)
           {% else %} atividades utilizadas em planos de Trabalho
           {% endif %}  
         </p>
-      </div>
-  </div>
 </caption>
 
 <div style="overflow-y:auto ; height:450px">

@@ -7,16 +7,16 @@
       - Filtro aplicado: Sigla <b>"{{p_sigla}}"</b>, Nome <b>"{{p_nome}}"</b>, Pai <b>"{{p_pai}}"</b>, Tipo <b>"{{p_tipo}}"</b>, UF <b>"{{p_uf}}"</b>   
       </h5>
     {% else %}
-      <div class="col-2">
-        <h5>Lista das Unidades {% if lista == 'ativas' %}
-                                Ativas 
-                              {% elif lista == 'todas' %} 
-                                  Ativas e Inativas
-                              {% endif %}</h5>
-      </div>
-      <div class="col">
-        <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a>
-      </div>
+      {% if lista == 'ativas' %}
+        <div class="col-2">
+          <span class="align-baseline"><h5>Lista das Unidades Ativas</h5></span>
+        </div>
+        <div class="col">
+          <span class="align-baseline"><a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a></span>
+        </div>
+      {% elif lista == 'todas' %} 
+        <h5>Lista das Unidades Ativas e Inativas</h5>
+      {% endif %}
     {% endif %}  
   </div>
 
@@ -62,6 +62,8 @@
         <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
         <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
         <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Titular</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
       </tr>
     </thead>
     <tbody>
@@ -92,6 +94,8 @@
         <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
         <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.titular == None or u.titular == '' %}N.I.{% else %}{{u.titular}}{% endif %} </p></td>
+        <td><p align = "center"> {% if u.substituto == None or u.substituto == '' %}N.I.{% else %}{{u.substituto}}{% endif %} </p></td>
       </tr>
 
       {% endfor %}

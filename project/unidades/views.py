@@ -53,6 +53,10 @@ def lista_unidades(lista):
 
     dic_situ_unidade = {1:'Ativa',2:'Inativa'}
 
+    chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
+    substitutos = aliased(chefes)
+
+
     if lista == 'ativas':
         unids = db.session.query(Unidades.unidadeId,
                                 Unidades.undSigla,
@@ -65,7 +69,11 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG)\
+                                Unidades.undCodigoSIORG,
+                                label('titular',chefes.c.pesNome),
+                                label('substituto',substitutos.c.pesNome))\
+                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .filter(Unidades.situacaoUnidadeId == 1)\
                                 .order_by(Unidades.undSigla).all()
@@ -81,7 +89,11 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG)\
+                                Unidades.undCodigoSIORG,
+                                label('titular',chefes.c.pesNome),
+                                label('substituto',substitutos.c.pesNome))\
+                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .order_by(Unidades.undSigla).all()
 
@@ -149,6 +161,9 @@ def lista_unidades_filtro(lista):
 
         unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
 
+        chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
+        substitutos = aliased(chefes)
+
         if int(form.pai.data) == 0:
             unids = db.session.query(Unidades.unidadeId,
                                      Unidades.undSigla,
@@ -161,7 +176,11 @@ def lista_unidades_filtro(lista):
                                      Unidades.undNivel,
                                      Unidades.tipoFuncaoUnidadeId,
                                      Unidades.Email,
-                                     Unidades.undCodigoSIORG)\
+                                     Unidades.undCodigoSIORG,
+                                    label('titular',chefes.c.pesNome),
+                                    label('substituto',substitutos.c.pesNome))\
+                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                               .filter(Unidades.unidadeId.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),
@@ -181,7 +200,11 @@ def lista_unidades_filtro(lista):
                                     Unidades.undNivel,
                                     Unidades.tipoFuncaoUnidadeId,
                                     Unidades.Email,
-                                    Unidades.undCodigoSIORG)\
+                                    Unidades.undCodigoSIORG,
+                                    label('titular',chefes.c.pesNome),
+                                    label('substituto',substitutos.c.pesNome))\
+                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                               .filter(Unidades.unidadeId.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),

@@ -22,7 +22,9 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Planos_de_Trabalho_Ativs_Items, Unidades, Pessoas, unidade_ativ, cat_item_cat, Atividades, catdom,Pactos_de_Trabalho_Atividades
+from project.models import Planos_de_Trabalho_Ativs_Items, Unidades, Pessoas, unidade_ativ, cat_item_cat,\
+                           Atividades, catdom,Pactos_de_Trabalho_Atividades,\
+                           Planos_de_Trabalho_Ativs, Planos_de_Trabalho
 from project.atividades.forms import AtividadeForm, UnidForm
 
 import locale
@@ -56,6 +58,28 @@ def lista_atividades(lista):
 
     if lista == 'Todas':
 
+        # pega atividades que constam em algum plano de trabalho (pacto) - Aqui é utilizada somente para destacar atividades na lista   
+        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                 Atividades.titulo,
+                                 catdom.descricao,
+                                 Atividades.permiteRemoto,
+                                 Atividades.tempoPresencial,
+                                 Atividades.tempoRemoto,
+                                 Atividades.complexidade,
+                                 Atividades.definicaoComplexidade,
+                                 Atividades.entregasEsperadas,
+                                 unids.c.qtd_unids,
+                                 label('util',ativs_utilizadas.c.itemCatalogoId))\
+                       .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                       .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                       .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                       .order_by(Atividades.titulo).all()
+    
+    elif lista == 'ativas':
+
+        # pega atividades que constam em algum plano de trabalho (pacto) - Aqui é utilizada somente para destacar atividades na lista   
         ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()
 
         ativs = db.session.query(Atividades.itemCatalogoId,
@@ -72,33 +96,63 @@ def lista_atividades(lista):
                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                       .order_by(Atividades.titulo).all()
+                       .filter(Atividades.titulo.notlike('x%'))\
+                       .order_by(Atividades.titulo).all()                   
 
-    elif lista == 'pgs':
+    elif lista == 'pgs_v':   
 
-        # pega atividades que constam em algum programa de gestão (plano)    
-        ativs_utilizadas = db.session.query(Planos_de_Trabalho_Ativs_Items.itemCatalogoId).distinct().subquery()                   
-
-        ativs = db.session.query(Atividades.itemCatalogoId,
-                                Atividades.titulo,
-                                catdom.descricao,
-                                Atividades.permiteRemoto,
-                                Atividades.tempoPresencial,
-                                Atividades.tempoRemoto,
-                                Atividades.complexidade,
-                                Atividades.definicaoComplexidade,
-                                Atividades.entregasEsperadas,
-                                unids.c.qtd_unids,
-                                label('util',ativs_utilizadas.c.itemCatalogoId))\
-                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
-                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .order_by(Atividades.titulo).all()
-
-
-    else:
         # pega atividades que constam em algum plano de trabalho (pacto)    
-        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()                   
+        ativs_utilizadas_pg = db.session.query(Planos_de_Trabalho_Ativs_Items.itemCatalogoId)\
+            .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+            .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
+            .distinct().subquery()              
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                Atividades.titulo,
+                                catdom.descricao,
+                                Atividades.permiteRemoto,
+                                Atividades.tempoPresencial,
+                                Atividades.tempoRemoto,
+                                Atividades.complexidade,
+                                Atividades.definicaoComplexidade,
+                                Atividades.entregasEsperadas,
+                                unids.c.qtd_unids,
+                                label('util',ativs_utilizadas_pg.c.itemCatalogoId))\
+                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .join(ativs_utilizadas_pg,ativs_utilizadas_pg.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .filter(Atividades.titulo.notlike('x%'))\
+                        .order_by(Atividades.titulo).all()
+
+    elif lista == 'pgs_g': 
+
+        # pega atividades que constam em algum plano de trabalho (pacto)    
+        ativs_utilizadas_pg = db.session.query(Planos_de_Trabalho_Ativs_Items.itemCatalogoId)\
+            .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+            .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
+            .distinct().subquery()                 
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                Atividades.titulo,
+                                catdom.descricao,
+                                Atividades.permiteRemoto,
+                                Atividades.tempoPresencial,
+                                Atividades.tempoRemoto,
+                                Atividades.complexidade,
+                                Atividades.definicaoComplexidade,
+                                Atividades.entregasEsperadas,
+                                unids.c.qtd_unids,
+                                label('util',ativs_utilizadas_pg.c.itemCatalogoId))\
+                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .join(ativs_utilizadas_pg,ativs_utilizadas_pg.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .order_by(Atividades.titulo).all()                    
+
+
+    elif lista == 'planos_g':  
+
+        # pega atividades que constam em algum plano de trabalho (pacto)    
+        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()                
 
         ativs = db.session.query(Atividades.itemCatalogoId,
                                 Atividades.titulo,
@@ -115,6 +169,28 @@ def lista_atividades(lista):
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .order_by(Atividades.titulo).all()
+    
+    elif lista == 'planos_v':    
+
+        # pega atividades que constam em algum plano de trabalho (pacto)    
+        ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()              
+
+        ativs = db.session.query(Atividades.itemCatalogoId,
+                                Atividades.titulo,
+                                catdom.descricao,
+                                Atividades.permiteRemoto,
+                                Atividades.tempoPresencial,
+                                Atividades.tempoRemoto,
+                                Atividades.complexidade,
+                                Atividades.definicaoComplexidade,
+                                Atividades.entregasEsperadas,
+                                unids.c.qtd_unids,
+                                label('util',ativs_utilizadas.c.itemCatalogoId))\
+                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
+                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
+                        .filter(Atividades.titulo.notlike('x%'))\
+                        .order_by(Atividades.titulo).all()                    
 
 
     quantidade = len(ativs)

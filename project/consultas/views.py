@@ -588,17 +588,30 @@ def estatisticas():
 
     # quantidades de unidades, pessoas, atividades, atividades utilizadas em planos e atividades utilizadas em pgs
     qtd_unidades = Unidades.query.count()
+    qtd_unidades_ativas = db.session.query(Unidades).filter(Unidades.situacaoUnidadeId == 1).count()
+
 
     qtd_pessoas = Pessoas.query.count()
 
     qtd_ativs = db.session.query(Atividades).count()
+    qtd_ativs_validas = db.session.query(Atividades).filter(Atividades.titulo.notlike('x%')).count()
 
     ativs_utilizadas = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId)).count()
+    ativs_utilizadas_validas = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId))\
+                                         .join(Atividades, Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                                         .filter(Atividades.titulo.notlike('x%'))\
+                                         .count()
 
     ativs_utilizadas_pgs = db.session.query(distinct(Planos_de_Trabalho_Ativs_Items.itemCatalogoId))\
                                      .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
                                      .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
                                      .count()
+    ativs_utilizadas_pgs_validas = db.session.query(distinct(Planos_de_Trabalho_Ativs_Items.itemCatalogoId))\
+                                     .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+                                     .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
+                                     .join(Atividades, Atividades.itemCatalogoId == Planos_de_Trabalho_Ativs_Items.itemCatalogoId)\
+                                     .filter(Atividades.titulo.notlike('x%'))\
+                                     .count()                                 
 
     # o primeiro pg
     primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
@@ -704,7 +717,9 @@ def estatisticas():
 
     return render_template('estatisticas.html', programas_de_gestao=programas_de_gestao,
                                                 planos_de_trabalho_fs=planos_de_trabalho_fs, 
-                                                qtd_ativs=qtd_ativs, qtd_pessoas=qtd_pessoas, qtd_unidades=qtd_unidades,
+                                                qtd_ativs=qtd_ativs, qtd_pessoas=qtd_pessoas, 
+                                                qtd_unidades=qtd_unidades,
+                                                qtd_unidades_ativas=qtd_unidades_ativas,
                                                 qtd_pes_max=qtd_pes_max, qtd_pes_min=qtd_pes_min, qtd_pes_avg=qtd_pes_avg,
                                                 ativs_utilizadas=ativs_utilizadas,
                                                 ativs_utilizadas_pgs=ativs_utilizadas_pgs,
@@ -716,7 +731,10 @@ def estatisticas():
                                                 vida_plano=vida_plano,
                                                 ativs=ativs,
                                                 solicit=solicit,
-                                                ativs_pgs=ativs_pgs)
+                                                ativs_pgs=ativs_pgs,
+                                                qtd_ativs_validas=qtd_ativs_validas,
+                                                ativs_utilizadas_validas=ativs_utilizadas_validas,
+                                                ativs_utilizadas_pgs_validas=ativs_utilizadas_pgs_validas)
 
 
 # qtd pgs e pts em um período log
