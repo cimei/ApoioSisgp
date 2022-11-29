@@ -457,7 +457,7 @@ class catdom(db.Model):
     catalogoDominioId   = db.Column(db.Integer, primary_key = True, autoincrement=False)
     classificacao       = db.Column(db.String)
     descricao           = db.Column(db.String)
-    ativo               = db.Column(db.Boolean)
+    ativo               = db.Column(db.Integer)
 
     def __init__(self, catalogoDominioId, classificacao, descricao, ativo):
 
