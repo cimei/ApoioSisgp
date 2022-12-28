@@ -79,7 +79,7 @@
         </p></th>
         <td><p align = "center"> {{p.pesNome}} </p></td>
         <td><p align = "center"> {{p.pesCPF}} </p></td>
-        <td><p align = "center"> {{p.pesDataNascimento.strftime('%x')}} </p></td>
+        <td><p align = "center"> {% if p.pesDataNascimento == None or p.pesDataNascimento == '' %}N.I.{% else %}{{p.pesDataNascimento.strftime('%d/%m/%Y')}}{%endif%} </p></td>
         <td><p align = "center"> {{p.pesMatriculaSiape}} </p></td>
         <td><p align = "center"> {% if p.pesEmail == None %}N.I.{% else %}{{p.pesEmail}}{% endif %} </p></td>
         <td><p align = "center"> {{p.undSigla}} </p></td>

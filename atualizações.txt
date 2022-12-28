@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+28/12/2022
+Tratamento na lista pessoas quando a data de nascimento for nula.
+v3.0.7
+
 25/11/2022
 Correções diversas. Caracterizçaõ de Atividades não válidas. Ajustes em Estatísticas.
 v3.0.6
