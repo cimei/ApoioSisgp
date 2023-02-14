@@ -164,6 +164,7 @@ def pactos():
     |Apresenta uma lista dos pactos de trabalho e dados relevantes.                         |
     +---------------------------------------------------------------------------------------+
     """
+    tipo = 'todos'
 
     situacao = db.session.query(catdom.catalogoDominioId,
                                 catdom.descricao)\
@@ -180,20 +181,73 @@ def pactos():
                                        Pactos_de_Trabalho.percentualExecucao,
                                        Pactos_de_Trabalho.relacaoPrevistoRealizado,
                                        Pactos_de_Trabalho.avaliacaoId,
-                                       Unidades.undSigla,
+                                       VW_Unidades.undSiglaCompleta,
+                                       Unidades.situacaoUnidadeId,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
                                        label('descricao2',situacao.c.descricao))\
                                  .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.id_unidade == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                  .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                 .filter(Unidades.situacaoUnidadeId == 1)\
                                  .order_by(Pessoas.pesNome)\
                                  .all()
 
     qtd_itens = len(pactos_trabalho)
 
-    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho)    
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho, tipo = tipo)    
+
+
+## pactos em situação irregular
+
+@consultas.route('/pactos_irregulares')
+def pactos_irregulares():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista dos pactos de trabalho em situação irregular.                      |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    tipo = 'irregulares'
+
+    hoje = date.today()
+
+    # subquery das situações de pacto de trabalho
+    catdom_1 = aliased(catdom)
+
+    pactos_irregulares = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+                                       Pactos_de_Trabalho.unidadeId,
+                                       Pactos_de_Trabalho.pessoaId,
+                                       Pactos_de_Trabalho.dataInicio,
+                                       Pactos_de_Trabalho.dataFim,
+                                       Pactos_de_Trabalho.formaExecucaoId,
+                                       Pactos_de_Trabalho.situacaoId,
+                                       Pactos_de_Trabalho.percentualExecucao,
+                                       Pactos_de_Trabalho.relacaoPrevistoRealizado,
+                                       Pactos_de_Trabalho.avaliacaoId,
+                                       VW_Unidades.undSiglaCompleta,
+                                       Unidades.situacaoUnidadeId,
+                                       Pessoas.pesNome,
+                                       label('descricao1',catdom.descricao),
+                                       label('descricao2',catdom_1.descricao))\
+                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.id_unidade == Pactos_de_Trabalho.unidadeId)\
+                                 .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+                                 .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
+                                 .join(catdom_1, catdom_1.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                 .filter(Pactos_de_Trabalho.dataFim < hoje,
+                                         Pactos_de_Trabalho.situacaoId != 404,
+                                         Pactos_de_Trabalho.situacaoId != 406,
+                                         Pactos_de_Trabalho.situacaoId != 407,
+                                         Unidades.situacaoUnidadeId == 1)\
+                                 .order_by(Pessoas.pesNome)\
+                                 .all()
+
+    qtd_itens = len(pactos_irregulares)
+
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_irregulares, tipo = tipo)                                 
 
 
 ## lista atividades de um pacto de trabalho
@@ -330,6 +384,8 @@ def relatorioPG():
 
     hoje = date.today()
 
+    catdom_2 = aliased(catdom)
+
     dados_pt = db.session.query(Planos_de_Trabalho.planoTrabalhoId,
                                 Planos_de_Trabalho.unidadeId,
                                 Planos_de_Trabalho.totalServidoresSetor,
@@ -345,9 +401,11 @@ def relatorioPG():
                               Pactos_de_Trabalho.unidadeId,
                               label('pactoIni',Pactos_de_Trabalho.dataInicio),
                               label('pactoFim',Pactos_de_Trabalho.dataFim),
-                              label('pactoDesc',catdom.descricao))\
+                              label('pactoDesc',catdom.descricao),
+                              label('formaExec',catdom_2.descricao))\
                        .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                        .join(catdom, Pactos_de_Trabalho.situacaoId == catdom.catalogoDominioId)\
+                       .join(catdom_2, Pactos_de_Trabalho.formaExecucaoId == catdom_2.catalogoDominioId)\
                        .subquery()
 
     pt = db.session.query(Unidades.unidadeId,
@@ -362,7 +420,8 @@ def relatorioPG():
                           pactos.c.pesNome,
                           pactos.c.pactoIni,
                           pactos.c.pactoFim,
-                          pactos.c.pactoDesc)\
+                          pactos.c.pactoDesc,
+                          pactos.c.formaExec)\
                    .join(dados_pt, dados_pt.c.unidadeId == Unidades.unidadeId)\
                    .join(VW_Unidades, VW_Unidades.id_unidade == Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.planoTrabalhoId == dados_pt.c.planoTrabalhoId)\
@@ -391,11 +450,6 @@ def relatorioPG():
     row = 3
     col = 0
 
-    # Monta linha de cabeçalho do xlsx. Descobre o maior nível hierárquico das unidades
-
-    # niv_max = db.session.query(label('niv',func.max(Unidades.undNivel))).first()
-    # col_cab = col + niv_max.niv
-
     # A view VW_Unidades traz a hierarquia da unidade, o que dispensa a consulta comentada acima
     col_cab = col
 
@@ -412,26 +466,11 @@ def relatorioPG():
     worksheet.write(row, col_cab + 7, 'Início Plano', bold)
     worksheet.write(row, col_cab + 8, 'Fim Plano', bold)
     worksheet.write(row, col_cab + 9, 'Situação Plano', bold)
+    worksheet.write(row, col_cab + 10, 'Forma Execução', bold)
 
     row = 4
 
     for item in pt:
-
-        # sigla = item.undSigla
-        # pai = item.unidadeIdPai
-        
-        # # monta colunas com hierarquia da unidade no registro
-        # worksheet.write(row, niv_max.niv, sigla)
-
-        # hier = []
-        # hier.append(sigla)
-        # while pai != None:
-        #     sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
-        #     hier.append(sup.undSigla)
-        #     pai = sup.unidadeIdPai
-
-        # for i in range(len(hier)-1, -1, -1):
-        #     worksheet.write(row, col-i+len(hier)-1, hier[i])
 
         # preenche demais colunas de detalhe, sem a necessidade de montar a hierarquia (código comentado acima)
         col_det = col
@@ -467,6 +506,8 @@ def relatorioPG():
             worksheet.write(row, col_det + 8, 'N.I.')
 
         worksheet.write(row, col_det + 9, item.pactoDesc)
+
+        worksheet.write(row, col_det + 10, item.formaExec)
 
         row += 1
 

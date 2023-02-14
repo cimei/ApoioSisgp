@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container">
-
 <div class="jumbotron">
   
   <h5>Relatório de Programas de Gestão e de Planos de Trabalho</h5>
 
   <div class = "row justify-content-end">
-
       <a href=/static/Rel_PG.xlsx class="btn btn-primary" role="button" aria-pressed="true">Gerar xlsx</a>
-
   </div>  
 
 <br>
@@ -30,6 +26,7 @@
         <th scope="col"><p align = "center">Início PT</p></th>
         <th scope="col"><p align = "center">Fim PT</p></th>
         <th scope="col"><p align = "center">Situação PT</p></th>
+        <th scope="col"><p align = "center">Forma Exec.</p></th>
       </tr>
     </thead>
     <tbody>
@@ -47,6 +44,7 @@
         <td><p align = "center"> {% if p.pactoIni == None %} {% else %} {{ p.pactoIni.strftime('%d/%m/%Y') }} {% endif %} </p></td>
         <td><p align = "center"> {% if p.pactoFim == None %} {% else %} {{ p.pactoFim.strftime('%d/%m/%Y') }} {% endif %} </p></td>
         <td><p align = "center"> {% if p.pactoDesc == None %} {% else %} {{ p.pactoDesc }} {% endif %} </p></td>
+        <td><p align = "center"> {% if p.formaExec == None %} {% else %} {{ p.formaExec }} {% endif %} </p></td>
       </tr>
 
       {% endfor %}
@@ -56,7 +54,6 @@
 
 </div>
 
-</div>
 
 </div>
 {% endblock %}

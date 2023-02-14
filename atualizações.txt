@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+14/02/2023
+Incluida nas consultas uma lista de planos em situação irregular
+Ajustes nas consultas Planos de Trabalho e Relatório de PGs e PTs. 
+v3.0.8
+
 28/12/2022
 Tratamento na lista pessoas quando a data de nascimento for nula.
 v3.0.7

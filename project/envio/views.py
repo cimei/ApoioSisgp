@@ -97,6 +97,8 @@ def lista_a_enviar():
 
         rlogin_json = response.json()
 
+        print('** Retorno do pedido de token: ',rlogin_json)
+
         token = rlogin_json['access_token']
         tipo =  rlogin_json['token_type']       
 

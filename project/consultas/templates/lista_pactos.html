@@ -5,7 +5,13 @@
 
 <div class="jumbotron">
   
-  <h5>Lista de Planos de Trabalho</h5>
+  <h5>Lista de Planos de Trabalho - Unidades Ativas - 
+    {% if tipo == 'todos' %}
+      Todos
+    {% elif tipo == 'irregulares' %}
+      PTs EM SITUAÇÃO IRREGULAR
+    {% endif %}
+  </h5>
 
 <caption>
   <div class="row">
@@ -51,7 +57,7 @@
         <th scope="row"><abbr title="Ver atividades deste pacto.">
           <p align = "center"> <a href="{{url_for('consultas.pacto_atividades', pactoId=p.pactoTrabalhoId, nome=p.pesNome)}}">{{pactos_trabalho.index(p) + 1}}</a></p>
         </th>
-        <td><p align = "center"> {{ p.undSigla }} </p></td>
+        <td><p align = "center"> {{ p.undSiglaCompleta }} </p></td>
         <td><p align = "center"> {{ p.pesNome }} </p></td>
         <td><p align = "center"> {{ p.dataInicio.strftime('%x') }} </p></td>
         <td><p align = "center"> {{ p.dataFim.strftime('%x') }} </p></td>
