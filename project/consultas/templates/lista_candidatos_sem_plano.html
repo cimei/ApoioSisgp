@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+<div class="jumbotron">
+  
+  <h5>Lista de Candidatos selecionados que não poussuem Plano</h5>
+
+<caption>
+  <div class="row">
+      <div class="col">
+        <p><span class="badge badge-pill badge-success">{{quantidade}}</span> ocorrências
+        </p>
+      </div>
+  </div>
+</caption>
+
+<div style="overflow-y:auto ; height:450px">
+  <table id="table"
+        data-toggle="table"
+        data-filter-control="true"
+        data-show-search-clear-button="true"
+        data-sortable="true"
+        classes="table-sm"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        class="table table-striped table-hover table-sm">
+    <caption>Candidatos</caption>
+    <thead>
+      <tr>
+        <th scope="col"><p align = "center">#</p></th>
+        <th scope="col" data-field="pesNome" data-filter-control="input" data-sortable="true"><p align = "center">Pessoa</p></th>
+        <th scope="col" data-field="undSigla" data-filter-control="input" data-sortable="true"><p align = "center">Unidade</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Início PG</p></th>
+        <th scope="col" data-sortable="true"><p align = "center">Fim PG</p></th>
+        <th scope="col"><p align = "center">Situação PG</p></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for c in candidatos_sem_plano %}
+
+      <tr>
+        <th scope="row">{{candidatos_sem_plano.index(c) + 1}}</th>
+        <td><p align = "center"> {{ c.pesNome }} </p></td>
+        <td><p align = "center"> {{ c.undSiglaCompleta }} </p></td>
+        <td><p align = "center"> {{ c.dataInicio.strftime('%x') }} </p></td>
+        <td><p align = "center"> {{ c.dataFim.strftime('%x') }} </p></td>
+        <td><p align = "center"> {{ c.descricao }}</p></td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+</div>
+
+</div>
+
+</div>
+{% endblock %}

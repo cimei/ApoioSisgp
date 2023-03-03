@@ -396,7 +396,32 @@ class Planos_de_Trabalho_Hist(db.Model):
         return f"{self.planoTrabalhoId};{self.situacaoId};{self.observacoes};\
                  {self.responsavelOperacao};{self.DataOperacao}"
                  
-                 
+
+# PG (planotrabalho) atividade candidato
+
+class Atividade_Candidato(db.Model):
+
+    __tablename__ = 'PlanoTrabalhoAtividadeCandidato'
+    __table_args__ = {"schema": "ProgramaGestao"}   
+
+    planoTrabalhoAtividadeCandidatoId = db.Column(db.String, primary_key = True)
+    planoTrabalhoAtividadeId          = db.Column(db.String)
+    pessoaId                          = db.Column(db.Integer)
+    situacaoId                        = db.Column(db.Integer)
+    termoAceite                       = db.Column(db.String)
+
+    def __init__(self,planoTrabalhoAtividadeCandidatoId,planoTrabalhoAtividadeId,pessoaId,situacaoId,termoAceite):
+        
+        self.planoTrabalhoAtividadeCandidatoId = planoTrabalhoAtividadeCandidatoId
+        self.planoTrabalhoAtividadeId = planoTrabalhoAtividadeId
+        self.pessoaId                 = pessoaId
+        self.situacaoId               = situacaoId
+        self.termoAceite              = termoAceite
+
+    def __repr__ (self):
+        return f"{self.planoTrabalhoAtividadeCandidatoId};{self.planoTrabalhoAtividadeId};{self.pessoaId};{self.situacaoId};{self.termoAceite}"              
+
+
 # Pactos de Trabalho
 
 class Pactos_de_Trabalho(db.Model):
@@ -741,3 +766,5 @@ class VW_Atividades_Pactos(db.Model):
 
     def __repr__ (self):
         return f"{self.id_produto}"
+
+        

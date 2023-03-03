@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+02/03/2023
+Criada lista de candidatos sem planos
+v3.0.9
+
 14/02/2023
 Incluida nas consultas uma lista de planos em situação irregular
 Ajustes nas consultas Planos de Trabalho e Relatório de PGs e PTs. 

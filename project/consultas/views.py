@@ -32,7 +32,7 @@ from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
                            Pactos_de_Trabalho_Atividades, Atividades, Planos_de_Trabalho_Ativs,\
                            Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items, Pactos_de_Trabalho_Solic,\
-                           VW_Unidades
+                           VW_Unidades, Atividade_Candidato
 from project.usuarios.views import registra_log_auto                           
 
 from project.consultas.forms import PeriodoForm
@@ -281,29 +281,6 @@ def pacto_atividades(pactoId,nome):
                            .all()
 
     qtd_itens = len(pacto_ativ)
-
-    ##### para conferir cálculo de %execucao (conta por fora não bate com os valores registrados no banco)
-    # pactos = db.session.query(Pessoas.pesNome,  
-    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoPrevistoPorItem).label("total_tempo_item"),
-    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoPrevistoTotal).label("total_tempo_total"),
-    #                           func.sum(Pactos_de_Trabalho_Atividades.tempoRealizado).label("total_tempo_realizado"))\
-    #                    .join(Pactos_de_Trabalho, Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-    #                    .join(Pessoas,Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
-    #                    .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,Pactos_de_Trabalho.pessoaId,Pessoas.pesNome)\
-    #                    .all()           
-    
-    # workbook = xlsxwriter.Workbook('totais_pactos.xlsx')
-    # worksheet = workbook.add_worksheet('Lista')
-    # col = 0
-    # row = 0
-    # for p in pactos:
-    #     worksheet.write(row, col, p.pesNome)
-    #     worksheet.write(row, col + 1, p.total_tempo_item)
-    #     worksheet.write(row, col + 2, p.total_tempo_total)
-    #     worksheet.write(row, col + 3, p.total_tempo_realizado)
-    #     row += 1
-    # workbook.close()
-
 
     pacto_ativ_unic = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId))\
                                 .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
@@ -880,3 +857,42 @@ def periodo():
     return render_template('pg_pt_por_periodo.html', form=form)
 
 
+# Candidaturas aprovadas mas sem plano
+
+@consultas.route("/candidatos_sem_plano")
+def candidatos_sem_plano():
+    """+--------------------------------------------------------------------------------------+
+       |Mostra pessoas que tiveram candidatura aprovada em um PG, mas que não um plano.       |
+       |                                                                                      |
+       +--------------------------------------------------------------------------------------+
+    """
+
+
+    candidatos_sem_plano = db.session.query(Atividade_Candidato.pessoaId,
+                                            Atividade_Candidato.situacaoId,
+                                            Pessoas.pesNome,
+                                            Unidades.undSigla,
+                                            VW_Unidades.undSiglaCompleta,
+                                            Planos_de_Trabalho_Ativs.planoTrabalhoId,
+                                            Planos_de_Trabalho.situacaoId,
+                                            Planos_de_Trabalho.dataInicio,
+                                            Planos_de_Trabalho.dataFim,
+                                            catdom.descricao)\
+                             .join(Pessoas, Pessoas.pessoaId == Atividade_Candidato.pessoaId)\
+                             .join(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                             .outerjoin(VW_Unidades, VW_Unidades.id_unidade == Pessoas.unidadeId)\
+                             .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Atividade_Candidato.planoTrabalhoAtividadeId)\
+                             .join(Planos_de_Trabalho, Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
+                             .join(catdom, catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
+                             .outerjoin(Pactos_de_Trabalho, and_(Pactos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho.planoTrabalhoId,
+                                                                 Pactos_de_Trabalho.pessoaId == Atividade_Candidato.pessoaId))\
+                             .filter(Atividade_Candidato.situacaoId == 804,
+                                     Pactos_de_Trabalho.pactoTrabalhoId == None,
+                                     Unidades.situacaoUnidadeId == 1,
+                                     Planos_de_Trabalho.situacaoId == 309)\
+                             .order_by(VW_Unidades.undSiglaCompleta,Pessoas.pesNome)\
+                             .all()
+
+    quantidade = len(candidatos_sem_plano)  
+
+    return render_template('lista_candidatos_sem_plano.html', candidatos_sem_plano=candidatos_sem_plano, quantidade=quantidade)
