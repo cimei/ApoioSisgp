@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+28/06/2023
+Exigência de login para algumas consultas, em especial, de pessoas.
+v3.0.10
+
 02/03/2023
 Criada lista de candidatos sem planos
 v3.0.9

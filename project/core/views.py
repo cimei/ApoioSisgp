@@ -18,11 +18,11 @@
 # core/views.py
 
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
+from flask_login import current_user, login_required
 
 import os
 from datetime import datetime as dt
 import tempfile
-from flask_login import current_user
 from werkzeug.utils import secure_filename
 import csv
 import uuid
@@ -325,6 +325,8 @@ def CarregaUnidades():
 
 
 @core.route('/carregaPessoas', methods=['GET', 'POST'])
+@login_required
+
 def CarregaPessoas():
     """
     +---------------------------------------------------------------------------------------+
@@ -498,6 +500,8 @@ def CarregaPessoas():
 
 
 @core.route('/carregaAtividades', methods=['GET', 'POST'])
+@login_required
+
 def CarregaAtividades():
     """
     +---------------------------------------------------------------------------------------+

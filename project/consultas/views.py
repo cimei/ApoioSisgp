@@ -22,7 +22,7 @@
 # views.py na pasta consultas
 
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
 from sqlalchemy import and_, func, distinct, or_
@@ -295,6 +295,8 @@ def pacto_atividades(pactoId,nome):
 ## deletar programa de gestão (plano de tragalho e relacionamentos) em rascunho
 
 @consultas.route('/<pgId>/deleta_pg', methods=['GET', 'POST'])
+@login_required
+
 def deleta_pg(pgId):
     """
     +---------------------------------------------------------------------------------------+
@@ -352,6 +354,8 @@ def deleta_pg(pgId):
 ## gera xlsx com dados dos plano de gestão nas unidades 
 
 @consultas.route('/relatorioPG', methods = ['GET', 'POST'])
+@login_required
+
 def relatorioPG():
     """
     +---------------------------------------------------------------------------------------+

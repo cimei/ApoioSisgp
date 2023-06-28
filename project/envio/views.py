@@ -13,7 +13,7 @@
 # views.py na pasta envio
 
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
 from sqlalchemy import func, distinct, or_
@@ -39,6 +39,8 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 ## lista planos avaliados que não foram enviados ainda 
 
 @envio.route('/lista_a_enviar')
+@login_required
+
 def lista_a_enviar():
     """
     +---------------------------------------------------------------------------------------+
@@ -154,6 +156,8 @@ def lista_a_enviar():
 ## enviar planos 
 
 @envio.route('<n_enviados>/enviar_planos', methods = ['GET', 'POST'])
+@login_required
+
 def enviar_planos(n_enviados):
     """
     +---------------------------------------------------------------------------------------+
@@ -265,6 +269,8 @@ def enviar_planos(n_enviados):
 ## enviar plano específico 
 
 @envio.route('<plano_id>/<lista>/enviar_um_plano', methods = ['GET', 'POST'])
+@login_required
+
 def enviar_um_plano(plano_id,lista):
     """
     +---------------------------------------------------------------------------------------+
@@ -384,6 +390,8 @@ def enviar_um_plano(plano_id,lista):
 ## lista planos enviados 
 
 @envio.route('/lista_enviados')
+@login_required
+
 def lista_enviados():
     """
     +---------------------------------------------------------------------------------------+

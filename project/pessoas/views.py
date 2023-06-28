@@ -41,6 +41,8 @@ pessoas = Blueprint('pessoas',__name__, template_folder='templates')
 ## lista pessoas da instituição
 
 @pessoas.route('/lista_pessoas')
+@login_required
+
 def lista_pessoas():
     """
     +---------------------------------------------------------------------------------------+
@@ -87,6 +89,8 @@ def lista_pessoas():
 ## lista pessoas da instituição conforme filtro aplicado
 
 @pessoas.route('/lista_pessoas_filtro', methods=['GET','POST'])
+@login_required
+
 def lista_pessoas_filtro():
     """
     +---------------------------------------------------------------------------------------+
@@ -377,6 +381,7 @@ def lista_pessoas_filtro():
 ## lista gestores do SISGP
 
 @pessoas.route('/lista_gestores_sisgp')
+@login_required
 
 def lista_gestores_sisgp():
     """
@@ -646,6 +651,8 @@ def cria_pessoa():
 ## lista pessoas de uma unidade
 
 @pessoas.route('/<unid>/lista_pessoas_unid')
+@login_required
+
 def lista_pessoas_unid(unid):
     """
     +---------------------------------------------------------------------------------------+
