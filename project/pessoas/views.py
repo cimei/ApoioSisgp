@@ -213,9 +213,9 @@ def pessoa_update(cod_pes):
                 last_cat_dom = db.session.query(catdom).order_by(catdom.catalogoDominioId.desc()).first()
 
                 novo_gestor = catdom(catalogoDominioId = last_cat_dom.catalogoDominioId + 1,
-                                     classificacao='GestorSistema',
+                                     classificacao = 'GestorSistema',
                                      descricao = pessoa.pessoaId,
-                                     ativo = True)
+                                     ativo = 1)
                 db.session.add(novo_gestor)
                 db.session.commit()
                 registra_log_auto(current_user.id, pessoa.pesNome + 'colocada como gestora do SISGP.')

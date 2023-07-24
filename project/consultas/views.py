@@ -600,123 +600,129 @@ def estatisticas():
                                      .join(Planos_de_Trabalho,Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
                                      .count()
 
-    # o primeiro pg
-    primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
-    # meses desde o primeito pg
-    vida_pgd = (hoje.year - primeiro_pg[0].dataInicio.year) * 12 + hoje.month - primeiro_pg[0].dataInicio.month
+    if ativs_utilizadas_pgs != 0:
+    
+        # o primeiro pg
+        primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
 
-    # o primeiro plano
-    primeiro_plano = db.session.query(Pactos_de_Trabalho.dataInicio).order_by(Pactos_de_Trabalho.dataInicio).limit(1)
-    # meses desde o primeito plano
-    vida_plano = (hoje.year - primeiro_plano[0].dataInicio.year) * 12 + hoje.month - primeiro_plano[0].dataInicio.month
+        # meses desde o primeito pg
+        vida_pgd = (hoje.year - primeiro_pg[0].dataInicio.year) * 12 + hoje.month - primeiro_pg[0].dataInicio.month
 
-    # quantidade de atividades em pgs (planos)
-    ativs_pgs = db.session.query(catdom.descricao, 
-                             label('qtd_ativs',func.count(Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeItemId)))\
-                      .join(Planos_de_Trabalho_Ativs,Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId==Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
-                      .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho_Ativs.modalidadeExecucaoId)\
-                      .group_by(catdom.descricao)\
-                      .all()
+        # o primeiro plano
+        primeiro_plano = db.session.query(Pactos_de_Trabalho.dataInicio).order_by(Pactos_de_Trabalho.dataInicio).limit(1)
+        # meses desde o primeito plano
+        vida_plano = (hoje.year - primeiro_plano[0].dataInicio.year) * 12 + hoje.month - primeiro_plano[0].dataInicio.month
 
-    # quantidades de atividades em planos (pactos)
-    ativs = db.session.query(catdom.descricao, 
-                             label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
-                      .join(Pactos_de_Trabalho,Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-                      .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho_Atividades.situacaoId)\
-                      .group_by(catdom.descricao)\
-                      .all()
+        # quantidade de atividades em pgs (planos)
+        ativs_pgs = db.session.query(catdom.descricao, 
+                                label('qtd_ativs',func.count(Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeItemId)))\
+                        .join(Planos_de_Trabalho_Ativs,Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId==Planos_de_Trabalho_Ativs_Items.planoTrabalhoAtividadeId)\
+                        .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho_Ativs.modalidadeExecucaoId)\
+                        .group_by(catdom.descricao)\
+                        .all()
 
-    # atividades top5 em planos de trabalho
-    ativs_sub = db.session.query(Atividades.titulo,
-                                 func.count(Pactos_de_Trabalho_Atividades.itemCatalogoId).label('qtd_ativs'))\
-                            .join(Pactos_de_Trabalho_Atividades,Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
-                            .group_by(Atividades.titulo)\
-                            .subquery()
-    ativs_top = db.session.query(ativs_sub.c.titulo,
-                                   ativs_sub.c.qtd_ativs)\
-                             .order_by(ativs_sub.c.qtd_ativs.desc())\
-                             .limit(5)
+        # quantidades de atividades em planos (pactos)
+        ativs = db.session.query(catdom.descricao, 
+                                label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                        .join(Pactos_de_Trabalho,Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                        .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho_Atividades.situacaoId)\
+                        .group_by(catdom.descricao)\
+                        .all()
 
-    # quantitativos de programas de gestão
-    programas_de_gestao = db.session.query(catdom.descricao, 
-                                           label('qtd_pg',func.count(Planos_de_Trabalho.planoTrabalhoId)))\
-                                    .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
-                                    .group_by(catdom.descricao)\
-                                    .all()
+        # atividades top5 em planos de trabalho
+        ativs_sub = db.session.query(Atividades.titulo,
+                                    func.count(Pactos_de_Trabalho_Atividades.itemCatalogoId).label('qtd_ativs'))\
+                                .join(Pactos_de_Trabalho_Atividades,Atividades.itemCatalogoId == Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                                .group_by(Atividades.titulo)\
+                                .subquery()
+        ativs_top = db.session.query(ativs_sub.c.titulo,
+                                    ativs_sub.c.qtd_ativs)\
+                                .order_by(ativs_sub.c.qtd_ativs.desc())\
+                                .limit(5)
 
-    # quantidades de planos de trabalho por forma e situação
-    planos_de_trabalho_fs = db.session.query(label('forma',catdom.descricao),
-                                             label('sit',catdom_sit.c.descricao),   
-                                             label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
-                                    .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                    .join(catdom_sit,catdom_sit.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                    .group_by(catdom.descricao,catdom_sit.c.descricao)\
-                                    .order_by(catdom.descricao,catdom_sit.c.descricao)\
-                                    .all()      
+        # quantitativos de programas de gestão
+        programas_de_gestao = db.session.query(catdom.descricao, 
+                                            label('qtd_pg',func.count(Planos_de_Trabalho.planoTrabalhoId)))\
+                                        .join(catdom,catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
+                                        .group_by(catdom.descricao)\
+                                        .all()
 
-    # quantidades de solicitações
-    solicit = db.session.query(Pactos_de_Trabalho_Solic.analisado,
-                               Pactos_de_Trabalho_Solic.aprovado,
-                               catdom.descricao,
-                               label('qtd_solic',func.count(Pactos_de_Trabalho_Solic.pactoTrabalhoSolicitacaoId)))\
-                        .join(Pactos_de_Trabalho,Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Solic.pactoTrabalhoId)\
-                        .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho_Solic.tipoSolicitacaoId)\
-                        .group_by(Pactos_de_Trabalho_Solic.analisado,Pactos_de_Trabalho_Solic.aprovado,catdom.descricao)\
-                        .order_by(Pactos_de_Trabalho_Solic.analisado,Pactos_de_Trabalho_Solic.aprovado,catdom.descricao)\
-                        .all()                                                          
+        # quantidades de planos de trabalho por forma e situação
+        planos_de_trabalho_fs = db.session.query(label('forma',catdom.descricao),
+                                                label('sit',catdom_sit.c.descricao),   
+                                                label('qtd_planos',func.count(Pactos_de_Trabalho.pactoTrabalhoId)))\
+                                        .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
+                                        .join(catdom_sit,catdom_sit.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                        .group_by(catdom.descricao,catdom_sit.c.descricao)\
+                                        .order_by(catdom.descricao,catdom_sit.c.descricao)\
+                                        .all()      
 
-    # pessoas: max, min e média nas unidades
-    pessoas_unid = db.session.query(label('qtd_pes',func.count(Pessoas.pessoaId)))\
-                             .group_by(Pessoas.unidadeId)\
-                             .all()
+        # quantidades de solicitações
+        solicit = db.session.query(Pactos_de_Trabalho_Solic.analisado,
+                                Pactos_de_Trabalho_Solic.aprovado,
+                                catdom.descricao,
+                                label('qtd_solic',func.count(Pactos_de_Trabalho_Solic.pactoTrabalhoSolicitacaoId)))\
+                            .join(Pactos_de_Trabalho,Pactos_de_Trabalho.pactoTrabalhoId == Pactos_de_Trabalho_Solic.pactoTrabalhoId)\
+                            .join(catdom,catdom.catalogoDominioId == Pactos_de_Trabalho_Solic.tipoSolicitacaoId)\
+                            .group_by(Pactos_de_Trabalho_Solic.analisado,Pactos_de_Trabalho_Solic.aprovado,catdom.descricao)\
+                            .order_by(Pactos_de_Trabalho_Solic.analisado,Pactos_de_Trabalho_Solic.aprovado,catdom.descricao)\
+                            .all()                                                          
 
-    if len(pessoas_unid) > 0:
-        qtd_pes_max = max(pessoas_unid)[0]
-        qtd_pes_min = min(pessoas_unid)[0]
-        qtd_pes_avg = round(qtd_pessoas/qtd_unidades)
+        # pessoas: max, min e média nas unidades
+        pessoas_unid = db.session.query(label('qtd_pes',func.count(Pessoas.pessoaId)))\
+                                .group_by(Pessoas.unidadeId)\
+                                .all()
+
+        if len(pessoas_unid) > 0:
+            qtd_pes_max = max(pessoas_unid)[0]
+            qtd_pes_min = min(pessoas_unid)[0]
+            qtd_pes_avg = round(qtd_pessoas/qtd_unidades)
+        else:
+            qtd_pes_max = 0
+            qtd_pes_min = 0
+            qtd_pes_avg = 0                             
+
+        # unidades top5 em programas de gestão
+        unids_sub = db.session.query(Unidades.undSigla,
+                                    func.count(Planos_de_Trabalho.unidadeId).label('qtd_pgs'))\
+                                .join(Planos_de_Trabalho,Unidades.unidadeId == Planos_de_Trabalho.unidadeId)\
+                                .group_by(Unidades.undSigla)\
+                                .subquery()
+        unids_top = db.session.query(unids_sub.c.undSigla,
+                                    unids_sub.c.qtd_pgs)\
+                            .order_by(unids_sub.c.qtd_pgs.desc())\
+                            .limit(5)
+
+        # unidades top5 em planos de trabalho
+        unids_pt_sub = db.session.query(Unidades.undSigla,
+                                    func.count(Pactos_de_Trabalho.unidadeId).label('qtd_pts'))\
+                                .join(Pactos_de_Trabalho,Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                .group_by(Unidades.undSigla)\
+                                .subquery()
+        unids_pt_top = db.session.query(unids_pt_sub.c.undSigla,
+                                        unids_pt_sub.c.qtd_pts)\
+                                .order_by(unids_pt_sub.c.qtd_pts.desc())\
+                                .limit(5)                       
+                
+
+        return render_template('estatisticas.html', programas_de_gestao=programas_de_gestao,
+                                                    planos_de_trabalho_fs=planos_de_trabalho_fs, 
+                                                    qtd_ativs=qtd_ativs, qtd_pessoas=qtd_pessoas, qtd_unidades=qtd_unidades,
+                                                    qtd_pes_max=qtd_pes_max, qtd_pes_min=qtd_pes_min, qtd_pes_avg=qtd_pes_avg,
+                                                    ativs_utilizadas=ativs_utilizadas,
+                                                    ativs_utilizadas_pgs=ativs_utilizadas_pgs,
+                                                    hoje=hoje,
+                                                    ativs_top=ativs_top,
+                                                    unids_top=unids_top,
+                                                    unids_pt_top=unids_pt_top,
+                                                    vida_pgd=vida_pgd,
+                                                    vida_plano=vida_plano,
+                                                    ativs=ativs,
+                                                    solicit=solicit,
+                                                    ativs_pgs=ativs_pgs)
     else:
-        qtd_pes_max = 0
-        qtd_pes_min = 0
-        qtd_pes_avg = 0                             
-
-    # unidades top5 em programas de gestão
-    unids_sub = db.session.query(Unidades.undSigla,
-                                 func.count(Planos_de_Trabalho.unidadeId).label('qtd_pgs'))\
-                            .join(Planos_de_Trabalho,Unidades.unidadeId == Planos_de_Trabalho.unidadeId)\
-                            .group_by(Unidades.undSigla)\
-                            .subquery()
-    unids_top = db.session.query(unids_sub.c.undSigla,
-                                 unids_sub.c.qtd_pgs)\
-                           .order_by(unids_sub.c.qtd_pgs.desc())\
-                           .limit(5)
-
-    # unidades top5 em planos de trabalho
-    unids_pt_sub = db.session.query(Unidades.undSigla,
-                                 func.count(Pactos_de_Trabalho.unidadeId).label('qtd_pts'))\
-                             .join(Pactos_de_Trabalho,Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
-                             .group_by(Unidades.undSigla)\
-                             .subquery()
-    unids_pt_top = db.session.query(unids_pt_sub.c.undSigla,
-                                    unids_pt_sub.c.qtd_pts)\
-                             .order_by(unids_pt_sub.c.qtd_pts.desc())\
-                             .limit(5)                       
-              
-
-    return render_template('estatisticas.html', programas_de_gestao=programas_de_gestao,
-                                                planos_de_trabalho_fs=planos_de_trabalho_fs, 
-                                                qtd_ativs=qtd_ativs, qtd_pessoas=qtd_pessoas, qtd_unidades=qtd_unidades,
-                                                qtd_pes_max=qtd_pes_max, qtd_pes_min=qtd_pes_min, qtd_pes_avg=qtd_pes_avg,
-                                                ativs_utilizadas=ativs_utilizadas,
-                                                ativs_utilizadas_pgs=ativs_utilizadas_pgs,
-                                                hoje=hoje,
-                                                ativs_top=ativs_top,
-                                                unids_top=unids_top,
-                                                unids_pt_top=unids_pt_top,
-                                                vida_pgd=vida_pgd,
-                                                vida_plano=vida_plano,
-                                                ativs=ativs,
-                                                solicit=solicit,
-                                                ativs_pgs=ativs_pgs)
+        return render_template('estatisticas_missing.html', qtd_pessoas=qtd_pessoas, qtd_unidades=qtd_unidades,
+                                                    qtd_pes_max=0, qtd_pes_min=0, qtd_pes_avg=0, hoje=hoje)
 
 
 # qtd pgs e pts em um período log

@@ -457,7 +457,7 @@ class catdom(db.Model):
     catalogoDominioId   = db.Column(db.Integer, primary_key = True, autoincrement=False)
     classificacao       = db.Column(db.String)
     descricao           = db.Column(db.String)
-    ativo               = db.Column(db.Boolean)
+    ativo               = db.Column(db.Integer)
 
     def __init__(self, catalogoDominioId, classificacao, descricao, ativo):
 
@@ -658,7 +658,7 @@ class VW_Pactos(db.Model):
     data_fim                = db.Column(db.Date)
     carga_horaria_total     = db.Column(db.Integer)
     data_interrupcao        = db.Column(db.Date)
-    entregue_no_prazo       = db.Column(db.Integer)
+    entregue_no_prazo       = db.Column(db.Boolean)
     horas_homologadas       = db.Column(db.Float)
 
     def __init__(self, id_pacto, situacao, matricula_siape, cpf, nome_participante, cod_unidade_exercicio, nome_unidade_exercicio, sigla_unidade_exercicio, desc_situacao_pacto,

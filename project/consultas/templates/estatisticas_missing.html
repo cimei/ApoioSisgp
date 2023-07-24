@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container pt-3">
+
+  <div class="jumbotron">
+    
+    <h5 align = "center"><b>Alguns números do PGD em {{hoje.strftime('%x')}} </b> <br>
+    </h5>
+
+    <br>
+
+    <div class="row">
+
+      <div class = "col-4">
+        <div class="card bg-transparent border-dark">
+
+          <div class="card-body bg-transparent" align = "center">
+            <dl>
+              <dt>Unidades: <abbr title="Clique aqui para ver lista de unidades.">
+                <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}">{{qtd_unidades}}</a></abbr></dt> 
+              </dl>
+          </div>    
+        </div>
+      </div>
+
+      <div class = "col-4">
+        <div class="card bg-transparent border-dark">
+
+          <div class="card-body bg-transparent" align = "center">
+              <dt>Pessoas: <abbr title="Clique aqui para ver a lista de pessoas.">
+                <a href="{{url_for('pessoas.lista_pessoas')}}">{{qtd_pessoas}} </a></abbr></dt>
+                <br>
+              <dd>&nbsp;Maior grupo em uma unidade: {{qtd_pes_max}} </dd>
+              <dd>&nbsp;Menor grupo em uma unidade: {{qtd_pes_min}} </dd>
+              <dd>&nbsp;Média por unidade: {{qtd_pes_avg}} </dd>
+            </dl>
+          </div>    
+        </div>
+      </div>
+
+      <div class = "col-4">
+        <div class="card bg-transparent border-dark">
+    
+          <div class="card-body bg-transparent" align = "center">
+            <dl>
+            <dt>Atividades: <abbr title="Clique aqui para ver a lista de todas as atividades.">
+              <a href="#">0</a></abbr></dt>
+              <br>
+            <dd>&nbsp;Distintas em Planos: <abbr title="Clique aqui para ver a lista destas atividades.">
+              <a href="#">0</a></abbr>
+              (0)% </dd>
+              <br>
+            <dd>&nbsp;Distintas em PGs: <abbr title="Clique aqui para ver a lista destas atividades.">
+              <a href="#">0</a></abbr>
+              (0)% </dd>
+            </dl>  
+          </div>    
+        </div>
+      </div>
+
+    </div>  
+
+  </div>
+
+</div>
+
+{% endblock %}

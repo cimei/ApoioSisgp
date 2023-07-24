@@ -35,7 +35,6 @@ import os
 
 envio = Blueprint('envio',__name__, template_folder='templates')
 
-
 ## lista planos avaliados que não foram enviados ainda 
 
 @envio.route('/lista_a_enviar')
@@ -106,10 +105,10 @@ def lista_a_enviar():
 
         for d in demandas:
 
-            r = requests.get(os.getenv('APIPGDME_URL') + '/plano_trabalho/' + d.pactoTrabalhoId, headers= head)
+            r = requests.get(os.getenv('APIPGDME_URL') + '/plano_trabalho/' + d.pactoTrabalhoId.urn[9:], headers= head)
 
             if r.ok == False:
-                n_enviados.append(d.pactoTrabalhoId)
+                n_enviados.append(d.pactoTrabalhoId.urn[9:])
 
         planos = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                         Pactos_de_Trabalho.planoTrabalhoId,
@@ -160,7 +159,6 @@ def enviar_planos(n_enviados):
     +---------------------------------------------------------------------------------------+
     """
  
-
     # pega token de acesso à API de envio de dados
 
     string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
@@ -169,7 +167,7 @@ def enviar_planos(n_enviados):
 
     api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-    response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+    response = requests.post(api_url_login, headers=headers, data=json.dumps(string))
 
     rlogin_json = response.json()
 
@@ -180,7 +178,9 @@ def enviar_planos(n_enviados):
     sucesso = 0
 
     # pega todos os planos via query da aplicação API/CADE
-    l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()
+    #l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()
+    l = n_enviados.replace("['","").replace("']",'').split()
+
     planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
     qtd_planos = len(planos)
 
@@ -189,20 +189,20 @@ def enviar_planos(n_enviados):
 
         dic_envio = {}
 
-        dic_envio['cod_plano']       = p.id_pacto
+        dic_envio['cod_plano']       = p.id_pacto.urn[9:].upper()
         dic_envio['situacao']        = p.situacao
         dic_envio['matricula_siape'] = int(p.matricula_siape)
         dic_envio['cpf']             = p.cpf
         dic_envio['nome_participante']      = p.nome_participante
-        dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
+        dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio if p.cod_unidade_exercicio is not None else 0
         dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
         dic_envio['modalidade_execucao']    = p.modalidade_execucao
         dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
         dic_envio['data_inicio']         = p.data_inicio.strftime('%Y-%m-%d')
         dic_envio['data_fim']            = p.data_fim.strftime('%Y-%m-%d')
-        dic_envio['carga_horaria_total'] = p.carga_horaria_total
-        dic_envio['data_interrupcao']    = p.data_interrupcao
-        dic_envio['entregue_no_prazo']   = p.entregue_no_prazo
+        dic_envio['carga_horaria_total'] = p.carga_horaria_total 
+        dic_envio['data_interrupcao']    = p.data_interrupcao if p.data_interrupcao is None else p.data_interrupcao.strftime('%Y-%m-%d')
+        dic_envio['entregue_no_prazo']   = bool(p.entregue_no_prazo)
         dic_envio['horas_homologadas']   = p.horas_homologadas
         dic_envio['atividades'] = []
 
@@ -214,7 +214,7 @@ def enviar_planos(n_enviados):
         # para cada atividade, monta o resto do dicionário (key 'atividades')
         for a in ativs:
 
-            dic_envio['atividades'].append({'id_atividade': a.id_produto,
+            dic_envio['atividades'].append({'id_atividade': a.id_produto.urn[9:].upper(),
                                             'nome_grupo_atividade': a.nome_grupo_atividade,
                                             'nome_atividade': a.nome_atividade,
                                             'faixa_complexidade': a.faixa_complexidade,
@@ -229,7 +229,7 @@ def enviar_planos(n_enviados):
                                             'qtde_entregas': a.qtde_entregas,
                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                             'avaliacao': a.avaliacao,
-                                            'data_avaliacao': a.data_avaliacao,
+                                            'data_avaliacao': a.data_avaliacao if a.data_avaliacao is None else a.data_avaliacao.strftime('%Y-%m-%d'),
                                             'justificativa': a.justificativa}) 
 
         # prepara headers do put
@@ -244,7 +244,7 @@ def enviar_planos(n_enviados):
         #     r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers=headers, data=f)      
 
         # faz o put na API via dumps json do dicionário    
-        r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
+        r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+ plano_id.urn[9:].upper(), headers= headers, data=json.dumps(dic_envio, allow_nan=True, indent=4))
 
         # para cada put com sucesso (status_code < 400) acumula 1 no sucesso
         if r_put.ok:
@@ -279,12 +279,12 @@ def enviar_um_plano(plano_id,lista):
 
     api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-    response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+    response = requests.post(api_url_login, headers=headers, data=json.dumps(string))
 
     rlogin_json = response.json()
 
     token = rlogin_json['access_token']
-    tipo =  rlogin_json['token_type']       
+    tipo =  rlogin_json['token_type']    
 
     # indicador de plano enviado com sucesso 
     sucesso = False
@@ -296,20 +296,20 @@ def enviar_um_plano(plano_id,lista):
 
     dic_envio = {}
 
-    dic_envio['cod_plano']       = plano.id_pacto
+    dic_envio['cod_plano']       = plano.id_pacto.urn[9:].upper()
     dic_envio['situacao']        = plano.situacao
     dic_envio['matricula_siape'] = int(plano.matricula_siape)
     dic_envio['cpf']             = plano.cpf
     dic_envio['nome_participante']      = plano.nome_participante
-    dic_envio['cod_unidade_exercicio']  = plano.cod_unidade_exercicio
+    dic_envio['cod_unidade_exercicio']  = plano.cod_unidade_exercicio if plano.cod_unidade_exercicio is not None else 0
     dic_envio['nome_unidade_exercicio'] = plano.nome_unidade_exercicio
     dic_envio['modalidade_execucao']    = plano.modalidade_execucao
     dic_envio['carga_horaria_semanal']  = plano.carga_horaria_semanal
     dic_envio['data_inicio']         = plano.data_inicio.strftime('%Y-%m-%d')
     dic_envio['data_fim']            = plano.data_fim.strftime('%Y-%m-%d')
     dic_envio['carga_horaria_total'] = plano.carga_horaria_total
-    dic_envio['data_interrupcao']    = plano.data_interrupcao
-    dic_envio['entregue_no_prazo']   = plano.entregue_no_prazo
+    dic_envio['data_interrupcao']    = plano.data_interrupcao if plano.data_interrupcao is None else plano.data_interrupcao.strftime('%Y-%m-%d')
+    dic_envio['entregue_no_prazo']   = bool(plano.entregue_no_prazo)
     dic_envio['horas_homologadas']   = plano.horas_homologadas
     dic_envio['atividades'] = []
 
@@ -321,7 +321,7 @@ def enviar_um_plano(plano_id,lista):
     # para cada atividade, monta o resto do dicionário (key 'atividades')
     for a in ativs:
 
-        dic_envio['atividades'].append({'id_atividade': a.id_produto,
+        dic_envio['atividades'].append({'id_atividade': a.id_produto.urn[9:].upper(),
                                         'nome_grupo_atividade': a.nome_grupo_atividade,
                                         'nome_atividade': a.nome_atividade,
                                         'faixa_complexidade': a.faixa_complexidade,
@@ -336,7 +336,7 @@ def enviar_um_plano(plano_id,lista):
                                         'qtde_entregas': a.qtde_entregas,
                                         'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                         'avaliacao': a.avaliacao,
-                                        'data_avaliacao': a.data_avaliacao,
+                                        'data_avaliacao': a.data_avaliacao if a.data_avaliacao is None else a.data_avaliacao.strftime('%Y-%m-%d'),
                                         'justificativa': a.justificativa}) 
 
     # prepara headers do put
@@ -350,9 +350,9 @@ def enviar_um_plano(plano_id,lista):
     #     r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers=headers, data=f)      
 
     # faz o put na API via dumps json do dicionário    
-    r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
+    r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+ plano_id.upper(), headers=headers, data=json.dumps(dic_envio))
 
-    # para cada put com sucesso (status_code < 400) acumula 1 no sucesso
+    # para put com sucesso (status_code < 400) passa true no sucesso
     if r_put.ok:
         sucesso = True
 
@@ -435,7 +435,7 @@ def lista_enviados():
 
         api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-        response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+        response = requests.post(api_url_login, headers=headers, data=json.dumps(string))
 
         rlogin_json = response.json()
 
@@ -448,7 +448,7 @@ def lista_enviados():
 
         for d in demandas:
 
-            r = requests.get(os.getenv('APIPGDME_URL') + '/plano_trabalho/' + d.pactoTrabalhoId, headers= head)
+            r = requests.get(os.getenv('APIPGDME_URL') + '/plano_trabalho/' + d.pactoTrabalhoId.urn[9:].upper(), headers= head)
 
             if r.ok:
                 enviados.append(d.pactoTrabalhoId)
