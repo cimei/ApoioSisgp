@@ -19,6 +19,7 @@
             <th align="center">E-mail conf. em</th>
             <th align="center">Último login</th>
             <th align="center">Ativo?</th>
+            <th align="center">Envia PT?</th>
             </tr>
         </thead>
         <tbody>
@@ -27,16 +28,17 @@
               <td> <a href="{{url_for('usuarios.update_user', user_id=user.id)}}"><abbr title="Clique aqui atualizar">{{ user.id }} </td>
               <td> {{ user.userNome }} </td>
               <td> {{ user.userEmail }} </td>
-              <td align="center"> {% if user.registered_on != None %} {{user.registered_on.strftime('%x')}} {% endif %} </td>
+              <td align="center"> {% if user.registered_on != None %} {{user.registered_on.strftime('%d/%m/%Y')}} {% endif %} </td>
               <td align="center"> {% if user.email_confirmed == True %} Sim {% else %} Não {% endif %} </td>
               <td align="center"> {% if user.email_confirmed_on != None %} 
-                                    {{user.email_confirmed_on.strftime('%x')}}
+                                    {{user.email_confirmed_on.strftime('%d/%m/%Y')}}
                                   {% else %}
                                     <a href="{{url_for('usuarios.confirm', userId=user.id)}}"><abbr title="Clique aqui enviar novo e-mail de confirmação.">Enviar e-mail</abbr> 
                                   {% endif %}
               </td>
-              <td align="center"> {% if user.current_logged_in != None %} {{user.current_logged_in.strftime('%c')}} {% endif %}</td>
+              <td align="center"> {% if user.current_logged_in != None %} {{user.current_logged_in.strftime('%d/%m/%Y')}} {% endif %}</td>
               <td align="center"> {% if user.userAtivo == True %} Sim {% else %} Não {% endif %} </td>
+              <td align="center"> {% if user.userEnvia == True %} Sim {% else %} Não {% endif %} </td>
             </tr>
           {% endfor %}
         </tbody>

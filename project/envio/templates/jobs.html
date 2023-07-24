@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+  <div class="jumbotron">
+
+    <div class="row">
+
+      <div class="col-10">
+        {% if job_agendado %}
+          <h5><b>Reagendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
+          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <h6>Agendamento atual: <b>{{ prox_exec.strftime('%d/%m/%Y %H:%M:%S') }}</b></h6>
+        {% else %}
+          <h5><b>Agendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
+          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+        {% endif %}  
+      </div>
+
+      <div class="col-2">
+        {% if lista == 'n_enviados' and demandas_count != 0 %}
+          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar TODOS</button>
+        {% endif %}  
+      </div>
+
+    </div>
+
+      {% macro render_field(field,obr) %}
+        {% if obr == True %}
+          <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
+        {% else %}
+          <dt>{{ field.label(class="form-control-label") }}
+        {% endif %}
+        <dd>{{ field(**kwargs)|safe }}
+        {% if field.errors %}
+          <ul class=errors>
+          {% for error in field.errors %}
+            <li><span class="text-danger font-weight-bold">{{ error }}</span></li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+        </dd>
+    {% endmacro %}
+
+    <form class="needs-validation" method='POST' >
+      {{ form.hidden_tag() }}
+      
+    <br>
+
+    <div class="row">
+      <div class="form-group col-3">
+        {{ render_field(form.periodicidade,class="form-control", obr=True) }}
+      </div>
+
+      <div class="form-group col-2">
+        {{ render_field(form.hora,class="form-control", obr=True) }}
+      </div>
+
+      <div class="form-group col-2">
+        {{ render_field(form.minuto,class="form-control", obr=True) }}
+      </div>
+    </div>  
+
+      <br>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-outline-primary") }}
+      </div>
+
+
+
+  </div>
+</div>
+
+
+{% endblock %}

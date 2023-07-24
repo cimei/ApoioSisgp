@@ -145,6 +145,7 @@ def register():
        |e-mails, pois o aplicativo envia uma mensagem sobre a confirmação do registro.        |
        +--------------------------------------------------------------------------------------+
     """
+    usuarios_qtd = users.query.count()
 
     form = RegistrationForm()
 
@@ -152,17 +153,12 @@ def register():
 
         if form.check_username(form.username) and form.check_email(form.email):
 
-            # primeiro usuário é cadastrado como ativo
-            if users.query.count() == 0:
-                ativo = True
-            else:
-                ativo = False
-
             user = users(userNome                   = form.username.data,
                         userEmail                  = form.email.data,
                         plaintext_password         = form.password.data,
                         email_confirmation_sent_on = datetime.now(),
-                        userAtivo                  = ativo)
+                        userAtivo                  = False,
+                        userEnvia                  = False)
 
             db.session.add(user)
             db.session.commit()
@@ -176,6 +172,10 @@ def register():
             flash('Usuário '+ form.username.data +' registrado! Verifique sua caixa de e-mail para confirmar o endereço.','sucesso')
             
             return redirect(url_for('core.index'))
+        
+    if usuarios_qtd == 0:
+        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','erro')
+        return redirect(url_for('usuarios.primeiro_user'))    
 
     return render_template('register.html',form=form)
 
@@ -407,7 +407,8 @@ def primeiro_user():
                         userEmail                  = form.email.data,
                         plaintext_password         = form.password.data,
                         email_confirmation_sent_on = datetime.now(),
-                        userAtivo                  = True)
+                        userAtivo                  = True,
+                        userEnvia                  = False)
 
             db.session.add(user)
             db.session.commit()
@@ -478,12 +479,13 @@ def update_user(user_id):
         if current_user.userAtivo:
 
             user.userAtivo = form.ativo.data
+            user.userEnvia = form.envia.data
 
             db.session.commit()
 
-            registra_log_auto(current_user.id,'Usuário '+ user.userNome +' ativado.')
+            registra_log_auto(current_user.id,'Usuário '+ user.userNome +' alterado.')
 
-            flash('Usuário '+ user.userNome +' ativado!','sucesso')
+            flash('Usuário '+ user.userNome +' alterado!','sucesso')
 
             return redirect(url_for('usuarios.view_users'))
 
@@ -497,7 +499,8 @@ def update_user(user_id):
     # traz a informação atual do usuário
     elif request.method == 'GET':
 
-        form.ativo.data       = user.userAtivo
+        form.ativo.data = user.userAtivo
+        form.envia.data = user.userEnvia
 
     return render_template('update_user.html', title='Update', name=user.userNome,
                             form=form)

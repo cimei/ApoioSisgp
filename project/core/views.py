@@ -18,11 +18,11 @@
 # core/views.py
 
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
+from flask_login import current_user, login_required
 
 import os
 from datetime import datetime as dt
 import tempfile
-from flask_login import current_user
 from werkzeug.utils import secure_filename
 import csv
 import uuid
@@ -32,7 +32,7 @@ from sqlalchemy import distinct
 from project.core.forms import ArquivoForm
 from project import db
 from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
-                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users
+                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users, jobs
 
 from project.usuarios.views import registra_log_auto
 
@@ -73,6 +73,25 @@ def PegaArquivo(form):
 
 @core.route('/')
 def index():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Ações quando o aplicativo é colocado no ar.                                            |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    try:
+        limpa_apscheduler_regs = db.session.query(jobs).delete()
+        db.session.commit()
+        print ("*** TABELA DO APSCHEDULER FOI ESVAZIADA ***")
+    except:
+        print ("*** TABELA DO APSCHEDULER NÃO EXISTE AINDA ***")
+    
+    return redirect(url_for('core.inicio'))
+
+
+
+@core.route('/inicio')
+def inicio():
     """
     +---------------------------------------------------------------------------------------+
     |Apresenta a tela inicial do aplicativo.                                                |
@@ -325,6 +344,8 @@ def CarregaUnidades():
 
 
 @core.route('/carregaPessoas', methods=['GET', 'POST'])
+@login_required
+
 def CarregaPessoas():
     """
     +---------------------------------------------------------------------------------------+
@@ -498,6 +519,8 @@ def CarregaPessoas():
 
 
 @core.route('/carregaAtividades', methods=['GET', 'POST'])
+@login_required
+
 def CarregaAtividades():
     """
     +---------------------------------------------------------------------------------------+

@@ -32,14 +32,14 @@
         <ul class="navbar-nav mr-auto">
 
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('core.index')}}">Início<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{{url_for('core.inicio')}}">Início<span class="sr-only">(current)</span></a>
           </li>
 
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('core.info')}}">Sobre</a>
           </li>
 
-         {% if current_user.is_authenticated and current_user.userAtivo %}
+        {% if current_user.is_authenticated and current_user.userAtivo %}
 
           <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownU" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -103,15 +103,18 @@
             </div>
           </li>
 
-          <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Envio
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-              <a class="dropdown-item" href="{{url_for('envio.lista_a_enviar')}}">Planos a enviar</a>
-              <a class="dropdown-item" href="{{url_for('envio.lista_enviados')}}">Planos enviados</a>
-            </div>
-          </li>
+          {% if current_user.userEnvia %}
+            <li class="nav-item dropdown active">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Envio
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
+                <a class="dropdown-item" href="{{url_for('envio.lista_a_enviar')}}">Planos a enviar</a>
+                <a class="dropdown-item" href="{{url_for('envio.lista_enviados')}}">Planos enviados</a>
+                <a class="dropdown-item" href="{{url_for('envio.agenda_envio')}}">Agendar envio</a>
+              </div>
+            </li>
+          {% endif %}
 
         {% endif %}
         
@@ -122,11 +125,11 @@
             {{current_user.userNome}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
-              <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
               {% if current_user.userAtivo %}
+                <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
                 <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Ver Usuários</a>
+              {% endif %}  
                 <a class="dropdown-item"  href="{{ url_for('usuarios.troca_senha') }}">Trocar senha</a>
-              {% endif %}
             </div>
           </li>
 
@@ -154,7 +157,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '3.0.9') %}
+          {% set ver = namespace(num = '3.0.10') %}
 
         </ul>
 

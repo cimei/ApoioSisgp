@@ -509,6 +509,7 @@ def lista_atividades_unidade(unid_id):
 ## desassocia atividade de uma unidade
 
 @unidades.route('/<item_cat_id>/<cat_id>/<int:unid_id>/desassocia_ativ', methods=['GET', 'POST'])
+@login_required
 
 def desassocia_ativ(item_cat_id,cat_id,unid_id):
     """

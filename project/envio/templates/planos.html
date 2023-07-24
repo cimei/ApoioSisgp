@@ -8,15 +8,18 @@
     <div class="row">
       <div class="col-10">
         {% if lista == 'n_enviados' %}
-          <h5><b>Lista de Planos de Trabalho APTOS AO ENVIO</b> (Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h5>
+          <h5><b>Lista de Planos de Trabalho APTOS AO ENVIO</b></h5>
+          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) executados, com todas as atividades avaliadas e ainda não enviados.</p>
         {% else %}
-          <h5><b>Lista de Planos de Trabalho ENVIADOS</b> (Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h5>
+          <h5><b>Lista de Planos de Trabalho ENVIADOS</b></h5>
+          <h6>Origem: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <p><span class="badge badge-primary badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) que já foram eniados.</p>
         {% endif %}  
-        <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> plano(s) nesta lista</p>
       </div>
       <div class="col-2">
         {% if lista == 'n_enviados' and demandas_count != 0 %}
-          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar Planos</button>
+          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar TODOS</button>
         {% endif %}  
       </div>
     </div>
@@ -40,7 +43,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 
-              <form action="{{url_for('envio.enviar_planos',n_enviados=n_enviados)}}" method="post">
+              <form action="{{url_for('envio.enviar_planos')}}" method="post">
                 <input class="btn btn-danger" type="submit" name="" value="Executar">
               </form>
 

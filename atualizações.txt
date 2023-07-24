@@ -1,5 +1,13 @@
 ## Atualizações ##
 
+24/07/2023
+Implementação de agendamento de envio de planos.
+v3.1.0
+
+28/06/2023
+Exigência de login para algumas consultas, em especial, de pessoas.
+v3.0.10
+
 02/03/2023
 Criada lista de candidatos sem planos
 v3.0.9

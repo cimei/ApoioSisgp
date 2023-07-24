@@ -7,6 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
+# from flask_apscheduler import APScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 import pyodbc
 
@@ -28,6 +31,9 @@ Migrate(app,db)
 mail = Mail(app)
 
 locale.setlocale( locale.LC_ALL, '' )
+
+# sched = APScheduler()
+sched = BackgroundScheduler(jobstores={'default': SQLAlchemyJobStore(url=os.environ.get('DB_URL'))})
 
 #################################
 ## log in - cofigurações

@@ -22,7 +22,7 @@
 # views.py na pasta consultas
 
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
 from sqlalchemy import and_, func, distinct, or_
@@ -187,7 +187,7 @@ def pactos():
                                        label('descricao1',catdom.descricao),
                                        label('descricao2',situacao.c.descricao))\
                                  .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
-                                 .join(VW_Unidades, VW_Unidades.id_unidade == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                  .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -233,7 +233,7 @@ def pactos_irregulares():
                                        label('descricao1',catdom.descricao),
                                        label('descricao2',catdom_1.descricao))\
                                  .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
-                                 .join(VW_Unidades, VW_Unidades.id_unidade == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                  .join(catdom_1, catdom_1.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -295,6 +295,8 @@ def pacto_atividades(pactoId,nome):
 ## deletar programa de gestão (plano de tragalho e relacionamentos) em rascunho
 
 @consultas.route('/<pgId>/deleta_pg', methods=['GET', 'POST'])
+@login_required
+
 def deleta_pg(pgId):
     """
     +---------------------------------------------------------------------------------------+
@@ -352,6 +354,8 @@ def deleta_pg(pgId):
 ## gera xlsx com dados dos plano de gestão nas unidades 
 
 @consultas.route('/relatorioPG', methods = ['GET', 'POST'])
+@login_required
+
 def relatorioPG():
     """
     +---------------------------------------------------------------------------------------+
@@ -400,7 +404,7 @@ def relatorioPG():
                           pactos.c.pactoDesc,
                           pactos.c.formaExec)\
                    .join(dados_pt, dados_pt.c.unidadeId == Unidades.unidadeId)\
-                   .join(VW_Unidades, VW_Unidades.id_unidade == Unidades.unidadeId)\
+                   .join(VW_Unidades, VW_Unidades.unidadeId == Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.planoTrabalhoId == dados_pt.c.planoTrabalhoId)\
                    .order_by(Unidades.unidadeId)\
                    .all()
@@ -880,7 +884,7 @@ def candidatos_sem_plano():
                                             catdom.descricao)\
                              .join(Pessoas, Pessoas.pessoaId == Atividade_Candidato.pessoaId)\
                              .join(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                             .outerjoin(VW_Unidades, VW_Unidades.id_unidade == Pessoas.unidadeId)\
+                             .outerjoin(VW_Unidades, VW_Unidades.unidadeId == Pessoas.unidadeId)\
                              .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Atividade_Candidato.planoTrabalhoAtividadeId)\
                              .join(Planos_de_Trabalho, Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
                              .join(catdom, catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\

@@ -37,6 +37,24 @@ from sqlalchemy.dialects.mssql import NUMERIC
 def load_user(user_id):
     return users.query.get(user_id)
 
+class jobs(db.Model):
+
+    __tablename__ = 'apscheduler_jobs'
+    __table_args__ = {"schema": "dbo"}
+
+    id             = db.Column(db.String,primary_key=True)
+    next_run_time  = db.Column(db.Float)
+    job_state      = db.Column(db.String)
+    
+    def __init__(self, id,next_run_time, job_state):
+
+        self.id            = id
+        self.next_run_time = next_run_time
+        self.mjob_statesg  = job_state
+
+    def __repr__(self):
+
+        return f"{self.id};{self.next_run_time}" 
 
 class users(db.Model, UserMixin):
 
@@ -54,9 +72,10 @@ class users(db.Model, UserMixin):
     last_logged_in             = db.Column(db.DateTime, nullable=True)
     current_logged_in          = db.Column(db.DateTime, nullable=True)
     userAtivo                  = db.Column(db.Boolean)
+    userEnvia                  = db.Column(db.Boolean)
     avaliadorId                = db.Column(db.Integer, nullable=True)
 
-    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,email_confirmation_sent_on=None):
+    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,userEnvia,email_confirmation_sent_on=None):
 
         self.userNome                   = userNome
         self.userEmail                  = userEmail
@@ -68,6 +87,7 @@ class users(db.Model, UserMixin):
         self.last_logged_in             = None
         self.current_logged_in          = datetime.now()
         self.userAtivo                  = userAtivo
+        self.userEnvia                  = userEnvia
         self.avaliadorId                = None
 
     def check_password (self,plaintext_password):
@@ -148,23 +168,40 @@ class Unidades(db.Model):
 
 class VW_Unidades(db.Model):
 
-    __tablename__ = 'VW_UNIDADE'
+    __tablename__ = 'VW_UnidadeSiglaCompleta'
     __table_args__ = {"schema": "dbo"}
 
-    id_unidade       = db.Column(db.BigInteger, primary_key = True)
-    undDescricao     = db.Column(db.String)
-    undSiglaCompleta = db.Column(db.String)
-    undCodigoSIORG   = db.Column(db.Integer)
+    unidadeId           = db.Column(db.BigInteger, primary_key = True)
+    undSigla            = db.Column(db.String)
+    unidadeIdPai        = db.Column(db.String)
+    tipoUnidadeId       = db.Column(db.BigInteger)
+    situacaoUnidadeId   = db.Column(db.BigInteger)
+    ufId                = db.Column(db.String)
+    undNivel            = db.Column(db.Integer)
+    tipoFuncaoUnidadeId = db.Column(db.BigInteger)
+    undSiglaCompleta    = db.Column(db.String)
+    Email               = db.Column(db.String)
+    undCodigoSIORG      = db.Column(db.Integer)
 
-    def __init__(self, undDescricao, undSiglaCompleta, undCodigoSIORG):
+    def __init__(self, unidadeId,undSigla,undDescricao,unidadeIdPai,tipoUnidadeId,situacaoUnidadeId,ufId,
+                       undNivel,tipoFuncaoUnidadeId,undSiglaCompleta,Email,undCodigoSIORG):
 
-        self.undDescricao     = undDescricao
-        self.undSiglaCompleta = undSiglaCompleta
-        self.undCodigoSIORG   = undCodigoSIORG
+        self.unidadeId           = unidadeId
+        self.undSigla            = undSigla
+        self.undDescricao        = undDescricao
+        self.unidadeIdPai        = unidadeIdPai
+        self.tipoUnidadeId       = tipoUnidadeId
+        self.situacaoUnidadeId   = situacaoUnidadeId
+        self.ufId                = ufId
+        self.undNivel            = undNivel
+        self.tipoFuncaoUnidadeId = tipoFuncaoUnidadeId
+        self.undSiglaCompleta    = undSiglaCompleta
+        self.Email               = Email
+        self.undCodigoSIORG      = undCodigoSIORG
 
 
     def __repr__ (self):
-        return f"{self.undDescricao};{self.undSiglaCompleta};{self.undCodigoSIORG}"
+        return f"{self.undSiglaCompleta}"
 
 
 
