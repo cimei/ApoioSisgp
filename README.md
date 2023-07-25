@@ -68,5 +68,20 @@ Como este sistema faz controle de acesso e registra o log dos commits realizados
       ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
       GO
 
+      /****** Object:  Table  [dbo].[apscheduler_jobs]  ******/
+
+      CREATE TABLE [dbo].[apscheduler_jobs](
+            [id] [nvarchar](191) NOT NULL,
+            [next_run_time] [float] NULL,
+            [job_state] [varbinary](max) NOT NULL, 
+      PRIMARY KEY CLUSTERED 
+      (
+            [id] ASC
+      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+      ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+      GO
+
+[Apoio].[User] é para o controle de usuários, [Apoio],[log_auto] para o diário do sistema e [dbo].[apscheduler_jobs] para o controle do agendamento de envio de Planos ao órgão central do SIPEC.
+
 Outro detalhe sobre o banco de dados: Como o sistema conta com a funcionalidade de envio de dados, ele utiliza as views da API de Envio de Planos de Trabalho do Programa de Gestão (CADE/ME). O script de geração destas views está disponível no github do SISGP (https://github.com/spbgovbr/Sistema_Programa_de_Gestao_Susep).
 
