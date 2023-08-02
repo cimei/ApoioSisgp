@@ -48,7 +48,10 @@ def lista_atividades(lista):
     |Recebe o tipo de lista como parâmetro.                                                         |    
     +-----------------------------------------------------------------------------------------------+
     """
-# Lê tabela atividades
+    
+    page = request.args.get('page', 1, type=int)
+    
+    # Lê tabela atividades
 
     unids = db.session.query(cat_item_cat.itemCatalogoId,
                              label('qtd_unids',func.count(cat_item_cat.catalogoId)))\
@@ -56,7 +59,7 @@ def lista_atividades(lista):
                        .group_by(cat_item_cat.itemCatalogoId)\
                        .subquery()
 
-    if lista == 'Todas':
+    if lista == 'inativas':
 
         # pega atividades que constam em algum plano de trabalho (pacto) - Aqui é utilizada somente para destacar atividades na lista   
         ativs_utilizadas = db.session.query(Pactos_de_Trabalho_Atividades.itemCatalogoId).distinct().subquery()
@@ -75,7 +78,11 @@ def lista_atividades(lista):
                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                       .order_by(Atividades.titulo).all()
+                       .filter(Atividades.titulo.like('x%'))\
+                       .order_by(Atividades.titulo)\
+                       .paginate(page=page,per_page=100)
+
+        quantidade = ativs.total               
     
     elif lista == 'ativas':
 
@@ -97,7 +104,10 @@ def lista_atividades(lista):
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .filter(Atividades.titulo.notlike('x%'))\
-                       .order_by(Atividades.titulo).all()                   
+                       .order_by(Atividades.titulo)\
+                       .paginate(page=page,per_page=100) 
+
+        quantidade = ativs.total                               
 
     elif lista == 'pgs_v':   
 
@@ -122,7 +132,10 @@ def lista_atividades(lista):
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas_pg,ativs_utilizadas_pg.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .filter(Atividades.titulo.notlike('x%'))\
-                        .order_by(Atividades.titulo).all()
+                        .order_by(Atividades.titulo)\
+                        .all()
+
+        quantidade = len(ativs)                
 
     elif lista == 'pgs_g': 
 
@@ -146,7 +159,10 @@ def lista_atividades(lista):
                         .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas_pg,ativs_utilizadas_pg.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .order_by(Atividades.titulo).all()                    
+                        .order_by(Atividades.titulo)\
+                        .all()  
+
+        quantidade = len(ativs)                                  
 
 
     elif lista == 'planos_g':  
@@ -168,7 +184,10 @@ def lista_atividades(lista):
                         .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .order_by(Atividades.titulo).all()
+                        .order_by(Atividades.titulo)\
+                        .all()
+
+        quantidade = len(ativs)                
     
     elif lista == 'planos_v':    
 
@@ -190,10 +209,11 @@ def lista_atividades(lista):
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .filter(Atividades.titulo.notlike('x%'))\
-                        .order_by(Atividades.titulo).all()                    
+                        .order_by(Atividades.titulo)\
+                        .all()                    
 
 
-    quantidade = len(ativs)
+        quantidade = len(ativs)
 
     return render_template('lista_atividades.html', ativs=ativs, quantidade=quantidade,lista=lista)
 

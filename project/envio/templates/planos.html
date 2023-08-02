@@ -8,20 +8,20 @@
     <div class="row">
       <div class="col-10">
         {% if lista == 'n_enviados' %}
-          <h5><b>Lista de Planos de Trabalho APTOS AO ENVIO</b></h5>
+          <h5><b>Lista de Planos de Trabalho NUNCA ENVIADOS</b></h5>
           <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
-          <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) executados, com todas as atividades avaliadas e ainda não enviados.</p>
+          <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviados.</p>
         {% else %}
           <h5><b>Lista de Planos de Trabalho ENVIADOS</b></h5>
           <h6>Origem: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
-          <p><span class="badge badge-primary badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) que já foram eniados.</p>
+          <p><span class="badge badge-primary badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.</p>
         {% endif %}  
       </div>
-      <div class="col-2">
-        {% if lista == 'n_enviados' and demandas_count != 0 %}
-          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar TODOS</button>
+      <!-- <div class="col-2">
+        {% if demandas_count != 0 %}
+          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar lista</button>
         {% endif %}  
-      </div>
+      </div> -->
     </div>
 
       {# modal confirmar envio de Planos de Trabalho #}
@@ -43,7 +43,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 
-              <form action="{{url_for('envio.enviar_planos')}}" method="post">
+              <form action="{{url_for('envio.enviar_planos',tipo=lista)}}" method="post">
                 <input class="btn btn-danger" type="submit" name="" value="Executar">
               </form>
 
@@ -76,6 +76,7 @@
               <th scope="col"><p align = "center">Situação</p></th>
               <th scope="col"><p align = "center"><abbr title="Percentual de execução">% exec.</abbr></p></th>
               <th scope="col"><p align = "center"><abbr title="Relação Previsto/Realizado">p/r</abbr></p></th>
+              <th scope="col"><p align = "center"><abbr title="Percentagem da avaliação.">% Avaliado</abbr></p></th>
               <th scope="col"><p align = "center"><abbr title="Enviar plano específico.">Ação</abbr></p></th>
             </tr>
           </thead>
@@ -92,6 +93,11 @@
                 <td><p align = "center"> {{demanda.descricao}} </p></td>
                 <td><p align = "center"> {% if demanda.percentualExecucao == None %}N.C.{% else %} {{demanda.percentualExecucao|string()|replace(".",",")}} {% endif %} </p></td> 
                 <td><p align = "center"> {% if demanda.relacaoPrevistoRealizado == None %}N.C.{% else %} {{demanda.relacaoPrevistoRealizado|string()|replace(".",",")}} {% endif %} </p></td> 
+                {% if demanda.qtd_ativs > 0 %}
+                  <td><p align = "center"> {{(100 * demanda.qtd_com_nota / demanda.qtd_ativs)|round(1)}} </p></td>
+                {% else %} 
+                  <td><p align = "center"> 0 </p></td> 
+                {% endif %} 
                 <td><p align = "center"> <a class="" href="{{url_for('envio.enviar_um_plano',plano_id=demanda.pactoTrabalhoId,lista=lista)}}">
                     {% if lista == 'n_enviados' %} Enviar {% else %} Reenviar {% endif %}</a> </p></td>
                </tr>

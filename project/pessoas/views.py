@@ -51,9 +51,11 @@ def lista_pessoas():
     +---------------------------------------------------------------------------------------+
     """
 
+    page = request.args.get('page', 1, type=int)    
+
     tipo = "inst"
 
-# Lê tabela pessoas
+    # Lê tabela pessoas
 
     pessoas = db.session.query(Pessoas.pessoaId,
                              Pessoas.pesNome,
@@ -74,9 +76,10 @@ def lista_pessoas():
                             .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                            .order_by(Pessoas.pesNome).all()
+                            .order_by(Pessoas.pesNome)\
+                            .paginate(page=page,per_page=100)
 
-    quantidade = len(pessoas)
+    quantidade = pessoas.total
 
     gestorQtd = db.session.query(catdom.descricao)\
                        .filter(catdom.classificacao == 'GestorSistema').count()
@@ -98,6 +101,9 @@ def lista_pessoas_filtro():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+
+    page = request.args.get('page', 1, type=int)
+
     tipo = "pesq"
 
     form = PesquisaForm()
@@ -210,9 +216,10 @@ def lista_pessoas_filtro():
                                             Pessoas.tipoFuncaoId.is_(None),
                                             Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                             Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                    .order_by(Pessoas.pesNome).all()
+                                    .order_by(Pessoas.pesNome)\
+                                    .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
             elif int(form.func.data) == 0:
 
@@ -239,9 +246,10 @@ def lista_pessoas_filtro():
                                                 Pessoas.unidadeId.like(p_unidade_pattern),
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome).all()
+                                        .order_by(Pessoas.pesNome)\
+                                        .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
             else:
 
@@ -269,9 +277,10 @@ def lista_pessoas_filtro():
                                                 Pessoas.tipoFuncaoId == form.func.data,
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome).all()
+                                        .order_by(Pessoas.pesNome)\
+                                        .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
         else:   ### consulta pessoas sob a unidade e suas subordinadas
 
@@ -301,9 +310,10 @@ def lista_pessoas_filtro():
                                             Pessoas.tipoFuncaoId.is_(None),
                                             Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                             Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                    .order_by(Pessoas.pesNome).all()
+                                    .order_by(Pessoas.pesNome)\
+                                    .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
             elif int(form.func.data) == 0:
 
@@ -330,9 +340,10 @@ def lista_pessoas_filtro():
                                                 Pessoas.unidadeId.in_(tree),
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome).all()
+                                        .order_by(Pessoas.pesNome)\
+                                        .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
             else:
 
@@ -360,9 +371,10 @@ def lista_pessoas_filtro():
                                                 Pessoas.tipoFuncaoId == form.func.data,
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome).all()
+                                        .order_by(Pessoas.pesNome)\
+                                        .paginate(page=page,per_page=100)
 
-                quantidade = len(pessoas)
+                quantidade = pessoas.total
 
 
 
@@ -391,9 +403,11 @@ def lista_gestores_sisgp():
     +---------------------------------------------------------------------------------------+
     """
 
+    page = request.args.get('page', 1, type=int)
+
     tipo = "gest"
 
-# Lê tabela pessoas
+    # Lê tabela pessoas
 
     gestores = db.session.query(Pessoas.pessoaId,
                              Pessoas.pesNome,
@@ -416,9 +430,10 @@ def lista_gestores_sisgp():
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                             .outerjoin(catdom, catdom.descricao == cast(Pessoas.pessoaId,String))\
                             .filter(catdom.classificacao == 'GestorSistema')\
-                            .order_by(Pessoas.pesNome).all()
+                            .order_by(Pessoas.pesNome)\
+                            .paginate(page=page,per_page=100)
 
-    quantidade = len(gestores)
+    quantidade = gestores.total
 
 
     return render_template('lista_pessoas.html', pessoas = gestores, quantidade=quantidade,
@@ -660,7 +675,10 @@ def lista_pessoas_unid(unid):
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
-# Lê tabela pessoas
+
+    page = request.args.get('page', 1, type=int)
+
+    # Lê tabela pessoas
 
     tipo = "unid"
 
@@ -688,9 +706,10 @@ def lista_pessoas_unid(unid):
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                             .filter(Unidades.undSigla.in_(l_unid))\
-                            .order_by(Pessoas.unidadeId,Pessoas.pesNome).all()
+                            .order_by(Pessoas.unidadeId,Pessoas.pesNome)\
+                            .paginate(page=page,per_page=100)
 
-    quantidade = len(pessoas)
+    quantidade = pessoas.total
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
                                                  gestorNome = None, tipo = tipo, unid=unid)

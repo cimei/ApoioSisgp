@@ -2,33 +2,35 @@
 {% block content %}
 <div class="jumbotron">
   {% if lista == 'ativas' %}
-    <div class = "row">
-      <div class = "col-2">
-        <span class="align-baseline"><h5>Lista das Atividades Válidas</h5></span>
-      </div>                        
-      <div class = "col">
-        <span class="align-baseline"><a class="nav-link" href="{{url_for('atividades.lista_atividades',lista='Todas')}}">(Ver todas as Atividades)</a></h5></span>
-      </div> 
-    </div>
-  {% else %} 
-    <h5>Lista das Atividades</h5>   
+    <h5>Lista das Atividades Válidas</h5>
+  {% elif lista == 'inativas' %} 
+    <h5>Lista das Atividades Inválidas</h5>   
   {% endif %}                       
 
   <div class = "row">
     <div class="col-1">
       <a href="{{url_for('atividades.cria_atividade')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
     </div>
-    <div class="col">
-      <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da atividade.</small>
+    <div class="col-3">
+      <small class="form-text text-muted"> Ou clique no título da atividade paraver e atualizar seus dados.</small>
     </div>
+    <div class = "col-2">
+      {% if lista == 'ativas' %}
+        <a href="{{url_for('atividades.lista_atividades',lista='inativas')}}"class="btn btn-success" role="button" aria-pressed="true">Atividades Inválidas</a>
+      {% elif lista == 'inativas' %} 
+        <a href="{{url_for('atividades.lista_atividades',lista='ativas')}}"class="btn btn-success" role="button" aria-pressed="true">Atividades Válidas</a> 
+      {% endif %}
+    </div>
+      
+    
   </div>
   <br>
 
 <caption>
         <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
-          {% if lista == 'Todas'%} atividades da Instituição (TODAS)
+          {% if lista == 'inativas'%} atividades antigas da Instituição 
           {% elif lista == 'pgs_g' or lista == 'pgs_v' %} atividades utilizadas em programas de gestão
-          {% elif lista == 'ativas' %} atividades da Instituição (VÁLIDAS)
+          {% elif lista == 'ativas' %} atividades válidas da Instituição
           {% else %} atividades utilizadas em planos de Trabalho
           {% endif %}  
         </p>
@@ -60,30 +62,76 @@
     </thead>
     <tbody>
 
-      {% for a in ativs %}
+      {% if lista == 'ativas' or lista == 'inativas' %}
 
-      <tr {% if a.util == None%} class="text-secondary" {% endif %}>
-        <th scope="row"><abbr title="Atualizar atividade.">
-          <p align = "center" ><a href="{{url_for('atividades.atividade_update', cod_ativ=a.itemCatalogoId)}}"> {{ativs.index(a) + 1}} </a>
-        </p></th>
-        <td>
-          <p align = "left"> 
-            <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;"> {{a.titulo}}</span></abbr>
-          </p>
-        </td>
-        <td><p align = "center"> {{a.descricao}} </p></td>
-        <td><p align = "center"> {% if a.permiteRemoto %}Sim{% else %}Não{% endif %} </p></td>
-        <td><p align = "center"> {{(a.tempoPresencial)|decimal_com_virgula}} </p></td>
-        <td><p align = "center"> {{(a.tempoRemoto)|decimal_com_virgula}} </p></td>
-        <td><p align = "center"> {{a.complexidade}} </p></td>
-        <td><p align = "center"> <a href="{{url_for('atividades.associa_atividade_unidade', cod_ativ=a.itemCatalogoId)}}">{% if a.qtd_unids == None %} 0 {% else %} {{a.qtd_unids}} {% endif %}</a></p></td>
+      {% for a in ativs.items %}
 
-      </tr>
+        <tr {% if a.util == None%} class="text-secondary" {% endif %}>
+          <th scope="row"> <p align = "center">{{(ativs.page - 1) * ativs.per_page + ativs.items.index(a) + 1}} </p></th>
+          <td>
+            <p align = "left"> 
+              <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;">
+                 <a href="{{url_for('atividades.atividade_update', cod_ativ=a.itemCatalogoId)}}">{{a.titulo}}</a></span></abbr>
+            </p>
+          </td>
+          <td><p align = "center"> {{a.descricao}} </p></td>
+          <td><p align = "center"> {% if a.permiteRemoto %}Sim{% else %}Não{% endif %} </p></td>
+          <td><p align = "center"> {{(a.tempoPresencial)|decimal_com_virgula}} </p></td>
+          <td><p align = "center"> {{(a.tempoRemoto)|decimal_com_virgula}} </p></td>
+          <td><p align = "center"> {{a.complexidade}} </p></td>
+          <td><p align = "center"> <a href="{{url_for('atividades.associa_atividade_unidade', cod_ativ=a.itemCatalogoId)}}">{% if a.qtd_unids == None %} 0 {% else %} {{a.qtd_unids}} {% endif %}</a></p></td>
+
+        </tr>
+      
+      {% else %}
+      
+        <tr {% if a.util == None%} class="text-secondary" {% endif %}>
+          <th scope="row"><abbr title="Atualizar atividade.">
+            <p align = "center" > {{ativs.index(a) + 1}} </p></th>
+          <td>
+            <p align = "left"> 
+              <abbr title="{{a.titulo}}"><span class="d-inline-block text-truncate" style="max-width: 600px;"> 
+                <a href="{{url_for('atividades.atividade_update', cod_ativ=a.itemCatalogoId)}}">{{a.titulo}}</a></span></abbr>
+            </p>
+          </td>
+          <td><p align = "center"> {{a.descricao}} </p></td>
+          <td><p align = "center"> {% if a.permiteRemoto %}Sim{% else %}Não{% endif %} </p></td>
+          <td><p align = "center"> {{(a.tempoPresencial)|decimal_com_virgula}} </p></td>
+          <td><p align = "center"> {{(a.tempoRemoto)|decimal_com_virgula}} </p></td>
+          <td><p align = "center"> {{a.complexidade}} </p></td>
+          <td><p align = "center"> <a href="{{url_for('atividades.associa_atividade_unidade', cod_ativ=a.itemCatalogoId)}}">{% if a.qtd_unids == None %} 0 {% else %} {{a.qtd_unids}} {% endif %}</a></p></td>
+
+        </tr>
 
       {% endfor %}
+      {% endif %}
 
     </tbody>
   </table>
+
+</div>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+
+    {% for page_num in ativs.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
+      {% if page_num %}
+        {% if ativs.page == page_num %}
+          <li class="page-item active">
+              <a class="page-link" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+              <a class="page-link" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% else %}
+        <span class="page-link">…</span>
+      {% endif %}
+
+    {% endfor %}
+  </ul>
+</nav>
 
 </div>
 

@@ -47,6 +47,8 @@ def lista_unidades(lista):
     
     # Lê tabela unidades
 
+    page = request.args.get('page', 1, type=int)
+
     unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
 
     dic_tipo_unidade = {1:'Instituição',2:'Diretoria',3:'Coordenação-Geral',4:'Coordenação',5:'Serviço',6:'Outro'}
@@ -76,8 +78,10 @@ def lista_unidades(lista):
                                 .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .filter(Unidades.situacaoUnidadeId == 1)\
-                                .order_by(Unidades.undSigla).all()
-    elif lista == 'todas':
+                                .order_by(Unidades.undSigla)\
+                                .paginate(page=page,per_page=100)
+        
+    elif lista == 'inativas':
         unids = db.session.query(Unidades.unidadeId,
                                 Unidades.undSigla,
                                 Unidades.undDescricao,
@@ -95,9 +99,11 @@ def lista_unidades(lista):
                                 .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
                                 .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                                .order_by(Unidades.undSigla).all()
+                                .filter(Unidades.situacaoUnidadeId != 1)\
+                                .order_by(Unidades.undSigla)\
+                                .paginate(page=page,per_page=100)
 
-    quantidade = len(unids)
+    quantidade = unids.total
 
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
                                                 dic_situ_unidade = dic_situ_unidade, 

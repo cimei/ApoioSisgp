@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+02/08/2023
+Ajustes em Envios visuais em demais funções.
+v3.1.1
+
 24/07/2023
 Implementação de agendamento de envio de planos.
 v3.1.0

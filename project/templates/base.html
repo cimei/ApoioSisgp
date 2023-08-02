@@ -41,23 +41,12 @@
 
         {% if current_user.is_authenticated and current_user.userAtivo %}
 
-          <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownU" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Unidades</a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownU">
-              <a class="dropdown-item" href="{{url_for('unidades.lista_unidades_filtro',lista='pesq')}}">Filtro</a>
-              <a class="dropdown-item" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Lista completa</a>
-            </div>
+          <li class="nav-item active">
+            <a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Unidades</a>
           </li>
 
-          <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownP" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Pessoas
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownP">
-              <a class="dropdown-item" href="{{url_for('pessoas.lista_pessoas_filtro')}}">Filtro</a>
-              <a class="dropdown-item" href="{{url_for('pessoas.lista_pessoas')}}">Lista completa</a>
-            </div>
+          <li class="nav-item active">
+              <a class="nav-link" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
           </li>
 
           <li class="nav-item active">
@@ -116,6 +105,16 @@
             </li>
           {% endif %}
 
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle text-warning" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Usuário
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Diário</a>
+              <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Gestão de usuários</a>
+            </div>
+          </li>  
+
         {% endif %}
         
         {% if current_user.is_authenticated %}
@@ -125,10 +124,6 @@
             {{current_user.userNome}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown5">
-              {% if current_user.userAtivo %}
-                <a class="dropdown-item" href="{{url_for('usuarios.log')}}">Ver diário</a>
-                <a class="dropdown-item"  href="{{ url_for('usuarios.view_users') }}">Ver Usuários</a>
-              {% endif %}  
                 <a class="dropdown-item"  href="{{ url_for('usuarios.troca_senha') }}">Trocar senha</a>
             </div>
           </li>
@@ -157,7 +152,7 @@
 
         {% endif %}
 
-          {% set ver = namespace(num = '3.1.0') %}
+          {% set ver = namespace(num = '3.1.1') %}
 
         </ul>
 

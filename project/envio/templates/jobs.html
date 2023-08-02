@@ -11,7 +11,7 @@
         {% if job_agendado %}
           <h5><b>Reagendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
           <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
-          <h6>Agendamento atual: <b>{{ prox_exec.strftime('%d/%m/%Y %H:%M:%S') }}</b></h6>
+          <h6>Agendamento atual: <b>{{ prox_exec_envio.strftime('%d/%m/%Y %H:%M:%S') }}</b></h6>
         {% else %}
           <h5><b>Agendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
           <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
@@ -49,6 +49,10 @@
     <br>
 
     <div class="row">
+      <div class="form-group col-3">
+        {{ render_field(form.tipo,class="form-control", obr=True) }}
+      </div>
+
       <div class="form-group col-3">
         {{ render_field(form.periodicidade,class="form-control", obr=True) }}
       </div>

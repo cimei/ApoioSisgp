@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@govbr-ds/core": "^3.3.1"
+  }
+}

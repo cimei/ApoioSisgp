@@ -8,24 +8,29 @@
       </h5>
     {% else %}
       {% if lista == 'ativas' %}
-        <div class="col-2">
-          <span class="align-baseline"><h5>Lista das Unidades Ativas</h5></span>
-        </div>
-        <div class="col">
-          <span class="align-baseline"><a class="nav-link" href="{{url_for('unidades.lista_unidades',lista='todas')}}">(Ver todas as Unidades)</a></span>
-        </div>
-      {% elif lista == 'todas' %} 
-        <h5>Lista das Unidades Ativas e Inativas</h5>
+        <h5>Lista das Unidades Ativas</h5>
+      {% elif lista == 'inativas' %} 
+        <h5>Lista das Unidades Inativas</h5>
       {% endif %}
     {% endif %}  
   </div>
 
   <div class = "row">
     <div class="col-1">
-      <a href="{{url_for('unidades.cria_unidade')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
+      <a href="{{url_for('unidades.cria_unidade')}}" class="btn btn-primary" role="button" aria-pressed="true">Inserir nova</a>
     </div>
-    <div class="col">
-      <small class="form-text text-muted"> Ou clique em um número de sequência para ver e atualizar dados da unidade.</small>
+    <div class="col-3">
+      <small class="form-text text-muted"> Ou clique na sigla da unidade para ver e atualizar seus dados.</small>
+    </div>
+    <div class="col-2">
+      {% if lista == 'ativas' %}
+        <a href="{{url_for('unidades.lista_unidades',lista='inativas')}}" class="btn btn-success" role="button" aria-pressed="true">Ver Unidades INATIVAS</a>
+      {% elif lista == 'inativas' %} 
+        <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}" class="btn btn-success" role="button" aria-pressed="true">Ver Unidades ATIVAS</a>
+      {% endif %}
+    </div>
+    <div class="col-2">
+      <a href="{{url_for('unidades.lista_unidades_filtro',lista='pesq')}}" class="btn btn-secondary" role="button" aria-pressed="true">Filtro</a>
     </div>
   </div>
   <br>
@@ -33,7 +38,7 @@
 <caption>
   <div class="row">
       <div class="col">
-        <p><span class="badge badge-pill badge-primary">{{quantidade}}</span> unidade(s) nesta lista</p>
+        <p><span class="badge badge-pill badge-primary">{{quantidade}}</span> unidade(s) nesta lista. Pág. {{unids.page}} de {{unids.pages}}</p>
       </div>
   </div>
 </caption>
@@ -67,13 +72,11 @@
       </tr>
     </thead>
     <tbody>
-      {% for u in unids %}
+      {% for u in unids.items %}
 
       <tr>
-        <th scope="row"><abbr title="Acrescentar dados à Unidade.">
-          <p align = "center"><a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}"> {{unids.index(u) + 1}} </a>
-        </p></th>
-        <td><p align = "center"> {{u.undSigla}} </p></td>
+        <th scope="row"> <p align = "center">{{(unids.page - 1) * unids.per_page + unids.items.index(u) + 1}} </a> </p></th>
+        <td><p align = "center"> <a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}">{{u.undSigla}} </a></p></td>
         <td><p align = "center"> {{u.undDescricao}} </p></td>
         <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
         <td><p class = "text-muted" align = "center"> 
@@ -105,7 +108,31 @@
 
 </div>
 
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+
+    {% for page_num in unids.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
+      {% if page_num %}
+        {% if unids.page == page_num %}
+          <li class="page-item active">
+              <a class="page-link" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+              <a class="page-link" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% else %}
+        <span class="page-link">…</span>
+      {% endif %}
+
+    {% endfor %}
+  </ul>
+</nav>
+
 </div>
+
+
 
 
 
