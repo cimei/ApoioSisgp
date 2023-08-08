@@ -1,29 +1,33 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('envio.envio_i')}}">Envio</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> --> 
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Agendamento</span>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <div class="container">
 
   <div class="jumbotron">
 
     <div class="row">
-
-      <div class="col-10">
+      <div class="col">
         {% if job_agendado %}
-          <h5><b>Reagendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
-          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <h5><b>Reagendamento de envio de Planos    <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
           <h6>Agendamento atual: <b>{{ prox_exec_envio.strftime('%d/%m/%Y %H:%M:%S') }}</b></h6>
         {% else %}
-          <h5><b>Agendamento do envio dos Planos de Trabalho Encerrados e Avaliados</b></h5>
-          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <h5><b>Agendamento do envio de Planos     <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
         {% endif %}  
       </div>
-
-      <div class="col-2">
-        {% if lista == 'n_enviados' and demandas_count != 0 %}
-          <button type="button" class="btn btn-outline-danger" data-toggle='modal' data-target='#envia_modal'>Enviar TODOS</button>
-        {% endif %}  
-      </div>
-
     </div>
 
       {% macro render_field(field,obr) %}
@@ -68,7 +72,7 @@
 
       <br>
       <div class="form-group">
-        {{ form.submit(class="btn btn-outline-primary") }}
+        {{ form.submit(class="br-button secondary mr-3") }}
       </div>
 
 

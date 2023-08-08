@@ -1,0 +1,19 @@
+/*!
+ * Design System de Governo - DS-Gov
+ * Templates
+ * Versão 0.1.0
+ * Suporte:
+   - Serpro: DIDES/SUPSE/SESEP/SEDEP
+ */
+
+// sass-lint:disable clean-import-paths
+
+@import "../../templates/portal/portal.scss";
+@import "../../templates/page/page.scss";
+@import "../../templates/search/search.scss";
+@import "../../templates/starter/starter.scss";
+@import "../../templates/login/login.scss";
+@import "../../templates/signin/signin.scss";
+@import "../../templates/not-found/not-found.scss";
+@import "../../templates/crud/crud.scss";
+@import "../../templates/password-recovery/password-recovery.scss";

@@ -454,6 +454,8 @@ def envia_planos():
         return 'erro_credenciais'
 
 
+
+
 ## lista planos avaliados que não foram enviados ainda 
 
 @envio.route('/lista_a_enviar')
@@ -466,6 +468,7 @@ def lista_a_enviar():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    page = request.args.get('page', 1, type=int)
 
     n_enviados = planos_n_enviados_API()
 
@@ -529,11 +532,11 @@ def lista_a_enviar():
                             .order_by(Unidades.unidadeId,Pessoas.pesNome,Pactos_de_Trabalho.dataInicio.desc())\
                             .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                             .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                            .all() 
-
+                            .paginate(page=page,per_page=100)
+        
         planos = planos_nao_env
         
-        planos_count = len(planos)        
+        planos_count = planos.total    
 
         return render_template('planos.html', demandas = planos, 
                                               demandas_count = planos_count,
@@ -558,6 +561,7 @@ def lista_enviados():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    page = request.args.get('page', 1, type=int)
 
     enviados = planos_enviados_API()
 
@@ -620,9 +624,9 @@ def lista_enviados():
                                 .order_by(Unidades.unidadeId,Pessoas.pesNome,Pactos_de_Trabalho.dataInicio.desc())\
                                 .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                                 .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                .all() 
-        
-        planos_count = len(planos)        
+                                .paginate(page=page,per_page=100) 
+       
+        planos_count = planos.total 
 
         return render_template('planos.html', demandas = planos, 
                                             demandas_count = planos_count,
@@ -988,4 +992,20 @@ def agenda_envio():
                                         job_agendado_reenvio=job_agendado_reenvio, 
                                         prox_exec_envio=prox_exec_envio, 
                                         prox_exec_reenvio=prox_exec_reenvio, 
-                                        form=form)        
+                                        form=form)   
+    
+    
+## renderiza tela inicial dos envios 
+
+@envio.route('/envio_i')
+@login_required
+
+def envio_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial dos envios.                                                     |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('envio.html')          

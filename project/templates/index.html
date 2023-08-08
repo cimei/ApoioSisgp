@@ -1,78 +1,35 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
 
 <div class="container">
   <div class="jumbotron">
-    <h3><center>Apoio ao SISGP</center></h3>
-    <h3><center>Consultas e Manutenções</center></h3>
-    <h5><center>({{ativos}} Usuários habilitados a utilizar este sistema)</center></h5>
+    <!-- <h3><center>Início</center></h3> -->
+    <!-- <h5><center>({{ativos}} Usuários habilitados a utilizar este sistema)</center></h5>
     <br>
-    <h4><center>Bem vindo!</center></h4>
-  </div>
-</div>
-<div class="container">
-  <div class="jumbotron">
+    <h4><center>Bem vindo!</center></h4> -->
 
-    <h4><center>Alguns dados do Programa de Gestão na Instituição</center></h4><br>
-    
-    <div class="row">
+  {% if current_user.is_authenticated and current_user.userAtivo %} 
 
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{unids}} Unidades</h5>
-            <p class="card-text">{{unids_com_pg}} já criaram algum PG</p>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}" class="card-link">Ver unidades</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pes}} Pessoas</h5>
-            <p class="card-text">{{pes_pacto}} com planos vigentes</p>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{ativs}} Atividades</h5>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('atividades.lista_atividades',lista='Todas')}}" class="card-link">Ver atividades</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pts}} Programas de Gestão</h5>
-            <p class="card-text">{{pts_exec}} em execução</p>
-            <p class="card-text">veja "Consultas"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pactos}} Planos</h5>
-            <p class="card-text">{{pactos_exec}} em execução</p>
-            <p class="card-text">veja "Consultas"</p>
-          </div>
-        </div>
-      </div>
-
+  <div class="d-flex justify-content-around">
+  
+    <div class="br-magic-button large">
+      <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.envio_i")}}'">Envio de Dados ao Órgão Central do SISP</button>
     </div>
+
+    <div class="br-magic-button large">
+      <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.apoio_i")}}'">Funções de Apoio à Gestão do PGD 1.0</button>
+    </div>
+
+    <div class="br-magic-button large">
+      <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.interno_i")}}'">Funções Internas</button>
+    </div>
+
+  </div>  
+
+  {% endif %}
+  
+
+
   </div>
 </div>
 

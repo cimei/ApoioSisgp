@@ -1,7 +1,7 @@
 ## Atualizações ##
 
 02/08/2023
-Ajustes em Envios visuais em demais funções.
+Ajustes em Envios e de layout em demais funções.
 v3.1.1
 
 24/07/2023

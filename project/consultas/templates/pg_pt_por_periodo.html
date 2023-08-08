@@ -1,11 +1,25 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('consultas.consultas_i')}}">Consultas</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>PGs e PTs por período</span>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <div class="container pt-3">
 
 <div class="jumbotron">
 
-<h5 align = "center"><b>Quantidades de Programas de Gestão e Planos de Trabalhos por período</b>
+<h5 align = "center"><b>Quantidades de Programas de Gestão e Planos de Trabalhos por período</b></h5>
 <br><br>
 
 {% macro render_field(field,obr) %}
@@ -39,7 +53,7 @@
             {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
           </div>
           <div class="form-group col-2">
-            {{ form.submit(class="btn btn-outline-primary btn-sm") }}
+            {{ form.submit(class="br-button secondary mr-3") }}
           </div>
           <div class="col"></div>
         </div>

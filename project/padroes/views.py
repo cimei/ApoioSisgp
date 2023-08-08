@@ -541,3 +541,17 @@ def cria_feriado():
 
     return render_template('atu_feriados.html', form=form, tp=tp)
 
+## renderiza tela inicial do padrões
+
+@padroes.route('/padroes_i')
+@login_required
+
+def padroes_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial ddos padrões.                                                   |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('padroes.html') 

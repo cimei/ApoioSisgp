@@ -1,5 +1,19 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('padroes.padroes_i')}}">Dados Auxiliares</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Tipos de Função</span>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <div class="container">
 
@@ -9,10 +23,7 @@
 
   <div class = "row">
     <div class="col-2">
-      <a href="{{url_for('padroes.cria_func_pessoas')}}" class="btn btn-primary active" role="button" aria-pressed="true">Inserir nova</a>
-    </div>
-    <div class="col">
-      <small class="form-text text-muted"> Clique em um número de sequência para ver e atualizar o tipo.</small>
+      <a href="{{url_for('padroes.cria_func_pessoas')}}" class="br-button secondary mr-3" role="button"><i class="fas fa-plus" aria-hidden="true"></i>Inserir</a>
     </div>
   </div>
   <br>

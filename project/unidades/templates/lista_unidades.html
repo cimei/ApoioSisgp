@@ -1,6 +1,22 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Unidades</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div class="jumbotron">
+
   <div class = "row">
     {% if lista == 'pesq' %}
       <h5>Lista das Unidades  
@@ -16,124 +32,136 @@
   </div>
 
   <div class = "row">
-    <div class="col-1">
-      <a href="{{url_for('unidades.cria_unidade')}}" class="btn btn-primary" role="button" aria-pressed="true">Inserir nova</a>
-    </div>
-    <div class="col-3">
-      <small class="form-text text-muted"> Ou clique na sigla da unidade para ver e atualizar seus dados.</small>
-    </div>
     <div class="col-2">
-      {% if lista == 'ativas' %}
-        <a href="{{url_for('unidades.lista_unidades',lista='inativas')}}" class="btn btn-success" role="button" aria-pressed="true">Ver Unidades INATIVAS</a>
-      {% elif lista == 'inativas' %} 
-        <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}" class="btn btn-success" role="button" aria-pressed="true">Ver Unidades ATIVAS</a>
-      {% endif %}
-    </div>
+      <div class="d-flex justify-content-around">
+        <a href="{{url_for('unidades.cria_unidade')}}" class="br-button secondary mr-3" role="button"><i class="fas fa-plus" aria-hidden="true"></i>Inserir</a>
+      </div>
+    </div>    
     <div class="col-2">
-      <a href="{{url_for('unidades.lista_unidades_filtro',lista='pesq')}}" class="btn btn-secondary" role="button" aria-pressed="true">Filtro</a>
+      <div class="d-flex justify-content-around">
+        {% if lista == 'ativas' %}      
+          <div class="br-switch medium">
+            <input id="switch-label-01" type="checkbox" checked onclick="window.location.href='{{url_for("unidades.lista_unidades",lista="inativas")}}'"/>
+            <label for="switch-label-01"></label>
+            <div class="switch-data" data-enabled="Ativas" data-disabled="Inativas"></div>
+          </div>
+        {% elif lista == 'inativas' %} 
+          <div class="br-switch medium">
+            <input id="switch-label-01" type="checkbox" onclick="window.location.href='{{url_for("unidades.lista_unidades",lista="ativas")}}'"/>
+            <label for="switch-label-01"></label>
+            <div class="switch-data" data-enabled="Ativas" data-disabled="Inativas"></div>
+          </div>
+        {% endif %}
+      </div>  
+    </div>   
+    <div class="col-2">
+      <div class="d-flex justify-content-around">
+        <a href="{{url_for('unidades.lista_unidades_filtro',lista='pesq')}}" class="br-button secondary mr-3" role="button"><i class="fas fa-filter" aria-hidden="true"></i>Filtro</a>
+      </div>  
     </div>
   </div>
+
+
   <br>
 
-<caption>
-  <div class="row">
-      <div class="col">
-        <p><span class="badge badge-pill badge-primary">{{quantidade}}</span> unidade(s) nesta lista. Pág. {{unids.page}} de {{unids.pages}}</p>
-      </div>
+  <caption>
+    <div class="row">
+        <div class="col">
+          <p><span class="badge badge-pill badge-primary">{{quantidade}}</span> unidade(s) nesta lista. Pág. {{unids.page}} de {{unids.pages}}</p>
+        </div>
+    </div>
+  </caption>
+
+  <div style="overflow-y:auto ; height:450px">
+    <table id="table"
+          data-toggle="table"
+          data-filter-control="true"
+          data-show-search-clear-button="true"
+          data-sortable="true"
+          classes="table-sm"
+          data-show-columns="true"
+          data-show-columns-toggle-all="true"
+          class="table table-striped table-hover table-sm">
+      <caption>Unidades da Instituição</caption>
+      <thead>
+        <tr>
+          <th scope="col"><p align = "center">#</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Sigla</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
+          <th scope="col" data-field="Sigla_Pai" data-filter-control="input" data-sortable="true"><p align = "center">Pai</p></th>
+          <th scope="col" data-field="tipoUnidadeId" data-filter-control="input" data-sortable="true"><p class = "text-muted" align = "center">Tipo</p></th>
+          <th scope="col" data-field="situacaoUnidadeId" data-filter-control="input" data-sortable="true"><p align = "center">Situação</p></th>
+          <th scope="col" data-field="ufId" data-filter-control="input" data-sortable="true"><p align = "center">UF</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Nível</p></th>
+          <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Titular</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in unids.items %}
+
+        <tr>
+          <th scope="row"> <p align = "center">{{(unids.page - 1) * unids.per_page + unids.items.index(u) + 1}} </a> </p></th>
+          <td><p align = "center"> <a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}">{{u.undSigla}} </a></p></td>
+          <td><p align = "center"> {{u.undDescricao}} </p></td>
+          <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
+          <td><p class = "text-muted" align = "center"> 
+            {% if  u.tipoUnidadeId in dic_tipo_unidade.keys() %}
+              {{dic_tipo_unidade[u.tipoUnidadeId]}} 
+            {% else %}
+              {{u.tipoUnidadeId}}
+            {% endif %}
+          </p></td>
+          <td><p class = "text-muted" align = "center"> 
+            {% if  u.situacaoUnidadeId in dic_situ_unidade.keys() %}
+              {{dic_situ_unidade[u.situacaoUnidadeId]}} 
+            {% else %}
+              {{u.situacaoUnidadeId}}
+            {% endif %}
+          <td><p align = "center"> {{u.ufId}} </p></td>
+          <td><p align = "center"> {% if u.undNivel == None %}N.I.{% else %}{{u.undNivel}}{% endif %} </p></td>
+          <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
+          <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
+          <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
+          <td><p align = "center"> {% if u.titular == None or u.titular == '' %}N.I.{% else %}{{u.titular}}{% endif %} </p></td>
+          <td><p align = "center"> {% if u.substituto == None or u.substituto == '' %}N.I.{% else %}{{u.substituto}}{% endif %} </p></td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+
   </div>
-</caption>
 
-<div style="overflow-y:auto ; height:450px">
-  <table id="table"
-        data-toggle="table"
-        data-filter-control="true"
-        data-show-search-clear-button="true"
-        data-sortable="true"
-        classes="table-sm"
-        data-show-columns="true"
-        data-show-columns-toggle-all="true"
-        class="table table-striped table-hover table-sm">
-    <caption>Unidades da Instituição</caption>
-    <thead>
-      <tr>
-        <th scope="col"><p align = "center">#</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Sigla</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
-        <th scope="col" data-field="Sigla_Pai" data-filter-control="input" data-sortable="true"><p align = "center">Pai</p></th>
-        <th scope="col" data-field="tipoUnidadeId" data-filter-control="input" data-sortable="true"><p class = "text-muted" align = "center">Tipo</p></th>
-        <th scope="col" data-field="situacaoUnidadeId" data-filter-control="input" data-sortable="true"><p align = "center">Situação</p></th>
-        <th scope="col" data-field="ufId" data-filter-control="input" data-sortable="true"><p align = "center">UF</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Nível</p></th>
-        <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Titular</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for u in unids.items %}
+  <br>
 
-      <tr>
-        <th scope="row"> <p align = "center">{{(unids.page - 1) * unids.per_page + unids.items.index(u) + 1}} </a> </p></th>
-        <td><p align = "center"> <a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}">{{u.undSigla}} </a></p></td>
-        <td><p align = "center"> {{u.undDescricao}} </p></td>
-        <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
-        <td><p class = "text-muted" align = "center"> 
-          {% if  u.tipoUnidadeId in dic_tipo_unidade.keys() %}
-            {{dic_tipo_unidade[u.tipoUnidadeId]}} 
+  <nav class="br-pagination" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+
+      {% for page_num in unids.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
+        {% if page_num %}
+          {% if unids.page == page_num %}
+            <li>
+                <a class="page active" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
+            </li>
           {% else %}
-            {{u.tipoUnidadeId}}
+            <li>
+                <a class="page" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
+            </li>
           {% endif %}
-        </p></td>
-        <td><p class = "text-muted" align = "center"> 
-          {% if  u.situacaoUnidadeId in dic_situ_unidade.keys() %}
-            {{dic_situ_unidade[u.situacaoUnidadeId]}} 
-          {% else %}
-            {{u.situacaoUnidadeId}}
-          {% endif %}
-        <td><p align = "center"> {{u.ufId}} </p></td>
-        <td><p align = "center"> {% if u.undNivel == None %}N.I.{% else %}{{u.undNivel}}{% endif %} </p></td>
-        <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.titular == None or u.titular == '' %}N.I.{% else %}{{u.titular}}{% endif %} </p></td>
-        <td><p align = "center"> {% if u.substituto == None or u.substituto == '' %}N.I.{% else %}{{u.substituto}}{% endif %} </p></td>
-      </tr>
+        {% else %}
+          <span class="page">…</span>
+        {% endif %}
 
       {% endfor %}
+    </ul>
+  </nav>
 
-    </tbody>
-  </table>
 
 </div>
-
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center">
-
-    {% for page_num in unids.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
-      {% if page_num %}
-        {% if unids.page == page_num %}
-          <li class="page-item active">
-              <a class="page-link" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
-          </li>
-        {% else %}
-          <li class="page-item">
-              <a class="page-link" href="{{url_for('unidades.lista_unidades',lista=lista,page=page_num)}}">{{page_num}}</a>
-          </li>
-        {% endif %}
-      {% else %}
-        <span class="page-link">…</span>
-      {% endif %}
-
-    {% endfor %}
-  </ul>
-</nav>
-
-</div>
-
-
-
-
 
 {% endblock %}

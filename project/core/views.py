@@ -652,15 +652,58 @@ def CarregaAtividades():
             if os.path.exists(arq):
                 os.remove(arq)        
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
     return render_template('grab_file.html',form=form, tipo = tipo)
 
 
+## renderiza tela inicial do apoio
 
+@core.route('/apoio_i')
+@login_required
+
+def apoio_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial do apoio.                                                       |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('apoio.html') 
+
+## renderiza tela inicial de cargas
+
+@core.route('/cargas_i')
+@login_required
+
+def cargas_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial de cargas.                                                      |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('cargas.html') 
+
+## renderiza tela inicial funções internas
+
+@core.route('/interno_i')
+@login_required
+
+def interno_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial de funções internas.                                            |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('interno.html') 

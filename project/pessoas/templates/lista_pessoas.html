@@ -1,5 +1,20 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Pessoas</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div class="jumbotron">
   
   <h5>Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição 
@@ -10,19 +25,23 @@
 
   <div class = "row">
     {% if tipo != "gest" %}
-      <div class="col-1">
-        <a href="{{url_for('pessoas.cria_pessoa')}}" class="btn btn-primary" role="button" aria-pressed="true">Inserir nova</a>
-      </div>
-      <div class="col-3">
-        <small class="form-text text-muted"> Ou clique no nome da pessoa para ver e atualizar seus dados.</small>
+      <div class="col-2">
+        <div class="d-flex justify-content-around">
+          <a href="{{url_for('pessoas.cria_pessoa')}}" class="br-button secondary mr-3" role="button"><i class="fas fa-plus" aria-hidden="true"></i>Inserir</a>
+        </div>
       </div>
       <div class="col-2">
-        <a href="{{url_for('pessoas.lista_pessoas_filtro')}}" class="btn btn-secondary" role="button" aria-pressed="true">Filtro</a>
+        <div class="d-flex justify-content-around">
+          <a href="{{url_for('pessoas.lista_pessoas_filtro')}}" class="br-button secondary mr-3" role="button"><i class="fas fa-filter" aria-hidden="true"></i>Filtro</a>
+        </div>
       </div>
     {% endif %}
     {% if tipo == "inst" or tipo == 'pesq' %}
       <div class="col-2">
-        <a href="{{url_for('pessoas.lista_gestores_sisgp')}}" class="btn btn-success" role="button" aria-pressed="true">{{ gestorQtd }} Gestores</a>
+        <div class="d-flex justify-content-around">
+          <a href="{{url_for('pessoas.lista_gestores_sisgp')}}" class="br-button secondary mr-3" role="button">
+            {{ gestorQtd }} {% if gestorQtd == 1 %}Gestor{% else %}Gestores{% endif %}</a>
+        </div>
       </div>
     {% endif %}  
   </div>
@@ -95,22 +114,22 @@
 
 </div>
 
-<nav aria-label="Page navigation">
+<nav class="br-pagination"  aria-label="Page navigation">
   <ul class="pagination justify-content-center">
 
     {% for page_num in pessoas.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
       {% if page_num %}
         {% if pessoas.page == page_num %}
-          <li class="page-item active">
-              <a class="page-link" href="{{url_for('pessoas.lista_pessoas',page=page_num)}}">{{page_num}}</a>
+          <li>
+              <a class="page active" href="{{url_for('pessoas.lista_pessoas',page=page_num)}}">{{page_num}}</a>
           </li>
         {% else %}
-          <li class="page-item">
-              <a class="page-link" href="{{url_for('pessoas.lista_pessoas',page=page_num)}}">{{page_num}}</a>
+          <li>
+              <a class="page" href="{{url_for('pessoas.lista_pessoas',page=page_num)}}">{{page_num}}</a>
           </li>
         {% endif %}
       {% else %}
-        <span class="page-link">…</span>
+        <span class="page">…</span>
       {% endif %}
 
     {% endfor %}

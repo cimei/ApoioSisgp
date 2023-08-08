@@ -1,0 +1,113 @@
+{% extends "BASE_GOV.html" %}
+{% block content %}
+
+<div class="container">
+
+  <div class="col mb-5">
+    <div class="br-breadcrumb">
+      <ul class="crumb-list">
+        <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+        <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+        <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Consultas</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="jumbotron">
+
+    {% if current_user.is_authenticated and current_user.userAtivo %} 
+
+      <div class = "row">    
+      
+            <div class = "col-4">  
+            <div class="d-flex justify-content-around">
+            <div class="br-magic-button large">
+              <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.catalogo_dominio")}}'">Catálogo de Domínio</button>
+            </div>
+            </div>
+            </div>
+
+            <div class = "col-4">
+            <div class="d-flex justify-content-around">
+            <div class="br-magic-button large">
+              <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.pessoas_qtd_pg_unidade")}}'">Qtd. pessoas em PG por unidade</button>
+            </div>
+            </div>
+            </div>
+
+            <div class = "col-4">
+            <div class="d-flex justify-content-around">  
+            <div class="br-magic-button large">
+              <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.pactos")}}'">Planos de Trabaho - Todos</button>
+            </div>
+            </div>
+            </div>
+
+      </div>  
+
+      <br>
+
+      <div class = "row">
+
+          <div class = "col-4">
+          <div class="d-flex justify-content-around">
+          <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.pactos_irregulares")}}'">Planos de Trabaho - Irregulares</button>
+          </div>
+          </div>
+          </div>
+
+          <div class = "col-4">
+            <div class="d-flex justify-content-around">  
+          <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.candidatos_sem_plano")}}'">Candidatos sem Plano</button>
+          </div>
+          </div>
+          </div>
+
+          <div class = "col-4">
+          <div class="d-flex justify-content-around">  
+          <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.estatisticas")}}'">Estatisticas</button>
+          </div>
+          </div>
+          </div>
+        
+      </div>
+
+      <br>
+
+      <div class = "row">
+
+          <div class = "col-4">
+          <div class="d-flex justify-content-around">  
+          <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.periodo")}}'">PGs e PTs no período</button>
+          </div>
+          </div>
+          </div>
+
+          <div class = "col-4">
+          <div class="d-flex justify-content-around">  
+          <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.relatorioPG")}}'">Relatório de PGs e PTs</button>
+          </div>
+          </div>
+          </div>
+
+      </div>    
+
+    {% endif %}
+
+    </div>  
+
+
+  </div>
+</div>
+
+
+{% endblock %}

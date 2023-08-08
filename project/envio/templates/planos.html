@@ -1,19 +1,35 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('envio.envio_i')}}">Envio</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> --> 
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>{% if lista == 'n_enviados' %}
+                                                                                                  Planos ainda não enviados
+                                                                                                {% else %}
+                                                                                                  Planos já enviados
+                                                                                                {% endif %}</span>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <div class="container">
 
   <div class="jumbotron">
 
     <div class="row">
-      <div class="col-10">
+      <div class="col">
         {% if lista == 'n_enviados' %}
-          <h5><b>Lista de Planos de Trabalho NUNCA ENVIADOS</b></h5>
-          <h6>Destino: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <h5><b>Lista de Planos de Trabalho NUNCA ENVIADOS    <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6> </b></h5>
           <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviados.</p>
         {% else %}
-          <h5><b>Lista de Planos de Trabalho ENVIADOS</b></h5>
-          <h6>Origem: <b>{{'APIPGDME_URL'|verifica_serv_bd}}</b></h6>
+          <h5><b>Lista de Planos de Trabalho ENVIADOS    <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
           <p><span class="badge badge-primary badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.</p>
         {% endif %}  
       </div>
@@ -82,7 +98,7 @@
           </thead>
 
           <tbody>
-            {% for demanda in demandas %}
+            {% for demanda in demandas.items %}
               <tr>
                 <th scope="row"><p align = "center"> {{demandas.index(demanda) + 1}} </p></th>
                 <td><p align = "center"> {{demanda.undSigla}} </p></td>
@@ -105,6 +121,40 @@
           </tbody>
         </table>
       </div>
+
+      <br>
+
+      <nav class="br-pagination" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+          {% for page_num in demandas.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
+            {% if page_num %}
+              {% if demandas.page == page_num %}
+                <li>
+                  {% if lista == 'n_enviados' %}
+                    <a class="page active" href="{{url_for('envio.lista_a_enviar',page=page_num)}}">{{page_num}}</a>
+                  {% else %}
+                    <a class="page active" href="{{url_for('envio.lista_enviados',page=page_num)}}">{{page_num}}</a>
+                  {% endif %}
+                </li>
+              {% else %}
+                <li>
+                  {% if lista == 'n_enviados' %}
+                    <a class="page" href="{{url_for('envio.lista_a_enviar',page=page_num)}}">{{page_num}}</a>
+                  {% else %}
+                    <a class="page" href="{{url_for('envio.lista_enviados',page=page_num)}}">{{page_num}}</a>
+                  {% endif %}
+                </li>
+              {% endif %}
+            {% else %}
+              <span class="page">…</span>
+            {% endif %}
+
+          {% endfor %}
+        </ul>
+      </nav>
+
+
   </div>
 </div>
 

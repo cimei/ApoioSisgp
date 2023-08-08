@@ -1,0 +1,177 @@
+// Base de botões pílula
+@mixin btn-pill($background: $color-white, $border: $color-primary, $color: $color-primary) {
+  @include media-breakpoint-up(sm) {
+    min-width: $btn-pill-min-width;
+    width: auto;
+  }
+  align-items: center;
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $btn-pill-radius;
+  cursor: pointer;
+  display: inline-flex;
+  height: $btn-size;
+  justify-content: center;
+  padding: 0 $btn-pill-padding;
+  text-align: center;
+  width: 100%;
+  strong {
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+  &.is-small {
+    height: $btn-small;
+  }
+  &:focus,
+  &.is-focus {
+    box-shadow: 0 3px 6px -3px $color-primary;
+    outline: 0;
+  }
+  &:hover,
+  &.is-hover {
+    background-color: $color-primary-lighten-15;
+    border-color: $color-primary-lighten-15;
+    color: $color-white;
+    text-decoration: none;
+  }
+  &:disabled,
+  &.is-disabled {
+    background: $color-gray-5;
+    border-color: $color-gray-5;
+    color: $color-white;
+    cursor: default;
+  }
+}
+
+// Base de botões link
+@mixin btn-link($color: $color-primary) {
+  background: transparent;
+  border: 0;
+  color: $color;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  &:focus,
+  &.is-focus {
+    outline: 0;
+    text-shadow: 0 3px 6px currentColor;
+  }
+  &:hover,
+  &.is-hover {
+    color: $color-primary-lighten-15;
+  }
+  &:disabled,
+  &.is-disabled {
+    color: $color-gray-5;
+    cursor: default;
+  }
+}
+
+// Botão redondo
+@mixin btn-circle($size: $btn-circle) {
+  @include media-breakpoint-up(sm) {
+    height: $size !important;
+    min-width: 0;
+    width: $size !important;
+  }
+  align-items: center;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  height: $size !important;
+  justify-content: center;
+  padding: 0 !important;
+  width: $size !important;
+  img {
+    width: 100%;
+  }
+}
+
+// Botões de redes sociais
+@mixin btn-social-media {
+  @include btn-circle($btn-circle-lg);
+}
+
+// Botão voltar ao topo
+@mixin go-top {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: inline-flex;
+  font-size: $go-top-font-size;
+  font-weight: 800;
+  margin: 0;
+  padding: 0;
+  text-transform: $go-top-text-transform;
+  .br-button {
+    margin-left: $spacing-1;
+  }
+  &:hover,
+  &:focus {
+    .br-button {
+      background-color: $color-primary-lighten-15;
+      border-color: $color-primary-lighten-15;
+    }
+  }
+  &:disabled {
+    .br-button {
+      background: $color-gray-5;
+      border-color: $color-gray-5;
+    }
+  }
+}
+
+// Botão de filtro
+@mixin has-filter {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  [class*="fa-"] {
+    color: $color-primary;
+    margin-left: $spacing-3;
+  }
+  &:hover,
+  &:focus {
+    [class*="fa-"] {
+      color: $color-primary-lighten-15;
+    }
+  }
+  &:disabled {
+    [class*="fa-"] {
+      color: $color-gray-5;
+    }
+  }
+}
+
+@mixin btn-loading {
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+  &::after {
+    animation: spinAround 500ms infinite linear;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 1em;
+    left: calc(50% - (1em / 2));
+    position: absolute !important;
+    top: calc(50% - (1em / 2));
+    width: 1em;
+  }
+  &.is-primary,
+  &.is-call-to-action {
+    &::after {
+      border-color: transparent transparent $color-white $color-white !important;
+    }
+  }
+  &.is-secondary {
+    &::after {
+      border-color: transparent transparent $color-primary $color-primary !important;
+    }
+  }
+}

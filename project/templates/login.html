@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "BASE_GOV.html" %}
 {% block content %}
 <div class="container">
 
@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  {{form.submit(class="btn btn-primary")}}
+  {{form.submit(class="br-button secondary mr-3")}}
 
   <div class="form-group">
     <p><br><a class="" href="{{url_for('usuarios.reset')}}">Esqueceu, ou quer trocar sua senha? Clique aqui.</a></p>

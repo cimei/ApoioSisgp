@@ -1,0 +1,36 @@
+// Definições
+$btn-font-weight: 700;
+$btn-margin-horizontal: $spacing-5;
+$btn-margin-vertical: $spacing-3;
+
+$btn-pill-font-size: 16px;
+$btn-pill-radius: 100px;
+$btn-pill-padding: $spacing-5;
+$btn-pill-min-width: 144px;
+
+$btn-circle: 36px;
+$btn-circle-lg: 64px;
+
+$go-top-padding: $spacing-3 $spacing-5 $spacing-5;
+$go-top-font-size: 12px;
+$go-top-font-weight: 800;
+$go-top-text-transform: uppercase;
+
+$btn-size: 44px;
+$btn-small: 32px;
+
+$btn-action-size: 52px;
+$btn-action-min-width: 180px;
+$btn-action-shadow: 14px;
+
+$facebook-bg: #3b5998;
+$twitter-bg: #00aced;
+
+@keyframes spinAround {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}

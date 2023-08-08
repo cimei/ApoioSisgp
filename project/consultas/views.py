@@ -638,12 +638,18 @@ def estatisticas():
     # o primeiro pg
     primeiro_pg = db.session.query(Planos_de_Trabalho.dataInicio).order_by(Planos_de_Trabalho.dataInicio).limit(1)
     # meses desde o primeito pg
-    vida_pgd = (hoje.year - primeiro_pg[0].dataInicio.year) * 12 + hoje.month - primeiro_pg[0].dataInicio.month
+    if primeiro_pg.first():
+        vida_pgd = (hoje.year - primeiro_pg[0].dataInicio.year) * 12 + hoje.month - primeiro_pg[0].dataInicio.month
+    else:
+        vida_pgd = 0    
 
     # o primeiro plano
     primeiro_plano = db.session.query(Pactos_de_Trabalho.dataInicio).order_by(Pactos_de_Trabalho.dataInicio).limit(1)
     # meses desde o primeito plano
-    vida_plano = (hoje.year - primeiro_plano[0].dataInicio.year) * 12 + hoje.month - primeiro_plano[0].dataInicio.month
+    if primeiro_plano.first():
+        vida_plano = (hoje.year - primeiro_plano[0].dataInicio.year) * 12 + hoje.month - primeiro_plano[0].dataInicio.month
+    else:
+        vida_plano = 0
 
     # quantidade de atividades em pgs (planos)
     ativs_pgs = db.session.query(catdom.descricao, 
@@ -900,3 +906,18 @@ def candidatos_sem_plano():
     quantidade = len(candidatos_sem_plano)  
 
     return render_template('lista_candidatos_sem_plano.html', candidatos_sem_plano=candidatos_sem_plano, quantidade=quantidade)
+
+## renderiza tela inicial de consultas
+
+@consultas.route('/consultas_i')
+@login_required
+
+def consultas_i():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta tela inicial de consultas.                                                   |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+    
+    return render_template('consultas.html') 

@@ -277,13 +277,13 @@ def atividade_update(cod_ativ):
 
             flash('Atividade atualizada!','sucesso')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
 
     # traz a informação atual da atividade
@@ -373,13 +373,13 @@ def cria_atividade():
 
             flash('Atividade inserida no banco!','sucesso')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
         else:
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
 
     return render_template('atu_atividade.html', form=form, unids_lista=[], 
@@ -495,7 +495,7 @@ def associa_atividade_unidade(cod_ativ):
 
                     flash('Esta associação já existe (catalogoId em CatalogItemCatalogo não pode ser criado)!','sucesso')
 
-                return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+                return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
             else:
 
@@ -505,7 +505,7 @@ def associa_atividade_unidade(cod_ativ):
 
             flash('O seu usuário precisa ser ativado para esta operação!','erro')
 
-            return redirect(url_for('atividades.lista_atividades',lista='Todas'))
+            return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
 
     return render_template('associa_unidade.html', form=form, atividade=ativ.titulo, unids_ativ=unids_ativ)

@@ -1,0 +1,83 @@
+// Carregar variáveis do DS-Gov
+@import "../../base/dsgov-base";
+
+/*!
+ * button - 0.2.5 */
+
+// Carregar dependências
+@import "configs";
+@import "mixins";
+
+// Estilos de botões
+.#{$prefix}button {
+  &.is-primary {
+    @include btn-pill($color-primary, $color-primary, $color-white);
+    @include font-primary-button;
+  }
+  &.is-secondary {
+    @include btn-pill;
+    @include font-secondary-button;
+  }
+  &.is-tertiary {
+    @include btn-link($font-link-color);
+  }
+  &.is-cancel {
+    @include btn-link($color-gray-6);
+  }
+  &.is-call-to-action {
+    @include btn-pill($color-secondary, $color-gray-2, $color-white);
+    @include font-primary-button;
+    @include media-breakpoint-up(sm) {
+      // Compensar o tamanho maior da borda do botão
+      min-width: $btn-action-min-width + ($btn-action-shadow * 2);
+    }
+    border-width: $btn-action-shadow;
+    height: $btn-action-size + ($btn-action-shadow * 2);
+    &:focus,
+    &.is-focus {
+      box-shadow: 0 3px 6px -3px $color-secondary;
+    }
+    &:hover,
+    &.is-hover {
+      background-color: $color-teal;
+      border-color: $color-gray-2;
+      color: $color-white;
+      text-decoration: none;
+    }
+  }
+  &.is-circle {
+    @include btn-circle;
+    &:not(.is-primary):not(.is-secondary) { // sass-lint:disable-line force-pseudo-nesting
+      border-color: transparent;
+    }
+  }
+  &.is-social-media {
+    @include btn-social-media;
+    border-color: transparent;
+  }
+  &.is-go-top {
+    @include go-top;
+  }
+  &.is-filter {
+    @include has-filter;
+  }
+  &.is-loading {
+    @include btn-loading;
+  }
+  // Botões lado a lado
+  & + & {
+    @include media-breakpoint-up(sm) {
+      margin-left: $btn-margin-horizontal;
+      margin-top: 0;
+    }
+    margin-top: $btn-margin-vertical;
+  }
+  &.is-facebook {
+    background: $facebook-bg;
+    color: $color-white;
+  }
+  &.is-twitter {
+    background: $twitter-bg;
+    color: $color-white;
+  }
+}
