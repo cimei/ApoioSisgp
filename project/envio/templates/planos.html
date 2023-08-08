@@ -100,7 +100,7 @@
           <tbody>
             {% for demanda in demandas.items %}
               <tr>
-                <th scope="row"><p align = "center"> {{demandas.index(demanda) + 1}} </p></th>
+                <th scope="row"><p align = "center"> {{(demandas.page - 1) * demandas.per_page + demandas.items.index(demanda) + 1}} </p></th>
                 <td><p align = "center"> {{demanda.undSigla}} </p></td>
                 <td><p align = "center"> {{demanda.pesNome}} </p></td>
                 <td><p align = "center"> {{demanda.dataInicio.strftime('%d/%m/%Y')}} </p></td>
