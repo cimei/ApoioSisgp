@@ -134,7 +134,10 @@
                   <a class="br-item" href="javascript:void(0)">Link de acesso 4</a> -->
                   
                   {% if current_user.is_authenticated and not current_user.userAtivo %}
-                    <span class="br-item">ATENÇÃO! USUÁRIO NÃO ATIVADO!</span>
+                    <!-- <span class="br-item">ATENÇÃO! USUÁRIO NÃO ATIVADO!</span> -->
+                    <div class="mb-3">
+                      <span class="feedback warning" role="alert"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i>Usuário ainda não ativado.</span>
+                    </div>
                   {% endif %}
 
                   <a class="br-item" href="{{url_for('core.info')}}">Sobre</a>
@@ -318,10 +321,22 @@
 
               {% for message in erros %}
                 <div class="container">
-                  <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{message}}
+
+                  <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                      <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Erro.</span><span class="message-body"> {{message}}</span></div>
                   </div>
+
+                  <!-- <div class="br-message danger" role="alert">
+                    <div class="icon"><i class="fas fa-times-circle fa-lg" aria-hidden="true"></i>
+                    </div>
+                    <div class="content"><span class="message-title">Erro.</span><span class="message-body"> {{message}}</span></div>
+                    <div class="close">
+                      <button class="br-button circle small" type="button" aria-label="Fechar"><i class="fas fa-times" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div> -->
+
                 </div>
               {% endfor %}
 
@@ -333,10 +348,20 @@
 
                 {% for message in sucessos %}
                   <div class="container">
-                    <div class="alert alert-primary">
-                      <button type="button" class="close" data-dismiss="alert">&times;</button>
-                      {{message}}
+
+                    <div class="alert alert-success">
+                      <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                      <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Sucesso.</span><span class="message-body"> {{message}}</span></div>
                     </div>
+
+                    <!-- <div class="br-message success" role="alert">
+                      <div class="icon"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i></div>
+                      <div class="content"><span class="message-title">Sucesso.</span><span class="message-body"> {{message}}</span></div>
+                      <div class="close">
+                        <button class="br-button circle small" type="button" aria-label="Fechar" data-dismiss="br-message"><i class="fas fa-times" aria-hidden="true"></i></button>
+                      </div>
+                    </div> -->
+
                   </div>
                 {% endfor %}
 
@@ -348,10 +373,22 @@
 
                 {% for message in perigos %}
                   <div class="container">
-                    <div class="alert alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">&times;</button>
-                      {{message}}
+
+                    <div class="alert alert-warning">
+                      <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                      <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Atenção.</span><span class="message-body"> {{message}}</span></div>
                     </div>
+
+                    <!-- <div class="br-message warning" role="alert">
+                      <div class="icon"><i class="fas fa-exclamation-triangle fa-lg" aria-hidden="true"></i>
+                      </div>
+                      <div class="content"><span class="message-title">Atenção.</span><span class="message-body"> {{message}}</span></div>
+                      <div class="close">
+                        <button class="br-button circle small" type="button" aria-label="Fechar"><i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </div> -->
+
                   </div>
                 {% endfor %}
 

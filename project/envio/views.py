@@ -24,7 +24,8 @@ from sqlalchemy import func, literal
 
 from project import db, sched
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
-                           Pactos_de_Trabalho_Atividades, VW_Pactos, VW_Atividades_Pactos, jobs, users
+                           Pactos_de_Trabalho_Atividades, VW_Pactos, VW_Atividades_Pactos,\
+                           jobs, users, Log_Auto
 
 from project.usuarios.views import registra_log_auto                           
 
@@ -41,7 +42,7 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 
 # funções
 
-# função que gera lista de planos que já foram enviados previamente
+# função que gera lista de planos que já foram enviados previamente, consultando a API
 def planos_enviados_API():
     
     if os.getenv('APIPGDME_URL') != None and os.getenv('APIPGDME_URL') != "" and \
@@ -113,7 +114,64 @@ def planos_enviados_API():
         return ('erro_credenciais')      
 
 
-# função que gera lista de planos que nunca foram enviados
+
+# função que gera lista de planos que já foram enviados previamente, consultando o log
+def planos_enviados_LOG():
+
+    #subquery para pegar situações dos planos de trabalho (pactos)
+    catdom_1 = db.session.query(catdom.catalogoDominioId,
+                                catdom.descricao)\
+                        .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
+                        .subquery()
+
+    #subquery que conta atividades em cada plano de trabalho (pacto)
+    ativs = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                            label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                    .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                    .subquery()
+    
+    #subquery que conta atividades com nota em cada plano de trabalho (pacto)
+    ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                                    label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                            .filter(Pactos_de_Trabalho_Atividades.nota != None)\
+                            .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                            .subquery()  
+
+    # todos os planos executados e com todas as atividades avaliadas
+    planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+                                        catdom_1.c.descricao,
+                                        Pactos_de_Trabalho.situacaoId,
+                                        ativs.c.qtd_ativs,
+                                        ativs_com_nota.c.qtd_com_nota)\
+                            .filter(catdom_1.c.descricao == 'Executado',
+                                    ativs_com_nota.c.qtd_com_nota != None,
+                                    ativs_com_nota.c.qtd_com_nota > 0)\
+                            .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                            .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                            .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                            .all() 
+
+    # identifica envios na tabela do log
+    
+    enviados_log = db.session.query(Log_Auto.msg)\
+                             .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
+                             .all()
+    
+    log = [e[27:] for e in enviados_log]        
+
+    enviados = []
+    
+    for id in planos_avaliados:
+
+        if id.plactoTrabalhoId in log:
+            enviados.append(id.pactoTrabalhoId)
+
+    return enviados        
+   
+
+
+
+# função que gera lista de planos que nunca foram enviados, consultando API
 def planos_n_enviados_API():
 
     if os.getenv('APIPGDME_URL') != None and os.getenv('APIPGDME_URL') != "" and \
@@ -189,11 +247,69 @@ def planos_n_enviados_API():
     else:
         return ('erro_credenciais') 
 
+# função que gera lista de planos que nunca foram enviados, consultando o LOG
+def planos_n_enviados_LOG(): 
+
+    #subquery para pegar situações dos planos de trabalho (pactos)
+    catdom_1 = db.session.query(catdom.catalogoDominioId,
+                                catdom.descricao)\
+                        .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
+                        .subquery()
+
+    #subquery que conta atividades em cada plano de trabalho (pacto)
+    ativs = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                                label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                        .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                        .subquery()
+    
+    #subquery que conta atividades com nota em cada plano de trabalho (pacto)
+    ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                                        label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                                .filter(Pactos_de_Trabalho_Atividades.nota != None)\
+                                .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                                .subquery() 
+    
+    # resgata todos os planos executados com pelo menos uma atividade avaliada
+    planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+                                catdom_1.c.descricao,
+                                Pactos_de_Trabalho.situacaoId,
+                                ativs.c.qtd_ativs,
+                                ativs_com_nota.c.qtd_com_nota)\
+                            .filter(catdom_1.c.descricao == 'Executado',
+                                    ativs_com_nota.c.qtd_com_nota != None,
+                                    ativs_com_nota.c.qtd_com_nota > 0)\
+                            .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                            .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                            .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                            .all() 
+    
+    # identifica envios na tabela do log
+    
+    enviados_log = db.session.query(Log_Auto.msg)\
+                             .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
+                             .all()
+    
+    log = [e[27:] for e in enviados_log]        
+
+    enviados = []
+    
+    for id in planos_avaliados:
+
+        if id.plactoTrabalhoId not in log:
+            enviados.append(id.pactoTrabalhoId)
+
+    return enviados        
+
+
 
 # função para envio de planos já enviados anteriormente
 def envia_planos_novamente():
-
-    enviados = planos_enviados_API()
+    
+    if os.getenv('CONSULTA_API') == 'S':
+        enviados = planos_enviados_API()
+    else:
+        enviados = planos_enviados_LOG()
+        
 
     # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
     if current_user == None:
@@ -325,8 +441,11 @@ def envia_planos_novamente():
 # função para envio de planos nunca enviados
 def envia_planos():  
       
-    n_enviados = planos_n_enviados_API()
-
+    if os.getenv('CONSULTA_API') == 'S':
+        n_enviados = planos_n_enviados_API()
+    else:
+        n_enviados = planos_n_enviados_LOG()
+    
     # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
     if current_user == None:
         primeiro = db.session.query(users.id).first()
@@ -470,7 +589,11 @@ def lista_a_enviar():
     """
     page = request.args.get('page', 1, type=int)
 
-    n_enviados = planos_n_enviados_API()
+    
+    if os.getenv('CONSULTA_API') == 'S':
+        n_enviados = planos_n_enviados_API()
+    else:
+        n_enviados = planos_n_enviados_LOG()
 
     if n_enviados != 'erro_credenciais':
 
@@ -563,7 +686,10 @@ def lista_enviados():
     """
     page = request.args.get('page', 1, type=int)
 
-    enviados = planos_enviados_API()
+    if os.getenv('CONSULTA_API') == 'S':
+        enviados = planos_enviados_API()
+    else:
+        enviados = planos_enviados_LOG()
 
     if enviados != 'erro_credenciais':
 
