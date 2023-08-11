@@ -707,3 +707,12 @@ def interno_i():
     """
     
     return render_template('interno.html') 
+
+## renderiza tela com template base do gov
+
+@core.route('/base')
+@login_required
+
+def base():
+    
+    return render_template('template_gov.html') 

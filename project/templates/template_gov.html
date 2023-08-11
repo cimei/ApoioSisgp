@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>MEAG PGD 1.0</title>
+    <!-- Fonte Rawline-->
+    <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css"/>
+    <!-- Fonte Raleway-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900&amp;display=swap"/>
+    <!-- Design System de Governo-->
+    <link rel="stylesheet" href="/static/css/br-gov/core/dist/core.css">
+    <!-- Fontawesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">  
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/extensions/filter-control/bootstrap-table-filter-control.css">
+
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
+
+  </head>
+
+  <body>
+
+    <!-- header escuro no topo da página -->
+    <header>
+        <div class="row no-gutters">
+            <div class="col">
+            <div id="barra-brasil" style="background:#7F7F7F; height: 20px; padding:0 0 0 10px;display:block;">
+                <ul id="menu-barra-temp" style="list-style:none;">
+                <li style="display:inline; float:left;padding-right:10px; margin-right:10px; border-right:1px solid #EDEDED">
+                    <a href="http://brasil.gov.br" style="font-family:sans,sans-serif; text-decoration:none; color:white;">Portal do Governo Brasileiro</a>
+                </li>
+                </ul>
+            </div>
+            </div>
+        </div>
+    </header>
+
+
+    <div class="template-base">
+
+      <!-- navegação via teclas de acesso rápido (shift alt nº) -->
+      <nav class="br-skiplink"><a class="br-item" href="#main-content" accesskey="1">Ir para o conteúdo (1/4) <span class="br-tag text ml-1">1</span></a>
+                               <a class="br-item" href="#header-navigation" accesskey="2">Ir para o menu (2/4) <span class="br-tag text ml-1">2</span></a>
+                               <a class="br-item" href="#main-searchbox" accesskey="3">Ir para a busca (3/4) <span class="br-tag text ml-1">3</span></a>
+                               <a class="br-item" href="#footer" accesskey="4">Ir para o rodapé (4/4) <span class="br-tag text ml-1">4</span></a>
+      </nav>
+
+      <!-- Topo da página com logo, nome e descrição do sistema e botões de login, registro e logout -->
+      <header class="br-header mb-4" id="header" data-sticky="data-sticky">
+        <div class="container-lg">
+          <div class="header-top">
+            <div class="header-logo"><img src="/static/pgd.png" alt="logo"/><span class="br-divider vertical"></span>
+              <div class="header-sign">Programa de Gestão e Desempenho</div>
+            </div>
+            <div class="header-actions">
+              <div class="header-links dropdown">
+                <button class="br-button circle small" type="button" data-toggle="dropdown" aria-label="Abrir Acesso Rápido"><i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                </button>
+                
+                <div class="br-list">  
+
+                  <div class="header">
+                    <div class="title">Acesso Rápido</div>
+                  </div>
+
+                  {% if current_user.is_authenticated and not current_user.userAtivo %}
+                    <div class="mb-3">
+                      <span class="feedback warning" role="alert"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i>Usuário ainda não ativado.</span>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- {% if current_user.is_authenticated and current_user.userAtivo %}                   
+                    <a class="br-item" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Unidades</a>
+                    <a class="br-item" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
+                    <a class="br-item" href="{{url_for('atividades.lista_atividades',lista='ativas')}}">Atividades</a>
+                  {% endif %}     -->
+                </div>
+
+                <a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a>
+                
+              </div><span class="br-divider vertical mx-half mx-sm-1"></span>
+
+              <div class="header-search-trigger">
+                <button class="br-button circle" type="button" aria-label="Abrir Busca" data-toggle="search" data-target=".header-search"><i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <div class="header-login">
+
+                {% if current_user.is_authenticated %}
+                  <div class="header-sign-in">
+                    <button class="br-sign-in small" type="button" data-trigger="login" onclick="window.location.href='{{url_for("usuarios.logout")}}'"><i class="fas fa-user" aria-hidden="true"></i><span class="d-sm-inline">Sair</span></a>
+                    </button>
+                  </div>
+                  <div class="header-avatar"></div>
+                {% else %}
+                  <div class="header-sign-in">
+                    <button class="br-sign-in small" type="button" data-trigger="login" onclick="window.location.href='{{url_for("usuarios.login")}}'"><i class="fas fa-user" aria-hidden="true"></i><span class="d-sm-inline">Entrar</span></a>
+                    </button>
+                  </div>
+                  <div class="header-avatar"></div>
+                  <span> ou </span>
+                  <div class="header-sign-in">
+                    <button class="br-sign-in small" type="button" data-trigger="login" onclick="window.location.href='{{url_for("usuarios.register")}}'"><i class="fas fa-user" aria-hidden="true"></i><span class="d-sm-inline">Registrar-se</span>
+                    </button>
+                  </div>
+                  <div class="header-avatar"></div>
+                {% endif %}  
+              </div>
+
+            </div>
+          </div>
+
+          <div class="header-bottom">
+            <div class="header-menu">
+              <div class="header-menu-trigger" id="header-navigation">
+                <button class="br-button small circle" type="button" aria-label="Menu" data-toggle="menu" data-target="#main-navigation" id="navigation"><i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="header-info">
+                <div class="header-title">MEAG PGD 1.0</div>
+                <div class="header-subtitle">Módulo de Envio e Apoio à Gestão do PGD 1.0</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Parte principal que contem o menu suspenso à esquerda e blocos do sistema -->
+
+        <main class="d-flex flex-fill mb-5" id="main">
+            <!-- <div class="container-lg d-flex"> -->
+            <div class="container">
+            <div class="row">
+
+                <!-- menu suspenso à esquerda -->
+                
+                <div class="br-menu" id="main-navigation">
+                    <div class="menu-container">
+                      <div class="menu-panel">
+                        <div class="menu-header">
+                            <div class="menu-title"><span>MEAG PGD 1.0</span></div>
+                            <div class="menu-close">
+                            <button class="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu"><i class="fas fa-times" aria-hidden="true"></i>
+                            </button>
+                            </div>
+                      </div>
+
+                      <nav class="menu-body">
+
+                          <a class="menu-item divider" href="{{url_for('core.info')}}"><span class="icon"><i class="fas fa-question" aria-hidden="true"></i></span><span class="content">Sobre</span></a>
+                          
+                          {% if current_user.is_authenticated and current_user.userAtivo %} 
+
+                          <a class="menu-item divider" href="{{url_for('unidades.lista_unidades',lista='ativas')}}"><span class="icon"><i class="fas fa-cube" aria-hidden="true"></i></span><span class="content">Unidades</span></a>
+                          <a class="menu-item divider" href="{{url_for('pessoas.lista_pessoas')}}"><span class="icon"><i class="fas fa-users" aria-hidden="true"></i></span><span class="content">Pessoas</span></a>
+                          <a class="menu-item divider" href="{{url_for('atividades.lista_atividades',lista='ativas')}}"><span class="icon"><i class="fas fa-pen" aria-hidden="true"></i></span><span class="content">Atividades</span></a>
+
+                          <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-plane" aria-hidden="true"></i></span><span class="content">Envio</span></a>
+                            <ul>
+                                <li><a class="menu-item" href="{{url_for('envio.lista_a_enviar')}}"><span class="icon"><i class="fas fa-folder" aria-hidden="true"></i></span><span class="content">Planos à enviar</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('envio.lista_enviados')}}"><span class="icon"><i class="fas fa-cloud" aria-hidden="true"></i></span><span class="content">Planos enviados</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('envio.agenda_envio')}}"><span class="icon"><i class="fas fa-play" aria-hidden="true"></i></span><span class="content">Agendamento</span></a></li>
+                            </ul>
+                          </div>  
+
+                          <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-eye" aria-hidden="true"></i></span><span class="content">Dados Auxiliares</span></a>
+                            <ul>
+                                <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Situações Pessoa</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('padroes.lista_tipo_funcao')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Tipos Função</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i class="fas fa-tree" aria-hidden="true"></i></span><span class="content">Tipos Vínculo</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('padroes.lista_feriados')}}"><span class="icon"><i class="fas fa-moon" aria-hidden="true"></i></span><span class="content">Feriados</span></a></li>  
+                            </ul>
+                          </div>
+
+                          <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-list" aria-hidden="true"></i></span><span class="content">Consultas</span></a>
+                            <ul>
+                                <li><a class="menu-item" href="{{url_for('consultas.catalogo_dominio')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Catálogo de Domínios</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.pessoas_qtd_pg_unidade')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Qtd. pessoas em PG por unidade</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.pactos')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Planos de Trabalho - Todos</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.pactos_irregulares')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Planos de Trabaho - Irregulares</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.candidatos_sem_plano')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Candidatos sem Plano</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.estatisticas')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Estatisticas</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.periodo')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">PGs e PTs no período</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('consultas.relatorioPG')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Relatório de PGs e PTs</span></a></li>
+                            </ul>
+                          </div>
+
+                          <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-upload" aria-hidden="true"></i></span><span class="content">Carga</span></a>
+                            <ul>
+                                <li><a class="menu-item" href="{{url_for('core.CarregaUnidades')}}"><span class="icon"><i class="fas fa-plus" aria-hidden="true"></i></span><span class="content">Unidades</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('core.CarregaPessoas')}}"><span class="icon"><i class="fas fa-plus" aria-hidden="true"></i></span><span class="content">Pessoas</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('core.CarregaAtividades')}}"><span class="icon"><i class="fas fa-plus" aria-hidden="true"></i></span><span class="content">Atividades</span></a></li>
+                            </ul>
+                          </div>
+
+                          <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-inbox" aria-hidden="true"></i></span><span class="content">Funções internas</span></a>
+                            <ul>
+                                <li><a class="menu-item" href="{{url_for('usuarios.log')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Diário</span></a></li>
+                                <li><a class="menu-item" href="{{ url_for('usuarios.view_users') }}"><span class="icon"><i class="fas fa-user" aria-hidden="true"></i></span><span class="content">Usuário</span></a></li>
+                                <li><a class="menu-item" href="{{ url_for('usuarios.troca_senha') }}"><span class="icon"><i class="fas fa-lock" aria-hidden="true"></i></span><span class="content">Trocar senha</span></a></li>
+                            </ul>
+                          </div>
+
+                          {% endif %}
+
+                      </nav>
+
+                        <div class="menu-footer">
+
+                        </div>
+
+                        </div>
+                        <div class="menu-scrim" data-dismiss="menu" tabindex="0"></div>
+                    </div>
+                </div>
+
+                <!-- <div class="col mb-5"> -->
+
+                <!-- <div class="main-content pl-sm-3 mt-4" id="main-content"> -->
+                <div class="main-content" id="main-content">   
+                    
+                    <!-- Tipos de mensagens flash -->
+
+                    {% with erros = get_flashed_messages(category_filter=["erro"]) %}
+                      {% if erros %}
+
+                        {% for message in erros %}
+                          <div class="container">
+                            <div class="alert alert-danger">
+                                <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                                <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Erro.</span><span class="message-body"> {{message}}</span></div>
+                            </div>
+                          </div>
+                        {% endfor %}
+
+                      {% endif %}
+                    {% endwith %}
+
+                    {% with sucessos = get_flashed_messages(category_filter=["sucesso"]) %}
+                      {% if sucessos %}
+
+                        {% for message in sucessos %}
+                          <div class="container">
+                            <div class="alert alert-success">
+                                <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                                <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Sucesso.</span><span class="message-body"> {{message}}</span></div>
+                            </div>
+                          </div>
+                        {% endfor %}
+
+                      {% endif %}
+                    {% endwith %}
+
+                    {% with perigos = get_flashed_messages(category_filter=["perigo"]) %}
+                      {% if perigos %}
+
+                        {% for message in perigos %}
+                          <div class="container">
+                            <div class="alert alert-warning">
+                              <button type="button" class="close" data-dismiss="alert"><i class="fas fa-times" aria-hidden="true"></i></button>
+                              <div class="content"><span class="message-title"><i class="fas fa-check-circle fa-lg" aria-hidden="true"></i> Atenção.</span><span class="message-body"> {{message}}</span></div>
+                            </div>
+                          </div>
+                        {% endfor %}
+
+                      {% endif %}
+                    {% endwith %}
+
+                    
+                    <!-- BLOCO CONTENDO AS VÁRIAS TELAS DO SISTEMA  -->
+                    {% block content %}
+                
+                    {% endblock %}
+
+                </div>
+
+                <!-- </div> -->
+
+            </div>
+            </div>
+        </main>
+
+      
+
+      <!-- rodapé da página  -->
+
+      <footer class="br-footer pt-3" id="footer">
+        <div class="container-lg">
+          <div class="info">
+            {% set ver = namespace(num = '3.1.1') %}
+            <div class="text-down-01 text-medium pb-3">{{'DB_DATABASE'|verifica_serv_bd}} em {{'DB_SERVER'|verifica_serv_bd}} v. {{ ver.num }} <small>cbt</small> 
+          </div>
+        </div>
+      </footer>
+      
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script> -->
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Barra Brasil -->
+    <script defer="defer" src="{{ url_for('static', filename='js/barra_2.0.js') }}"></script>
+
+    <!-- js padrão digital  -->
+    <script src="{{ url_for('static', filename='css/br-gov/core/dist/core-init.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/br-gov/core/dist/core.js') }}"></script>
+  
+</body>
+
+
+</html>

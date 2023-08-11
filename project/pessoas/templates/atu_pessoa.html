@@ -1,5 +1,20 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Pessoa</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div class="container">
 
 <div class="jumbotron">
@@ -31,12 +46,12 @@
         {{ render_field(form.nome,class="form-control",obr=True) }}
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.cpf,class="form-control", obr=True) }}
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.gestor,class="form-control") }}
       </div>
@@ -44,7 +59,7 @@
   </div>
 
   <div class = "row">
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.nasc,class="form-control", placeholder="dd/mm/aaaa", obr=True) }}
       </div>
@@ -54,7 +69,7 @@
         {{ render_field(form.siape,class="form-control", obr=False) }}
       </div>
     </div>
-    <div class="col-4">
+    <div class="col-5">
       <div class="form-group">
         {{ render_field(form.email,class="form-control", obr=False) }}
       </div>
@@ -94,7 +109,7 @@
   
 
 
-  <div class="form-group">
+  <div class="form-group mt-4">
     {{ form.submit(class="br-button secondary mr-3") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
   </div>
 

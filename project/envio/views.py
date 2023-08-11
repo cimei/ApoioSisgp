@@ -156,15 +156,22 @@ def planos_enviados_LOG():
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
                              .all()
+    enviados_manualmente_log = db.session.query(Log_Auto.msg)\
+                                         .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
+                                         .all()                         
     
-    log = [e[27:] for e in enviados_log]        
+    log = [e.msg[27:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]        
 
     enviados = []
     
     for id in planos_avaliados:
 
-        if id.plactoTrabalhoId in log:
+        if id.pactoTrabalhoId in log:
             enviados.append(id.pactoTrabalhoId)
+            
+    # se não encontrar planos enviados no log, recorre à API para verificar es houve algum envio
+    if len(log) == 0:
+        enviados = planos_enviados_API()        
 
     return enviados        
    
@@ -281,24 +288,31 @@ def planos_n_enviados_LOG():
                             .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                             .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                             .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                            .all() 
+                            .all()                     
     
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
                              .all()
+    enviados_manualmente_log = db.session.query(Log_Auto.msg)\
+                                         .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
+                                         .all()                         
     
-    log = [e[27:] for e in enviados_log]        
+    log = [e.msg[27:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]
 
-    enviados = []
+    n_enviados = []
     
     for id in planos_avaliados:
 
-        if id.plactoTrabalhoId not in log:
-            enviados.append(id.pactoTrabalhoId)
+        if id.pactoTrabalhoId not in log:
+            n_enviados.append(id.pactoTrabalhoId)
+            
+    # se não achar planos enviados no log, recorre à API para verificar es houve algum envio
+    if len(log) == 0:
+        n_enviados = planos_n_enviados_API()        
 
-    return enviados        
+    return n_enviados        
 
 
 

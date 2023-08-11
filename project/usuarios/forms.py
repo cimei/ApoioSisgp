@@ -100,7 +100,7 @@ class TrocaPasswordForm(FlaskForm):
 class AdminForm(FlaskForm):
 
     ativo  = BooleanField('Usuário está ativo?')
-    envia  = BooleanField('Usuário pode enviar planos para o órgão central?')
+    envia  = BooleanField('Usuário pode enviar planos?')
     
     submit = SubmitField('Atualizar')
 

@@ -1,7 +1,5 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
-
-<div class="container">
 
   <div class="col mb-5">
     <div class="br-breadcrumb">
@@ -17,50 +15,55 @@
     </div>
   </div>
 
-  <div class="jumbotron">
 
       {% if current_user.is_authenticated and current_user.userAtivo %} 
 
-
+      <div class="row mt-5">
         <div class="d-flex justify-content-around">
       
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("unidades.lista_unidades",lista="ativas")}}'">Unidades</button>
           </div>
 
+          <div class="col-1"></div>
+
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("pessoas.lista_pessoas")}}'">Pessoas</button>
           </div>
+
+          <div class="col-1"></div>
 
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("atividades.lista_atividades",lista="ativas")}}'">Atividades</button>
           </div>
 
         </div>
+      </div>  
 
-<br>
-
+      <div class="row mt-5">
         <div class="d-flex justify-content-around">
       
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.padroes_i")}}'">Dados Auxiliares</button>
           </div>
 
+          <div class="col-1"></div>
+
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.consultas_i")}}'">Consultas</button>
           </div>
+
+          <div class="col-1"></div>
 
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.cargas_i")}}'">Carga de dados</button>
           </div>
 
         </div>
+      </div>
 
 
       {% endif %}
-
-  </div>
-</div>
 
 
 {% endblock %}

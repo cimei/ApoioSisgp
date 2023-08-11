@@ -1,4 +1,4 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
 <div class="col mb-5">
@@ -46,10 +46,10 @@
       {{ form.hidden_tag() }}
         <div class="form-group row align-items-center">
           <div class="col"></div>
-          <div class="form-group col-2">
+          <div class="form-group col-3">
             {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
           </div>
-          <div class="form-group col-2">
+          <div class="form-group col-3">
             {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
           </div>
           <div class="form-group col-2">

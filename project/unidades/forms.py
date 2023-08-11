@@ -18,7 +18,7 @@ from wtforms.fields.html5 import EmailField
 class UnidadeForm(FlaskForm):
 
    sigla   = StringField('Sigla:', validators=[DataRequired(message="Informe a Sigla!")])
-   desc    = StringField('Nome:',validators=[DataRequired(message="Informe o nome por extenso!")])
+   desc    = StringField('Descrição:',validators=[DataRequired(message="Informe a descrição (nome) por extenso!")])
    pai     = SelectField('Pai:',coerce=int)
    tipo    = SelectField('Tipo:',validators=[DataRequired(message="Escolha o tipo!")],coerce=int)
    situ    = SelectField('Situação:',validators=[DataRequired(message="Escolha a situação!")],coerce=int)
@@ -35,7 +35,7 @@ class UnidadeForm(FlaskForm):
 class PesquisaUnidForm(FlaskForm):
 
    sigla   = SelectField('Sigla:')
-   desc    = StringField('Nome:')
+   desc    = StringField('Descrição:')
    pai     = SelectField('Pai:')
    tipo    = SelectField('Tipo:')
    uf      = StringField('UF:')

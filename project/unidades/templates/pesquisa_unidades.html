@@ -1,9 +1,24 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
+
+<div class="col mb-5">
+  <div class="br-breadcrumb">
+    <ul class="crumb-list">
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Unidades</a></li>
+      <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+      <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Filtro para Unidades</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div class="container">
 
 <div class="jumbotron">
-<h1>Filtro para lista de Unidades</h1>
+<h1>Filtro para Unidades</h1>
 
 {% macro render_field(field,obr) %}
   {% if obr == True %}
@@ -26,7 +41,7 @@
   {{ form.hidden_tag() }}
 
   <div class = "row">
-    <div class="col-6">
+    <div class="col-10">
       <div class="form-group">
         {{ render_field(form.desc,class="form-control",obr=False) }}
       </div>
@@ -34,7 +49,7 @@
   </div>
   
   <div class = "row">
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.sigla,class="form-control", obr=False) }}
       </div>
@@ -44,21 +59,27 @@
         {{ render_field(form.pai,class="form-control", obr=False) }}
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.tipo,class="form-control", obr=False) }}
       </div>
     </div>
-    <div class="col-1">
+    <div class="col-2">
       <div class="form-group">
         {{ render_field(form.uf,class="form-control", obr=False) }}
       </div>
     </div>
   </div>
   
-  <div class="form-group">
-    {{ form.submit(class="br-button secondary mr-3") }}
+  <div class="row mt-4">
+    <div class="col-8"></div>
+    <div class="col">
+      <div class="form-group">
+        {{ form.submit(class="br-button secondary mr-3") }}
+      </div>
+    </div>
   </div>
+
 
 </div>
 </div>

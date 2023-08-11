@@ -249,6 +249,7 @@ def atividade_update(cod_ativ):
                                .filter(catdom.classificacao == 'FormaCalculoTempoItemCatalogo')\
                                .all()
     lista_calc_temp = [(int(c.catalogoDominioId),c.descricao) for c in calc_tempo_cat]
+    lista_calc_temp.insert(0,(0,''))
 
 
     ativ = Atividades.query.filter(Atividades.itemCatalogoId==cod_ativ).first_or_404()
@@ -321,6 +322,8 @@ def cria_atividade():
                                .filter(catdom.classificacao == 'FormaCalculoTempoItemCatalogo')\
                                .all()
     lista_calc_temp = [(int(c.catalogoDominioId),c.descricao) for c in calc_tempo_cat]
+    lista_calc_temp.insert(0,(0,''))
+
 
 
     form = AtividadeForm()

@@ -20,7 +20,7 @@ class AtividadeForm(FlaskForm):
     titulo      = StringField('Título:', validators=[DataRequired(message="Informe o Título!")])
     calc_temp   = SelectField('Cálculo do tempo:',coerce=int, validators=[DataRequired(message="Informe a forma do cálculo do tempo!")])
     remoto      = BooleanField('Permite remoto:')
-    tempo_pres  = StringField('Tempo Presencial:')
+    tempo_pres  = StringField('Tempo Presen.:')
     tempo_rem   = StringField('Tempo Remoto:')
     descricao   = StringField('Descrição:')
     complex     = StringField('Complexidade:')

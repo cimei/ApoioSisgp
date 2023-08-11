@@ -1,7 +1,6 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
-<div class="container">
 
   <div class="col mb-5">
     <div class="br-breadcrumb">
@@ -17,25 +16,31 @@
     </div>
   </div>
 
-  <div class="jumbotron">
 
       {% if current_user.is_authenticated and current_user.userAtivo and current_user.userEnvia %} 
-      
+
+      <div class="row mt-5">
         <div class="d-flex justify-content-around">
 
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.lista_a_enviar")}}'">Planos a enviar</button>
           </div>
 
+          <div class="col-1"></div>
+
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.lista_enviados")}}'">Planos enviados</button>
           </div>
+
+          <div class="col-1"></div>
 
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.agenda_envio")}}'">Agendar envio</button>
           </div>
 
         </div>
+      </div>
+
 
       {% else %}
 
@@ -43,8 +48,6 @@
 
       {% endif %}
 
-  </div>
-</div>
 
 
 {% endblock %}

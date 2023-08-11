@@ -70,60 +70,7 @@
                 <button 
                   class="br-button circle small" type="button" data-toggle="dropdown" aria-label="Abrir Acesso Rápido" data-target="#main-navigation"><i class="fas fa-ellipsis-v" aria-hidden="true"></i>
                 </button>
-
-                <div class="br-menu" id="main-navigation">
-                  <div class="menu-container">
-                    <div class="menu-panel">
-                      <div class="menu-header">
-                        <div class="menu-title"><span>MEAG PGD 1.0</span></div>
-                        <div class="menu-close">
-                          <button class="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu"><i class="fas fa-times" aria-hidden="true"></i>
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <nav class="menu-body">
-    
-                        <a class="menu-item divider" href="{{url_for('core.info')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Sobre</span></a>
-                        <a class="menu-item divider" href="{{url_for('unidades.lista_unidades',lista='ativas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Unidades</span></a>
-                        <a class="menu-item divider" href="{{url_for('pessoas.lista_pessoas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Pessoas</span></a>
-                        <a class="menu-item divider" href="{{url_for('atividades.lista_atividades',lista='ativas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Atividades</span></a>
-    
-                        <div class="menu-folder"><a class="menu-item" href="#"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Dados Auxiliares</span></a>
-                          <ul>
-                            <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Situações da Pessoa</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('padroes.lista_tipo_funcao')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Tipos de Função</span></a>
-                            <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i class="fas fa-tree" aria-hidden="true"></i></span><span class="content">Tipos de Vínculo</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('padroes.lista_feriados')}}"><span class="icon"><i class="fas fa-moon" aria-hidden="true"></i></span><span class="content">Feriados</span></a></li>  
-                          </ul>
-                        </div>
-    
-                        <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Consultas</span></a>
-                          <ul>
-                            <li><a class="menu-item" href="{{url_for('consultas.catalogo_dominio')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Catálogo de Domínios</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.pessoas_qtd_pg_unidade')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Qtd. pessoas em PG por unidade</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.pactos')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Planos de Trabalho - Todos</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.pactos_irregulares')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Planos de Trabaho - Irregulares</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.candidatos_sem_plano')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Candidatos sem Plano</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.estatisticas')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Estatisticas</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.periodo')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">PGs e PTs no período</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('consultas.relatorioPG')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Relatório de PGs e PTs</span></a></li>
-                          </ul>
-                        </div>
-    
-                        <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Carga</span></a>
-                          <ul>
-                            <li><a class="menu-item" href="{{url_for('core.CarregaUnidades')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Unidades</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('core.CarregaPessoas')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Pessoas</span></a></li>
-                            <li><a class="menu-item" href="{{url_for('core.CarregaAtividades')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Atividades</span></a></li>
-                        </div>
-                      </nav>
-    
-                    </div>
-                    <div class="menu-scrim" data-dismiss="menu" tabindex="0"></div>
-                  </div>
-                </div>
-                
+               
                 <div class="br-list horizontal" role="list">
                   <div class="header">
                     <div class="title">Lista horizontal com expansão</div>
@@ -289,9 +236,61 @@
         </div>
       </header>
 
-      <main id="main">
-        <div class="container">
+      <main class="d-flex flex-fill mb-5" id="main">
+        <div class="container-lg d-flex">
           <div class="row">
+
+            <div class="br-menu" id="main-navigation">
+              <div class="menu-container">
+                <div class="menu-panel">
+                  <div class="menu-header">
+                    <div class="menu-title"><span>MEAG PGD 1.0</span></div>
+                    <div class="menu-close">
+                      <button class="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu"><i class="fas fa-times" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <nav class="menu-body">
+
+                    <a class="menu-item divider" href="{{url_for('core.info')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Sobre</span></a>
+                    <a class="menu-item divider" href="{{url_for('unidades.lista_unidades',lista='ativas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Unidades</span></a>
+                    <a class="menu-item divider" href="{{url_for('pessoas.lista_pessoas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Pessoas</span></a>
+                    <a class="menu-item divider" href="{{url_for('atividades.lista_atividades',lista='ativas')}}"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Atividades</span></a>
+
+                    <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Dados Auxiliares</span></a>
+                      <ul>
+                        <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Situações Pessoa</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('padroes.lista_tipo_funcao')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Tipos Função</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i class="fas fa-tree" aria-hidden="true"></i></span><span class="content">Tipos Vínculo</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('padroes.lista_feriados')}}"><span class="icon"><i class="fas fa-moon" aria-hidden="true"></i></span><span class="content">Feriados</span></a></li>  
+                      </ul>
+                    </div>
+                    <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Consultas</span></a>
+                      <ul>
+                        <li><a class="menu-item" href="{{url_for('consultas.catalogo_dominio')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Catálogo de Domínios</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.pessoas_qtd_pg_unidade')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Qtd. pessoas em PG por unidade</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.pactos')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Planos de Trabalho - Todos</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.pactos_irregulares')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Planos de Trabaho - Irregulares</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.candidatos_sem_plano')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Candidatos sem Plano</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.estatisticas')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Estatisticas</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.periodo')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">PGs e PTs no período</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('consultas.relatorioPG')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Relatório de PGs e PTs</span></a></li>
+                      </ul>
+                    </div>
+                    <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-bell" aria-hidden="true"></i></span><span class="content">Carga</span></a>
+                      <ul>
+                        <li><a class="menu-item" href="{{url_for('core.CarregaUnidades')}}"><span class="icon"><i class="fas fa-heart" aria-hidden="true"></i></span><span class="content">Unidades</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('core.CarregaPessoas')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Pessoas</span></a></li>
+                        <li><a class="menu-item" href="{{url_for('core.CarregaAtividades')}}"><span class="icon"><i class="fas fa-archive" aria-hidden="true"></i></span><span class="content">Atividades</span></a></li>
+                      </ul>
+                    </div>
+                  </nav>
+
+                </div>
+                <div class="menu-scrim" data-dismiss="menu" tabindex="0"></div>
+              </div>
+            </div>
 
             <!-- <div class="col mb-5">
               <div class="br-breadcrumb">
@@ -492,8 +491,8 @@
     <script defer="defer" src="{{ url_for('static', filename='js/barra_2.0.js') }}"></script>
 
     <!-- Padrão digital  -->
-    <!-- <script src="{{ url_for('static', filename='css/br-gov/core/dist/core.min.js') }}"></script> -->
-    <script src="{{ url_for('static', filename='css/br-gov/core/dist/core.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/br-gov/core/dist/core-init.js') }}"></script>
+    <script src="{{ url_for('static', filename='css/br-gov/core/dist/core.js') }}"></script>
 
 
   

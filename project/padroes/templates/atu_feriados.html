@@ -1,4 +1,4 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
 <div class="col mb-5">
@@ -15,7 +15,6 @@
   </div>
 </div>
 
-<div class="container">
 
 <div class="jumbotron">
 <h1>Feriado {% if tp == 'ins'%} (INCLUSÃO){% else %} (CONSULTA/ALTERAÇÃO){% endif %}</h1>
@@ -42,38 +41,43 @@
 
   <div class = "row">
 
-    <div class="col-2">
+    <div class="col-5">
       <div class="form-group">
         {{ render_field(form.ferData,class="form-control", placeholder="dd/mm/aaaa",obr=True) }}
       </div>
     </div>
-    <div class="col-6">
+    <div class="col-7">
       <div class="form-group">
         {{ render_field(form.ferDescricao,class="form-control",obr=True) }}
       </div>
     </div>
+
   </div>
 
 
   <div class = "row">
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.ferFixo,class="form-control",obr=False) }}
       </div>
     </div>
-    <div class="col-1">
+    <div class="col-2">
       <div class="form-group">
         {{ render_field(form.ufId,class="form-control",obr=False) }}
       </div>
     </div>
   </div>
 
-  <div class = "row">
+  <div class = "row mt-4">
     <div class="form-group">
       {{ form.submit(class="br-button secondary mr-3") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
     </div>
   </div>
-</div>
+
+  
+
+</form>
+
 </div>
 
 {% endblock %}

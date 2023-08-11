@@ -1,7 +1,6 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
-<div class="container">
 
   <div class="col mb-5">
     <div class="br-breadcrumb">
@@ -17,9 +16,10 @@
     </div>
   </div>
 
-  <div class="jumbotron">
 
     {% if current_user.is_authenticated and current_user.userAtivo %} 
+
+    <div class="row mt-5">
 
         <div class="d-flex justify-content-around">
       
@@ -27,13 +27,17 @@
               <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_situ_pessoas")}}'">Situações Pessoas</button>
             </div>
 
+            <div class="col-1"></div>
+
+
             <div class="br-magic-button large">
               <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_tipo_funcao")}}'">Tipos de Função</button>
             </div>
 
         </div>
+    </div>    
 
-        <br>
+    <div class="row mt-5">
       
         <div class="d-flex justify-content-around">    
 
@@ -41,19 +45,22 @@
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_vinc_pessoas")}}'">Tipos de Vínculo</button>
           </div>
 
+          <div class="col-1"></div>
+
+
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_feriados")}}'">Feriados</button>
           </div>
 
-        </div>      
+        </div>   
+        
+    </div>    
 
     {% endif %}
 
     </div>  
 
 
-  </div>
-</div>
 
 
 {% endblock %}

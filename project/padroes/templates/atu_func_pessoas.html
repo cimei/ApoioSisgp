@@ -1,4 +1,4 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
 <div class="col mb-5">
@@ -42,12 +42,12 @@
 
   <div class = "row">
 
-    <div class="col-1">
+    <div class="col-2">
       <div class="form-group">
         {{ render_field(form.id,class="form-control",obr=True) }}
       </div>
     </div>
-    <div class="col-4">
+    <div class="col-8">
       <div class="form-group">
         {{ render_field(form.desc,class="form-control",obr=True) }}
       </div>
@@ -56,19 +56,19 @@
 
 
   <div class = "row">
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.cod,class="form-control",obr=Indic) }}
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-3">
       <div class="form-group">
         {{ render_field(form.indic,class="form-control",obr=False) }}
       </div>
     </div>
   </div>
 
-  <div class = "row">
+  <div class = "row mt-4">
     <div class="form-group">
       {{ form.submit(class="br-button secondary mr-3") }}<span class="text-muted"> Atenção: campos marcados com * são obrigatórios.</span>
     </div>

@@ -1,7 +1,5 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
-
-<div class="container">
 
   <div class="col mb-5">
     <div class="br-breadcrumb">
@@ -17,10 +15,10 @@
     </div>
   </div>
 
-  <div class="jumbotron">
-
       {% if current_user.is_authenticated and current_user.userAtivo %} 
 
+
+      <div class="row mt-5">
 
         <div class="d-flex justify-content-around">
       
@@ -28,9 +26,13 @@
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.log")}}'">Diário do sistema</button>
           </div>
 
+          <div class="col-1"></div>
+
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.view_users")}}'">Gestão de usuários</button>
           </div>
+
+          <div class="col-1"></div>
 
           <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.troca_senha")}}'">Trocar senha</button>
@@ -38,10 +40,9 @@
 
         </div>
 
-      {% endif %}
+      </div>  
 
-  </div>
-</div>
+      {% endif %}
 
 
 {% endblock %}

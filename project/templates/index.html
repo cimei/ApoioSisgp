@@ -1,36 +1,42 @@
-{% extends "BASE_GOV.html" %}
+{% extends "template_gov.html" %}
 {% block content %}
 
-<div class="container">
-  <div class="jumbotron">
-    <!-- <h3><center>Início</center></h3> -->
-    <!-- <h5><center>({{ativos}} Usuários habilitados a utilizar este sistema)</center></h5>
-    <br>
-    <h4><center>Bem vindo!</center></h4> -->
+
 
   {% if current_user.is_authenticated and current_user.userAtivo %} 
 
-  <div class="d-flex justify-content-around">
-  
-    <div class="br-magic-button large">
-      <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.envio_i")}}'">Envio de Dados ao Órgão Central do SISP</button>
-    </div>
+      <div class="row mt-5">
+      <div class="d-flex justify-content-around">
+      
+        <div class="br-magic-button large">
+          <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.envio_i")}}'">Envio de Dados ao Órgão Central do SISP</button>
+        </div>
 
-    <div class="br-magic-button large">
-      <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.apoio_i")}}'">Funções de Apoio à Gestão do PGD 1.0</button>
-    </div>
+        <div class="col-1"></div>
 
-    <div class="br-magic-button large">
-      <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.interno_i")}}'">Funções Internas</button>
-    </div>
+        <div class="br-magic-button large">
+          <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.apoio_i")}}'">Funções de Apoio à Gestão do PGD 1.0</button>
+        </div>
 
-  </div>  
+        <div class="col-1"></div>
+
+        <div class="br-magic-button large">
+          <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.interno_i")}}'">Funções Internas</button>
+        </div>
+      </div>  
+      </div>  
+
+  {% else %}  
+
+  <div class="main-content pl-sm-3 mt-4" id="main-content">
+    <h1>Bem vindo!</h1>
+    <h2>No canto superior direito, entre, ou registre-se, para acessar o sistema.</h2>
+  </div>
+    
+  </div>
 
   {% endif %}
   
 
-
-  </div>
-</div>
 
 {% endblock %}
