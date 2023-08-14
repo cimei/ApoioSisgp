@@ -508,9 +508,9 @@ def update_user(user_id):
 #
 # mostra log
 
-@usuarios.route("/log", methods=['GET', 'POST'])
+@usuarios.route("/<tipo>/log", methods=['GET', 'POST'])
 @login_required
-def log ():
+def log (tipo):
     """+--------------------------------------------------------------------------------------+
        |Mostra a atividade no sistema em função dos principais commits.                       |
        |                                                                                      |
@@ -523,35 +523,64 @@ def log ():
 
         data_ini = form.data_ini.data
         data_fim = form.data_fim.data
+        
+        if tipo == 'geral':
 
-        log = db.session.query(Log_Auto.id,
-                               Log_Auto.data_hora,
-                               users.userNome,
-                               Log_Auto.msg)\
-                        .join(users, Log_Auto.user_id == users.id)\
-                        .filter(Log_Auto.data_hora >= datetime.combine(data_ini,time.min),
-                                Log_Auto.data_hora <= datetime.combine(data_fim,time.max))\
-                        .order_by(Log_Auto.id.desc())\
-                        .all()
+            log = db.session.query(Log_Auto.id,
+                                   Log_Auto.data_hora,
+                                   users.userNome,
+                                   Log_Auto.msg)\
+                            .join(users, Log_Auto.user_id == users.id)\
+                            .filter(Log_Auto.data_hora >= datetime.combine(data_ini,time.min),
+                                    Log_Auto.data_hora <= datetime.combine(data_fim,time.max))\
+                            .order_by(Log_Auto.id.desc())\
+                            .all()
+        
+        elif tipo == 'envio':
+            
+            log = db.session.query(Log_Auto.id,
+                                   Log_Auto.data_hora,
+                                   users.userNome,
+                                   Log_Auto.msg)\
+                            .join(users, Log_Auto.user_id == users.id)\
+                            .filter(Log_Auto.data_hora >= datetime.combine(data_ini,time.min),
+                                    Log_Auto.data_hora <= datetime.combine(data_fim,time.max),
+                                    Log_Auto.msg.like('*%'))\
+                            .order_by(Log_Auto.id.desc())\
+                            .all()                    
 
         return render_template('user_log.html', log=log, name=current_user.userNome,
-                               form=form)
+                               form=form, tipo=tipo)
 
 
     # traz a log das últimas 24 horas e registra entrada manual de log, se for o caso.
     else:
+        
+        if tipo == 'geral':
 
-        log = db.session.query(Log_Auto.id,
-                               Log_Auto.data_hora,
-                               users.userNome,
-                               Log_Auto.msg)\
-                        .join(users, Log_Auto.user_id == users.id)\
-                        .filter(Log_Auto.data_hora >= (datetime.now()-timedelta(days=1)))\
-                        .order_by(Log_Auto.id.desc())\
-                        .all()
+            log = db.session.query(Log_Auto.id,
+                                Log_Auto.data_hora,
+                                users.userNome,
+                                Log_Auto.msg)\
+                            .join(users, Log_Auto.user_id == users.id)\
+                            .filter(Log_Auto.data_hora >= (datetime.now()-timedelta(days=1)))\
+                            .order_by(Log_Auto.id.desc())\
+                            .all()
+                            
+        elif tipo == 'envio':
+            
+            log = db.session.query(Log_Auto.id,
+                                Log_Auto.data_hora,
+                                users.userNome,
+                                Log_Auto.msg)\
+                            .join(users, Log_Auto.user_id == users.id)\
+                            .filter(Log_Auto.data_hora >= (datetime.now()-timedelta(days=1)),
+                                    Log_Auto.msg.like('*%'))\
+                            .order_by(Log_Auto.id.desc())\
+                            .all()
 
         return render_template('user_log.html', log=log, name=current_user.userNome,
-                           form=form)
+                           form=form, tipo=tipo)
 
 #
 

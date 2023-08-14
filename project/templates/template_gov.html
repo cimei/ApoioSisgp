@@ -76,11 +76,6 @@
                     </div>
                   {% endif %}
                   
-                  <!-- {% if current_user.is_authenticated and current_user.userAtivo %}                   
-                    <a class="br-item" href="{{url_for('unidades.lista_unidades',lista='ativas')}}">Unidades</a>
-                    <a class="br-item" href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a>
-                    <a class="br-item" href="{{url_for('atividades.lista_atividades',lista='ativas')}}">Atividades</a>
-                  {% endif %}     -->
                 </div>
 
                 <a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a>
@@ -126,7 +121,7 @@
               </div>
               <div class="header-info">
                 <div class="header-title">MEAG PGD 1.0</div>
-                <div class="header-subtitle">Módulo de Envio e Apoio à Gestão do PGD 1.0</div>
+                <div class="header-subtitle"><b>Módulo de Envio e Apoio à Gestão do PGD 1.0</b></div>
               </div>
             </div>
           </div>
@@ -169,6 +164,7 @@
                                 <li><a class="menu-item" href="{{url_for('envio.lista_a_enviar')}}"><span class="icon"><i class="fas fa-folder" aria-hidden="true"></i></span><span class="content">Planos à enviar</span></a></li>
                                 <li><a class="menu-item" href="{{url_for('envio.lista_enviados')}}"><span class="icon"><i class="fas fa-cloud" aria-hidden="true"></i></span><span class="content">Planos enviados</span></a></li>
                                 <li><a class="menu-item" href="{{url_for('envio.agenda_envio')}}"><span class="icon"><i class="fas fa-play" aria-hidden="true"></i></span><span class="content">Agendamento</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('usuarios.log',tipo='envio')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Diário de Envio</span></a></li>
                             </ul>
                           </div>  
 
@@ -204,7 +200,7 @@
 
                           <div class="menu-folder"><a class="menu-item" href="javascript: void(0)"><span class="icon"><i class="fas fa-inbox" aria-hidden="true"></i></span><span class="content">Funções internas</span></a>
                             <ul>
-                                <li><a class="menu-item" href="{{url_for('usuarios.log')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Diário</span></a></li>
+                                <li><a class="menu-item" href="{{url_for('usuarios.log',tipo='geral')}}"><span class="icon"><i class="fas fa-address-book" aria-hidden="true"></i></span><span class="content">Diário</span></a></li>
                                 <li><a class="menu-item" href="{{ url_for('usuarios.view_users') }}"><span class="icon"><i class="fas fa-user" aria-hidden="true"></i></span><span class="content">Usuário</span></a></li>
                                 <li><a class="menu-item" href="{{ url_for('usuarios.troca_senha') }}"><span class="icon"><i class="fas fa-lock" aria-hidden="true"></i></span><span class="content">Trocar senha</span></a></li>
                             </ul>

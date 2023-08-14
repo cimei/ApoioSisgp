@@ -5,7 +5,11 @@
   <div class="br-breadcrumb">
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
-      <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.interno_i')}}">Funções Internas</a></li>
+      {% if tipo == 'geral' %}
+       <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('core.interno_i')}}">Funções Internas</a></li>
+      {% elif tipo == 'envio' %}
+        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="{{url_for('envio.envio_i')}}">Envio</a></li>
+      {% endif %}
       <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
       <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
       <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
@@ -18,8 +22,13 @@
 <div class="container">
 
 <div class="jumbotron">
-
-  <h5>Diário</h5>
+  
+  {% if tipo == 'geral' %}
+    <h5>Diário</h5>
+  {% elif tipo == 'envio' %}
+    <h5>Diário de Envios</h5>
+  {% endif %}
+  
 
   <div class="row">
     <p>(Observação: Se não informadas datas na procura, são apresentados registros das <b>últimas 24 horas</b>)</p>

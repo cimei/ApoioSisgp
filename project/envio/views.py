@@ -20,7 +20,7 @@ from flask import render_template,url_for,flash, redirect, request, Blueprint
 from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
-from sqlalchemy import func, literal
+from sqlalchemy import func, literal, or_
 
 from project import db, sched
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
@@ -154,13 +154,13 @@ def planos_enviados_LOG():
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
+                             .filter(Log_Auto.msg.like('PACTO ENVIADO:'+'%') )\
                              .all()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
                                          .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[27:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]        
+    log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]        
 
     enviados = []
     
@@ -201,9 +201,8 @@ def planos_n_enviados_API():
         ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
                                           label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
                                    .filter(Pactos_de_Trabalho_Atividades.nota != None)\
-                                   .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
                                    .subquery() 
-        
+                                   
         # resgata todos os planos executados com pelo menos uma atividade avaliada
         planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                     catdom_1.c.descricao,
@@ -293,13 +292,13 @@ def planos_n_enviados_LOG():
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like('Plano enviado com sucesso:'+'%') )\
+                             .filter(Log_Auto.msg.like('PACTO ENVIADO:'+'%') )\
                              .all()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
                                          .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[27:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]
+    log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]
 
     n_enviados = []
     
@@ -334,7 +333,7 @@ def envia_planos_novamente():
         id = current_user.id 
         modo = 'manual'
 
-    registra_log_auto(id, 'Início do reenvio de Planos para API.') 
+    registra_log_auto(id, '* Início do reenvio de Planos para API.') 
 
     if enviados != 'erro_credenciais':      
     
@@ -391,24 +390,33 @@ def envia_planos_novamente():
 
             # para cada atividade, monta o resto do dicionário (key 'atividades')
             for a in ativs:
+                
+                # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+                situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                                    .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                                    .first()
 
-                dic_envio['atividades'].append({'id_atividade': a.id_produto,
-                                                'nome_grupo_atividade': a.nome_grupo_atividade,
-                                                'nome_atividade': a.nome_atividade,
-                                                'faixa_complexidade': a.faixa_complexidade,
-                                                'parametros_complexidade': a.parametros_complexidade,
-                                                'tempo_presencial_estimado': a.tempo_presencial_estimado,
-                                                'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                'tempo_presencial_executado': a.tempo_presencial_programado,
-                                                'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                                'tempo_teletrabalho_programado': a.tempo_teletrabalho_estimado,
-                                                'tempo_teletrabalho_executado': a.tempo_teletrabalho_estimado,
-                                                'entrega_esperada': a.entrega_esperada,
-                                                'qtde_entregas': a.qtde_entregas,
-                                                'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
-                                                'avaliacao': a.avaliacao,
-                                                'data_avaliacao': a.data_avaliacao,
-                                                'justificativa': a.justificativa}) 
+                if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
+                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                    dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                    'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                    'nome_atividade': a.nome_atividade,
+                                                    'faixa_complexidade': a.faixa_complexidade,
+                                                    'parametros_complexidade': a.parametros_complexidade,
+                                                    'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                    'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                    'tempo_presencial_executado': a.tempo_presencial_programado,
+                                                    'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_estimado,
+                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_estimado,
+                                                    'entrega_esperada': a.entrega_esperada,
+                                                    'qtde_entregas': a.qtde_entregas,
+                                                    'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                    'avaliacao': a.avaliacao,
+                                                    'data_avaliacao': a.data_avaliacao,
+                                                    'justificativa': a.justificativa}) 
 
             # prepara headers do put
             plano_id = p.id_pacto
@@ -420,13 +428,13 @@ def envia_planos_novamente():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, 'PACTO REENVIADO: ' + str(plano_id))
+                registra_log_auto(id, ' * PACTO REENVIADO: ' + str(plano_id))
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, 'Retorno API sobre falha no reenvio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
+                registra_log_auto(id, '* Retorno API sobre falha no reenvio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -440,11 +448,11 @@ def envia_planos_novamente():
             msg = ''    
 
         if sucesso == qtd_planos:
-            registra_log_auto(id, msg + str(qtd_planos) + ' Plano(s) reenviado(s) com sucesso.')
+            registra_log_auto(id, '*' + msg + str(qtd_planos) + ' Plano(s) reenviado(s) com sucesso.')
             if modo == 'manual':
                 flash(str(qtd_planos) + ' Planos reenviados com sucesso','sucesso') # todos os planos enviados com sucesso
         else:
-            registra_log_auto(id, msg + 'Na tentativa de reenvio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.')
+            registra_log_auto(id, '*' + msg + 'Na tentativa de reenvio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.')
             if modo == 'manual':
                 flash('Houve problema no reenvio dos Planos: Dos ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.','erro') # alguma coisa deu errado
 
@@ -469,7 +477,7 @@ def envia_planos():
         id = current_user.id 
         modo = 'manual'
 
-    registra_log_auto(id, 'Início do envio de Planos para API.')       
+    registra_log_auto(id, '* Início do envio de Planos para API.')       
     
     if n_enviados != 'erro_credenciais':
     
@@ -526,24 +534,33 @@ def envia_planos():
 
             # para cada atividade, monta o resto do dicionário (key 'atividades')
             for a in ativs:
+                
+                # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+                situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                                    .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                                    .first()
 
-                dic_envio['atividades'].append({'id_atividade': a.id_produto,
-                                                'nome_grupo_atividade': a.nome_grupo_atividade,
-                                                'nome_atividade': a.nome_atividade,
-                                                'faixa_complexidade': a.faixa_complexidade,
-                                                'parametros_complexidade': a.parametros_complexidade,
-                                                'tempo_presencial_estimado': a.tempo_presencial_estimado,
-                                                'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                'tempo_presencial_executado': a.tempo_presencial_programado,
-                                                'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                                'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
-                                                'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
-                                                'entrega_esperada': a.entrega_esperada,
-                                                'qtde_entregas': a.qtde_entregas,
-                                                'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
-                                                'avaliacao': a.avaliacao,
-                                                'data_avaliacao': a.data_avaliacao,
-                                                'justificativa': a.justificativa}) 
+                if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
+                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                    dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                    'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                    'nome_atividade': a.nome_atividade,
+                                                    'faixa_complexidade': a.faixa_complexidade,
+                                                    'parametros_complexidade': a.parametros_complexidade,
+                                                    'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                    'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                    'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                    'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                    'entrega_esperada': a.entrega_esperada,
+                                                    'qtde_entregas': a.qtde_entregas,
+                                                    'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                    'avaliacao': a.avaliacao,
+                                                    'data_avaliacao': a.data_avaliacao,
+                                                    'justificativa': a.justificativa}) 
 
             # prepara headers do put
             plano_id = p.id_pacto
@@ -555,13 +572,13 @@ def envia_planos():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, 'PACTO ENVIADO: ' + str(plano_id))
+                registra_log_auto(id, ' * PACTO ENVIADO: ' + str(plano_id))
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, 'Retorno API sobre falha no envio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
+                registra_log_auto(id, '* Retorno API sobre falha no envio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -575,11 +592,11 @@ def envia_planos():
             msg = ''    
 
         if sucesso == qtd_planos:
-            registra_log_auto(id, msg + str(qtd_planos) + ' Plano(s) enviado(s) com sucesso.')
+            registra_log_auto(id, '*' + msg + str(qtd_planos) + ' Plano(s) enviado(s) com sucesso.')
             if modo == 'manual':
                 flash(str(qtd_planos) + ' Planos enviados com sucesso','sucesso') # todos os planos enviados com sucesso
         else:
-            registra_log_auto(id, msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram enviados.')
+            registra_log_auto(id, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram enviados.')
             if modo == 'manual':
                 flash('Houve problema no envio dos Planos: Dos ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram enviados.','erro') # alguma coisa deu errado 
     
@@ -606,8 +623,10 @@ def lista_a_enviar():
     
     if os.getenv('CONSULTA_API') == 'S':
         n_enviados = planos_n_enviados_API()
+        fonte = 'API'
     else:
         n_enviados = planos_n_enviados_LOG()
+        fonte = 'LOG'
 
     if n_enviados != 'erro_credenciais':
 
@@ -678,7 +697,8 @@ def lista_a_enviar():
         return render_template('planos.html', demandas = planos, 
                                               demandas_count = planos_count,
                                               enviados = len(planos_avaliados) - planos_count,
-                                              lista = lista)
+                                              lista = lista,
+                                              fonte = fonte)
 
     else:
 
@@ -702,8 +722,10 @@ def lista_enviados():
 
     if os.getenv('CONSULTA_API') == 'S':
         enviados = planos_enviados_API()
+        fonte = 'API'
     else:
         enviados = planos_enviados_LOG()
+        fonte = 'LOG'
 
     if enviados != 'erro_credenciais':
 
@@ -772,7 +794,8 @@ def lista_enviados():
                                             demandas_count = planos_count,
                                             n_enviados = len(planos_avaliados) - planos_count,
                                             enviados = enviados,
-                                            lista = lista)
+                                            lista = lista,
+                                            fonte = fonte)
 
     else:
 
@@ -873,24 +896,33 @@ def enviar_um_plano(plano_id,lista):
 
     # para cada atividade, monta o resto do dicionário (key 'atividades')
     for a in ativs:
+        
+        # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+        situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                            .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                            .first()
 
-        dic_envio['atividades'].append({'id_atividade': a.id_produto,
-                                        'nome_grupo_atividade': a.nome_grupo_atividade,
-                                        'nome_atividade': a.nome_atividade,
-                                        'faixa_complexidade': a.faixa_complexidade,
-                                        'parametros_complexidade': a.parametros_complexidade,
-                                        'tempo_presencial_estimado': a.tempo_presencial_estimado,
-                                        'tempo_presencial_programado': a.tempo_presencial_programado,
-                                        'tempo_presencial_executado': a.tempo_presencial_programado,
-                                        'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                        'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
-                                        'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
-                                        'entrega_esperada': a.entrega_esperada,
-                                        'qtde_entregas': a.qtde_entregas,
-                                        'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
-                                        'avaliacao': a.avaliacao,
-                                        'data_avaliacao': a.data_avaliacao,
-                                        'justificativa': a.justificativa}) 
+        if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
+                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+            dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                            'nome_grupo_atividade': a.nome_grupo_atividade,
+                                            'nome_atividade': a.nome_atividade,
+                                            'faixa_complexidade': a.faixa_complexidade,
+                                            'parametros_complexidade': a.parametros_complexidade,
+                                            'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                            'tempo_presencial_programado': a.tempo_presencial_programado,
+                                            'tempo_presencial_executado': a.tempo_presencial_programado,
+                                            'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                            'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                            'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                            'entrega_esperada': a.entrega_esperada,
+                                            'qtde_entregas': a.qtde_entregas,
+                                            'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                            'avaliacao': a.avaliacao,
+                                            'data_avaliacao': a.data_avaliacao,
+                                            'justificativa': a.justificativa}) 
 
     # prepara headers do put
     headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
@@ -911,17 +943,17 @@ def enviar_um_plano(plano_id,lista):
 
     if sucesso:
         if lista == 'enviados':
-            registra_log_auto(current_user.id, 'Plano reenviado manualmente com sucesso: ' + str(plano_id))
+            registra_log_auto(current_user.id, '* Plano reenviado manualmente com sucesso: ' + str(plano_id))
             flash('Plano reenviado manualmente com sucesso!','sucesso')
         elif lista == 'n_enviados':
-            registra_log_auto(current_user.id, 'Plano enviado manualmente com sucesso: ' + str(plano_id))
+            registra_log_auto(current_user.id, '* Plano enviado manualmente com sucesso: ' + str(plano_id))
             flash('Plano enviado manualmente com sucesso!','sucesso')   
     else:
         if lista == 'enviados':
-            registra_log_auto(current_user.id, 'Erro na tentativa de reenvio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
+            registra_log_auto(current_user.id, '* Erro na tentativa de reenvio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
             flash('Erro na tentativa de reenvio manual do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg),'erro') 
         elif lista == 'n_enviados':
-            registra_log_auto(current_user.id, 'Erro na tentativa de envio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
+            registra_log_auto(current_user.id, '* Erro na tentativa de envio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
             flash('Erro na tentativa de envio manual do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg),'erro')   
 
     # print(json.dumps(dic_envio, skipkeys=True, allow_nan=True, indent=4))          
@@ -1030,7 +1062,7 @@ def agenda_envio():
                 msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
                 print(msg)
 
-            registra_log_auto(current_user.id, 'Agendamento de envio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
+            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
             flash(msg,'sucesso')    
 
         
@@ -1111,7 +1143,7 @@ def agenda_envio():
                     msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
                     print(msg)
 
-                registra_log_auto(current_user.id, 'Agendamento de reenvio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
+                registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
                 flash(msg,'sucesso')    
 
         return render_template('index.html')  

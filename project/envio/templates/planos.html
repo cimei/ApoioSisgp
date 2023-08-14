@@ -26,10 +26,22 @@
     <div class="row">
       <div class="col">
         {% if lista == 'n_enviados' %}
-          <h5><b>Lista de Planos de Trabalho NUNCA ENVIADOS    <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6> </b></h5>
+          <h5><b>Lista de Planos de Trabalho NUNCA ENVIADOS,
+            {% if fonte == 'API' %}
+              conforme API de dados    
+            {% else %}
+              conforme LOG deste sistema
+            {% endif %}
+                <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6> </b></h5>
           <p><span class="badge badge-success badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviados.</p>
         {% else %}
-          <h5><b>Lista de Planos de Trabalho ENVIADOS    <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
+          <h5><b>Lista de Planos de Trabalho ENVIADOS,
+            {% if fonte == 'API' %}
+              conforme API de dados    
+            {% else %}
+              conforme LOG deste sistema
+            {% endif %}
+                <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
           <p><span class="badge badge-primary badge-pill">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.</p>
         {% endif %}  
       </div>

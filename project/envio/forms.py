@@ -22,7 +22,7 @@ class AgendamentoForm(FlaskForm):
 
    tipo          = SelectField('Planos para envio:',choices=[('nunca_enviados','Nunca enviados'),('todos','Todos')])
    periodicidade = SelectField('Periodicidade',choices=[('Diária','Diária'),('Semanal','Semanal'),('Mensal','Mensal'),('Nenhuma','Nenhuma')])
-   hora          = SelectField('Hora',choices=[(20,'20'),(21,'21'),(22,'22'),(23,'23'),(0,'00'),(1,'01'),(2,'02'),(3,'03'),(4,'04'),(5,'05'),(6,'06')],coerce=int)
+   hora          = SelectField('Hora',choices=[(20,'20'),(21,'21'),(22,'22'),(23,'23'),(0,'00'),(1,'01'),(2,'02'),(3,'03')],coerce=int)
    minuto        = IntegerField('Minuto')    
 
    submit        = SubmitField('Agendar')
