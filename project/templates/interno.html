@@ -4,12 +4,12 @@
   <div class="col mb-5">
     <div class="br-breadcrumb">
       <ul class="crumb-list">
-        <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
-        <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
-        <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Funções internas</span>
+        <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
+        <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+        <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Funções internas</span>
         </li>
       </ul>
     </div>
@@ -22,20 +22,124 @@
 
         <div class="d-flex justify-content-around">
       
-          <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.log")}}'">Diário do sistema</button>
+          <!-- <div class="br-magic-button large">
+            <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.log",tipo="geral")}}'">Diário do sistema</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("usuarios.log",tipo="geral")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-book fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Diário</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Registro das principais ações realizadas no sistema. A tela inicial mostra as últimas 24 horas de
+                      atividades, mas há opção de filtro para um período maior.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.view_users")}}'">Gestão de usuários</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("usuarios.view_users")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-user fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Gestão de usuários</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Lista dos usuários registrados no sistema com a opção de ativação de usuário recém registrado, bem 
+                      como a permição de uso da funcionalidade de envio de dados .
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.troca_senha")}}'">Trocar senha</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("usuarios.troca_senha")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-lock fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Trocar senha</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Formulário onde o usuário logado pode trocar sua senha.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
         </div>

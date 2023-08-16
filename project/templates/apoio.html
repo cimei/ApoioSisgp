@@ -4,12 +4,12 @@
   <div class="col mb-5">
     <div class="br-breadcrumb">
       <ul class="crumb-list">
-        <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fas fa-home"></i></a></li>
-        <!-- <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-        <li class="crumb"><i class="icon fas fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
-        <li class="crumb" data-active="active"><i class="icon fas fa-chevron-right"></i><span>Funções de apoio</span>
+        <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
+        <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
+        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
+        <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Funções de apoio</span>
         </li>
       </ul>
     </div>
@@ -21,20 +21,125 @@
       <div class="row mt-5">
         <div class="d-flex justify-content-around">
       
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("unidades.lista_unidades",lista="ativas")}}'">Unidades</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("unidades.lista_unidades",lista="ativas")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-cube fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Unidades</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Lista das unidades da instituição, com as opções de inclusão, alteração e filtro.
+                      Pode-se também selecionar entre ativas e inativas.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("pessoas.lista_pessoas")}}'">Pessoas</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("pessoas.lista_pessoas")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-users fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Pessoas</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Lista das pessoas da instituição, com as opções de inclusão, alteração e filtro.
+                      Há destaque para a informação de gestores do sistema.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("atividades.lista_atividades",lista="ativas")}}'">Atividades</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("atividades.lista_atividades",lista="ativas")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-pen fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Atividades</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Lista das atividades da instituição, com as opções de inclusão e alteração.
+                      Pode-se também selecionar entre válidas e não válidas.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
         </div>
@@ -43,20 +148,123 @@
       <div class="row mt-5">
         <div class="d-flex justify-content-around">
       
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.padroes_i")}}'">Dados Auxiliares</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("padroes.padroes_i")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-eye fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Dados Auxiliares</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Consulta e atualização de tabelas operacionais do SISGP.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
+
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.consultas_i")}}'">Consultas</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("consultas.consultas_i")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-list fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Consultas</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Consultas de interesse à gestão do PGD da instituição.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
           <div class="col-1"></div>
 
-          <div class="br-magic-button large">
+          <!-- <div class="br-magic-button large">
             <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.cargas_i")}}'">Carga de dados</button>
+          </div> -->
+          <div class="col-auto card-sm">
+            <label class="flip-container">
+              <div class="flipper">
+                <div class="front">
+                  <div class="card">
+                    <div class="header-card">
+                      <input type="checkbox" id="switch" class="flippe">
+                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
+                    </div>
+                    <div class="card-body text-center centered-content">
+                      <a href='{{url_for("core.cargas_i")}}'>
+                        <div class="card-text">
+                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
+                          <i class="fa fa-upload fa-6x" aria-hidden="true"></i>
+                          <p></p>
+                        </div>
+                      </a>
+                      <p>Carga de dados</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="back">
+                  <div class="card">
+                    <div class="header-card">
+                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
+                    </div>
+                    <div class="back-text">
+                      Inserção ou atualização em lote de Unidades, Pessoas ou Atividades.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </label>
           </div>
 
         </div>

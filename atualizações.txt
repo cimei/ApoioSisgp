@@ -1,6 +1,10 @@
 ## Atualizações ##
 
 02/08/2023
+Finalização do layout.
+v3.1.2
+
+02/08/2023
 Ajustes em Envios e de layout em demais funções.
 v3.1.1
 

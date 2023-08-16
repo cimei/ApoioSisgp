@@ -75,6 +75,7 @@ def planos_enviados_API():
                                     ativs.c.qtd_ativs,
                                     ativs_com_nota.c.qtd_com_nota)\
                                 .filter(catdom_1.c.descricao == 'Executado',
+                                        ativs.c.qtd_ativs != None,
                                         ativs_com_nota.c.qtd_com_nota != None,
                                         ativs_com_nota.c.qtd_com_nota > 0)\
                                 .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -144,6 +145,7 @@ def planos_enviados_LOG():
                                         ativs.c.qtd_ativs,
                                         ativs_com_nota.c.qtd_com_nota)\
                             .filter(catdom_1.c.descricao == 'Executado',
+                                    ativs.c.qtd_ativs != None,
                                     ativs_com_nota.c.qtd_com_nota != None,
                                     ativs_com_nota.c.qtd_com_nota > 0)\
                             .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -154,10 +156,10 @@ def planos_enviados_LOG():
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like('PACTO ENVIADO:'+'%') )\
+                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
                              .all()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
-                                         .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
+                                         .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
     log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]        
@@ -199,23 +201,26 @@ def planos_n_enviados_API():
         
         #subquery que conta atividades com nota em cada plano de trabalho (pacto)
         ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
-                                          label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
-                                   .filter(Pactos_de_Trabalho_Atividades.nota != None)\
-                                   .subquery() 
+                                        label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                                .filter(Pactos_de_Trabalho_Atividades.nota != None)\
+                                .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                                .subquery()                           
+                                   
                                    
         # resgata todos os planos executados com pelo menos uma atividade avaliada
         planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                    catdom_1.c.descricao,
-                                    Pactos_de_Trabalho.situacaoId,
-                                    ativs.c.qtd_ativs,
-                                    ativs_com_nota.c.qtd_com_nota)\
-                                .filter(catdom_1.c.descricao == 'Executado',
-                                        ativs_com_nota.c.qtd_com_nota != None,
-                                        ativs_com_nota.c.qtd_com_nota > 0)\
-                                .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                .all() 
+                                            catdom_1.c.descricao,
+                                            Pactos_de_Trabalho.situacaoId,
+                                            ativs.c.qtd_ativs,
+                                            ativs_com_nota.c.qtd_com_nota)\
+                                    .filter(catdom_1.c.descricao == 'Executado',
+                                            ativs.c.qtd_ativs != None,
+                                            ativs_com_nota.c.qtd_com_nota != None,
+                                            ativs_com_nota.c.qtd_com_nota > 0)\
+                                    .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                    .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                                    .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                                    .all() 
         
         # pega token de acesso à API de envio de dados
 
@@ -282,6 +287,7 @@ def planos_n_enviados_LOG():
                                 ativs.c.qtd_ativs,
                                 ativs_com_nota.c.qtd_com_nota)\
                             .filter(catdom_1.c.descricao == 'Executado',
+                                    ativs.c.qtd_ativs != None,
                                     ativs_com_nota.c.qtd_com_nota != None,
                                     ativs_com_nota.c.qtd_com_nota > 0)\
                             .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -292,10 +298,10 @@ def planos_n_enviados_LOG():
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like('PACTO ENVIADO:'+'%') )\
+                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
                              .all()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
-                                         .filter(Log_Auto.msg.like('Plano enviado manualmente com sucesso:'+'%') )\
+                                         .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
     log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]
@@ -658,6 +664,7 @@ def lista_a_enviar():
                                             ativs.c.qtd_ativs,
                                             ativs_com_nota.c.qtd_com_nota)\
                                      .filter(catdom_1.c.descricao == 'Executado',
+                                             ativs.c.qtd_ativs != None,
                                              ativs_com_nota.c.qtd_com_nota != None,
                                              ativs_com_nota.c.qtd_com_nota > 0)\
                                      .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
@@ -757,6 +764,7 @@ def lista_enviados():
                                     ativs.c.qtd_ativs,
                                     ativs_com_nota.c.qtd_com_nota)\
                                 .filter(catdom_1.c.descricao == 'Executado',
+                                        ativs.c.qtd_ativs != None,
                                         ativs_com_nota.c.qtd_com_nota != None,
                                         ativs_com_nota.c.qtd_com_nota > 0)\
                                 .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
