@@ -162,7 +162,7 @@ def planos_enviados_LOG():
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]        
+    log = [e.msg[18:] for e in enviados_log] + [e.msg[41:] for e in enviados_manualmente_log]        
 
     enviados = []
     
@@ -173,6 +173,7 @@ def planos_enviados_LOG():
             
     # se não encontrar planos enviados no log, recorre à API para verificar es houve algum envio
     if len(log) == 0:
+        print ('*** Ao tentar listar enviados, não achei nada no log, vou pegar da API! ***')
         enviados = planos_enviados_API()        
 
     return enviados        
@@ -304,7 +305,7 @@ def planos_n_enviados_LOG():
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[15:] for e in enviados_log] + [e.msg[39:] for e in enviados_manualmente_log]
+    log = [e.msg[18:] for e in enviados_log] + [e.msg[41:] for e in enviados_manualmente_log]
 
     n_enviados = []
     
@@ -315,6 +316,7 @@ def planos_n_enviados_LOG():
             
     # se não achar planos enviados no log, recorre à API para verificar es houve algum envio
     if len(log) == 0:
+        print ('*** Ao tentar listar não enviados, não achei nada no log, vou pegar da API! ***')
         n_enviados = planos_n_enviados_API()        
 
     return n_enviados        
@@ -329,6 +331,8 @@ def envia_planos_novamente():
     else:
         enviados = planos_enviados_LOG()
         
+    print('**')
+    print('*** Iniciando o reenvio de planos conforme agendamento ***')    
 
     # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
     if current_user == None:
@@ -447,9 +451,7 @@ def envia_planos_novamente():
         # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
         if modo == 'agenda':
-            agenda = db.session.query(jobs).first()
-            run_time = datetime.fromtimestamp(agenda.next_run_time)
-            msg = 'Reenvio programado: ' + run_time.strftime('%d/%m/%Y - %H:%M') +'. '
+            msg = 'Envio programado. ' 
         else:
             msg = ''    
 
@@ -465,6 +467,9 @@ def envia_planos_novamente():
     else:
         return 'erro_credenciais'
 
+    print('*** Finalizando o reenvio de planos conforme agendamento ***')
+    print('**')    
+
 
 # função para envio de planos nunca enviados
 def envia_planos():  
@@ -473,6 +478,9 @@ def envia_planos():
         n_enviados = planos_n_enviados_API()
     else:
         n_enviados = planos_n_enviados_LOG()
+
+    print('**')
+    print('*** Iniciando o envio de planos conforme agendamento ***')    
     
     # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
     if current_user == None:
@@ -591,9 +599,7 @@ def envia_planos():
         # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
         if modo == 'agenda':
-            agenda = db.session.query(jobs).first()
-            run_time = datetime.fromtimestamp(agenda.next_run_time)
-            msg = 'Envio programado: ' + run_time.strftime('%d/%m/%Y - %H:%M') +'. '
+            msg = 'Envio programado. ' 
         else:
             msg = ''    
 
@@ -602,14 +608,15 @@ def envia_planos():
             if modo == 'manual':
                 flash(str(qtd_planos) + ' Planos enviados com sucesso','sucesso') # todos os planos enviados com sucesso
         else:
-            registra_log_auto(id, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram enviados.')
+            registra_log_auto(id, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.')
             if modo == 'manual':
-                flash('Houve problema no envio dos Planos: Dos ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram enviados.','erro') # alguma coisa deu errado 
-    
+                flash('Houve problema no envio dos Planos: Dos ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.','erro') # alguma coisa deu errado 
+
     else:
         return 'erro_credenciais'
 
-
+    print('*** Finalizando o envio de planos conforme agendamento ***')
+    print('**')
 
 
 ## lista planos avaliados que não foram enviados ainda 
@@ -657,20 +664,27 @@ def lista_a_enviar():
                                    .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
                                    .subquery()  
 
+        #query que resgata erros em tentativas de envios de planos   
+        log_erro_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                   .filter(Log_Auto.msg.like('* Retorno API sobre falha no envio do Plano:'+'%') )\
+                                   .order_by(Log_Auto.id.desc())\
+                                   .all() 
+        l_log_erro_envio = [[p.msg[45:81],p.msg] for p in log_erro_envio]                                                  
+
         # todos os planos executados em com pelo menos uma atividade avaliada
-        planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                            catdom_1.c.descricao,
-                                            Pactos_de_Trabalho.situacaoId,
-                                            ativs.c.qtd_ativs,
-                                            ativs_com_nota.c.qtd_com_nota)\
-                                     .filter(catdom_1.c.descricao == 'Executado',
-                                             ativs.c.qtd_ativs != None,
-                                             ativs_com_nota.c.qtd_com_nota != None,
-                                             ativs_com_nota.c.qtd_com_nota > 0)\
-                                     .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                     .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                     .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                     .all()                             
+        # planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+        #                                     catdom_1.c.descricao,
+        #                                     Pactos_de_Trabalho.situacaoId,
+        #                                     ativs.c.qtd_ativs,
+        #                                     ativs_com_nota.c.qtd_com_nota)\
+        #                              .filter(catdom_1.c.descricao == 'Executado',
+        #                                      ativs.c.qtd_ativs != None,
+        #                                      ativs_com_nota.c.qtd_com_nota != None,
+        #                                      ativs_com_nota.c.qtd_com_nota > 0)\
+        #                              .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+        #                              .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+        #                              .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+        #                              .all()                             
 
         planos_nao_env = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                   Pactos_de_Trabalho.planoTrabalhoId,
@@ -703,9 +717,9 @@ def lista_a_enviar():
 
         return render_template('planos.html', demandas = planos, 
                                               demandas_count = planos_count,
-                                              enviados = len(planos_avaliados) - planos_count,
                                               lista = lista,
-                                              fonte = fonte)
+                                              fonte = fonte,
+                                              l_log_erro_envio = l_log_erro_envio)
 
     else:
 
@@ -757,20 +771,20 @@ def lista_enviados():
                                 .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
                                 .subquery()  
 
-        # todos os planos executados e com todas as atividades avaliadas
-        planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                    catdom_1.c.descricao,
-                                    Pactos_de_Trabalho.situacaoId,
-                                    ativs.c.qtd_ativs,
-                                    ativs_com_nota.c.qtd_com_nota)\
-                                .filter(catdom_1.c.descricao == 'Executado',
-                                        ativs.c.qtd_ativs != None,
-                                        ativs_com_nota.c.qtd_com_nota != None,
-                                        ativs_com_nota.c.qtd_com_nota > 0)\
-                                .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                .all()
+        # # todos os planos executados e com todas as atividades avaliadas
+        # planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+        #                             catdom_1.c.descricao,
+        #                             Pactos_de_Trabalho.situacaoId,
+        #                             ativs.c.qtd_ativs,
+        #                             ativs_com_nota.c.qtd_com_nota)\
+        #                         .filter(catdom_1.c.descricao == 'Executado',
+        #                                 ativs.c.qtd_ativs != None,
+        #                                 ativs_com_nota.c.qtd_com_nota != None,
+        #                                 ativs_com_nota.c.qtd_com_nota > 0)\
+        #                         .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+        #                         .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+        #                         .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+        #                         .all()
     
         planos = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                         Pactos_de_Trabalho.planoTrabalhoId,
@@ -799,11 +813,9 @@ def lista_enviados():
         planos_count = planos.total 
 
         return render_template('planos.html', demandas = planos, 
-                                            demandas_count = planos_count,
-                                            n_enviados = len(planos_avaliados) - planos_count,
-                                            enviados = enviados,
-                                            lista = lista,
-                                            fonte = fonte)
+                                              demandas_count = planos_count,
+                                              lista = lista,
+                                              fonte = fonte)
 
     else:
 
@@ -993,51 +1005,62 @@ def agenda_envio():
         tipo          = form.tipo.data
         periodicidade = form.periodicidade.data
         hora          = form.hora.data
-        minuto        = form.minuto.data
+        if form.minuto.data > 59:
+            minuto = 59
+        else:    
+            minuto    = form.minuto.data
+
+        if len(str(minuto)) == 1:
+            s_minuto = '0'+str(minuto)
+        else: 
+            s_minuto = str(minuto)
+        
+        print ('*****')
         
         # verifica agendamentos existentes
 
         id='job_envia_planos'
 
-        job_agendado = db.session.query(jobs).filter(jobs.id==id).first()
+        try:
+            job_existente = sched.get_job(id)
+            if job_existente:
+                print ('*** Job encontrado: ',job_existente)
+                job_agendado = True
+            else:
+                print ('*** Não encontrei job '+id+' ***')
+                job_agendado = None      
+        except:
+            print ('*** Não encontrei job '+id+' ***')
+            job_agendado = None
 
         if job_agendado:
             
             # altera job existente com os novos parâmetros informados pelo usuário
             if periodicidade == 'Diária':
-                msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'mon-fri'
                 try:
                     sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                 except:
-                    limpa_apscheduler_regs = db.session.query(jobs).delete()
-                    db.session.commit()
-                    print('** Tentativa de reagendamento falhou. Limpando tabela do APScheduler e tentando novamente.')
                     sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start()
             elif periodicidade == 'Semanal':
-                msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'fri'
                 try:
                     sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
                 except:
-                    limpa_apscheduler_regs = db.session.query(jobs).delete()
-                    db.session.commit()
-                    print('** Tentativa de agendamento falhou. Limpando tabela do APScheduler e tentando novamente.')   
                     sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                     sched.start()   
             elif periodicidade == 'Mensal':
-                msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+str(minuto)+' ***')
+                msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia = '1st fri'
                 try:
                     sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
                 except:
-                    limpa_apscheduler_regs = db.session.query(jobs).delete()
-                    db.session.commit()
-                    print('** Tentativa de agendamento falhou. Limpando tabela do APScheduler e tentando novamente.')   
                     sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start() 
             elif periodicidade == 'Nenhuma':
@@ -1049,78 +1072,92 @@ def agenda_envio():
            
             # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
             if periodicidade == 'Diária':
-                msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'mon-fri'
-                sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                sched.start()
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
             elif periodicidade == 'Semanal':
-                msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'fri'
-                sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                sched.start()
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
             elif periodicidade == 'Mensal':
-                msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+str(minuto)+' ***')
+                msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
                 print(msg)
                 dia = '1st fri'
-                sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                sched.start()
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
             elif periodicidade == 'Nenhuma':
                 msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
                 print(msg)
 
-            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
-            flash(msg,'sucesso')    
+        if periodicidade != 'Nenhuma':
+            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ str(hora) +':'+ s_minuto)
+        else:
+            registra_log_auto(current_user.id, '* Agendamento cancelado.')    
+        flash(msg,'sucesso')    
 
-        
         if tipo == 'todos':
 
             id='job_envia_planos_novamente'
 
-            hora += 1
+            # hora += 1
+            minuto += 2
+            s_minuto += '2'
 
-            job_agendado = db.session.query(jobs).filter(jobs.id==id).first()
+            try:
+                job_existente = sched.get_job(id)
+                if job_existente:
+                    print ('*** Job encontrado: ',job_existente)
+                    job_agendado = True
+                else:
+                    print ('*** Não encontrei job '+ id +' ***')
+                    job_agendado = None      
+            except:
+                print ('*** Não encontrei job '+ id +' ***')
+                job_agendado = None
 
             if job_agendado:
                 
                 # altera job existente com os novos parâmetros informados pelo usuário
                 if periodicidade == 'Diária':
-                    msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'mon-fri'
                     try:
                         sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    except:
-                        limpa_apscheduler_regs = db.session.query(jobs).delete()
-                        db.session.commit()
-                        print('** Tentativa de reagendamento falhou. Limpando tabela do APScheduler e tentando novamente.')
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                        sched.start()
+                    except:   
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        # sched.start()
                 elif periodicidade == 'Semanal':
-                    msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'fri'
                     try:
                         sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
-                    except:
-                        limpa_apscheduler_regs = db.session.query(jobs).delete()
-                        db.session.commit()
-                        print('** Tentativa de agendamento falhou. Limpando tabela do APScheduler e tentando novamente.')   
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                        sched.start()   
+                    except:  
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        # sched.start()   
                 elif periodicidade == 'Mensal':
-                    msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia = '1st fri'
                     try:
                         sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
                     except:
-                        limpa_apscheduler_regs = db.session.query(jobs).delete()
-                        db.session.commit()
-                        print('** Tentativa de agendamento falhou. Limpando tabela do APScheduler e tentando novamente.')   
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                        sched.start() 
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        # sched.start() 
                 elif periodicidade == 'Nenhuma':
                     msg =  ('*** O '+id+' será CANCELADO. Não haverá envios automáticos. ***')
                     print(msg)
@@ -1130,48 +1167,73 @@ def agenda_envio():
             
                 # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
                 if periodicidade == 'Diária':
-                    msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'mon-fri'
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    # sched.start()
                 elif periodicidade == 'Semanal':
-                    msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'fri'
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                    sched.start()
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    # sched.start()
                 elif periodicidade == 'Mensal':
-                    msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+str(minuto)+' ***')
+                    msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
                     print(msg)
                     dia = '1st fri'
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                    # sched.start()
                 elif periodicidade == 'Nenhuma':
                     msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
                     print(msg)
 
-                registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ str(hora) +':'+ str(minuto))
-                flash(msg,'sucesso')    
+            registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ str(hora) +':'+ s_minuto)
+            flash(msg,'sucesso')    
 
         return render_template('index.html')  
 
-    # verifica agendamentos existentes
-    job_agendado_envio   = db.session.query(jobs).filter(jobs.id=='job_envia_planos').first()
-    job_agendado_reenvio = db.session.query(jobs).filter(jobs.id=='job_envia_planos_novamente').first()
-    prox_exec_envio = ''
-    if job_agendado_envio:
-        prox_exec_envio = datetime.fromtimestamp(job_agendado.next_run_time)
-    prox_exec_reenvio = ''
-    if job_agendado_reenvio:
-        prox_exec_reenvio = datetime.fromtimestamp(job_agendado.next_run_time)    
+    # verifica agendamentos anteriores via consulta ao log
+
+    log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                     .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%') )\
+                                     .order_by(Log_Auto.id.desc())\
+                                     .first()
+    log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                      .filter(Log_Auto.msg == '* Agendamento cancelado.')\
+                                      .order_by(Log_Auto.id.desc())\
+                                      .first()                                        
+
+    
+    try:
+        job_existente = sched.get_job('job_envia_planos')
+        if job_existente:
+            txt = ' (job ativo)'
+        else:
+            txt = ' (não há job ativo)'      
+    except:
+        txt = ' (não há job ativo)' 
+    
+    if log_agenda_ant_envio:
+        if log_agenda_canc_envio and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
+            agenda_ant_envio = 'CANCELADO'
+        else:    
+            agenda_ant_envio = log_agenda_ant_envio.msg[24:] + txt
+    else:
+        agenda_ant_envio = None 
 
     # joga dados, caso existam, para a tela
     
-    return render_template('jobs.html', job_agendado_envio=job_agendado_envio, 
-                                        job_agendado_reenvio=job_agendado_reenvio, 
-                                        prox_exec_envio=prox_exec_envio, 
-                                        prox_exec_reenvio=prox_exec_reenvio, 
+    return render_template('jobs.html', agenda_ant_envio=agenda_ant_envio, 
                                         form=form)   
     
     

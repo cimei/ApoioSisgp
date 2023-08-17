@@ -30,11 +30,13 @@ import uuid
 from sqlalchemy import distinct
 
 from project.core.forms import ArquivoForm
-from project import db
+from project import db, sched
 from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
-                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users, jobs
+                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users, jobs, Log_Auto
 
 from project.usuarios.views import registra_log_auto
+
+from project.envio.views import envia_planos
 
 
 core = Blueprint("core",__name__)
@@ -79,12 +81,76 @@ def index():
     +---------------------------------------------------------------------------------------+
     """
     
-    try:
-        limpa_apscheduler_regs = db.session.query(jobs).delete()
-        db.session.commit()
-        print ("*** TABELA DO APSCHEDULER FOI ESVAZIADA ***")
-    except:
-        print ("*** TABELA DO APSCHEDULER NÃO EXISTE AINDA ***")
+    log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                     .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%') )\
+                                     .order_by(Log_Auto.id.desc())\
+                                     .first()
+
+    if log_agenda_ant_envio:                                                                  
+
+        periodicidade = (log_agenda_ant_envio.msg[24:].split())[0]
+        hora_min     = (log_agenda_ant_envio.msg[24:].split())[2]
+
+        sem_cancelamento = True
+
+        log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                        .filter(Log_Auto.msg == '* Agendamento cancelado.')\
+                                        .order_by(Log_Auto.id.desc())\
+                                        .first()
+
+        if log_agenda_canc_envio and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
+            sem_cancelamento = False
+        else:
+            sem_cancelamento = True
+
+        try:
+            job_existente = sched.get_job('job_envia_planos')
+            if job_existente:
+                executa = False
+            else:
+                executa = True      
+        except:
+            executa = True
+
+        if executa and sem_cancelamento:
+
+            print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
+
+            id = 'job_envia_planos'
+
+            hora     = int(hora_min[0:2])
+            s_minuto = hora_min[3:5]
+            minuto   = int(s_minuto)
+
+            if periodicidade == 'Diária':
+                msg = ('*** Agendamento inicial como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                print(msg)
+                dia_semana = 'mon-fri'
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+            elif periodicidade == 'Semanal':
+                msg = ('*** Agendamento inicial como SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                print(msg)
+                dia_semana = 'fri'
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+            elif periodicidade == 'Mensal':
+                msg = ('*** Agendamento inicial com MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
+                print(msg)
+                dia = '1st fri'
+                try:
+                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
+
+
     
     return redirect(url_for('core.inicio'))
 
@@ -97,6 +163,19 @@ def inicio():
     |Apresenta a tela inicial do aplicativo.                                                |
     +---------------------------------------------------------------------------------------+
     """
+
+    return render_template ('index.html',sistema='Apoio SISGP')
+
+@core.route('/info')
+def info():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta a tela de informações do aplicativo.                                         |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    # o comandinho mágico que permite fazer o download de um arquivo
+    send_from_directory('/app/project/static', 'Cartilha_do_ApoioSisgp.pdf')
 
     unids = db.session.query(Unidades).count()
 
@@ -118,23 +197,10 @@ def inicio():
 
     ativos = db.session.query(users).filter(users.userAtivo == True).count()
 
-    return render_template ('index.html',sistema='Apoio SISGP',unids = unids, unids_com_pg = unids_com_pg, pes = pes, 
+    return render_template('info.html',unids = unids, unids_com_pg = unids_com_pg, pes = pes, 
                                          pes_pacto = pes_pacto, ativs = ativs,
                                          pts = pts, pts_exec = pts_exec, pactos = pactos, pactos_exec = pactos_exec,
                                          ativos = ativos)
-
-@core.route('/info')
-def info():
-    """
-    +---------------------------------------------------------------------------------------+
-    |Apresenta a tela de informações do aplicativo.                                         |
-    +---------------------------------------------------------------------------------------+
-    """
-
-    # o comandinho mágico que permite fazer o download de um arquivo
-    send_from_directory('/app/project/static', 'Cartilha_do_ApoioSisgp.pdf')
-
-    return render_template('info.html')
 
 @core.route('/carregaUnidades', methods=['GET', 'POST'])
 def CarregaUnidades():

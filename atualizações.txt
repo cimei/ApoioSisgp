@@ -1,6 +1,10 @@
 ## Atualizações ##
 
-02/08/2023
+17/08/2023
+Ajustes na função de agendamento de envio.
+v3.1.3
+
+16/08/2023
 Finalização do layout.
 v3.1.2
 

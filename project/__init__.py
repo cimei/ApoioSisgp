@@ -33,7 +33,9 @@ mail = Mail(app)
 locale.setlocale( locale.LC_ALL, '' )
 
 # sched = APScheduler()
-sched = BackgroundScheduler(jobstores={'default': SQLAlchemyJobStore(url=os.environ.get('DB_URL'))})
+# sched = BackgroundScheduler(jobstores={'default': SQLAlchemyJobStore(url=os.environ.get('DB_URL'))})
+sched = BackgroundScheduler()
+
 
 #################################
 ## log in - cofigurações

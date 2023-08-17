@@ -4,7 +4,7 @@
 <div class="col mb-5">
   <div class="br-breadcrumb">
     <ul class="crumb-list">
-      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.index')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
+      <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('envio.envio_i')}}">Envio</a></li>
       <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
@@ -20,9 +20,14 @@
 
     <div class="row">
       <div class="col">
-        {% if job_agendado %}
+        {% if agenda_ant_envio %}
           <h5><b>Reagendamento de envio de Planos    <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
-          <h6>Agendamento atual: <b>{{ prox_exec_envio.strftime('%d/%m/%Y %H:%M:%S') }}</b></h6>
+          <h6>Agendamento atual: 
+            {% if agenda_ant_envio[-18:] == '(não há job ativo)' %}
+              <b><span class="text-danger">{{ agenda_ant_envio }}</span></b></h6>
+            {% else %}
+              <b>{{ agenda_ant_envio }}</b></h6>
+            {% endif %}  
         {% else %}
           <h5><b>Agendamento do envio de Planos     <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
         {% endif %}  
