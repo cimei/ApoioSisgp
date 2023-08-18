@@ -17,7 +17,7 @@
 
 <div class="container">
 
-<div class="jumbotron">
+<!-- <div class="jumbotron"> -->
   
   <h5>Lista das quantidades de pessoas no programa de gestão por unidade</h5>
 
@@ -74,10 +74,18 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Programas de Gestão ({{ u.undSigla }})</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
+
+                    <div class="container-fluid">
+                      <div style="margin-top: 150px" class="row">
+                      </div>
+                      <div class="row">
+                        <h5 class="modal-title">Programas de Gestão ({{ u.undSigla }})</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                   <div class="modal-body">
                     
@@ -110,7 +118,7 @@
                                     {# modal para deleção de pg #}
 
                                     <div class="modal" tabindex="-1" role="dialog" id="del_modal{{dados_pt.index(d) + 1}}">
-                                      <div class="modal-dialog" role="document">
+                                      <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content">
                                           <div class="modal-header">
                                             <div class="p-3 mb-2 bg-danger text-white">
@@ -176,13 +184,21 @@
               {# modal visualização de pactos de uma unidade #}
 
               <div class="modal fade" tabindex="-1" role="dialog" id="pac_modal{{u.unidadeId}}">
-                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title">Pactos na unidade {{ u.undSigla }}</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
+                      <div class="container-fluid">
+
+                        <div style="margin-top: 150px" class="row">
+                        </div>
+                        <div class="row">
+                          <h5 class="modal-title">Pactos na unidade {{ u.undSigla }}</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                      </div>
+                      
                     </div>
                     <div class="modal-body">
                       
@@ -227,7 +243,7 @@
 
 </div>
 
-</div>
+<!-- </div> -->
 
 </div>
 {% endblock %}
