@@ -162,7 +162,7 @@ def planos_enviados_LOG():
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[18:] for e in enviados_log] + [e.msg[41:] for e in enviados_manualmente_log]        
+    log = [e.msg[18:54] for e in enviados_log] + [e.msg[41:77] for e in enviados_manualmente_log]        
 
     enviados = []
     
@@ -172,9 +172,9 @@ def planos_enviados_LOG():
             enviados.append(id.pactoTrabalhoId)
             
     # se não encontrar planos enviados no log, recorre à API para verificar es houve algum envio
-    if len(log) == 0:
-        print ('*** Ao tentar listar enviados, não achei nada no log, vou pegar da API! ***')
-        enviados = planos_enviados_API()        
+    # if len(log) == 0:
+    #     print ('*** Ao tentar listar enviados, não achei nada no log, vou pegar da API! ***')
+    #     enviados = planos_enviados_API()        
 
     return enviados        
    
@@ -305,7 +305,7 @@ def planos_n_enviados_LOG():
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
                                          .all()                         
     
-    log = [e.msg[18:] for e in enviados_log] + [e.msg[41:] for e in enviados_manualmente_log]
+    log = [e.msg[18:54] for e in enviados_log] + [e.msg[41:77] for e in enviados_manualmente_log]
 
     n_enviados = []
     
@@ -315,9 +315,9 @@ def planos_n_enviados_LOG():
             n_enviados.append(id.pactoTrabalhoId)
             
     # se não achar planos enviados no log, recorre à API para verificar es houve algum envio
-    if len(log) == 0:
-        print ('*** Ao tentar listar não enviados, não achei nada no log, vou pegar da API! ***')
-        n_enviados = planos_n_enviados_API()        
+    # if len(log) == 0:
+    #     print ('*** Ao tentar listar não enviados, não achei nada no log, vou pegar da API! ***')
+    #     n_enviados = planos_n_enviados_API()        
 
     return n_enviados        
 
@@ -407,7 +407,7 @@ def envia_planos_novamente():
                                     .first()
 
                 if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
+                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
                                                    (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
                     dic_envio['atividades'].append({'id_atividade': a.id_produto,
@@ -417,10 +417,10 @@ def envia_planos_novamente():
                                                     'parametros_complexidade': a.parametros_complexidade,
                                                     'tempo_presencial_estimado': a.tempo_presencial_estimado,
                                                     'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                    'tempo_presencial_executado': a.tempo_presencial_programado,
+                                                    'tempo_presencial_executado': a.tempo_presencial_executado,
                                                     'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_estimado,
-                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_estimado,
+                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
                                                     'entrega_esperada': a.entrega_esperada,
                                                     'qtde_entregas': a.qtde_entregas,
                                                     'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
@@ -438,13 +438,13 @@ def envia_planos_novamente():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, ' * PACTO REENVIADO: ' + str(plano_id))
+                registra_log_auto(id, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, '* Retorno API sobre falha no reenvio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
+                registra_log_auto(id, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -555,7 +555,7 @@ def envia_planos():
                                     .first()
 
                 if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
+                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
                                                    (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
                     dic_envio['atividades'].append({'id_atividade': a.id_produto,
@@ -586,13 +586,13 @@ def envia_planos():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, ' * PACTO ENVIADO: ' + str(plano_id))
+                registra_log_auto(id, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, '* Retorno API sobre falha no envio do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg))
+                registra_log_auto(id, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -832,7 +832,7 @@ def lista_enviados():
 def enviar_planos(tipo):
     """
     +---------------------------------------------------------------------------------------+
-    |Envia planos que não tenham de acordo com o tipo escolhido.                            |
+    |Envia manualmente planos de uma lista. (não implementado no sistema)                   |
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
@@ -923,8 +923,8 @@ def enviar_um_plano(plano_id,lista):
                             .first()
 
         if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_executado and \
-                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                                           a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+                                          (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                             'nome_grupo_atividade': a.nome_grupo_atividade,
@@ -933,7 +933,7 @@ def enviar_um_plano(plano_id,lista):
                                             'parametros_complexidade': a.parametros_complexidade,
                                             'tempo_presencial_estimado': a.tempo_presencial_estimado,
                                             'tempo_presencial_programado': a.tempo_presencial_programado,
-                                            'tempo_presencial_executado': a.tempo_presencial_programado,
+                                            'tempo_presencial_executado': a.tempo_presencial_executado,
                                             'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
                                             'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
                                             'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
@@ -963,18 +963,18 @@ def enviar_um_plano(plano_id,lista):
 
     if sucesso:
         if lista == 'enviados':
-            registra_log_auto(current_user.id, '* Plano reenviado manualmente com sucesso: ' + str(plano_id))
-            flash('Plano reenviado manualmente com sucesso!','sucesso')
+            registra_log_auto(current_user.id, '* Plano reenviado manualmente com sucesso: '+str(plano_id)+' de '+plano.nome_participante)
+            flash('Plano de '+plano.nome_participante+' reenviado manualmente com sucesso!','sucesso')
         elif lista == 'n_enviados':
-            registra_log_auto(current_user.id, '* Plano enviado manualmente com sucesso: ' + str(plano_id))
-            flash('Plano enviado manualmente com sucesso!','sucesso')   
+            registra_log_auto(current_user.id, '* Plano enviado manualmente com sucesso: '+str(plano_id)+' de '+plano.nome_participante)
+            flash('Plano de '+plano.nome_participante+' enviado manualmente com sucesso!','sucesso')   
     else:
         if lista == 'enviados':
-            registra_log_auto(current_user.id, '* Erro na tentativa de reenvio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
-            flash('Erro na tentativa de reenvio manual do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg),'erro') 
+            registra_log_auto(current_user.id, '* Erro na tentativa de reenvio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
+            flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro') 
         elif lista == 'n_enviados':
-            registra_log_auto(current_user.id, '* Erro na tentativa de envio do Plano: ' + str(plano_id)  + ' - ' + str(retorno_API_msg))
-            flash('Erro na tentativa de envio manual do Plano: ' + str(plano_id) + ' - ' + str(retorno_API_msg),'erro')   
+            registra_log_auto(current_user.id, '* Erro na tentativa de envio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
+            flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro')   
 
     # print(json.dumps(dic_envio, skipkeys=True, allow_nan=True, indent=4))          
 
