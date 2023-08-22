@@ -334,10 +334,13 @@ def envia_planos_novamente():
     print('**')
     print('*** Iniciando o reenvio de planos conforme agendamento ***')    
 
-    # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
-    if current_user == None:
-        primeiro = db.session.query(users.id).first()
-        id = primeiro.id
+    # quando o envio for feito pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+    if current_user.get_id() == None:
+        user_agenda = db.session.query(Log_Auto.user_id)\
+                                .filter(Log_Auto.msg.like('* Agendamento de reenvio:%'))\
+                                .order_by(Log_Auto.id.desc())\
+                                .first()
+        id = user_agenda.user_id
         modo = 'agenda'
     else:
         id = current_user.id 
@@ -482,10 +485,13 @@ def envia_planos():
     print('**')
     print('*** Iniciando o envio de planos conforme agendamento ***')    
     
-    # quando o envio for feito pelo agendamento, current_user está vazio, pega então o primeiro usuário para registro do envio no diário 
-    if current_user == None:
-        primeiro = db.session.query(users.id).first()
-        id = primeiro.id
+    # quando o envio for feito pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+    if current_user.get_id() == None:
+        user_agenda = db.session.query(Log_Auto.user_id)\
+                                .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
+                                .order_by(Log_Auto.id.desc())\
+                                .first()
+        id = user_agenda.user_id
         modo = 'agenda'
     else:
         id = current_user.id 
