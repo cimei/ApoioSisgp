@@ -175,7 +175,7 @@ def info():
     """
 
     # o comandinho mágico que permite fazer o download de um arquivo
-    send_from_directory('/app/project/static', 'Cartilha_do_ApoioSisgp.pdf')
+    send_from_directory('/app/project/static', 'Cartilha_MEAG_PGD1.pdf')
 
     unids = db.session.query(Unidades).count()
 
