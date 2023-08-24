@@ -152,7 +152,7 @@ def index():
 
 
     
-    return redirect(url_for('core.inicio'))
+    return render_template ('index.html',sistema='Apoio SISGP')
 
 
 

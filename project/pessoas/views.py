@@ -682,7 +682,7 @@ def lista_pessoas_unid(unid):
 
     tipo = "unid"
 
-    r_unid = unid.replace('[','').replace(']','').replace(' ','').replace("'","")
+    r_unid = unid.replace('[','').replace(']','').replace(', ',',').replace("'","")
 
     l_unid = r_unid.split(',')
 
