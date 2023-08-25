@@ -36,7 +36,7 @@ from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
 
 from project.usuarios.views import registra_log_auto
 
-from project.envio.views import envia_planos
+from project.envio.views import envia_planos, envia_planos_novamente
 
 
 core = Blueprint("core",__name__)
@@ -78,78 +78,120 @@ def index():
     """
     +---------------------------------------------------------------------------------------+
     |Ações quando o aplicativo é colocado no ar.                                            |
+    |Inicia jobs de envio e de reenvio conforme ultimo registro de agendamento no log.      |
     +---------------------------------------------------------------------------------------+
     """
     
+    # pega últimos registros de agendamento no log
     log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
                                      .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%') )\
                                      .order_by(Log_Auto.id.desc())\
                                      .first()
-
-    if log_agenda_ant_envio:                                                                  
-
-        periodicidade = (log_agenda_ant_envio.msg[24:].split())[0]
-        hora_min     = (log_agenda_ant_envio.msg[24:].split())[2]
-
-        sem_cancelamento = True
-
-        log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+    log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
                                         .filter(Log_Auto.msg == '* Agendamento cancelado.')\
                                         .order_by(Log_Auto.id.desc())\
                                         .first()
 
+    if log_agenda_ant_envio:
+
         if log_agenda_canc_envio and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
-            sem_cancelamento = False
-        else:
-            sem_cancelamento = True
+            return render_template ('index.html',sistema='Apoio SISGP')
+        
+        else:  #não há cancelamento de agendamento
 
-        try:
-            job_existente = sched.get_job('job_envia_planos')
-            if job_existente:
-                executa = False
-            else:
-                executa = True      
-        except:
-            executa = True
+            # pega dados do último agendamento e se certifica que não há job_envia_planos na memória
+            periodicidade = (log_agenda_ant_envio.msg[24:].split())[0]
+            hora_min      = (log_agenda_ant_envio.msg[24:].split())[2]
 
-        if executa and sem_cancelamento:
+            try:
+                job_existente = sched.get_job('job_envia_planos')
+                if job_existente:
+                    executa = False
+                else:
+                    executa = True      
+            except:
+                executa = True
 
-            print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
+            if executa:  # não achou nada na memória, coloca agenda job_envia_planos
 
-            id = 'job_envia_planos'
+                print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
 
-            hora     = int(hora_min[0:2])
-            s_minuto = hora_min[3:5]
-            minuto   = int(s_minuto)
+                id = 'job_envia_planos'
 
-            if periodicidade == 'Diária':
-                msg = ('*** Agendamento inicial como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
-                print(msg)
-                dia_semana = 'mon-fri'
-                try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
-                except:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-            elif periodicidade == 'Semanal':
-                msg = ('*** Agendamento inicial como SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
-                print(msg)
-                dia_semana = 'fri'
-                try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                    sched.start()
-                except:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-            elif periodicidade == 'Mensal':
-                msg = ('*** Agendamento inicial com MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
-                print(msg)
-                dia = '1st fri'
-                try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
-                except:
-                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
+                if hora_min[1] == ':':
+                    hora_min = '0'+ hora_min
+                s_hora   = hora_min[0:2]    
+                hora     = int(s_hora)
+                s_minuto = hora_min[3:5]
+                minuto   = int(s_minuto)
 
+                if periodicidade == 'Diária':
+                    msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    print(msg)
+                    dia_semana = 'mon-fri'
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.start()
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                elif periodicidade == 'Semanal':
+                    msg = ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    print(msg)
+                    dia_semana = 'fri'
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        sched.start()
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                elif periodicidade == 'Mensal':
+                    msg = ('*** Agendamento inicial de '+id+' com MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                    print(msg)
+                    dia = '1st fri'
+                    try:
+                        sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.start()
+                    except:
+                        sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
+
+                # agendanto também o job_envia_planos_novamente, caso necessário
+                log_agenda_ant_reenvio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                        .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%') )\
+                                        .order_by(Log_Auto.id.desc())\
+                                        .first()
+
+                if log_agenda_ant_reenvio and log_agenda_ant_reenvio.id > log_agenda_ant_envio.id:
+
+                    id='job_envia_planos_novamente'
+
+                    # hora += 1
+                    # s_hora = str(hora)
+                    minuto += 2
+                    s_minuto = str(minuto)
+                        
+                    if periodicidade == 'Diária':
+                        msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                        print(msg)
+                        dia_semana = 'mon-fri'
+                        try:
+                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        except:   
+                            sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    elif periodicidade == 'Semanal':
+                        msg =  ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                        print(msg)
+                        dia_semana = 'fri'
+                        try:
+                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        except:  
+                            sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)    
+                    elif periodicidade == 'Mensal':
+                        msg =  ('*** Agendamento inicial de '+id+' como MENSAL, rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                        print(msg)
+                        dia = '1st fri'
+                        try:
+                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        except:
+                            sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
 
     
     return render_template ('index.html',sistema='Apoio SISGP')

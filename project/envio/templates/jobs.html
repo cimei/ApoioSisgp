@@ -22,11 +22,18 @@
       <div class="col">
         {% if agenda_ant_envio %}
           <h5><b>Reagendamento de envio de Planos    <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
-          <h6>Agendamento atual: 
-            {% if agenda_ant_envio[-18:] == '(não há job ativo)' %}
-              <b><span class="text-danger">{{ agenda_ant_envio }}</span></b></h6>
+          <h6>Agendamento atual:</h6>
+            {% if agenda_ant_envio[-27:] == '(não há job de envio ativo)' or agenda_ant_envio[-29:] == '(não há job de reenvio ativo)' %}
+              <h6><b><span class="text-danger">{{ agenda_ant_envio }}</span></b></h6>
             {% else %}
-              <b>{{ agenda_ant_envio }}</b></h6>
+              {% if agenda_ant_envio == 'Não consta agendamento' %} 
+                <h6><b><span class="text-danger">{{ agenda_ant_envio }}</span></b></h6>
+              {% else %}
+                <h6><b>{{ agenda_ant_envio }}</b></h6>
+              {% endif %}  
+              {% if agenda_ant_reenvio %}
+                <h6><b>{{ agenda_ant_reenvio }}</b></h6>
+              {% endif %}
             {% endif %}  
         {% else %}
           <h5><b>Agendamento do envio de Planos     <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>

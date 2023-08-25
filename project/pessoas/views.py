@@ -492,6 +492,12 @@ def pessoa_update(cod_pes):
 
         if current_user.userAtivo:
 
+            if form.cpf.data != pessoa.pesCPF:
+                checa_cpf = db.session.query(Pessoas).filter(Pessoas.pesCPF==form.cpf.data).first()
+                if checa_cpf:
+                    flash('O CPF informado já consta do sistema para '+checa_cpf.pesNome+'.','erro')
+                    return render_template('atu_pessoa.html', form=form, tp=tp)
+
             if form.func.data == 0:
                 funcPes = None
             else:
@@ -618,6 +624,11 @@ def cria_pessoa():
     if form.validate_on_submit():
 
         if current_user.userAtivo:
+
+            checa_cpf = db.session.query(Pessoas).filter(Pessoas.pesCPF==form.cpf.data).first()
+            if checa_cpf:
+                flash('O CPF informado já consta do sistema para '+checa_cpf.pesNome+'.','erro')
+                return render_template('atu_pessoa.html', form=form, tp=tp)
 
             if form.func.data == 0:
                 funcPes = None

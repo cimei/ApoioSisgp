@@ -1020,190 +1020,194 @@ def agenda_envio():
             s_minuto = '0'+str(minuto)
         else: 
             s_minuto = str(minuto)
+
+        if len(str(hora)) == 1:
+            s_hora = '0'+str(hora)
+        else: 
+            s_hora = str(hora)    
         
         print ('*****')
         
         # verifica agendamentos existentes
 
-        id='job_envia_planos'
+        id_1='job_envia_planos'
+        id_2='job_envia_planos_novamente'
 
         try:
-            job_existente = sched.get_job(id)
+            job_existente = sched.get_job(id_1)
             if job_existente:
                 print ('*** Job encontrado: ',job_existente)
                 job_agendado = True
             else:
-                print ('*** Não encontrei job '+id+' ***')
+                print ('*** Não encontrei job '+id_1+' ***')
                 job_agendado = None      
         except:
-            print ('*** Não encontrei job '+id+' ***')
+            print ('*** Não encontrei job '+id_1+' ***')
             job_agendado = None
 
         if job_agendado:
             
             # altera job existente com os novos parâmetros informados pelo usuário
             if periodicidade == 'Diária':
-                msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                msg = ('*** O '+id_1+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'mon-fri'
                 try:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                 except:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start()
             elif periodicidade == 'Semanal':
-                msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                msg =  ('*** O '+id_1+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'fri'
                 try:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
+                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
                 except:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                     sched.start()   
             elif periodicidade == 'Mensal':
-                msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
+                msg =  ('*** O '+id_1+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia = '1st fri'
                 try:
-                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                    sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
                 except:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start() 
             elif periodicidade == 'Nenhuma':
-                msg =  ('*** O '+id+' será CANCELADO. Não haverá envios automáticos. ***')
+                msg =  ('*** Jobs serão CANCELADOS. Não haverá envios automáticos. ***')
                 print(msg)
-                sched.remove_job(id)    
+                sched.remove_job(id_1) 
+                try:
+                    job_2 = sched.get_job(id_2)
+                    if job_2:
+                        sched.remove_job(id_2)
+                except:
+                    pass  
 
         else:
            
             # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
             if periodicidade == 'Diária':
-                msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                msg = ('*** O '+id_1+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'mon-fri'
                 try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start()
                 except:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
             elif periodicidade == 'Semanal':
-                msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                msg = ('*** O '+id_1+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia_semana = 'fri'
                 try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                     sched.start()
                 except:
-                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
             elif periodicidade == 'Mensal':
-                msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
+                msg = ('*** O '+id_1+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
                 dia = '1st fri'
                 try:
-                    sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start()
                 except:
-                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                    sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
             elif periodicidade == 'Nenhuma':
-                msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
+                msg =  ('*** Não jobs para cancelar. Comando ignorado. ***')
                 print(msg)
 
         if periodicidade != 'Nenhuma':
-            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ str(hora) +':'+ s_minuto)
+            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
         else:
             registra_log_auto(current_user.id, '* Agendamento cancelado.')    
         flash(msg,'sucesso')    
 
         if tipo == 'todos':
 
-            id='job_envia_planos_novamente'
-
             # hora += 1
+            # s_hora = str(hora)
             minuto += 2
-            s_minuto += '2'
+            s_minuto = str(minuto)
 
             try:
-                job_existente = sched.get_job(id)
+                job_existente = sched.get_job(id_2)
                 if job_existente:
                     print ('*** Job encontrado: ',job_existente)
                     job_agendado = True
                 else:
-                    print ('*** Não encontrei job '+ id +' ***')
+                    print ('*** Não encontrei job '+ id_2 +' ***')
                     job_agendado = None      
             except:
-                print ('*** Não encontrei job '+ id +' ***')
+                print ('*** Não encontrei job '+ id_2 +' ***')
                 job_agendado = None
 
             if job_agendado:
                 
                 # altera job existente com os novos parâmetros informados pelo usuário
                 if periodicidade == 'Diária':
-                    msg = ('*** O '+id+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                    msg = ('*** O '+id_2+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'mon-fri'
                     try:
-                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                     except:   
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                         # sched.start()
                 elif periodicidade == 'Semanal':
-                    msg =  ('*** O '+id+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                    msg =  ('*** O '+id_2+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'fri'
                     try:
-                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
+                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
                     except:  
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                         # sched.start()   
                 elif periodicidade == 'Mensal':
-                    msg =  ('*** O '+id+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
+                    msg =  ('*** O '+id_2+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia = '1st fri'
                     try:
-                        sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                        sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
                     except:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                        # sched.start() 
-                elif periodicidade == 'Nenhuma':
-                    msg =  ('*** O '+id+' será CANCELADO. Não haverá envios automáticos. ***')
-                    print(msg)
-                    sched.remove_job(id)    
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        # sched.start()  
 
             else:
             
                 # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
                 if periodicidade == 'Diária':
-                    msg = ('*** O '+id+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                    msg = ('*** O '+id_2+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'mon-fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     except:
-                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                     # sched.start()
                 elif periodicidade == 'Semanal':
-                    msg = ('*** O '+id+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+str(hora)+':'+s_minuto+' ***')
+                    msg = ('*** O '+id_2+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia_semana = 'fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                     except:
-                        sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                     # sched.start()
                 elif periodicidade == 'Mensal':
-                    msg = ('*** O '+id+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+str(hora)+':'+s_minuto+' ***')
+                    msg = ('*** O '+id_2+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
                     dia = '1st fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     except:
-                        sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                        sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
                     # sched.start()
-                elif periodicidade == 'Nenhuma':
-                    msg =  ('*** Não há '+id+' para cancelar. Comando ignorado. ***')
-                    print(msg)
 
-            registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ str(hora) +':'+ s_minuto)
+            registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
             flash(msg,'sucesso')    
 
         return render_template('index.html')  
@@ -1214,6 +1218,11 @@ def agenda_envio():
                                      .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%') )\
                                      .order_by(Log_Auto.id.desc())\
                                      .first()
+    log_agenda_ant_reenvio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                       .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%') )\
+                                       .order_by(Log_Auto.id.desc())\
+                                       .first()                                 
+
     log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
                                       .filter(Log_Auto.msg == '* Agendamento cancelado.')\
                                       .order_by(Log_Auto.id.desc())\
@@ -1221,25 +1230,41 @@ def agenda_envio():
 
     
     try:
-        job_existente = sched.get_job('job_envia_planos')
-        if job_existente:
-            txt = ' (job ativo)'
+        job_envio_existente = sched.get_job('job_envia_planos')
+        if job_envio_existente:
+            txt_envio = ' (job de envio ativo)'
         else:
-            txt = ' (não há job ativo)'      
+            txt_envio = ' (não há job de envio ativo)'      
     except:
-        txt = ' (não há job ativo)' 
+        txt_envio = ' (não há job de envio ativo)' 
+
+    try:
+        job_reenvio_existente = sched.get_job('job_envia_planos_novamente')
+        if job_reenvio_existente:
+            txt_reenvio = ' (job de reenvio ativo)'
+        else:
+            txt_reenvio = ' (não há job de reenvio ativo)'      
+    except:
+        txt_reenvio = ' (não há job de reenvio ativo)'    
     
     if log_agenda_ant_envio:
         if log_agenda_canc_envio and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
-            agenda_ant_envio = 'CANCELADO'
+            agenda_ant_envio = 'Não consta agendamento'
+            agenda_ant_reenvio = None
         else:    
-            agenda_ant_envio = log_agenda_ant_envio.msg[24:] + txt
+            agenda_ant_envio = log_agenda_ant_envio.msg[24:] + txt_envio
+            if log_agenda_ant_reenvio.id > log_agenda_ant_envio.id:
+                agenda_ant_reenvio = log_agenda_ant_reenvio.msg[26:] + txt_reenvio
+            else:
+                agenda_ant_reenvio = None
     else:
         agenda_ant_envio = None 
+        agenda_ant_reenvio = None
 
     # joga dados, caso existam, para a tela
     
-    return render_template('jobs.html', agenda_ant_envio=agenda_ant_envio, 
+    return render_template('jobs.html', agenda_ant_envio=agenda_ant_envio,
+                                        agenda_ant_reenvio=agenda_ant_reenvio, 
                                         form=form)   
     
     

@@ -123,6 +123,8 @@ def lista_unidades_filtro(lista):
     +---------------------------------------------------------------------------------------+
     """ 
 
+    page = request.args.get('page', 1, type=int)
+
     form = PesquisaUnidForm()
 
     unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
@@ -193,7 +195,7 @@ def lista_unidades_filtro(lista):
                                       Unidades.tipoUnidadeId.like(p_tipo_pattern),
                                       Unidades.ufId.like('%'+form.uf.data+'%'))\
                               .order_by(Unidades.undSigla)\
-                              .all()
+                              .paginate(page=page,per_page=100)
         else:
             unids = db.session.query(Unidades.unidadeId,
                                     Unidades.undSigla,
@@ -218,9 +220,9 @@ def lista_unidades_filtro(lista):
                                       Unidades.tipoUnidadeId.like(p_tipo_pattern),
                                       Unidades.ufId.like('%'+form.uf.data+'%'))\
                               .order_by(Unidades.undSigla)\
-                              .all()
+                              .paginate(page=page,per_page=100)
 
-        quantidade = len(unids)
+        quantidade = unids.total
 
         return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
                                                     dic_situ_unidade = dic_situ_unidade, 
