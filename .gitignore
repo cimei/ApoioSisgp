@@ -8,3 +8,6 @@
 /project/pessoas/__pycache__
 /project/unidades/__pycache__
 /project/usuarios/__pycache__
+/docs/source/
+/docs/make.bat
+/docs/Makefile

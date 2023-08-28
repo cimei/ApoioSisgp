@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Atividades &#8212; MEAG 3.1.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Consultas" href="project.consultas.html" />
+    <link rel="prev" title="Projeto" href="project.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="atividades">
+<h1>Atividades<a class="headerlink" href="#atividades" title="Permalink to this heading">¶</a></h1>
+<section id="module-project.atividades.forms">
+<span id="forms"></span><h2>Forms<a class="headerlink" href="#module-project.atividades.forms" title="Permalink to this heading">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Atividades (formulários)</p>
+<p>Formulários de alteração da dados de atividades.</p>
+<ul class="simple">
+<li><p>AtividadeForm: utilizado registrar ou atualizar dados de uma atividade.</p></li>
+<li><p>UnidForm: utilizado para associar uma atividade a uma unidade.</p></li>
+</ul>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">project.atividades.forms.</span></span><span class="sig-name descname"><span class="pre">AtividadeForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.forms.AtividadeForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.calc_temp">
+<span class="sig-name descname"><span class="pre">calc_temp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Cálculo</span> <span class="pre">do</span> <span class="pre">tempo:',),</span> <span class="pre">{'coerce':</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.calc_temp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.complex">
+<span class="sig-name descname"><span class="pre">complex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Complexidade:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.def_complex">
+<span class="sig-name descname"><span class="pre">def_complex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Definição</span> <span class="pre">da</span> <span class="pre">Complexidade:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.def_complex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.descricao">
+<span class="sig-name descname"><span class="pre">descricao</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Descrição:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.descricao" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.entregas">
+<span class="sig-name descname"><span class="pre">entregas</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Entregas:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.entregas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.remoto">
+<span class="sig-name descname"><span class="pre">remoto</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(BooleanField,</span> <span class="pre">('Permite</span> <span class="pre">remoto:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.remoto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Submeter',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.tempo_pres">
+<span class="sig-name descname"><span class="pre">tempo_pres</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Tempo</span> <span class="pre">Presen.:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.tempo_pres" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.tempo_rem">
+<span class="sig-name descname"><span class="pre">tempo_rem</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Tempo</span> <span class="pre">Remoto:',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.tempo_rem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.AtividadeForm.titulo">
+<span class="sig-name descname"><span class="pre">titulo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Título:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.AtividadeForm.titulo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="project.atividades.forms.UnidForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">project.atividades.forms.</span></span><span class="sig-name descname"><span class="pre">UnidForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.forms.UnidForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.UnidForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Submeter',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.UnidForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.atividades.forms.UnidForm.unid">
+<span class="sig-name descname"><span class="pre">unid</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Unidade:',),</span> <span class="pre">{'coerce':</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#project.atividades.forms.UnidForm.unid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-project.atividades.views">
+<span id="views"></span><h2>Views<a class="headerlink" href="#module-project.atividades.views" title="Permalink to this heading">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Atividades (views)</p>
+<p>Atividades da instituição.</p>
+</div>
+<div class="topic">
+<p class="topic-title">Ações relacionadas às Atividades</p>
+<ul class="simple">
+<li><p>lista_atividades: lista as atividades cadastradas no SISGP</p></li>
+<li><p>atividade_update: altera dadados de uma atividade</p></li>
+<li><p>cria_atividade: inserir nova atividade</p></li>
+<li><p>associa_atividade_unidade: relaciona uma atividade a uma unidade</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="project.atividades.views.associa_atividade_unidade">
+<span class="sig-prename descclassname"><span class="pre">project.atividades.views.</span></span><span class="sig-name descname"><span class="pre">associa_atividade_unidade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cod_ativ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.views.associa_atividade_unidade" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Associa uma atividade a uma unidade.
+Recebe id da atividade como parâmetro.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.atividades.views.atividade_update">
+<span class="sig-prename descclassname"><span class="pre">project.atividades.views.</span></span><span class="sig-name descname"><span class="pre">atividade_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cod_ativ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.views.atividade_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Permite atualizar os dados de uma atividade</p>
+<p>Recebe o código da atividade como parâmetro.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.atividades.views.cria_atividade">
+<span class="sig-prename descclassname"><span class="pre">project.atividades.views.</span></span><span class="sig-name descname"><span class="pre">cria_atividade</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.views.cria_atividade" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Inserção de uma nova atividade no sistema.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.atividades.views.lista_atividades">
+<span class="sig-prename descclassname"><span class="pre">project.atividades.views.</span></span><span class="sig-name descname"><span class="pre">lista_atividades</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lista</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.atividades.views.lista_atividades" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta uma lista das atividades da instituição.</p>
+<p>Recebe o tipo de lista como parâmetro.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="module-project.atividades">
+<span id="conteudo"></span><h2>Conteúdo<a class="headerlink" href="#module-project.atividades" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MEAG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MEAG</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MEAG</a><ul>
+  <li><a href="project.html">Projeto</a><ul>
+      <li>Previous: <a href="project.html" title="previous chapter">Projeto</a></li>
+      <li>Next: <a href="project.consultas.html" title="next chapter">Consultas</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.atividades.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

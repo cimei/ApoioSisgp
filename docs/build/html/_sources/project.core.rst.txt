@@ -1,0 +1,26 @@
+Core
+====
+
+Forms
+-----
+
+.. automodule:: project.core.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.core.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.core
+   :members:
+   :undoc-members:
+   :show-inheritance:

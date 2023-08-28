@@ -1,0 +1,26 @@
+Atividades
+==========
+
+Forms
+-----
+
+.. automodule:: project.atividades.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.atividades.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.atividades
+   :members:
+   :undoc-members:
+   :show-inheritance:

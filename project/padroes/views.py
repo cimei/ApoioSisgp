@@ -18,6 +18,7 @@
     * lista_feriados: Lista feriados 
     * feriado_update: Atualizar dados de um feriado
     * cria_feriado: Adiciona feriado no banco
+    * padroes_i: Auxiliar no menu em cascata de dados auxiliares
 
 """
 

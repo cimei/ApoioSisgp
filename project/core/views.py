@@ -3,15 +3,23 @@
 
     Este é o módulo inicial do sistema.
 
-    Apresenta as telas de início, informação e procedimentos de carda de dados em lote.
+    Apresenta as telas de início, informação e procedimentos de carga de dados em lote.
+
+.. topic:: Funções
+
+    * PegaArquivo: Faz o upload do arquivo desejado
 
 .. topic:: Ações relacionadas aos bolsistas
 
-    * index: Tela inicial
+    * index: Primeiro template chamado na inicialização do sistema. Reprograma agendamentos.
+    * inicio: Tela inicial do sistema
     * info: Tela de informações
     * CarregaUnidades: Carrega dados de unidade em lote
     * CarregaPessoas: Carrega dados de pessoa em lote
-    * CarregaAtividades: Carreg daddos de atividaes e lote
+    * CarregaAtividades: Carrega daddos de atividaes e lote
+    * apoio_i: Auxiliar para o menu em cascata de Funções de apoio
+    * cargas_i: Auxiliar para o menu em cascata de Carga de dados
+    * interno_i: Auxiliar para o menu em cascata de Funções internas
 
 """
 
@@ -816,11 +824,3 @@ def interno_i():
     
     return render_template('interno.html') 
 
-## renderiza tela com template base do gov
-
-@core.route('/base')
-@login_required
-
-def base():
-    
-    return render_template('template_gov.html') 

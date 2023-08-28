@@ -1,0 +1,26 @@
+Consultas
+=========
+
+Forms
+-----
+
+.. automodule:: project.consultas.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.consultas.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.consultas
+   :members:
+   :undoc-members:
+   :show-inheritance:

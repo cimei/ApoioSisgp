@@ -1,0 +1,26 @@
+Padrôes
+=======
+
+Forms
+-----
+
+.. automodule:: project.padroes.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.padroes.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.padroes
+   :members:
+   :undoc-members:
+   :show-inheritance:

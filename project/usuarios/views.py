@@ -25,7 +25,8 @@
     * confirm: Gera novo link de confirmação de e-mail para usuário novo.
     * confirm_email: Trata retorno da confirmação
     * reset: Trata pedido de troca de senha
-    * reset_with_token: Realiza troca de senha
+    * reset_with_token: Realiza troca de senha via token em e-mail
+    * troca_senha: Troca a senha em tela
     * login: Entrada de usuário
     * primeiro_user: registro do primeiro usuário de forma direta
     * logout: Saída de usuário

@@ -1,0 +1,26 @@
+Pessoas
+=======
+
+Forms
+-----
+
+.. automodule:: project.pessoas.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.pessoas.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.pessoas
+   :members:
+   :undoc-members:
+   :show-inheritance:

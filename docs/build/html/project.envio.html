@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Envio &#8212; MEAG 3.1.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Padrôes" href="project.padroes.html" />
+    <link rel="prev" title="Core" href="project.core.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="envio">
+<h1>Envio<a class="headerlink" href="#envio" title="Permalink to this heading">¶</a></h1>
+<section id="module-project.envio.forms">
+<span id="forms"></span><h2>Forms<a class="headerlink" href="#module-project.envio.forms" title="Permalink to this heading">¶</a></h2>
+<div class="topic">
+<p class="topic-title"><strong>Consultas (formulários)</strong></p>
+<p>Formulários:</p>
+<ul class="simple">
+<li><p>PeriodoForm: para que o usuário informe o intervalo de datas para resgatar registros</p></li>
+</ul>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">project.envio.forms.</span></span><span class="sig-name descname"><span class="pre">AgendamentoForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.forms.AgendamentoForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm.hora">
+<span class="sig-name descname"><span class="pre">hora</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Hora',),</span> <span class="pre">{'choices':</span> <span class="pre">[(9,</span> <span class="pre">'9'),</span> <span class="pre">(10,</span> <span class="pre">'10'),</span> <span class="pre">(11,</span> <span class="pre">'11'),</span> <span class="pre">(12,</span> <span class="pre">'12'),</span> <span class="pre">(13,</span> <span class="pre">'13'),</span> <span class="pre">(14,</span> <span class="pre">'14'),</span> <span class="pre">(15,</span> <span class="pre">'15'),</span> <span class="pre">(16,</span> <span class="pre">'16'),</span> <span class="pre">(17,</span> <span class="pre">'17'),</span> <span class="pre">(20,</span> <span class="pre">'20'),</span> <span class="pre">(21,</span> <span class="pre">'21'),</span> <span class="pre">(22,</span> <span class="pre">'22'),</span> <span class="pre">(23,</span> <span class="pre">'23'),</span> <span class="pre">(0,</span> <span class="pre">'00'),</span> <span class="pre">(1,</span> <span class="pre">'01'),</span> <span class="pre">(2,</span> <span class="pre">'02'),</span> <span class="pre">(3,</span> <span class="pre">'03')],</span> <span class="pre">'coerce':</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;})&gt;</span></em><a class="headerlink" href="#project.envio.forms.AgendamentoForm.hora" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm.minuto">
+<span class="sig-name descname"><span class="pre">minuto</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(IntegerField,</span> <span class="pre">('Minuto',),</span> <span class="pre">{'default':</span> <span class="pre">0})&gt;</span></em><a class="headerlink" href="#project.envio.forms.AgendamentoForm.minuto" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm.periodicidade">
+<span class="sig-name descname"><span class="pre">periodicidade</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Periodicidade',),</span> <span class="pre">{'choices':</span> <span class="pre">[('Diária',</span> <span class="pre">'Diária'),</span> <span class="pre">('Semanal',</span> <span class="pre">'Semanal'),</span> <span class="pre">('Mensal',</span> <span class="pre">'Mensal'),</span> <span class="pre">('Nenhuma',</span> <span class="pre">'Nenhuma')]})&gt;</span></em><a class="headerlink" href="#project.envio.forms.AgendamentoForm.periodicidade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Agendar',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.envio.forms.AgendamentoForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.AgendamentoForm.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Planos</span> <span class="pre">para</span> <span class="pre">envio:',),</span> <span class="pre">{'choices':</span> <span class="pre">[('nunca_enviados',</span> <span class="pre">'Nunca</span> <span class="pre">enviados'),</span> <span class="pre">('todos',</span> <span class="pre">'Todos')]})&gt;</span></em><a class="headerlink" href="#project.envio.forms.AgendamentoForm.tipo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="project.envio.forms.PeriodoForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">project.envio.forms.</span></span><span class="sig-name descname"><span class="pre">PeriodoForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.forms.PeriodoForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.PeriodoForm.data_fim">
+<span class="sig-name descname"><span class="pre">data_fim</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(DateField,</span> <span class="pre">('Data</span> <span class="pre">Final:</span> <span class="pre">',),</span> <span class="pre">{'format':</span> <span class="pre">'%Y-%m-%d'})&gt;</span></em><a class="headerlink" href="#project.envio.forms.PeriodoForm.data_fim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.PeriodoForm.data_ini">
+<span class="sig-name descname"><span class="pre">data_ini</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(DateField,</span> <span class="pre">('Data</span> <span class="pre">Inicial:</span> <span class="pre">',),</span> <span class="pre">{'format':</span> <span class="pre">'%Y-%m-%d'})&gt;</span></em><a class="headerlink" href="#project.envio.forms.PeriodoForm.data_ini" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="project.envio.forms.PeriodoForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Procurar',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#project.envio.forms.PeriodoForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-project.envio.views">
+<span id="views"></span><h2>Views<a class="headerlink" href="#module-project.envio.views" title="Permalink to this heading">¶</a></h2>
+<div class="topic">
+<p class="topic-title">Envio (views)</p>
+<p>Procedimentos relacionados ao envio de dados (planos e atividades) ao orgão superior.</p>
+</div>
+<div class="topic">
+<p class="topic-title">Funções</p>
+<ul class="simple">
+<li><p>planos_enviados_API: Identifica API os planos já enviados (demorado)</p></li>
+<li><p>planos_enviados_LOG: Identifica no LOG os planos já enviados</p></li>
+<li><p>planos_n_enviados_API: Identifica, conferindo na API, planos nunca enviados</p></li>
+<li><p>planos_n_enviados_LOG: Identifica, conferindo no LOG, planos nunca</p></li>
+<li><p>envia_planos_novamente: Faz o reenvio de planos em lote</p></li>
+<li><p>envia_planos: Faz o envio de planos em lote</p></li>
+</ul>
+</div>
+<div class="topic">
+<p class="topic-title">Ações relacionadas ao envio</p>
+<ul class="simple">
+<li><p>lista_a_enviar: Lista planos que estão aptos ao envio</p></li>
+<li><p>lista_enviados: Lista planos que já foram enviados</p></li>
+<li><p>enviar_planos: Envia, ou reenvia, planos em lote nas telas de listas (desativado)</p></li>
+<li><p>enviar_um_plano: Envia, ou reenvia, um plano individual</p></li>
+<li><p>lista_enviados: Lista planos que já foram enviados</p></li>
+<li><p>agenda_envio: Agendamento de envios</p></li>
+<li><p>envio_i: Auxiliar para montagem do menu em cascata</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.agenda_envio">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">agenda_envio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.agenda_envio" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Faz agendamento de envio de planos.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.envia_planos">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">envia_planos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.envia_planos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.envia_planos_novamente">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">envia_planos_novamente</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.envia_planos_novamente" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.enviar_planos">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">enviar_planos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tipo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.enviar_planos" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Envia manualmente planos de uma lista. (desativado)</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.enviar_um_plano">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">enviar_um_plano</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plano_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lista</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.enviar_um_plano" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Envia um plano específico.
+Recebe o id do plano como parâmetro.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.envio_i">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">envio_i</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.envio_i" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta tela inicial dos envios.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.lista_a_enviar">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">lista_a_enviar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.lista_a_enviar" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta uma lista dos planos que estão aptos ao envio.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.lista_enviados">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">lista_enviados</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.lista_enviados" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Apresenta uma lista dos planos que constam da API.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.planos_enviados_API">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">planos_enviados_API</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.planos_enviados_API" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.planos_enviados_LOG">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">planos_enviados_LOG</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.planos_enviados_LOG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.planos_n_enviados_API">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">planos_n_enviados_API</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.planos_n_enviados_API" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="project.envio.views.planos_n_enviados_LOG">
+<span class="sig-prename descclassname"><span class="pre">project.envio.views.</span></span><span class="sig-name descname"><span class="pre">planos_n_enviados_LOG</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#project.envio.views.planos_n_enviados_LOG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-project.envio">
+<span id="conteudo"></span><h2>Conteúdo<a class="headerlink" href="#module-project.envio" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">MEAG</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MEAG</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MEAG</a><ul>
+  <li><a href="project.html">Projeto</a><ul>
+      <li>Previous: <a href="project.core.html" title="previous chapter">Core</a></li>
+      <li>Next: <a href="project.padroes.html" title="next chapter">Padrôes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Cimei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/project.envio.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

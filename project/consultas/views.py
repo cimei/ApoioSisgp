@@ -3,19 +3,25 @@
 
     As consultas trazem informações úteis para a gestão do SISGP.
 
+.. topic:: Funções
+
+    * allowed_file: atesta se nome de arquivo tem . e restringe seu tipo (sem uso)
 
 .. topic:: Ações relacionadas às pessoas
 
     * pessoas_qtd_pg_unidade: Lista quantidades de pessoas em programas de gestão por unidade
     * catalogo_dominio: Lista o Catálogo de Domínios 
-    * pactos: Dados de Pactos de trabalho
-    * pacto_atividades: Atividades de um pacto: pacto_atividades
-    * deleta_pg: permite remover PGs em rascunho
-    * relatorioPG: relatório de PGs no formato xlsx
-    * hierarquia: relatório da estrutura hierárquica da instituição no formato xlsx
-    * lista_ativs_planos: lista das atividades em planos por situação
+    * pactos: Dados de planos de trabalho
+    * pactos_irregulares: Planos cuja situação não é adequada à vigência
+    * pacto_atividades: Atividades de um plano
+    * deleta_pg: Permite remover PGs em rascunho
+    * relatorioPG: Relatório de PGs no formato xlsx
+    * hierarquia: Relatório da estrutura hierárquica da instituição no formato xlsx
+    * lista_ativs_planos: Lista das atividades em planos por situação
     * estatisticas: Alguns números
-    * periodo: quantidades de PGs e PTs em um perídodo informado
+    * periodo: Quantidades de PGs e PTs em um perídodo informado
+    * candidatos_sem_plano: Pessoas com candidatura aprovada, ma sem plano
+    * consultas_i: Auxiliar para o menu em cascata de Consultas
 
 """
 
@@ -161,7 +167,7 @@ def catalogo_dominio():
 def pactos():
     """
     +---------------------------------------------------------------------------------------+
-    |Apresenta uma lista dos pactos de trabalho e dados relevantes.                         |
+    |Apresenta uma lista dos planos de trabalho e dados relevantes.                         |
     +---------------------------------------------------------------------------------------+
     """
     tipo = 'todos'

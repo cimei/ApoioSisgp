@@ -1,0 +1,26 @@
+Unidades
+========
+
+Forms
+-----
+
+.. automodule:: project.unidades.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Views
+-----
+
+.. automodule:: project.unidades.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project.unidades
+   :members:
+   :undoc-members:
+   :show-inheritance:

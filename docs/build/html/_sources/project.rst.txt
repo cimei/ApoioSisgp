@@ -1,0 +1,36 @@
+Projeto
+=======
+
+Seções
+------
+
+.. toctree::
+   :maxdepth: 4
+
+   project.atividades
+   project.consultas
+   project.core
+   project.envio
+   project.padroes
+   project.pessoas
+   project.unidades
+   project.usuarios
+
+Submódulos
+----------
+
+Modelos
+-------
+
+.. automodule:: project.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Conteúdo
+--------
+
+.. automodule:: project
+   :members:
+   :undoc-members:
+   :show-inheritance:

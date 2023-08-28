@@ -9,10 +9,11 @@
 .. topic:: Ações relacionadas às Unidades
 
     * lista_unidades: Lista unidades
+    * lista_unidades_filtro: Lista unidades conforme filtro aplicado
     * unidade_update: Atualiza unidade
     * cria_unidade: Acrescenta unidade
-    * lista_atividades_unidade: atividades associadas a uma unidade
-    * desassocia_ativ: desassocia atividade de uma unidade
+    * lista_atividades_unidade: Atividades associadas a uma unidade
+    * desassocia_ativ: Desassocia atividade de uma unidade
 
 """
 

@@ -4,13 +4,27 @@
     Procedimentos relacionados ao envio de dados (planos e atividades) ao orgão superior.
 
 
+.. topic:: Funções
+
+    * planos_enviados_API: Identifica API os planos já enviados (demorado)
+    * planos_enviados_LOG: Identifica no LOG os planos já enviados
+    * planos_n_enviados_API: Identifica, conferindo na API, planos nunca enviados
+    * planos_n_enviados_LOG: Identifica, conferindo no LOG, planos nunca 
+    * envia_planos_novamente: Faz o reenvio de planos em lote
+    * envia_planos: Faz o envio de planos em lote
+
+
+
 .. topic:: Ações relacionadas ao envio
 
     * lista_a_enviar: Lista planos que estão aptos ao envio 
-    * enviar_planos: Envia planos não enviados previamente
+    * lista_enviados: Lista planos que já foram enviados 
+    * enviar_planos: Envia, ou reenvia, planos em lote nas telas de listas (desativado)
     * enviar_um_plano: Envia, ou reenvia, um plano individual
     * lista_enviados: Lista planos que já foram enviados
     * agenda_envio: Agendamento de envios
+    * envio_i: Auxiliar para montagem do menu em cascata
+
 
 """
 
@@ -340,13 +354,13 @@ def envia_planos_novamente():
                                 .filter(Log_Auto.msg.like('* Agendamento de reenvio:%'))\
                                 .order_by(Log_Auto.id.desc())\
                                 .first()
-        id = user_agenda.user_id
+        id_user = user_agenda.user_id
         modo = 'agenda'
     else:
-        id = current_user.id 
+        id_user = current_user.id 
         modo = 'manual'
 
-    registra_log_auto(id, '* Início do reenvio de Planos para API.') 
+    registra_log_auto(id_user, '* Início do reenvio de Planos para API.') 
 
     if enviados != 'erro_credenciais':      
     
@@ -441,13 +455,13 @@ def envia_planos_novamente():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
+                registra_log_auto(id_user, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -459,16 +473,18 @@ def envia_planos_novamente():
             msg = ''    
 
         if sucesso == qtd_planos:
-            registra_log_auto(id, '*' + msg + str(qtd_planos) + ' Plano(s) reenviado(s) com sucesso.')
+            registra_log_auto(id_user, '*' + msg + str(qtd_planos) + ' Plano(s) reenviado(s) com sucesso.')
             if modo == 'manual':
                 flash(str(qtd_planos) + ' Planos reenviados com sucesso','sucesso') # todos os planos enviados com sucesso
         else:
-            registra_log_auto(id, '*' + msg + 'Na tentativa de reenvio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.')
+            registra_log_auto(id_user, '*' + msg + 'Na tentativa de reenvio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.')
             if modo == 'manual':
                 flash('Houve problema no reenvio dos Planos: Dos ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.','erro') # alguma coisa deu errado
 
     else:
         return 'erro_credenciais'
+
+    registra_log_auto(id_user, '* Término do reenvio de Planos para API.')    
 
     print('*** Finalizando o reenvio de planos conforme agendamento ***')
     print('**')    
@@ -491,13 +507,13 @@ def envia_planos():
                                 .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
                                 .order_by(Log_Auto.id.desc())\
                                 .first()
-        id = user_agenda.user_id
+        id_user = user_agenda.user_id
         modo = 'agenda'
     else:
-        id = current_user.id 
+        id_user = current_user.id 
         modo = 'manual'
 
-    registra_log_auto(id, '* Início do envio de Planos para API.')       
+    registra_log_auto(id_user, '* Início do envio de Planos para API.')       
     
     if n_enviados != 'erro_credenciais':
     
@@ -592,13 +608,13 @@ def envia_planos():
             # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
             if r_put.ok:
                 sucesso += 1
-                registra_log_auto(id, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
+                registra_log_auto(id_user, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
 
             retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
             if retorno_API:
                 retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                registra_log_auto(id_user, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
             else:
                 retorno_API_msg = 'Sem registro de erro.'
 
@@ -610,16 +626,18 @@ def envia_planos():
             msg = ''    
 
         if sucesso == qtd_planos:
-            registra_log_auto(id, '*' + msg + str(qtd_planos) + ' Plano(s) enviado(s) com sucesso.')
+            registra_log_auto(id_user, '*' + msg + str(qtd_planos) + ' Plano(s) enviado(s) com sucesso.')
             if modo == 'manual':
                 flash(str(qtd_planos) + ' Planos enviados com sucesso','sucesso') # todos os planos enviados com sucesso
         else:
-            registra_log_auto(id, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.')
+            registra_log_auto(id_user, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.')
             if modo == 'manual':
                 flash('Houve problema no envio dos Planos: Dos ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.','erro') # alguma coisa deu errado 
 
     else:
         return 'erro_credenciais'
+
+    registra_log_auto(id_user, '* Término do envio de Planos para API.')    
 
     print('*** Finalizando o envio de planos conforme agendamento ***')
     print('**')
@@ -838,7 +856,7 @@ def lista_enviados():
 def enviar_planos(tipo):
     """
     +---------------------------------------------------------------------------------------+
-    |Envia manualmente planos de uma lista. (não implementado no sistema)                   |
+    |Envia manualmente planos de uma lista. (desativado)                                    |
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
@@ -1128,10 +1146,10 @@ def agenda_envio():
 
         if tipo == 'todos':
 
-            # hora += 1
-            # s_hora = str(hora)
-            minuto += 2
-            s_minuto = str(minuto)
+            hora += 1
+            s_hora = str(hora)
+            # minuto += 10
+            # s_minuto = str(minuto)
 
             try:
                 job_existente = sched.get_job(id_2)

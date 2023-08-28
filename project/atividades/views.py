@@ -1,12 +1,12 @@
 """
 .. topic:: Atividades (views)
 
-    Atividades da institição.
+    Atividades da instituição.
 
 
 .. topic:: Ações relacionadas às Atividades
 
-    * Lista atividades: lista as atividades cadastradas no SISGP
+    * lista_atividades: lista as atividades cadastradas no SISGP
     * atividade_update: altera dadados de uma atividade
     * cria_atividade: inserir nova atividade
     * associa_atividade_unidade: relaciona uma atividade a uma unidade
@@ -337,25 +337,7 @@ def cria_atividade():
             if form.remoto.data:
                 remoto = 1
             else:
-                remoto = 0
-
-            # tabela = "[ProgramaGestao].[ItemCatalogo]"
-            # colunas = ["[itemCatalogoId]", "[titulo]", "[calculoTempoId]", "[permiteRemoto]",
-            #            "[tempoPresencial]", "[tempoRemoto]", "[descricao]", "[complexidade]",\
-            #            "[definicaoComplexidade]", "[entregasEsperadas]"]
-            # valores = ["(NEWID(), \'"+str(form.titulo.data) +"\', "+\
-            #                  str(form.calc_temp.data) +", "+\
-            #                  str(remoto) +", "+\
-            #                  str(form.tempo_pres.data) +", "+\
-            #                  str(form.tempo_rem.data) +", \'"+\
-            #                  str(form.descricao.data) +"\', \'"+\
-            #                  str(form.complex.data) +"\', \'"+\
-            #                  str(form.def_complex.data) +"\', \'"+\
-            #                  str(form.entregas.data) +"\')"]
-            # s_cols = ', '.join(colunas)
-            # s_vals = ', '.join(valores)
-
-            # ativ = db.session.execute(f"INSERT INTO {tabela} ({s_cols}) VALUES {s_vals}")   
+                remoto = 0  
 
             nova_ativ = Atividades(itemCatalogoId        = uuid.uuid4(),
                                    titulo                = form.titulo.data,
