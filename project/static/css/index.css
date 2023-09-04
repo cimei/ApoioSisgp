@@ -1,39 +1,77 @@
-* {
-        margin:0;
-        padding:0;
-        outline:0;
-        box-sizing:border-box;
-    }
+:root {
+    --card-title-color: #595959;
+    --card-title-color-hover: #1351b4;
+}
 
-    *:focus {
-        outline: 0;
-    }
+.container-fluid {
+    padding-right: calc(var(--bs-gutter-x) * 2.5);
+    padding-left: calc(var(--bs-gutter-x) * 2.5);
+}
 
-    @font-face {
-      font-family: 'Roboto';
-      src: url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
-    }
+.br-header[data-sticky] {
+    z-index: 1;
+}
 
-    html, body, #root {
-        height: 100%;
-    }
+body {
+    font-family: "Rawline";
+    background-color: #f5f7fa;
+}
 
-    body {
-        -webkit-font-smoothing: antialiased;
-    }
+.header-menu-trigger i {
+    font-size: 1.6rem;
+}
+.header-title a {
+    text-decoration: inherit;
+    font-weight: 600;
+}
 
-    body, input, button {
-        font: 14px 'Roboto', sans-serif;
-    }
+.header-subtitle {
+    margin-top: 0 !important;
+}
 
-    a {
-        text-decoration: none;
-    }
+.menu-panel a {
+    text-decoration: inherit;
+}
 
-    ul {
-        list-style: none;
-    }
+.card-box a {
+    text-decoration: inherit;
+}
 
-    button {
-        cursor: pointer;
+.card-box a i{
+   font-size: 3rem;
+   color: var(--card-title-color);
+}
+.card-box h5 {
+    font-size: 1rem;
+    color: var(--card-title-color);
+    font-weight: 600;
+}
+
+.card-box a:hover {
+    background-image: inherit;
+}
+.card-box a:hover h5, .card-box a:hover i {    
+    color: var(--card-title-color-hover);
+}
+
+
+.btn-help {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.header-list {
+    margin: 0;
+}
+.header-list small {
+    font-size: 13px;
+}
+
+
+@media (max-width: 768px){
+    .container-fluid {
+        padding-right: calc(var(--bs-gutter-x) * .5);
+        padding-left: calc(var(--bs-gutter-x) * .5);
     }
+}

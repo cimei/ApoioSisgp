@@ -17,186 +17,51 @@
   </div>
 
 
-    {% if current_user.is_authenticated and current_user.userAtivo %} 
+  {% if current_user.is_authenticated and current_user.userAtivo %} 
 
     <div class="row mt-5">
+      <div class="d-flex justify-content-center  flex-wrap">
 
-        <div class="d-flex justify-content-around">
-      
-            <!-- <div class="br-magic-button large">
-              <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_situ_pessoas")}}'">Situações Pessoas</button>
-            </div> -->
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("padroes.lista_situ_pessoas")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-heart fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Situações Pessoas</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Consulta e atualização da lista de possíveis situações para uma pessoa.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+        {% with 
+          icon="fa-heart", 
+          title="Situações Pessoas",
+          description="Consulta e atualização da lista de possíveis situações para uma pessoa.",
+          link=url_for("padroes.lista_situ_pessoas")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
-            <div class="col-1"></div>
+        {% with 
+          icon="fa-star", 
+          title="Tipos Função",
+          description="Consulta e atualização da lista de tipos de função que uma pessoa pode exercer na instituição.",
+          link=url_for("padroes.lista_tipo_funcao")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
+
+        {% with 
+          icon="fa-link", 
+          title="Tipos Vínculo",
+          description="Consulta e atualização dos tipos de vinculo que uma pessoa pode ter com a instituição.",
+          link=url_for("padroes.lista_vinc_pessoas")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
 
-            <!-- <div class="br-magic-button large">
-              <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_tipo_funcao")}}'">Tipos de Função</button>
-            </div> -->
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("padroes.lista_tipo_funcao")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-star fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Tipos Função</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Consulta e atualização da lista de tipos de função que uma pessoa pode exercer na instituição.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+        {% with 
+          icon="fa-bed", 
+          title="Feriados",
+          description="Consulta e atualização da lista de feriados.",
+          link=url_for("padroes.lista_feriados")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
-        </div>
-    </div>    
-
-    <div class="row mt-5">
-      
-        <div class="d-flex justify-content-around">    
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_vinc_pessoas")}}'">Tipos de Vínculo</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("padroes.lista_vinc_pessoas")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-link fa-4x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Tipos Vínculo</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Consulta e atualização dos tipos de vinculo que uma pessoa pode ter com a instituição.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <div class="col-1"></div>
-
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.lista_feriados")}}'">Feriados</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("padroes.lista_feriados")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-bed fa-4x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Feriados</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Consulta e atualização da lista de feriados.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-        </div>   
-        
-    </div>    
-
-    {% endif %}
-
-    </div>  
-
-
+      </div>
+    </div>
+  {% endif %}
 
 
 {% endblock %}

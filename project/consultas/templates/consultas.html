@@ -15,306 +15,88 @@
     </div>
   </div>
 
-    {% if current_user.is_authenticated and current_user.userAtivo %} 
+  {% if current_user.is_authenticated and current_user.userAtivo %} 
+  <div class="row mt-5">
+    <div class="d-flex justify-content-center  flex-wrap">
+      {% with 
+        icon="fa-anchor", 
+        title="Catálogo Domínio",
+        description="Consulta às situações e tipos padrões do SISGP.",
+        link=url_for("consultas.catalogo_dominio")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-    <div class="row mt-5">
+      {% with 
+        icon="fa-id-badge", 
+        title="Qtd. pessoas em PG por unidade",
+        description="Quantidade de pessoas que estão vinculadas aos programas de gestão de cada unidade da instituição.",
+        link=url_for("consultas.pessoas_qtd_pg_unidade")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-      <div class="d-flex justify-content-around">   
-      
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.catalogo_dominio")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-anchor fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Catálogo Domínio</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Consulta às situações e tipos padrões do SISGP.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+      {% with 
+        icon="fa-archive", 
+        title="Planos de Trabalho - Todos",
+        description="Todos os planos de trabalho registrados no SISGP.",
+        link=url_for("consultas.pactos")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.pessoas_qtd_pg_unidade")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-circle fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Qtd. pessoas em PG por unidade</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Quantidade de pessoas que estão vinculadas aos programas de gestão de cada unidade da instituição.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+      {% with 
+        icon="fa-bell", 
+        title="Planos de Trabalho - Irregulares",
+        description="Planos de trabalho que estão vencidos, mas cuja situação não foi regularizada.",
+        link=url_for("consultas.pactos_irregulares")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.pactos")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-archive fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Planos de Trabalho - Todos</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Todos os planos de trabalho registrados no SISGP.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.pactos_irregulares")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-bell fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Planos de Trabalho - Irregulares</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Planos de trabalho que estão vencidos, mas cuja situação não foi regularizada.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+      {% with 
+        icon="fa-child", 
+        title="Candidatos sem plano",
+        description="Lista das pessoas se se canditataram em programas de gestão, mas que não possuem planos de trabalho associados.",
+        link=url_for("consultas.candidatos_sem_plano")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-        </div>
-    </div>    
+      {% with 
+        icon="fa-file", 
+        title="Estatísticas",
+        description="Alguns números do Programa de Gestão da instituição.",
+        link=url_for("consultas.estatisticas")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-    <div class="row mt-5">
+      {% with 
+        icon="fa-clock", 
+        title="PGs e PTs no período",
+        description="Quantitativos de programas de gestão e planos de trabalho por situação em período selecinado. ",
+        link=url_for("consultas.periodo")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-      <div class="d-flex justify-content-around">   
-      
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.candidatos_sem_plano")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-child fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Candidatos sem plano</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Lista das pessoas se se canditataram em programas de gestão, mas que não possuem planos de trabalho associados.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+      {% with 
+        icon="fa-list", 
+        title="Relatório PGs e PTs",
+        description="Relatório de todos os programas de gestão e respectivos planos de trabalho da instituição. Há a possibilidade da sua exibição no formato pdf.",
+        link=url_for("consultas.relatorioPG")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.estatisticas")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-file fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Estatísticas</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Alguns números do Programa de Gestão da instituição.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+    </div>
+  </div>
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.periodo")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-clock fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>PGs e PTs no período</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Quantitativos de programas de gestão e planos de trabalho por situação em período selecinado. 
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
+  {% endif %}
 
-            <div class="col-auto card-sm">
-              <label class="flip-container">
-                <div class="flipper">
-                  <div class="front">
-                    <div class="card">
-                      <div class="header-card">
-                        <input type="checkbox" id="switch" class="flippe">
-                        <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                      </div>
-                      <div class="card-body text-center centered-content">
-                        <a href='{{url_for("consultas.relatorioPG")}}'>
-                          <div class="card-text">
-                            <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                            <i class="fa fa-list fa-4x" aria-hidden="true"></i>
-                            <p></p>
-                          </div>
-                        </a>
-                        <p>Relatório PGs e PTs</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="back">
-                    <div class="card">
-                      <div class="header-card">
-                        <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                      </div>
-                      <div class="back-text">
-                        Relatório de todos os programas de gestão e respectivos planos de trabalho da instituição.
-                        Há a possibilidade da sua exibição no formato pdf.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
 
-        </div>
-    </div>    
-
-    {% endif %}
-
-    </div>  
 
 
 {% endblock %}

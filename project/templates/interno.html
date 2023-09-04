@@ -15,138 +15,43 @@
     </div>
   </div>
 
-      {% if current_user.is_authenticated and current_user.userAtivo %} 
+  {% if current_user.is_authenticated and current_user.userAtivo %} 
+    <div class="row mt-5">
+      <div class="d-flex justify-content-center  flex-wrap">
+        
+        {% with 
+          icon="fa-book", 
+          title="Diário",
+          description="Registro das principais ações realizadas no sistema. A tela inicial mostra as últimas 24 horas de
+          atividades, mas há opção de filtro para um período maior.",
+          link=url_for("usuarios.log",tipo="geral")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
+        {% with 
+          icon="fa-user", 
+          title="Gestão de usuários",
+          description="Lista dos usuários registrados no sistema com a opção de ativação de usuário recém registrado, bem 
+          como a permição de uso da funcionalidade de envio de dados .",
+          link=url_for("usuarios.view_users")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
-      <div class="row mt-5">
+        {% with 
+          icon="fa-lock", 
+          title="Trocar senha",
+          description="Formulário onde o usuário logado pode trocar sua senha.",
+          link=url_for("usuarios.troca_senha")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
 
-        <div class="d-flex justify-content-around">
-      
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.log",tipo="geral")}}'">Diário do sistema</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("usuarios.log",tipo="geral")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-book fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Diário</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Registro das principais ações realizadas no sistema. A tela inicial mostra as últimas 24 horas de
-                      atividades, mas há opção de filtro para um período maior.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
+      </div>
+    </div>
 
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.view_users")}}'">Gestão de usuários</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("usuarios.view_users")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-user fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Gestão de usuários</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Lista dos usuários registrados no sistema com a opção de ativação de usuário recém registrado, bem 
-                      como a permição de uso da funcionalidade de envio de dados .
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("usuarios.troca_senha")}}'">Trocar senha</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("usuarios.troca_senha")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-lock fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Trocar senha</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Formulário onde o usuário logado pode trocar sua senha.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-        </div>
-
-      </div>  
-
-      {% endif %}
+  {% endif %}
 
 
 {% endblock %}

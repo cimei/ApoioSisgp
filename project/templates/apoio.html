@@ -16,262 +16,70 @@
   </div>
 
 
-      {% if current_user.is_authenticated and current_user.userAtivo %} 
+  {% if current_user.is_authenticated and current_user.userAtivo %} 
+  <div class="row mt-5">
+    <div class="d-flex justify-content-center  flex-wrap">
 
-      <div class="row mt-5">
-        <div class="d-flex justify-content-around">
-      
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("unidades.lista_unidades",lista="ativas")}}'">Unidades</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("unidades.lista_unidades",lista="ativas")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-cube fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Unidades</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Lista das unidades da instituição, com as opções de inclusão, alteração e filtro.
-                      Pode-se também selecionar entre ativas e inativas.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
+      {% with 
+        icon="fa-network-wired", 
+        title="Unidades",
+        description="Lista das unidades da instituição, com as opções de inclusão, alteração e filtro. Pode-se também selecionar entre ativas e inativas.",
+        link=url_for("unidades.lista_unidades",lista="ativas")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("pessoas.lista_pessoas")}}'">Pessoas</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("pessoas.lista_pessoas")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-users fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Pessoas</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Lista das pessoas da instituição, com as opções de inclusão, alteração e filtro.
-                      Há destaque para a informação de gestores do sistema.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("atividades.lista_atividades",lista="ativas")}}'">Atividades</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("atividades.lista_atividades",lista="ativas")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-pen fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Atividades</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Lista das atividades da instituição, com as opções de inclusão e alteração.
-                      Pode-se também selecionar entre válidas e não válidas.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-        </div>
-      </div>  
-
-      <div class="row mt-5">
-        <div class="d-flex justify-content-around">
-      
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("padroes.padroes_i")}}'">Dados Auxiliares</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("padroes.padroes_i")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-eye fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Dados Auxiliares</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Consulta e atualização de tabelas operacionais do SISGP.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
+      {% with 
+        icon="fa-users", 
+        title="Pessoas",
+        description="Lista das pessoas da instituição, com as opções de inclusão, alteração e filtro. Há destaque para a informação de gestores do sistema.",
+        link=url_for("pessoas.lista_pessoas")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
 
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("consultas.consultas_i")}}'">Consultas</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("consultas.consultas_i")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-list fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Consultas</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Consultas de interesse à gestão do PGD da instituição.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <div class="col-1"></div>
-
-          <!-- <div class="br-magic-button large">
-            <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.cargas_i")}}'">Carga de dados</button>
-          </div> -->
-          <div class="col-auto card-sm">
-            <label class="flip-container">
-              <div class="flipper">
-                <div class="front">
-                  <div class="card">
-                    <div class="header-card">
-                      <input type="checkbox" id="switch" class="flippe">
-                      <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                    </div>
-                    <div class="card-body text-center centered-content">
-                      <a href='{{url_for("core.cargas_i")}}'>
-                        <div class="card-text">
-                          <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                          <i class="fa fa-upload fa-6x" aria-hidden="true"></i>
-                          <p></p>
-                        </div>
-                      </a>
-                      <p>Carga de dados</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="back">
-                  <div class="card">
-                    <div class="header-card">
-                      <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                    </div>
-                    <div class="back-text">
-                      Inserção ou atualização em lote de Unidades, Pessoas ou Atividades.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </label>
-          </div>
-
-        </div>
-      </div>
+      {% with 
+        icon="fa-pen", 
+        title="Atividades",
+        description="Lista das atividades da instituição, com as opções de inclusão e alteração. Pode-se também selecionar entre válidas e não válidas.",
+        link=url_for("atividades.lista_atividades",lista="ativas")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
 
 
-      {% endif %}
+      {% with 
+        icon="fa-eye", 
+        title="Dados Auxiliares",
+        description="Consulta e atualização de tabelas operacionais do SISGP.",
+        link=url_for("padroes.padroes_i")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
+
+      {% with 
+        icon="fa-list", 
+        title="Consultas",
+        description="Consultas de interesse à gestão do PGD da instituição.",
+        link=url_for("consultas.consultas_i")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
+
+      {% with 
+        icon="fa-upload", 
+        title="Carga de dados",
+        description="Inserção ou atualização em lote de Unidades, Pessoas ou Atividades.",
+        link=url_for("core.cargas_i")
+      %}
+        {% include "card_menu.html" %}
+      {% endwith %}
+
+
+    </div>
+  </div>
+  {% endif %}
 
 
 {% endblock %}

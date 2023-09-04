@@ -15,23 +15,18 @@
   </div>
 </div>
 
-<div class="container">
 
-<!-- <div class="jumbotron"> -->
-  
-  <h5>Lista o Catálogo de Domínios</h5>
-
-<caption>
-  <div class="row">
-      <div class="col">
-        <p><span class="badge badge-pill badge-success">{{qtd_itens}}</span> itens no Catálogo.
-        </p>
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between">
+      <h5 class="header-list">Lista o Catálogo de Domínios</h5>
+      <div class="d-flex justify-content-around">
       </div>
+    </div>
   </div>
-</caption>
-
-<div style="overflow-y:auto ; height:450px">
-  <table  id="table"
+  <div class="card-body">
+    <p><span class="badge text-bg-primary">{{qtd_itens}}</span> itens no Catálogo.</p>
+    <table  id="table"
         data-toggle="table"
         data-filter-control="true"
         data-show-search-clear-button="true"
@@ -40,36 +35,33 @@
         data-show-columns="true"
         data-show-columns-toggle-all="true"
         class="table table-striped table-hover table-sm">
-    <caption>Catálogo de Domínios</caption>
-    <thead>
-      <tr>
-        <th scope="col"><p align = "center">#</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Cód.</p></th>
-        <th scope="col" data-field="classificacao" data-filter-control="input" data-sortable="true"><p align = "center">Classificação</p></th>
-        <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
-        <th scope="col" data-field="ativo" data-filter-control="input" data-sortable="true"><p align = "center">Ativo?</p></th>
-      </tr>
-    </thead>
-    <tbody>
+      <caption>Catálogo de Domínios</caption>
+      <thead>
+        <tr>
+          <th scope="col"><p align = "center">#</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Cód.</p></th>
+          <th scope="col" data-field="classificacao" data-filter-control="input" data-sortable="true"><p align = "center">Classificação</p></th>
+          <th scope="col" data-sortable="true"><p align = "center">Descrição</p></th>
+          <th scope="col" data-field="ativo" data-filter-control="input" data-sortable="true"><p align = "center">Ativo?</p></th>
+        </tr>
+      </thead>
+      <tbody>
 
-      {% for c in cat %}
+        {% for c in cat %}
 
-      <tr>
-        <th scope="row"><p align = "center"> {{cat.index(c) + 1}} </p></th>
-        <td><p align = "center"> {{ c.catalogoDominioId }} </p></td>
-        <td><p align = "center"> {{ c.classificacao }} </p></td>
-        <td><p align = "center"> {{ c.descricao }} </p></td>
-        <td><p align = "center"> {% if c.ativo == 1 %}Sim{% else %}Não{% endif %} </p></td>
-      </tr>
+        <tr>
+          <th scope="row"><p align = "center"> {{cat.index(c) + 1}} </p></th>
+          <td><p align = "center"> {{ c.catalogoDominioId }} </p></td>
+          <td><p align = "center"> {{ c.classificacao }} </p></td>
+          <td><p align = "center"> {{ c.descricao }} </p></td>
+          <td><p align = "center"> {% if c.ativo == 1 %}Sim{% else %}Não{% endif %} </p></td>
+        </tr>
 
-      {% endfor %}
+        {% endfor %}
 
-    </tbody>
-  </table>
-
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- </div> -->
-
-</div>
 {% endblock %}

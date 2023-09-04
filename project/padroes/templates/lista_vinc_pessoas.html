@@ -15,56 +15,44 @@
   </div>
 </div>
 
-<div class="container">
 
-<div class="jumbotron">
-  
-  <h5>Lista os tipos de vínculo das Pessoas na Instituição</h5>
 
-  <div class = "row">
-    <div class="col-2">
-      <a href="{{url_for('padroes.cria_vinc_pessoas')}}" class="br-button secondary mr-3" role="button"><i class="fa fa-plus" aria-hidden="true"></i>Inserir</a>
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between">
+      <h5 class="header-list">Lista os tipos de vínculo das Pessoas na Instituição</h5>
+      <div class="d-flex justify-content-around">
+        <a href="{{url_for('padroes.cria_vinc_pessoas')}}" class="br-button secondary mr-3" role="button"><i class="fa fa-plus" aria-hidden="true"></i>Inserir</a>
+      </div>
     </div>
   </div>
-  <br>
-
-<caption>
-  <div class="row">
-      <div class="col">
-        <p>Lista dos <span class="badge badge-pill badge-primary">{{quantidade}}</span> tipos de vínculo</p>
-      </div>
+  <div class="card-body">
+    <p>Lista dos <span class="badge text-bg-primary">{{quantidade}}</span> tipos de vínculo</p>
+    <table class="table table-striped table-hover table-sm">
+      <caption>Vínculos</caption>
+      <thead>
+        <tr>
+          <th scope="col"><p align = "center">#</p></th>
+          <th scope="col"><p align = "center">ID</p></th>
+          <th scope="col"><p align = "center">Descrição</p></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vinc_pessoas %}
+  
+        <tr>
+          <th scope="row"><abbr title="Dados da Situação.">
+            <p align = "center"><a href="{{url_for('padroes.vinc_pessoas_update', cod_vinc=v.tipoVinculoId)}}"> {{vinc_pessoas.index(v) + 1}} </a>
+          </p></th>
+          <td><p align = "center"> {{v.tipoVinculoId}} </p></td>
+          <td><p align = "center"> {{v.tvnDescricao}} </p></td>
+        </tr>
+  
+        {% endfor %}
+  
+      </tbody>
+    </table>
   </div>
-</caption>
-
-<div style="overflow-y:auto ; height:450px">
-  <table class="table table-striped table-hover table-sm">
-    <caption>Vínculos</caption>
-    <thead>
-      <tr>
-        <th scope="col"><p align = "center">#</p></th>
-        <th scope="col"><p align = "center">ID</p></th>
-        <th scope="col"><p align = "center">Descrição</p></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for v in vinc_pessoas %}
-
-      <tr>
-        <th scope="row"><abbr title="Dados da Situação.">
-          <p align = "center"><a href="{{url_for('padroes.vinc_pessoas_update', cod_vinc=v.tipoVinculoId)}}"> {{vinc_pessoas.index(v) + 1}} </a>
-        </p></th>
-        <td><p align = "center"> {{v.tipoVinculoId}} </p></td>
-        <td><p align = "center"> {{v.tvnDescricao}} </p></td>
-      </tr>
-
-      {% endfor %}
-
-    </tbody>
-  </table>
-
 </div>
 
-</div>
-
-</div>
 {% endblock %}

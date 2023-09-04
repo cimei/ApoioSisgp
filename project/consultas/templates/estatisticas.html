@@ -73,17 +73,35 @@
           <dd>&nbsp;Distintas em Planos:</dd>
           <dd><abbr title="Clique aqui para ver a lista destas atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='planos_v')}}">{{ativs_utilizadas_validas}}</a></abbr> válidas 
-            ({{((100 * ativs_utilizadas_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            {% if qtd_ativs_validas > 0 %}
+              ({{((100 * ativs_utilizadas_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            {% else %}
+                0%
+            {% endif %}
             <abbr title="Clique aqui para ver a lista destas atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='planos_g')}}">{{ativs_utilizadas}}</a></abbr> geral 
-            ({{((100 * ativs_utilizadas / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
+            {% if qtd_ativs > 0 %}
+              ({{((100 * ativs_utilizadas / qtd_ativs)|round)|string|replace(".",",")}})% 
+            {% else %}
+                0%
+            {% endif %}
+          </dd>
           <dd>&nbsp;Distintas em PGs:</dd>
           <dd><abbr title="Clique aqui para ver a lista destas atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='pgs_v')}}">{{ativs_utilizadas_pgs_validas}}</a></abbr> válidas
-            ({{((100 * ativs_utilizadas_pgs_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            {% if qtd_ativs_validas > 0 %}
+              ({{((100 * ativs_utilizadas_pgs_validas / qtd_ativs_validas)|round)|string|replace(".",",")}})% 
+            {% else %}
+              0%
+            {% endif %}
             <abbr title="Clique aqui para ver a lista destas atividades.">
             <a href="{{url_for('atividades.lista_atividades',lista='pgs_g')}}">{{ativs_utilizadas_pgs}}</a></abbr> geral 
-            ({{((100 * ativs_utilizadas_pgs / qtd_ativs)|round)|string|replace(".",",")}})% </dd>
+            {% if qtd_ativs > 0 %}
+              ({{((100 * ativs_utilizadas_pgs / qtd_ativs)|round)|string|replace(".",",")}})% 
+            {% else %}
+              0%
+            {% endif %}
+          </dd>
           </dl>  
         </div>    
       </div>

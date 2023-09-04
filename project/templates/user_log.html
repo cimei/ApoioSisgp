@@ -17,23 +17,6 @@
   </div>
 </div>
 
-<div class="container">
-
-<div class="jumbotron">
-  
-  {% if tipo == 'geral' %}
-    <h5>Diário</h5>
-  {% elif tipo == 'envio' %}
-    <h5>Diário de Envios</h5>
-  {% endif %}
-  
-
-  <div class="row">
-    <p>(Observação: Se não informadas datas na procura, são apresentados registros das <b>últimas 24 horas</b>)</p>
-  </div>
-
-<br>
-
 {% macro render_field(field,obr) %}
   {% if obr == True %}
     <dt>{{ field.label(class="form-control-label") }}<span class="text-danger font-weight-bold">*</span>
@@ -50,68 +33,73 @@
   {% endif %}
   </dd>
 {% endmacro %}
+<form class="form-group" method='POST'>
+  {{ form.hidden_tag() }}
 
-<div class="row">
+  <div class="form-group row align-items-center">
 
-  <div class="col small">
-    <form class="form-group" method='POST'>
-      {{ form.hidden_tag() }}
+    <div class="form-group col-4">
+      {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+    </div>
+    <div class="form-group col-4">
+      {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
+    </div>
+    <div class="form-group col-2">
+      {{ form.submit(class="br-button secondary mr-3") }}
+    </div>
 
-      <div class="form-group row align-items-center">
-
-        <div class="form-group col-4">
-          {{ render_field(form.data_ini,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
-        </div>
-        <div class="form-group col-4">
-          {{ render_field(form.data_fim,class="form-control",placeholder="dd/mm/aaaa",obr=False) }}
-        </div>
-        <div class="form-group col-2">
-          {{ form.submit(class="br-button secondary mr-3") }}
-        </div>
-
-      </div>    
-    </form> 
+  </div>    
+</form> 
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between">
+      {% if tipo == 'geral' %}
+        <h5 class="header-list">Diário</h5>
+      {% elif tipo == 'envio' %}
+        <h5 class="header-list">Diário de Envios</h5>
+      {% endif %}
+      <div class="d-flex justify-content-around">
+        
+      </div>
+    </div>
   </div>
+  <div class="card-body">
+    <p>(Observação: Se não informadas datas na procura, são apresentados registros das <b>últimas 24 horas</b>)</p>
 
-</div>
+    
 
-{% if log == None %}
+    {% if log == None %}
+      <h3>Nada, por enquanto.</h3>
 
-  <h3>Nada, por enquanto.</h3>
+    {% else %}
+      <table class="table table-striped table-hover table-sm">
+        <thead>
+          <tr>
+            <th scope="col"><p align = "center">#</p></th>
+            <th scope="col"><p align = "center">Data e Hora</p></th>
+            <th scope="col"><p align = "left">Responsável</p></th>
+            <th scope="col"><p align = "left">Descrição</p></th>
+          </tr>
+        </thead>
 
-{% else %}
+        <tbody>
 
-  <div style="overflow-y: auto; height:300px">
-    <table class="table table-striped table-hover table-sm">
-      <thead>
-        <tr>
-          <th scope="col"><p align = "center">#</p></th>
-          <th scope="col"><p align = "center">Data e Hora</p></th>
-          <th scope="col"><p align = "left">Responsável</p></th>
-          <th scope="col"><p align = "left">Descrição</p></th>
-        </tr>
-      </thead>
+          {% for l in log %}
 
-      <tbody>
+          <tr>
+            <th scope="row"><p align = "center"><small>{{l.id}}</small></p></th>
+            <td><p align = "center"><small> {{l.data_hora.strftime("%x - %H:%M")}} </small> </p></td>
+            <td><p align = "left"><small> {{l.userNome}} </small></p></td>
+            <td><p align = "left"><small>{{l.msg}}</small></p></td>
+          </tr>
 
-        {% for l in log %}
+          {% endfor %}
 
-        <tr>
-          <th scope="row"><p align = "center"><small>{{l.id}}</small></p></th>
-          <td><p align = "center"><small> {{l.data_hora.strftime("%x - %H:%M")}} </small> </p></td>
-          <td><p align = "left"><small> {{l.userNome}} </small></p></td>
-          <td><p align = "left"><small>{{l.msg}}</small></p></td>
-        </tr>
+        </tbody>
 
-        {% endfor %}
-
-      </tbody>
-
-    </table>
+      </table>
+    {% endif %}
   </div>
-
-{% endif %}
-
 </div>
-</div>
+
 {% endblock %}

@@ -16,22 +16,17 @@
   </div>
 </div>
 
-<!-- <div class="jumbotron"> -->
-
-  {% if lista == 'ativas' %}
-    <h5>Lista das Atividades Válidas</h5>
-  {% elif lista == 'inativas' %} 
-    <h5>Lista das Atividades Não Válidas</h5>   
-  {% endif %}                       
-
-  <div class = "row">
-    <div class="col-2">
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between">
+      {% if lista == 'ativas' %}
+        <h5 class="header-list">Lista das Atividades Válidas</h5>
+      {% elif lista == 'inativas' %} 
+        <h5 class="header-list">Lista das Atividades Não Válidas</h5>   
+      {% endif %}    
+      
       <div class="d-flex justify-content-around">
         <a href="{{url_for('atividades.cria_atividade')}}" class="br-button secondary mr-3" role="button"><i class="fa fa-plus" aria-hidden="true"></i>Inserir</a>
-      </div>
-    </div>    
-    <div class="col-2">
-      <div class="d-flex justify-content-around">
         {% if lista == 'ativas' %}      
           <div class="br-switch medium">
             <input id="switch-label-01" type="checkbox" checked onclick="window.location.href='{{url_for("atividades.lista_atividades",lista="inativas")}}'"/>
@@ -45,23 +40,21 @@
             <div class="switch-data" data-enabled="Válidas" data-disabled="Não válidas"></div>
           </div>
         {% endif %}
-      </div>  
-    </div>   
+      </div>
+    </div>
   </div>
 
-  <br>
+  <div class="card-body">
+    <p>Lista das <span class="badge text-bg-primary">{{quantidade}}</span>
+      {% if lista == 'inativas'%} atividades antigas da Instituição 
+      {% elif lista == 'pgs_g' or lista == 'pgs_v' %} atividades utilizadas em programas de gestão
+      {% elif lista == 'ativas' %} atividades válidas da Instituição
+      {% else %} atividades utilizadas em planos de Trabalho
+      {% endif %}  
+    </p>
+ 
 
-  <caption>
-          <p>Lista das <span class="badge badge-pill badge-primary">{{quantidade}}</span>
-            {% if lista == 'inativas'%} atividades antigas da Instituição 
-            {% elif lista == 'pgs_g' or lista == 'pgs_v' %} atividades utilizadas em programas de gestão
-            {% elif lista == 'ativas' %} atividades válidas da Instituição
-            {% else %} atividades utilizadas em planos de Trabalho
-            {% endif %}  
-          </p>
-  </caption>
 
-  <div style="overflow-y:auto ; height:450px">
     <table id="table"
           data-toggle="table"
           data-filter-control="true"
@@ -134,33 +127,27 @@
       </tbody>
     </table>
 
-  </div>
+    <nav class="br-pagination" aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
 
-  <br>
-
-  <nav class="br-pagination" aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
-
-      {% for page_num in ativs.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
-        {% if page_num %}
-          {% if ativs.page == page_num %}
-            <li>
-                <a class="page active" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
-            </li>
+        {% for page_num in ativs.iter_pages(left_edge=1,left_current=1,right_current=2,right_edge=1) %}
+          {% if page_num %}
+            {% if ativs.page == page_num %}
+              <li>
+                  <a class="page active" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
+              </li>
+            {% else %}
+              <li>
+                  <a class="page" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
+              </li>
+            {% endif %}
           {% else %}
-            <li>
-                <a class="page" href="{{url_for('atividades.lista_atividades',lista=lista,page=page_num)}}">{{page_num}}</a>
-            </li>
+            <span class="page">…</span>
           {% endif %}
-        {% else %}
-          <span class="page">…</span>
-        {% endif %}
 
-      {% endfor %}
-    </ul>
-  </nav>
-
-<!-- </div> -->
-
-
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>
 {% endblock %}

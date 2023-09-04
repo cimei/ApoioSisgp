@@ -1,6 +1,6 @@
 (function($) {
     'use strict';
-
+   
     // Check for the cookie when user first arrives, if cookie doesn't exist call the intro
     function get_cookie(c_name) {
         var c_value = document.cookie;

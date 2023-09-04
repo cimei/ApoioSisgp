@@ -1,0 +1,25 @@
+services:
+  web:
+    container_name: apoio_sisgp
+    build: .
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+    environment:
+      FLASK_DEBUG: 1
+      DB_SERVER: "host.docker.internal"
+      DB_PORT: "1433"
+      DB_DATABASE: "DBSISGP"
+      DB_USER: "app_usr"
+      DB_PWD: "app_usr"
+      MAIL_SERVER: "webmail.cnpq.br"
+      MAIL_PORT: "587"
+      MAIL_USE_TLS: "True"
+      MAIL_USER: "apoiosisgp@cnpq.br"
+      MAIL_PWD: "OBmu%y%"
+      APIPGDME_URL: "http://hom.api.programadegestao.economia.gov.br"
+      APIPGDME_AUTH_USER: "monicar@cnpq.br"
+      APIPGDME_AUTH_PASSWORD: "cnpq.monicar"
+      CONSULTA_API: 'N' 

@@ -15,26 +15,22 @@
   </div>
 </div>
 
-<div class="container">
 
-<!-- <div class="jumbotron"> -->
-  
-  <h5>Lista das quantidades de pessoas no programa de gestão por unidade</h5>
-
-<caption>
-  <div class="row">
-      <div class="col">
-        <p><span class="badge badge-pill badge-success">{{qtd_unidades}}</span> unidade(s) na instituição,
-           com <span class="badge badge-pill badge-success">{{qtd_pessoas}}</span> pessoa(s) cadastradas no SISGP.</p>
-        <p>Nesta lista: <span class="badge badge-pill badge-primary">{{qtd_pt_unidade}}</span> unidade(s).
-                        <span class="badge badge-pill badge-primary">{{qtd_pactos_unidade}}</span> PTs em execução.</p>
+<div class="card">
+  <div class="card-header">
+    <div class="d-flex flex-column flex-md-row justify-content-between">
+      <h5 class="header-list">Lista das quantidades de pessoas no programa de gestão por unidade</h5>
+      <div class="d-flex justify-content-around">
       </div>
+    </div>
   </div>
-</caption>
+  <div class="card-body">
+    <p><span class="badge text-bg-primary">{{qtd_unidades}}</span> unidade(s) na instituição,
+      com <span class="badge text-bg-primary">{{qtd_pessoas}}</span> pessoa(s) cadastradas no SISGP.</p>
+    <p>Nesta lista: <span class="badge text-bg-success">{{qtd_pt_unidade}}</span> unidade(s).
+                   <span class="badge text-bg-success">{{qtd_pactos_unidade}}</span> PTs em execução.</p>
 
-<div style="overflow-y:auto ; height:450px">
-
-  <table id="table"
+    <table id="table"
         data-toggle="table"
         data-filter-control="true"
         data-show-search-clear-button="true"
@@ -247,11 +243,9 @@
       {% endfor %}
 
     </tbody>
-  </table>
-
+    </table>
+  </div>
 </div>
 
-<!-- </div> -->
 
-</div>
 {% endblock %}

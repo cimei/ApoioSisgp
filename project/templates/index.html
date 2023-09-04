@@ -3,156 +3,58 @@
 
 
 
-  {% if current_user.is_authenticated and current_user.userAtivo %} 
+{% if current_user.is_authenticated and current_user.userAtivo %}
 
-      <div class="row mt-5">
-      <div class="d-flex justify-content-around">
-      
-        <!-- <div class="br-magic-button large">
-          <button class="br-button" type="button" onclick="window.location.href='{{url_for("envio.envio_i")}}'">Envio de Dados ao Órgão Central do SISP</button>
-        </div> -->
+<div class="row mt-5">
+  <div class="d-flex justify-content-center  flex-wrap">
 
-        <div class="col-auto card-sm">
-          <label class="flip-container">
-            <div class="flipper">
-              <div class="front">
-                <div class="card">
-                  <div class="header-card">
-                    <input type="checkbox" id="switch" class="flippe">
-                    <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                  </div>
-                  <div class="card-body text-center centered-content">
-                    <a href="{{url_for('envio.envio_i')}}">
-                      <div class="card-text">
-                        <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                        <i class="fa fa-rocket fa-8x" aria-hidden="true"></i>
-                        <p></p>
-                      </div>
-                    </a>
-                    <p>Envio de Dados ao Órgão Central do SISP</p>
-                  </div>
-                </div>
-              </div>
-              <div class="back">
-                <div class="card">
-                  <div class="header-card">
-                    <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                  </div>
-                  <div class="back-text">
-                    Além do agendamendo do envio de planos (todos, ou somente os não enviados), pode-se verificar quais planos 
-                    já foram enviados, com a opção do reenvio individual, e também verificar quais planos que estão aptos ao envio,
-                    mas que nunca foram enviados, com a opção do envio individual. Toda a ação relacionada ao envio, fica registrada
-                    no diário do sistema, que pode ser consultado em Diário de envios.
+    {% with 
+      icon="fa-cloud-arrow-up", 
+      title="Envio de Dados ao Órgão Central do SISP",
+      description="Além do agendamendo do envio de planos (todos, ou somente os não enviados), pode-se verificar quais planos já foram enviados, com a opção do reenvio individual, e também verificar quais planos que estão aptos ao envio, mas que nunca foram enviados, com a opção do envio individual. Toda a ação relacionada ao envio, fica registrada no diário do sistema, que pode ser consultado em Diário de envios.",
+      link=url_for('envio.envio_i')
+    %}
+      {% include "card_menu.html" %}
+    {% endwith %}
+
+    {% with 
+      icon="fa-handshake", 
+      title="Funções de Apoio à Gestão do PGD 1.0",
+      description="Gestão das tabelas de Unidades, Pessoas e Atividades do SISGP, bem como das tabelas auxiliares,
+      Consultas que podem auxiliar no dia a dia da gestão do PGD na instituição tembém fazem parete desta seção.
+      A carga de dados permite a inserção, ou atualização, em lote de Unidades, Pessoas e Atividades por meio do
+      upload de arquivos csv.",
+      link=url_for('core.apoio_i')
+    %}
+      {% include "card_menu.html" %}
+    {% endwith %}
+
     
-                  </div>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
-
-        <div class="col-1"></div>
-
-        <!-- <div class="br-magic-button large">
-          <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.apoio_i")}}'">Funções de Apoio à Gestão do PGD 1.0</button>
-        </div> -->
-
-        <div class="col-auto card-sm">
-          <label class="flip-container">
-            <div class="flipper">
-              <div class="front">
-                <div class="card">
-                  <div class="header-card">
-                    <input type="checkbox" id="switch" class="flippe">
-                    <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                  </div>
-                  <div class="card-body text-center centered-content">
-                    <a href="{{url_for('core.apoio_i')}}">
-                      <div class="card-text">
-                        <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                        <i class="fa fa-handshake fa-8x" aria-hidden="true"></i>
-                        <p></p>
-                      </div>
-                    </a>
-                    <p>Funções de Apoio à Gestão do PGD 1.0</p>
-                  </div>
-                </div>
-              </div>
-              <div class="back">
-                <div class="card">
-                  <div class="header-card">
-                    <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                  </div>
-                  <div class="back-text">
-                    Gestão das tabelas de Unidades, Pessoas e Atividades do SISGP, bem como das tabelas auxiliares,
-                    Consultas que podem auxiliar no dia a dia da gestão do PGD na instituição tembém fazem parete desta seção.
-                    A carga de dados permite a inserção, ou atualização, em lote de Unidades, Pessoas e Atividades por meio do
-                    upload de arquivos csv. 
-                  </div>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
+    {% with 
+      icon="fa-gears", 
+      title="Funções internas",
+      description="A consulta ao diário global do sistema, a gestão dos usuários (ativação e permissão de evio de dados) e
+      a possibilidade da troca de senha do usuário logado compõe esta seção.",
+      link=url_for('core.interno_i')
+    %}
+      {% include "card_menu.html" %}
+    {% endwith %}
 
 
-        <div class="col-1"></div>
-
-        <!-- <div class="br-magic-button large">
-          <button class="br-button" type="button" onclick="window.location.href='{{url_for("core.interno_i")}}'">Funções Internas</button>
-        </div> -->
-
-        <div class="col-auto card-sm">
-          <label class="flip-container">
-            <div class="flipper">
-              <div class="front">
-                <div class="card">
-                  <div class="header-card">
-                    <input type="checkbox" id="switch" class="flippe">
-                    <i class="fa fa-info-circle info" aria-hidden="true"></i>
-                  </div>
-                  <div class="card-body text-center centered-content">
-                    <a href="{{url_for('core.interno_i')}}">
-                      <div class="card-text">
-                        <!-- <img src="../../static/gov360/img/Solucoes_de_modernizacao.png" alt="Envio de Dados ao Órgão Central do SISP"> -->
-                        <i class="fa fa-inbox fa-8x" aria-hidden="true"></i>
-                        <p></p>
-                      </div>
-                    </a>
-                    <p>Funções<br>internas</p>
-                  </div>
-                </div>
-              </div>
-              <div class="back">
-                <div class="card">
-                  <div class="header-card">
-                    <i class="fa fa-times-circle times" aria-hidden="true"></i>
-                  </div>
-                  <div class="back-text">
-                    A consulta ao diário global do sistema, a gestão dos usuários (ativação e permissão de evio de dados) e
-                    a possibilidade da troca de senha do usuário logado compõe esta seção.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </label>
-        </div>
-
-
-      </div>  
-      </div>  
-
-  {% else %}  
-
-  <div class="main-content pl-sm-3 mt-4" id="main-content">
-    <h1>Bem vindo!</h1>
-    <h2>No canto superior direito, entre, ou registre-se, para acessar o sistema.</h2>
   </div>
-    
-  </div>
+</div>
 
-  {% endif %}
-  
+{% else %}
+
+<div class="main-content pl-sm-3 mt-4" id="main-content">
+  <h1>Bem vindo!</h1>
+  <h4 class="fs-5 fw-light">No canto superior direito, entre, ou registre-se, para acessar o sistema.</h4>
+</div>
+
+</div>
+
+{% endif %}
+
 
 
 {% endblock %}
