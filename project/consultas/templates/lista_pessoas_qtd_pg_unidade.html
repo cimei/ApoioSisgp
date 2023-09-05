@@ -109,43 +109,9 @@
                                   {% if current_user.is_authenticated %}
                                     <abbr title="ATENÇÃO!! AO CLICAR NESTE BOTÃO, O PG SERÁ EXCLUÍDO!">
 
-                                    <button type="button" class="btn btn-danger" data-bs-toggle='modal' data-bs-target='#del_modal{{dados_pt.index(d) + 1}}'>X</button>
+                                    <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}')">X</button>
 
-                                    {# modal para deleção de pg #}
-
-                                    <div class="modal" tabindex="-1" role="dialog" id="del_modal{{dados_pt.index(d) + 1}}">
-                                      <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                          <div class="modal-header">
-
-                                            <div class="container-fluid">
-                                              <div style="margin-top: 150px" class="row">
-                                              </div>
-                                              <div class="row">  
-                                                <div class="p-3 mb-2 bg-danger text-white">
-                                                  <h5 class="modal-title">Deletar Programa de Gestão?</h5>
-                                                </div>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                  <span aria-hidden="true">&times;</span>
-                                                </button>
-                                              </div>
-                                            </div>  
-
-                                          </div>
-                                          <div class="modal-body">
-                                            <p>Deseja realmente deletar este Programa de Gestão?</p>
-                                          </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-
-                                            <form action="{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}" method="post">
-                                              <input class="btn btn-danger" type="submit" name="" value="Excluir">
-                                            </form>
-
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
+                                    
                                   {% endif %}  
 
 

@@ -1,3 +1,5 @@
+
+
 $(document).ready(function() {
   const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
   const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
@@ -21,3 +23,21 @@ $(document).ready(function() {
 
 
 });
+
+function deleta_pg(url){
+  Swal.fire({
+    title: 'Deseja realmente deletar este Programa de Gestão??',
+    showCancelButton: true,
+    confirmButtonText: 'Sim',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        method: "POST",
+        url: url
+      })
+        .done(function( msg ) {
+          Swal.fire('Excluido!', '', 'success')
+        });
+    }
+  })
+}
