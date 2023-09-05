@@ -62,7 +62,7 @@
 
         {% if u.qtd_pg > 0 %}  
         
-          <a href="#" data-toggle='modal' data-target='#pt_modal{{u.unidadeId}}'>{{ u.qtd_pg }}</a></abbr>
+          <a href="#" data-bs-toggle='modal' data-bs-target='#pt_modal{{u.unidadeId}}'>{{ u.qtd_pg }}</a></abbr>
             
             {# modal visualização de programas de gestão da unidade #}
 
@@ -109,7 +109,7 @@
                                   {% if current_user.is_authenticated %}
                                     <abbr title="ATENÇÃO!! AO CLICAR NESTE BOTÃO, O PG SERÁ EXCLUÍDO!">
 
-                                    <button type="button" class="btn btn-danger" data-toggle='modal' data-target='#del_modal{{dados_pt.index(d) + 1}}'>X</button>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle='modal' data-bs-target='#del_modal{{dados_pt.index(d) + 1}}'>X</button>
 
                                     {# modal para deleção de pg #}
 
@@ -183,7 +183,7 @@
           
             <abbr title="Clique aqui para ver dados dos pactos (Em Execução) da unidade.">
 
-            <a href="#" data-toggle='modal' data-target='#pac_modal{{u.unidadeId}}'>{{ u.qtd_pactos }}</a></abbr>
+            <a href="#" data-bs-toggle='modal' data-bs-target='#pac_modal{{u.unidadeId}}'>{{ u.qtd_pactos }}</a></abbr>
               
               {# modal visualização de pactos de uma unidade #}
 
