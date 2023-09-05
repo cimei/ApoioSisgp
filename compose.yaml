@@ -9,11 +9,11 @@ services:
       - ./:/app
     environment:
       FLASK_DEBUG: 1
-      DB_SERVER: "host.docker.internal"
+      DB_SERVER: "susep-back.dev.cnpq.br"
       DB_PORT: "1433"
       DB_DATABASE: "DBSISGP"
-      DB_USER: "app_usr"
-      DB_PWD: "app_usr"
+      DB_USER: "apoiosisgp"
+      DB_PWD: "@master2022!"
       MAIL_SERVER: "webmail.cnpq.br"
       MAIL_PORT: "587"
       MAIL_USE_TLS: "True"
