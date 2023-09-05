@@ -70,18 +70,8 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-
-                    <div class="container-fluid">
-                      <div style="margin-top: 150px" class="row">
-                      </div>
-                      <div class="row">
-                        <h5 class="modal-title">Programas de Gestão ({{ u.undSigla }})</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                    </div>
-
+                    <h5 class="modal-title">Programas de Gestão ({{ u.undSigla }})</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     
@@ -111,7 +101,6 @@
 
                                     <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}')">X</button>
 
-                                    
                                   {% endif %}  
 
 
@@ -157,18 +146,8 @@
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <div class="container-fluid">
-
-                        <div style="margin-top: 150px" class="row">
-                        </div>
-                        <div class="row">
                           <h5 class="modal-title">Pactos na unidade {{ u.undSigla }}</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                      </div>
-                      
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                       

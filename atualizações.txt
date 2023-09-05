@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+05/09/2023
+Restilização do aplicativo pelo Geisimar.
+v3.2.0
+
 17/08/2023
 Ajustes na função de agendamento de envio.
 v3.1.3
