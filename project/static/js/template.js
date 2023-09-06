@@ -24,7 +24,7 @@ $(document).ready(function() {
 
 });
 
-function deleta_pg(url){
+function deleta_pg(url, id){
   Swal.fire({
     title: 'Deseja realmente deletar este Programa de Gestão??',
     showCancelButton: true,
@@ -36,6 +36,7 @@ function deleta_pg(url){
         url: url
       })
         .done(function( msg ) {
+          $("#tr_"+id).hide()
           Swal.fire('Excluido!', '', 'success')
         });
     }
