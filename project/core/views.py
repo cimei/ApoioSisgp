@@ -171,10 +171,10 @@ def index():
 
                     id='job_envia_planos_novamente'
 
-                    # hora += 1
-                    # s_hora = str(hora)
-                    minuto += 2
-                    s_minuto = str(minuto)
+                    hora += 1
+                    s_hora = str(hora)
+                    # minuto += 2
+                    # s_minuto = str(minuto)
                         
                     if periodicidade == 'Diária':
                         msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
