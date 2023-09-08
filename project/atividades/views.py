@@ -78,7 +78,8 @@ def lista_atividades(lista):
                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                       .filter(Atividades.titulo.like('x%'))\
+                       .filter(Atividades.titulo.like('x%'),
+                               Atividades.titulo.notlike('z%'))\
                        .order_by(Atividades.titulo)\
                        .paginate(page=page,per_page=100)
 
@@ -103,7 +104,8 @@ def lista_atividades(lista):
                        .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                        .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                        .outerjoin(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                       .filter(Atividades.titulo.notlike('x%'))\
+                       .filter(Atividades.titulo.notlike('x%'),
+                               Atividades.titulo.notlike('z%'))\
                        .order_by(Atividades.titulo)\
                        .paginate(page=page,per_page=100) 
 
@@ -131,7 +133,8 @@ def lista_atividades(lista):
                         .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas_pg,ativs_utilizadas_pg.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .filter(Atividades.titulo.notlike('x%'))\
+                        .filter(Atividades.titulo.notlike('x%'),
+                                Atividades.titulo.notlike('z%'))\
                         .order_by(Atividades.titulo)\
                         .all()
 
@@ -208,7 +211,8 @@ def lista_atividades(lista):
                         .join(catdom,catdom.catalogoDominioId == Atividades.calculoTempoId)\
                         .outerjoin(unids,unids.c.itemCatalogoId == Atividades.itemCatalogoId)\
                         .join(ativs_utilizadas,ativs_utilizadas.c.itemCatalogoId == Atividades.itemCatalogoId)\
-                        .filter(Atividades.titulo.notlike('x%'))\
+                        .filter(Atividades.titulo.notlike('x%'),
+                                Atividades.titulo.notlike('z%'))\
                         .order_by(Atividades.titulo)\
                         .all()                    
 
