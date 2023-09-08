@@ -98,8 +98,14 @@
                                 <p align = "center">
                                   {% if current_user.is_authenticated %}
                                     <abbr title="ATENÇÃO!! AO CLICAR NESTE BOTÃO, O PG SERÁ EXCLUÍDO!">
+<<<<<<< HEAD
                                       <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}', '{{d.planoTrabalhoId}}')">X</button>
                                     </abbr>  
+=======
+
+                                    <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}', d.planoTrabalhoId)">X</button>
+
+>>>>>>> e0c701e2e9c8a23d575dcb99218856c7ffbf3599
                                   {% endif %}  
                                 </p>
                               </td>
