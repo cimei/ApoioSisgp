@@ -88,7 +88,7 @@
                       <tbody>
                         {% for d in dados_pt %}
                           {% if d.unidadeId == u.unidadeId %}
-                            <tr>
+                            <tr id="tr_{{d.planoTrabalhoId}}">
                               <td><p align = "center"> {{ d.dataInicio.strftime('%x') }} </p></td>
                               <td><p align = "center"> {{ d.dataFim.strftime('%x') }} </p></td>
                               <td><p align = "center"> {{ d.descricao }} </p></td>
@@ -98,12 +98,9 @@
                                 <p align = "center">
                                   {% if current_user.is_authenticated %}
                                     <abbr title="ATENÇÃO!! AO CLICAR NESTE BOTÃO, O PG SERÁ EXCLUÍDO!">
-
-                                    <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}')">X</button>
-
+                                      <button type="button" class="btn btn-danger" onclick="deleta_pg('{{url_for('consultas.deleta_pg',pgId=d.planoTrabalhoId)}}', '{{d.planoTrabalhoId}}')">X</button>
+                                    </abbr>  
                                   {% endif %}  
-
-
                                 </p>
                               </td>
                               {% endif %}

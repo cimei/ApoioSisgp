@@ -34,7 +34,7 @@ from flask import render_template,url_for,flash, redirect, request, Blueprint
 from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
-from sqlalchemy import func, literal, or_
+from sqlalchemy import func, literal, distinct
 
 from project import db, sched
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
@@ -47,7 +47,7 @@ from project.envio.forms import AgendamentoForm
 
 import requests
 import json
-from datetime import datetime
+from datetime import date, timedelta
 import os
 import re
 
@@ -55,6 +55,7 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 
 
 # funções
+
 
 # função que gera lista de planos que já foram enviados previamente, consultando a API
 def planos_enviados_API():
@@ -132,18 +133,6 @@ def planos_enviados_API():
 
 # função que gera lista de planos que já foram enviados previamente, consultando o log
 def planos_enviados_LOG():
-
-    #subquery para pegar situações dos planos de trabalho (pactos)
-    catdom_1 = db.session.query(catdom.catalogoDominioId,
-                                catdom.descricao)\
-                        .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
-                        .subquery()
-
-    #subquery que conta atividades em cada plano de trabalho (pacto)
-    ativs = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
-                            label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
-                    .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-                    .subquery()
     
     #subquery que conta atividades com nota em cada plano de trabalho (pacto)
     ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
@@ -154,27 +143,22 @@ def planos_enviados_LOG():
 
     # todos os planos executados e com todas as atividades avaliadas
     planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                        catdom_1.c.descricao,
                                         Pactos_de_Trabalho.situacaoId,
-                                        ativs.c.qtd_ativs,
                                         ativs_com_nota.c.qtd_com_nota)\
-                            .filter(catdom_1.c.descricao == 'Executado',
-                                    ativs.c.qtd_ativs != None,
+                            .filter(Pactos_de_Trabalho.situacaoId == 406,
                                     ativs_com_nota.c.qtd_com_nota != None,
                                     ativs_com_nota.c.qtd_com_nota > 0)\
-                            .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                             .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                            .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                             .all() 
 
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
-                             .all()
+                             .distinct()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
-                                         .all()                         
+                                         .distinct()                         
     
     log = [e.msg[18:54] for e in enviados_log] + [e.msg[41:77] for e in enviados_manualmente_log]        
 
@@ -188,9 +172,23 @@ def planos_enviados_LOG():
     # se não encontrar planos enviados no log, recorre à API para verificar es houve algum envio
     # if len(log) == 0:
     #     print ('*** Ao tentar listar enviados, não achei nada no log, vou pegar da API! ***')
-    #     enviados = planos_enviados_API()        
+    #     enviados = planos_enviados_API()  
+    
+        # quebrando n_enviados em listas com 1000 ou menos elementos
+    listas = []
+    tamanho = len(enviados)
+    if tamanho > 1000:
+        qtd_listas = tamanho // 10
+        resto = tamanho % 10
+        if resto > 0:
+            qtd_listas += 1
+        listas = [enviados[i:i+1000] for i in range(0,len(enviados),1000)] 
+    else:
+        listas.append(enviados)    
+    
+    print ('*** tamanho da lista enviados: ',len(enviados),' Foi quebrada em : ',len(listas),' listas')      
 
-    return enviados        
+    return listas        
    
 
 
@@ -275,18 +273,6 @@ def planos_n_enviados_API():
 
 # função que gera lista de planos que nunca foram enviados, consultando o LOG
 def planos_n_enviados_LOG(): 
-
-    #subquery para pegar situações dos planos de trabalho (pactos)
-    catdom_1 = db.session.query(catdom.catalogoDominioId,
-                                catdom.descricao)\
-                        .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
-                        .subquery()
-
-    #subquery que conta atividades em cada plano de trabalho (pacto)
-    ativs = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
-                                label('qtd_ativs',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
-                        .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-                        .subquery()
     
     #subquery que conta atividades com nota em cada plano de trabalho (pacto)
     ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
@@ -295,29 +281,24 @@ def planos_n_enviados_LOG():
                                 .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
                                 .subquery() 
     
-    # resgata todos os planos executados com pelo menos uma atividade avaliada
+    # resgata todos os planos executados (406) com pelo menos uma atividade avaliada
     planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                catdom_1.c.descricao,
-                                Pactos_de_Trabalho.situacaoId,
-                                ativs.c.qtd_ativs,
-                                ativs_com_nota.c.qtd_com_nota)\
-                            .filter(catdom_1.c.descricao == 'Executado',
-                                    ativs.c.qtd_ativs != None,
+                                        Pactos_de_Trabalho.situacaoId,
+                                        ativs_com_nota.c.qtd_com_nota)\
+                            .filter(Pactos_de_Trabalho.situacaoId == 406,
                                     ativs_com_nota.c.qtd_com_nota != None,
                                     ativs_com_nota.c.qtd_com_nota > 0)\
-                            .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                             .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                            .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                             .all()                     
     
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
-                             .all()
+                             .distinct()
     enviados_manualmente_log = db.session.query(Log_Auto.msg)\
                                          .filter(Log_Auto.msg.like('* Plano enviado manualmente com sucesso:'+'%') )\
-                                         .all()                         
+                                         .distinct()                         
     
     log = [e.msg[18:54] for e in enviados_log] + [e.msg[41:77] for e in enviados_manualmente_log]
 
@@ -333,7 +314,21 @@ def planos_n_enviados_LOG():
     #     print ('*** Ao tentar listar não enviados, não achei nada no log, vou pegar da API! ***')
     #     n_enviados = planos_n_enviados_API()        
 
-    return n_enviados        
+    # quebrando n_enviados em listas com 1000 ou menos elementos
+    listas = []
+    tamanho = len(n_enviados)
+    if tamanho > 1000:
+        qtd_listas = tamanho // 10
+        resto = tamanho % 10
+        if resto > 0:
+            qtd_listas += 1
+        listas = [n_enviados[i:i+1000] for i in range(0,len(n_enviados),1000)] 
+    else:
+        listas.append(n_enviados)    
+    
+    print ('*** tamanho da lista n_enviados: ',len(n_enviados),' Foi quebrada em : ',len(listas),' listas')
+    
+    return listas        
 
 
 
@@ -379,92 +374,99 @@ def envia_planos_novamente():
         token = rlogin_json['access_token']
         tipo =  rlogin_json['token_type']       
 
-        # indicador de planos enviados com sucesso 
+        # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
         sucesso = 0
+        qtd_planos = 0
 
         # pega todos os planos que deverão ser enviados via query da aplicação API/CADE
         # l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()
-        l = enviados
-        planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
-        qtd_planos = len(planos)
 
-        # para cada plano, monta o dados do dicionário 
-        for p in planos:
+        for l in enviados:
+            # l = enviados
+            planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
+            qtd_planos += len(planos)
 
-            dic_envio = {}
+            # para cada plano, monta o dados do dicionário 
+            for p in planos:
 
-            dic_envio['cod_plano']       = p.id_pacto
-            dic_envio['situacao']        = p.situacao
-            dic_envio['matricula_siape'] = int(p.matricula_siape)
-            dic_envio['cpf']             = p.cpf
-            dic_envio['nome_participante']      = p.nome_participante
-            dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
-            dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
-            dic_envio['modalidade_execucao']    = p.modalidade_execucao
-            dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
-            dic_envio['data_inicio']         = p.data_inicio.strftime('%Y-%m-%d')
-            dic_envio['data_fim']            = p.data_fim.strftime('%Y-%m-%d')
-            dic_envio['carga_horaria_total'] = p.carga_horaria_total
-            dic_envio['data_interrupcao']    = p.data_interrupcao
-            dic_envio['entregue_no_prazo']   = p.entregue_no_prazo
-            dic_envio['horas_homologadas']   = p.horas_homologadas
-            dic_envio['atividades'] = []
+                dic_envio = {}
 
-            # pega as atividades de cada plano
-            ativs = db.session.query(VW_Atividades_Pactos)\
-                            .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
-                            .all()
+                dic_envio['cod_plano']       = p.id_pacto
+                dic_envio['situacao']        = p.situacao
+                dic_envio['matricula_siape'] = int(p.matricula_siape)
+                dic_envio['cpf']             = p.cpf
+                dic_envio['nome_participante']      = p.nome_participante
+                dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
+                dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
+                dic_envio['modalidade_execucao']    = p.modalidade_execucao
+                dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
+                dic_envio['data_inicio']         = p.data_inicio.strftime('%Y-%m-%d')
+                dic_envio['data_fim']            = p.data_fim.strftime('%Y-%m-%d')
+                dic_envio['carga_horaria_total'] = p.carga_horaria_total
+                dic_envio['data_interrupcao']    = p.data_interrupcao
+                dic_envio['entregue_no_prazo']   = p.entregue_no_prazo
+                dic_envio['horas_homologadas']   = p.horas_homologadas
+                dic_envio['atividades'] = []
 
-            # para cada atividade, monta o resto do dicionário (key 'atividades')
-            for a in ativs:
+                # pega as atividades de cada plano
+                ativs = db.session.query(VW_Atividades_Pactos)\
+                                .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
+                                .all()
+
+                # para cada atividade, monta o resto do dicionário (key 'atividades')
+                for a in ativs:
+                    
+                    # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+                    situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                                        .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                                        .first()
+
+                    if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                                                    a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+                                                    (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                        dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                        'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                        'nome_atividade': a.nome_atividade,
+                                                        'faixa_complexidade': a.faixa_complexidade,
+                                                        'parametros_complexidade': a.parametros_complexidade,
+                                                        'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                        'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                        'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                        'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                        'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                        'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                        'entrega_esperada': a.entrega_esperada,
+                                                        'qtde_entregas': a.qtde_entregas,
+                                                        'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                        'avaliacao': a.avaliacao,
+                                                        'data_avaliacao': a.data_avaliacao,
+                                                        'justificativa': a.justificativa}) 
+
+                # prepara headers do put
+                plano_id = p.id_pacto
+                headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
                 
-                # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
-                situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
-                                    .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
-                                    .first()
+                # faz o put na API via dumps json do dicionário    
+                r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
 
-                if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
-                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
+                if r_put.ok:
+                    sucesso += 1
+                    registra_log_auto(id_user, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
+                else:
+                    retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
-                    dic_envio['atividades'].append({'id_atividade': a.id_produto,
-                                                    'nome_grupo_atividade': a.nome_grupo_atividade,
-                                                    'nome_atividade': a.nome_atividade,
-                                                    'faixa_complexidade': a.faixa_complexidade,
-                                                    'parametros_complexidade': a.parametros_complexidade,
-                                                    'tempo_presencial_estimado': a.tempo_presencial_estimado,
-                                                    'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                    'tempo_presencial_executado': a.tempo_presencial_executado,
-                                                    'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
-                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
-                                                    'entrega_esperada': a.entrega_esperada,
-                                                    'qtde_entregas': a.qtde_entregas,
-                                                    'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
-                                                    'avaliacao': a.avaliacao,
-                                                    'data_avaliacao': a.data_avaliacao,
-                                                    'justificativa': a.justificativa}) 
-
-            # prepara headers do put
-            plano_id = p.id_pacto
-            headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
-            
-            # faz o put na API via dumps json do dicionário    
-            r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
-
-            # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
-            if r_put.ok:
-                sucesso += 1
-                registra_log_auto(id_user, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
-
-            retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
-
-            if retorno_API:
-                retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
-            else:
-                retorno_API_msg = 'Sem registro de erro.'
-
+                    if retorno_API:
+                        retorno_API_msg = retorno_API.group()[6:]
+                        print ('*** Erro reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                    else:
+                        retorno_API_msg = 'Sem retorno da API.'
+                        print ('*** Erro reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        print ('*** Texto API: ',str(r_put.text))
+                        registra_log_auto(id_user, '* Erro na tentativa de reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+        
         # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
         if modo == 'agenda':
@@ -532,91 +534,99 @@ def envia_planos():
         token = rlogin_json['access_token']
         tipo =  rlogin_json['token_type']       
 
-        # indicador de planos enviados com sucesso 
+        # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
         sucesso = 0
+        qtd_planos = 0
 
         # pega todos os planos que deverão ser enviados via query da aplicação API/CADE
         # l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()
-        l = n_enviados
-        planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
-        qtd_planos = len(planos)
+        
+        for l in n_enviados:
+            # l = n_enviados
+        
+            planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
+            qtd_planos += len(planos)
 
-        # para cada plano, monta o dados do dicionário 
-        for p in planos:
+            # para cada plano, monta o dados do dicionário 
+            for p in planos:
 
-            dic_envio = {}
+                dic_envio = {}
 
-            dic_envio['cod_plano']       = p.id_pacto
-            dic_envio['situacao']        = p.situacao
-            dic_envio['matricula_siape'] = int(p.matricula_siape)
-            dic_envio['cpf']             = p.cpf
-            dic_envio['nome_participante']      = p.nome_participante
-            dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
-            dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
-            dic_envio['modalidade_execucao']    = p.modalidade_execucao
-            dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
-            dic_envio['data_inicio']         = p.data_inicio.strftime('%Y-%m-%d')
-            dic_envio['data_fim']            = p.data_fim.strftime('%Y-%m-%d')
-            dic_envio['carga_horaria_total'] = p.carga_horaria_total
-            dic_envio['data_interrupcao']    = p.data_interrupcao
-            dic_envio['entregue_no_prazo']   = p.entregue_no_prazo
-            dic_envio['horas_homologadas']   = p.horas_homologadas
-            dic_envio['atividades'] = []
+                dic_envio['cod_plano']       = p.id_pacto
+                dic_envio['situacao']        = p.situacao
+                dic_envio['matricula_siape'] = int(p.matricula_siape)
+                dic_envio['cpf']             = p.cpf
+                dic_envio['nome_participante']      = p.nome_participante
+                dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
+                dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
+                dic_envio['modalidade_execucao']    = p.modalidade_execucao
+                dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
+                dic_envio['data_inicio']         = p.data_inicio.strftime('%Y-%m-%d')
+                dic_envio['data_fim']            = p.data_fim.strftime('%Y-%m-%d')
+                dic_envio['carga_horaria_total'] = p.carga_horaria_total
+                dic_envio['data_interrupcao']    = p.data_interrupcao
+                dic_envio['entregue_no_prazo']   = p.entregue_no_prazo
+                dic_envio['horas_homologadas']   = p.horas_homologadas
+                dic_envio['atividades'] = []
 
-            # pega as atividades de cada plano
-            ativs = db.session.query(VW_Atividades_Pactos)\
-                            .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
-                            .all()
+                # pega as atividades de cada plano
+                ativs = db.session.query(VW_Atividades_Pactos)\
+                                .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
+                                .all()
 
-            # para cada atividade, monta o resto do dicionário (key 'atividades')
-            for a in ativs:
+                # para cada atividade, monta o resto do dicionário (key 'atividades')
+                for a in ativs:
+                    
+                    # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+                    situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                                        .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                                        .first()
+
+                    if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                                                    a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+                                                    (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                        dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                        'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                        'nome_atividade': a.nome_atividade,
+                                                        'faixa_complexidade': a.faixa_complexidade,
+                                                        'parametros_complexidade': a.parametros_complexidade,
+                                                        'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                        'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                        'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                        'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                        'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                        'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                        'entrega_esperada': a.entrega_esperada,
+                                                        'qtde_entregas': a.qtde_entregas,
+                                                        'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                        'avaliacao': a.avaliacao,
+                                                        'data_avaliacao': a.data_avaliacao,
+                                                        'justificativa': a.justificativa}) 
+
+                # prepara headers do put
+                plano_id = p.id_pacto
+                headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
                 
-                # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
-                situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
-                                    .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
-                                    .first()
+                # faz o put na API via dumps json do dicionário    
+                r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
 
-                if situ_ativ.situacaoId == 503 and a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                                                   a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
-                                                   (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
+                if r_put.ok:
+                    sucesso += 1
+                    registra_log_auto(id_user, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
+                else:
+                    retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
 
-                    dic_envio['atividades'].append({'id_atividade': a.id_produto,
-                                                    'nome_grupo_atividade': a.nome_grupo_atividade,
-                                                    'nome_atividade': a.nome_atividade,
-                                                    'faixa_complexidade': a.faixa_complexidade,
-                                                    'parametros_complexidade': a.parametros_complexidade,
-                                                    'tempo_presencial_estimado': a.tempo_presencial_estimado,
-                                                    'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                    'tempo_presencial_executado': a.tempo_presencial_executado,
-                                                    'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
-                                                    'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
-                                                    'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
-                                                    'entrega_esperada': a.entrega_esperada,
-                                                    'qtde_entregas': a.qtde_entregas,
-                                                    'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
-                                                    'avaliacao': a.avaliacao,
-                                                    'data_avaliacao': a.data_avaliacao,
-                                                    'justificativa': a.justificativa}) 
-
-            # prepara headers do put
-            plano_id = p.id_pacto
-            headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
-            
-            # faz o put na API via dumps json do dicionário    
-            r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
-
-            # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
-            if r_put.ok:
-                sucesso += 1
-                registra_log_auto(id_user, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
-
-            retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
-
-            if retorno_API:
-                retorno_API_msg = retorno_API.group()[6:]
-                registra_log_auto(id_user, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
-            else:
-                retorno_API_msg = 'Sem registro de erro.'
+                    if retorno_API:
+                        retorno_API_msg = retorno_API.group()[6:]
+                        print ('*** Erro envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        registra_log_auto(id_user, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                    else:
+                        retorno_API_msg = 'Sem retorno da API.'
+                        print ('*** Erro envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        print ('*** Texto API: ',str(r_put.text))
+                        registra_log_auto(id_user, '* Erro na tentativa de envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
 
         # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
@@ -668,7 +678,13 @@ def lista_a_enviar():
     if n_enviados != 'erro_credenciais':
 
         lista = 'n_enviados'
-
+        
+        l = n_enviados[0]  ## pega até o limite de 1000 planos 
+            
+        qtd_total = 0    
+        for grupo in n_enviados:
+            qtd_total += len(grupo)
+        
         #subquery para pegar situações dos planos de trabalho (pactos)
         catdom_1 = db.session.query(catdom.catalogoDominioId,
                                     catdom.descricao)\
@@ -683,64 +699,51 @@ def lista_a_enviar():
 
         #subquery que conta atividades com nota em cada plano de trabalho (pacto)
         ativs_com_nota = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
-                                          label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
-                                   .filter(Pactos_de_Trabalho_Atividades.nota != None)\
-                                   .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-                                   .subquery()  
+                                        label('qtd_com_nota',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId)))\
+                                .filter(Pactos_de_Trabalho_Atividades.nota != None)\
+                                .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                                .subquery()  
 
         #query que resgata erros em tentativas de envios de planos   
         log_erro_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                   .filter(Log_Auto.msg.like('* Retorno API sobre falha no envio do Plano:'+'%') )\
-                                   .order_by(Log_Auto.id.desc())\
-                                   .all() 
+                                .filter(Log_Auto.msg.like('* Retorno API sobre falha no envio do Plano:'+'%') )\
+                                .order_by(Log_Auto.id.desc())\
+                                .all() 
         l_log_erro_envio = [[p.msg[45:81],p.msg] for p in log_erro_envio]                                                  
 
-        # todos os planos executados em com pelo menos uma atividade avaliada
-        # planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-        #                                     catdom_1.c.descricao,
-        #                                     Pactos_de_Trabalho.situacaoId,
-        #                                     ativs.c.qtd_ativs,
-        #                                     ativs_com_nota.c.qtd_com_nota)\
-        #                              .filter(catdom_1.c.descricao == 'Executado',
-        #                                      ativs.c.qtd_ativs != None,
-        #                                      ativs_com_nota.c.qtd_com_nota != None,
-        #                                      ativs_com_nota.c.qtd_com_nota > 0)\
-        #                              .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-        #                              .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-        #                              .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-        #                              .all()                             
+        # todos os planos executados em com pelo menos uma atividade avaliada                           
 
         planos_nao_env = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-                                  Pactos_de_Trabalho.planoTrabalhoId,
-                                  Pactos_de_Trabalho.dataInicio,
-                                  Pactos_de_Trabalho.dataFim,
-                                  Pactos_de_Trabalho.percentualExecucao,
-                                  Pactos_de_Trabalho.relacaoPrevistoRealizado,
-                                  Pessoas.pesNome,
-                                  Unidades.unidadeId,
-                                  Unidades.undSigla,
-                                  catdom_1.c.descricao,
-                                  label('forma',catdom.descricao),
-                                  Pactos_de_Trabalho.situacaoId,
-                                  ativs.c.qtd_ativs,
-                                  ativs_com_nota.c.qtd_com_nota,
-                                  literal(False).label('situ_envio_previo'))\
-                            .filter(Pactos_de_Trabalho.pactoTrabalhoId.in_(n_enviados))\
+                                         Pactos_de_Trabalho.planoTrabalhoId,
+                                         Pactos_de_Trabalho.dataInicio,
+                                         Pactos_de_Trabalho.dataFim,
+                                         Pactos_de_Trabalho.percentualExecucao,
+                                         Pactos_de_Trabalho.relacaoPrevistoRealizado,
+                                         Pessoas.pesNome,
+                                         Unidades.unidadeId,
+                                         Unidades.undSigla,
+                                         catdom_1.c.descricao,
+                                         label('forma',catdom.descricao),
+                                         Pactos_de_Trabalho.situacaoId,
+                                         ativs.c.qtd_ativs,
+                                         ativs_com_nota.c.qtd_com_nota,
+                                         literal(False).label('situ_envio_previo'))\
+                            .filter(Pactos_de_Trabalho.pactoTrabalhoId.in_(l))\
                             .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                             .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                             .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                             .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                            .order_by(Unidades.unidadeId,Pessoas.pesNome,Pactos_de_Trabalho.dataInicio.desc())\
                             .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                             .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                            .paginate(page=page,per_page=100)
-        
+                            .order_by(Pactos_de_Trabalho.dataFim.desc(),Unidades.undSigla,Pessoas.pesNome)\
+                            .paginate(page=page,per_page=100) 
+
         planos = planos_nao_env
-        
-        planos_count = planos.total    
+        planos_count = planos.total      
 
         return render_template('planos.html', demandas = planos, 
                                               demandas_count = planos_count,
+                                              qtd_total = qtd_total,
                                               lista = lista,
                                               fonte = fonte,
                                               l_log_erro_envio = l_log_erro_envio)
@@ -775,6 +778,12 @@ def lista_enviados():
     if enviados != 'erro_credenciais':
 
         lista = 'enviados'
+        
+        l = enviados[0]  ## pega até o limite de 1000 planos 
+        
+        qtd_total = 0    
+        for grupo in enviados:
+            qtd_total += len(grupo)
 
         #subquery para pegar situações dos planos de trabalho (pactos)
         catdom_1 = db.session.query(catdom.catalogoDominioId,
@@ -795,20 +804,6 @@ def lista_enviados():
                                 .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
                                 .subquery()  
 
-        # # todos os planos executados e com todas as atividades avaliadas
-        # planos_avaliados = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
-        #                             catdom_1.c.descricao,
-        #                             Pactos_de_Trabalho.situacaoId,
-        #                             ativs.c.qtd_ativs,
-        #                             ativs_com_nota.c.qtd_com_nota)\
-        #                         .filter(catdom_1.c.descricao == 'Executado',
-        #                                 ativs.c.qtd_ativs != None,
-        #                                 ativs_com_nota.c.qtd_com_nota != None,
-        #                                 ativs_com_nota.c.qtd_com_nota > 0)\
-        #                         .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-        #                         .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-        #                         .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-        #                         .all()
     
         planos = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                         Pactos_de_Trabalho.planoTrabalhoId,
@@ -824,20 +819,21 @@ def lista_enviados():
                                         Pactos_de_Trabalho.situacaoId,
                                         ativs.c.qtd_ativs,
                                         ativs_com_nota.c.qtd_com_nota)\
-                                .filter(Pactos_de_Trabalho.pactoTrabalhoId.in_(enviados))\
+                                .filter(Pactos_de_Trabalho.pactoTrabalhoId.in_(l))\
                                 .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                 .join(catdom_1, catdom_1.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                                 .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                .order_by(Unidades.unidadeId,Pessoas.pesNome,Pactos_de_Trabalho.dataInicio.desc())\
                                 .outerjoin(ativs_com_nota, ativs_com_nota.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
                                 .outerjoin(ativs, ativs.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                                .order_by(Pactos_de_Trabalho.dataFim.desc(),Unidades.undSigla,Pessoas.pesNome)\
                                 .paginate(page=page,per_page=100) 
        
         planos_count = planos.total 
-
+        
         return render_template('planos.html', demandas = planos, 
                                               demandas_count = planos_count,
+                                              qtd_total = qtd_total,
                                               lista = lista,
                                               fonte = fonte)
 
@@ -997,7 +993,7 @@ def enviar_um_plano(plano_id,lista):
             registra_log_auto(current_user.id, '* Erro na tentativa de reenvio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
             flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro') 
         elif lista == 'n_enviados':
-            registra_log_auto(current_user.id, '* Erro na tentativa de envio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
+            registra_log_auto(current_user.id, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
             flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro')   
 
     # print(json.dumps(dic_envio, skipkeys=True, allow_nan=True, indent=4))          

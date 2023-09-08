@@ -30,7 +30,12 @@
               conforme LOG deste sistema
             {% endif %}
                 <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6> </b></h5>
-          <p><span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviados.</p>
+          <p>
+            <span class="badge text-bg-success">{{demandas_count}}</span> plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviado(s).
+            {% if demandas_count < qtd_total %}
+              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span>.
+            {% endif %}
+          </p>
         {% else %}
           <h5 class="header-list"><b>Lista de Planos de Trabalho ENVIADOS,
             {% if fonte == 'API' %}
@@ -39,7 +44,12 @@
               conforme LOG deste sistema
             {% endif %}
                 <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
-          <p><span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.</p>
+          <p>
+            <span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.
+            {% if demandas_count < qtd_total %}
+              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span>.
+            {% endif %}
+          </p>
         {% endif %}  
       <div class="d-flex justify-content-around">
       </div>

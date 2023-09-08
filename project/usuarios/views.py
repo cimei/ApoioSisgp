@@ -74,7 +74,9 @@ def registra_log_auto(user_id,msg):
 
     db.session.add(reg_log)
 
+ 
     db.session.commit()
+  
 
     return
 
