@@ -17,7 +17,7 @@
 
 # views.py na pasta pessoas
 
-from flask import render_template,url_for,flash, redirect,request,Blueprint
+from flask import render_template,url_for,flash, redirect,request,Blueprint,abort
 from flask_login import current_user, login_required
 
 from sqlalchemy import cast, String
@@ -50,6 +50,9 @@ def lista_pessoas():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+
+    if not current_user.userAtivo:
+        abort(401)
 
     page = request.args.get('page', 1, type=int)    
 
@@ -101,6 +104,9 @@ def lista_pessoas_filtro():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    
+    if not current_user.userAtivo:
+        abort(401)
 
     page = request.args.get('page', 1, type=int)
 
@@ -402,6 +408,9 @@ def lista_gestores_sisgp():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    
+    if not current_user.userAtivo:
+        abort(401)
 
     page = request.args.get('page', 1, type=int)
 
@@ -453,6 +462,9 @@ def pessoa_update(cod_pes):
     |Recebe o código da pessoa como parâmetro.                                                     |
     +----------------------------------------------------------------------------------------------+
     """
+    
+    if not current_user.userAtivo:
+        abort(401)
 
     tp = 'atu'
 
@@ -589,6 +601,9 @@ def cria_pessoa():
     |                                                                                              |
     +----------------------------------------------------------------------------------------------+
     """
+    
+    if not current_user.userAtivo:
+        abort(401)
 
     tp = 'ins'
 
@@ -686,6 +701,9 @@ def lista_pessoas_unid(unid):
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    
+    if not current_user.userAtivo:
+        abort(401)
 
     page = request.args.get('page', 1, type=int)
 

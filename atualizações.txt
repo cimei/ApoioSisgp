@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+10/09/2023
+Ajustes no agendamento de envios e mensagens de erro. Bloqueio de acesso a Pessoas por usuário não ativo.
+v3.2.1
+
 05/09/2023
 Restilização do aplicativo pelo Geisimar.
 v3.2.0

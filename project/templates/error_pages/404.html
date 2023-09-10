@@ -1,11 +1,30 @@
 {% extends "template_gov.html" %}
 {% block content %}
 
-<div class="jumbotron">
+<div class="template-erro">
+  <div class="row my-5">
+      <div class="col imagem-erro">
+          <img
+              src="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/images/logo-positive.png"
+              alt="imagem de erro"
+          />
+      </div>
+      <div class="col erro-text">
+          <div class="text-support-03">
+              <p class="text-up-06 text-semi-bold my-3">
+                  Estamos constrangidos em te ver por aqui
+              </p>
+          </div>
+          <div class="text-secondary-06">
+              <p class="text-up-03 text-medium my-3">
+                ERRO 404 - NÃO ENCONTREI!
+              </p>
+          </div>
+          <p class="my-3">
+            A página, ou o registro, que você pediu não foi encontrado.
+          </p>
+      </div>
+  </div>
 
-  <h1>ERRO 404</h1>
-  <h2>PÁGINA (ou registro) NÃO ENCONTRADA!</h2>
-
-</div>
 
 {% endblock %}

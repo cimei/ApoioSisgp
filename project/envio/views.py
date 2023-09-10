@@ -30,11 +30,11 @@
 
 # views.py na pasta envio
 
-from flask import render_template,url_for,flash, redirect, request, Blueprint
+from flask import render_template,url_for,flash, redirect, request, Blueprint, abort
 from flask_login import current_user, login_required
 
 from sqlalchemy.sql import label
-from sqlalchemy import func, literal, distinct
+from sqlalchemy import func, literal
 
 from project import db, sched
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
@@ -47,7 +47,7 @@ from project.envio.forms import AgendamentoForm
 
 import requests
 import json
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 import os
 import re
 
@@ -55,6 +55,25 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 
 
 # funções
+
+
+# pega token de acesso à API de envio de dados
+def pega_token():        
+
+    string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+
+    headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
+
+    api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+
+    response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+
+    rlogin_json = response.json()
+
+    token = rlogin_json['access_token']
+    tipo =  rlogin_json['token_type']  
+    
+    return(token)
 
 
 # função que gera lista de planos que já foram enviados previamente, consultando a API
@@ -100,18 +119,20 @@ def planos_enviados_API():
 
         # pega token de acesso à API de envio de dados
 
-        string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+        # string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
 
-        headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
+        # headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
 
-        api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+        # api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-        response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+        # response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
-        rlogin_json = response.json()
+        # rlogin_json = response.json()
 
-        token = rlogin_json['access_token']
-        tipo =  rlogin_json['token_type']       
+        # token = rlogin_json['access_token']
+        # tipo =  rlogin_json['token_type']  
+        
+        token = pega_token()     
 
         head = {'Authorization': 'Bearer {}'.format(token)}
 
@@ -237,20 +258,22 @@ def planos_n_enviados_API():
         
         # pega token de acesso à API de envio de dados
 
-        string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+        # string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
 
-        headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
+        # headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
 
-        api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+        # api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-        response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+        # response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
-        rlogin_json = response.json()
+        # rlogin_json = response.json()
 
-        # print('** Retorno do pedido de token: ',rlogin_json)
+        # # print('** Retorno do pedido de token: ',rlogin_json)
 
-        token = rlogin_json['access_token']
-        tipo =  rlogin_json['token_type']       
+        # token = rlogin_json['access_token']
+        # tipo =  rlogin_json['token_type']    
+        
+        token = pega_token()   
 
         head = {'Authorization': 'Bearer {}'.format(token)}
 
@@ -361,18 +384,22 @@ def envia_planos_novamente():
     
         # pega token de acesso à API de envio de dados
 
-        string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+        # string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
 
-        headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
+        # headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
 
-        api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+        # api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-        response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+        # response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
-        rlogin_json = response.json()
+        # rlogin_json = response.json()
 
-        token = rlogin_json['access_token']
-        tipo =  rlogin_json['token_type']       
+        # token = rlogin_json['access_token']
+        # tipo =  rlogin_json['token_type']  
+        
+        token = pega_token()   
+        # 55 minutos para pegar novo token
+        hora_token = datetime.now() + timedelta(seconds=(60*55))  
 
         # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
         sucesso = 0
@@ -383,11 +410,21 @@ def envia_planos_novamente():
 
         for l in enviados:
             # l = enviados
+            
             planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
             qtd_planos += len(planos)
 
             # para cada plano, monta o dados do dicionário 
             for p in planos:
+                
+                # parar o envio caso extrapole o horário limite
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                    break
+                
+                # se estorar 55 minutos, pega novo token
+                if datetime.now() > hora_token:
+                    token = pega_token()
+                    hora_token = datetime.now() + timedelta(seconds=(60*55))
 
                 dic_envio = {}
 
@@ -465,7 +502,14 @@ def envia_planos_novamente():
                         retorno_API_msg = 'Sem retorno da API.'
                         print ('*** Erro reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
                         print ('*** Texto API: ',str(r_put.text))
-                        registra_log_auto(id_user, '* Erro na tentativa de reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        if str(r_put.text) == '{"detail":"Unauthorized"}':
+                            abort(401)
+        
+            # parar o envio caso extrapole o horário limite
+            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                break
         
         # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
@@ -517,38 +561,39 @@ def envia_planos():
 
     registra_log_auto(id_user, '* Início do envio de Planos para API.')       
     
-    if n_enviados != 'erro_credenciais':
-    
-        # pega token de acesso à API de envio de dados
-
-        string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
-
-        headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
-
-        api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
-
-        response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
-
-        rlogin_json = response.json()
-
-        token = rlogin_json['access_token']
-        tipo =  rlogin_json['token_type']       
+    if n_enviados != 'erro_credenciais':   
+        
+        token = pega_token() 
+        print('** Peguei o primeiro token para enviar planos **') 
+        # 55 minutos para pegar novo token
+        hora_token = datetime.now() + timedelta(seconds=(60*55))  
 
         # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
         sucesso = 0
         qtd_planos = 0
 
         # pega todos os planos que deverão ser enviados via query da aplicação API/CADE
-        # l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()
+        # l = n_enviados.replace('[','').replace(']','').replace("'","").replace(',','').split()  
         
         for l in n_enviados:
-            # l = n_enviados
+            # l = n_enviados[0]  ## retirar o for acima caso se queira enviar somente a primeira lista (<= 1000 planos)   
         
             planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
             qtd_planos += len(planos)
 
             # para cada plano, monta o dados do dicionário 
             for p in planos:
+                
+                # parar o envio caso extrapole o horário limite
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                    break
+                
+                # se estorar 55 minutos, pega novo token
+                if datetime.now() > hora_token:
+                    token = pega_token()   
+                    print('** Peguei novo token **') 
+                    hora_token = datetime.now() + timedelta(seconds=(60*55)) 
+                    print ('** Hora para pegar próximo token: ',hora_token)
 
                 dic_envio = {}
 
@@ -625,9 +670,16 @@ def envia_planos():
                     else:
                         retorno_API_msg = 'Sem retorno da API.'
                         print ('*** Erro envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
-                        print ('*** Texto API: ',str(r_put.text))
-                        registra_log_auto(id_user, '* Erro na tentativa de envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        print ('*** Texto API: ',str(r_put.text),type(r_put.text))
+                        registra_log_auto(id_user, '* Retorno API sobre falha no envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        if str(r_put.text) == '{"detail":"Unauthorized"}':
+                            abort(401)
 
+            # parar o envio caso extrapole o horário limite
+            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                break
+            
         # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
         if modo == 'agenda':
@@ -889,18 +941,20 @@ def enviar_um_plano(plano_id,lista):
 
     # pega token de acesso à API de envio de dados
 
-    string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+    # string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
 
-    headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
+    # headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
 
-    api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+    # api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
-    response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
+    # response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
-    rlogin_json = response.json()
+    # rlogin_json = response.json()
 
-    token = rlogin_json['access_token']
-    tipo =  rlogin_json['token_type']       
+    # token = rlogin_json['access_token']
+    # tipo =  rlogin_json['token_type']       
+    
+    token = pega_token()
 
     # indicador de plano enviado com sucesso 
     sucesso = False
@@ -1065,7 +1119,7 @@ def agenda_envio():
             if periodicidade == 'Diária':
                 msg = ('*** O '+id_1+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
-                dia_semana = 'mon-fri'
+                dia_semana = '*'
                 try:
                     sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                 except:
@@ -1106,7 +1160,7 @@ def agenda_envio():
             if periodicidade == 'Diária':
                 msg = ('*** O '+id_1+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                 print(msg)
-                dia_semana = 'mon-fri'
+                dia_semana = '*'
                 try:
                     sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     sched.start()
@@ -1165,7 +1219,7 @@ def agenda_envio():
                 if periodicidade == 'Diária':
                     msg = ('*** O '+id_2+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
-                    dia_semana = 'mon-fri'
+                    dia_semana = '*'
                     try:
                         sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                     except:   
@@ -1196,7 +1250,7 @@ def agenda_envio():
                 if periodicidade == 'Diária':
                     msg = ('*** O '+id_2+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                     print(msg)
-                    dia_semana = 'mon-fri'
+                    dia_semana = '*'
                     try:
                         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                     except:
