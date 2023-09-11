@@ -418,7 +418,8 @@ def envia_planos_novamente():
             for p in planos:
                 
                 # parar o envio caso extrapole o horário limite
-                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                   datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
                     break
                 
                 # se estorar 55 minutos, pega novo token
@@ -507,8 +508,10 @@ def envia_planos_novamente():
                             abort(401)
         
             # parar o envio caso extrapole o horário limite
-            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+               datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
                 print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
                 break
         
         # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
@@ -585,7 +588,8 @@ def envia_planos():
             for p in planos:
                 
                 # parar o envio caso extrapole o horário limite
-                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                   datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
                     break
                 
                 # se estorar 55 minutos, pega novo token
@@ -676,8 +680,10 @@ def envia_planos():
                             abort(401)
 
             # parar o envio caso extrapole o horário limite
-            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time():
+            if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+               datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
                 print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
                 break
             
         # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
