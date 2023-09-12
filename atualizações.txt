@@ -1,7 +1,7 @@
 ## Atualizações ##
 
 10/09/2023
-Ajustes no agendamento de envios e mensagens de erro. Bloqueio de acesso a Pessoas por usuário não ativo.
+Ajustes no agendamento de envios, listas de envios e mensagens de erro. Bloqueio de acesso a Pessoas por usuário não ativo.
 v3.2.1
 
 05/09/2023

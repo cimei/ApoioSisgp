@@ -6,9 +6,6 @@
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('envio.envio_i')}}">Envio</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> --> 
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>{% if lista == 'n_enviados' %}
                                                                                                   Planos ainda não enviados
                                                                                                 {% else %}
@@ -45,7 +42,7 @@
             {% endif %}
                 <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
           <p>
-            <span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) que já foram enviados.
+            <span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) nesta lista.
             {% if demandas_count < qtd_total %}
               Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span>.
             {% endif %}
@@ -74,10 +71,6 @@
             <th scope="col" data-sortable="true"><p align = "center">Início</p></th>
             <th scope="col" data-sortable="true"><p align = "center">Fim</p></th>
             <th scope="col" data-field="Forma" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Forma</p></th>
-            <th scope="col"><p align = "center">Situação</p></th>
-            <th scope="col"><p align = "center"><abbr title="Percentual de execução">% exec.</abbr></p></th>
-            <th scope="col"><p align = "center"><abbr title="Relação Previsto/Realizado">p/r</abbr></p></th>
-            <th scope="col"><p align = "center"><abbr title="Percentagem da avaliação.">% Avaliado</abbr></p></th>
             <th scope="col"><p align = "center"><abbr title="Enviar plano específico.">Ação</abbr></p></th>
           </tr>
         </thead>
@@ -86,32 +79,30 @@
           {% for demanda in demandas.items %}
             <tr>
               <th scope="row"><p align = "center"> {{(demandas.page - 1) * demandas.per_page + demandas.items.index(demanda) + 1}} </p></th>
-              <td><p align = "center"> {{demanda.undSigla}} </p></td>
+              <td><p align = "center"> {{demanda.sigla_unidade_exercicio}} </p></td>
               <td><p align = "center">
                 {% set erro = namespace(msg = None) %}
                 {% for item in l_log_erro_envio %}
-                  {% if demanda.pactoTrabalhoId in item[0] %}
+                  {% if demanda.id_pacto in item[0] %}
                     {% set erro.msg = item[1] %}
                   {% endif %}  
                 {% endfor %}
                 {% if erro.msg != None %}
-                  <abbr title="{{erro.msg}}"><span class="text-danger">{{demanda.pesNome}}</span></abbr>
+                  <abbr title="{{erro.msg}}"><span class="text-danger">{{demanda.nome_participante}}</span></abbr>
                 {% else %}
-                  {{demanda.pesNome}}
+                  {{demanda.nome_participante}}
                 {% endif %}
               </p></td>
-              <td><p align = "center"> {{demanda.dataInicio.strftime('%d/%m/%Y')}} </p></td>
-              <td><p align = "center"> {{demanda.dataFim.strftime('%d/%m/%Y')}} </p></td> 
-              <td><p align = "center"> {{demanda.forma}} </p></td>
-              <td><p align = "center"> {{demanda.descricao}} </p></td>
-              <td><p align = "center"> {% if demanda.percentualExecucao == None %}N.C.{% else %} {{demanda.percentualExecucao|string()|replace(".",",")}} {% endif %} </p></td> 
-              <td><p align = "center"> {% if demanda.relacaoPrevistoRealizado == None %}N.C.{% else %} {{demanda.relacaoPrevistoRealizado|string()|replace(".",",")}} {% endif %} </p></td> 
-              {% if demanda.qtd_ativs > 0 %}
-                <td><p align = "center"> {{(100 * demanda.qtd_com_nota / demanda.qtd_ativs)|round(1)}} </p></td>
-              {% else %} 
-                <td><p align = "center"> 0 </p></td> 
-              {% endif %} 
-              <td><p align = "center"> <a class="" href="{{url_for('envio.enviar_um_plano',plano_id=demanda.pactoTrabalhoId,lista=lista)}}">
+              <td><p align = "center"> {{demanda.data_inicio.strftime('%d/%m/%Y')}} </p></td>
+              <td><p align = "center"> {{demanda.data_fim.strftime('%d/%m/%Y')}} </p></td> 
+              <td><p align = "center">
+                {% for forma in formas %}
+                  {% if demanda.modalidade_execucao + 100 == forma.catalogoDominioId %} 
+                    {{ forma.descricao }}
+                  {% endif %}  
+                {% endfor %}
+              </p></td>
+              <td><p align = "center"> <a class="" href="{{url_for('envio.enviar_um_plano',plano_id=demanda.id_pacto,lista=lista)}}">
                   {% if lista == 'n_enviados' %} Enviar {% else %} Reenviar {% endif %}</a> </p></td>
               </tr>
           {% endfor %}
