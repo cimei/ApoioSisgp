@@ -158,7 +158,7 @@ def planos_enviados_LOG():
     else:
         listas.append(enviados)    
     
-    print ('*** A lista de enviados tem: ',len(enviados),' items. Será quebrada em : ',len(listas),' sub-listas.')      
+    # print ('*** A lista de enviados tem: ',len(enviados),' items. Será quebrada em : ',len(listas),' sub-listas.')      
 
     return listas        
    
@@ -264,7 +264,7 @@ def planos_n_enviados_LOG():
     else:
         listas.append(n_enviados)    
     
-    print ('*** A lista de não enviados tem: ',len(n_enviados),' items. Será quebrada em : ',len(listas),' sub-listas.')      
+    # print ('*** A lista de não enviados tem: ',len(n_enviados),' items. Será quebrada em : ',len(listas),' sub-listas.')      
     
     
     return listas        
