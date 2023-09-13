@@ -43,7 +43,7 @@ from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
 
 from project.usuarios.views import registra_log_auto                           
 
-from project.envio.forms import AgendamentoForm
+from project.envio.forms import AgendamentoForm, PesquisaPlanoForm
 
 import requests
 import json
@@ -744,6 +744,105 @@ def lista_enviados():
         flash ('Credenciais de envio não informadas no deploy do aplicativo!','erro') 
 
         return render_template('index.html')                                          
+
+
+## pesquisa planos 
+
+@envio.route('/pesquisa_planos', methods = ['GET', 'POST'])
+@login_required
+
+def pesquisa_planos():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Pesquisa planos a partir de critérios informados.                                      |
+    |                                                                                       |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    form = PesquisaPlanoForm()
+    
+    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
+    lista_unids = [(u.undSigla,u.undSigla) for u in unids]
+    lista_unids.insert(0,('','Todas')) 
+    
+    form.unidade.choices = lista_unids
+    
+    if form.validate_on_submit():
+        
+        formas = db.session.query(catdom.catalogoDominioId,
+                                  catdom.descricao)\
+                            .filter(catdom.classificacao == 'ModalidadeExecucao')\
+                            .all()
+                            
+        #query que resgata erros em tentativas de envios de planos   
+        log_erro_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                .filter(Log_Auto.msg.like('* Retorno API sobre falha'+'%') )\
+                                .order_by(Log_Auto.id.desc())\
+                                .all() 
+        l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]                    
+                            
+        enviados = planos_enviados_LOG()                    
+        
+        for l in enviados:
+        
+            planos_avaliados = db.session.query(VW_Pactos.id_pacto,
+                                                VW_Pactos.situacao,
+                                                VW_Pactos.data_inicio,
+                                                VW_Pactos.data_fim,
+                                                VW_Pactos.nome_participante,
+                                                VW_Pactos.sigla_unidade_exercicio,
+                                                VW_Pactos.modalidade_execucao,
+                                                literal('enviado').label('sit_envio'))\
+                                .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
+                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                        VW_Pactos.horas_homologadas > 0,
+                                        VW_Pactos.nome_participante.like('%'+form.pessoa.data+'%'),
+                                        VW_Pactos.sigla_unidade_exercicio.like('%'+form.unidade.data+'%'),
+                                        VW_Pactos.id_pacto.in_(l))\
+                                .all()
+                                
+            if enviados.index(l) == 0:
+                demandas = planos_avaliados
+                demandas_count = len(planos_avaliados)
+            else:    
+                demandas += planos_avaliados 
+                demandas_count += len(planos_avaliados)                    
+        
+        
+        n_enviados = planos_n_enviados_LOG()                    
+        
+        for l in n_enviados:
+        
+            planos_avaliados = db.session.query(VW_Pactos.id_pacto,
+                                                VW_Pactos.situacao,
+                                                VW_Pactos.data_inicio,
+                                                VW_Pactos.data_fim,
+                                                VW_Pactos.nome_participante,
+                                                VW_Pactos.sigla_unidade_exercicio,
+                                                VW_Pactos.modalidade_execucao,
+                                                literal('n_enviado').label('sit_envio'))\
+                                .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
+                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                        VW_Pactos.horas_homologadas > 0,
+                                        VW_Pactos.nome_participante.like('%'+form.pessoa.data+'%'),
+                                        VW_Pactos.sigla_unidade_exercicio.like('%'+form.unidade.data+'%'),
+                                        VW_Pactos.id_pacto.in_(l))\
+                                .all()
+                                
+            if n_enviados.index(l) == 0 and demandas == None:
+                demandas = planos_avaliados
+                demandas_count = len(planos_avaliados)
+            else:    
+                demandas += planos_avaliados 
+                demandas_count += len(planos_avaliados)    
+                                     
+        
+        return render_template('planos_pesq.html', demandas = demandas, 
+                                                   demandas_count = demandas_count,
+                                                   formas = formas,
+                                                   l_log_erro_envio = l_log_erro_envio)                            
+
+    return render_template('pesquisa.html', form = form)
 
 
 ## enviar planos (DESATIVADO)

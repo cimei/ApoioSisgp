@@ -9,7 +9,7 @@
 """
 
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, SelectField, IntegerField
+from wtforms import SubmitField, SelectField, IntegerField, StringField
 from wtforms.fields.html5 import DateField
 
 class PeriodoForm(FlaskForm):
@@ -27,3 +27,10 @@ class AgendamentoForm(FlaskForm):
    minuto        = IntegerField('Minuto',default=0)    
 
    submit        = SubmitField('Agendar')
+   
+class PesquisaPlanoForm(FlaskForm):
+
+   pessoa  = StringField('Pessoa:')
+   unidade = SelectField('Unidade:')
+   
+   submit              = SubmitField('Pesquisar')   

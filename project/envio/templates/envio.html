@@ -60,6 +60,16 @@
         %}
           {% include "card_menu.html" %}
         {% endwith %}
+
+        {% with 
+          icon="fa-magnifying-glass", 
+          title="Pesquisa Planos",
+          description="Permite procurar planos aptos ao envio (enviados e não enviados), 
+          conforme critérios de pesquisa.",
+          link=url_for("envio.pesquisa_planos")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
         
       </div>
     </div>
