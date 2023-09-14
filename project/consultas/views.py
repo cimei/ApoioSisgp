@@ -395,11 +395,9 @@ def relatorioPG():
                        .join(catdom_2, Pactos_de_Trabalho.formaExecucaoId == catdom_2.catalogoDominioId)\
                        .subquery()
 
-    pt = db.session.query(Unidades.unidadeId,
-                          Unidades.unidadeIdPai,
-                          Unidades.undSigla,
+    pt = db.session.query(VW_Unidades.unidadeId,
                           VW_Unidades.undSiglaCompleta,
-                          Unidades.undDescricao,
+                          VW_Unidades.undDescricao,
                           dados_pt.c.totalServidoresSetor,
                           dados_pt.c.dataInicio,
                           dados_pt.c.dataFim,
@@ -409,21 +407,15 @@ def relatorioPG():
                           pactos.c.pactoFim,
                           pactos.c.pactoDesc,
                           pactos.c.formaExec)\
-                   .join(dados_pt, dados_pt.c.unidadeId == Unidades.unidadeId)\
-                   .join(VW_Unidades, VW_Unidades.unidadeId == Unidades.unidadeId)\
+                   .join(dados_pt, dados_pt.c.unidadeId == VW_Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.planoTrabalhoId == dados_pt.c.planoTrabalhoId)\
-                   .order_by(Unidades.unidadeId)\
+                   .filter(VW_Unidades.situacaoUnidadeId == 1)\
+                   .order_by(VW_Unidades.unidadeId)\
                    .all()
-
-    # montando estrutura hierárquica de cada unidade com pg e gravando tudo num xlsx
 
     # Criando o workbook e adicionando a worksheet.
 
     pasta_rel = os.path.normpath('/app/project/static/Rel_PG.xlsx')
-    # pasta_rel = os.path.normpath('c:/temp/Rel_PG.xlsx')
-
-    # if not os.path.exists(os.path.normpath('/uploads/')):
-    #     os.makedirs(os.path.normpath('/uploads/'))
 
     workbook = xlsxwriter.Workbook(pasta_rel)
     worksheet = workbook.add_worksheet('Lista')

@@ -173,6 +173,7 @@ class VW_Unidades(db.Model):
 
     unidadeId           = db.Column(db.BigInteger, primary_key = True)
     undSigla            = db.Column(db.String)
+    undDescricao        = db.Column(db.String)
     unidadeIdPai        = db.Column(db.String)
     tipoUnidadeId       = db.Column(db.BigInteger)
     situacaoUnidadeId   = db.Column(db.BigInteger)
