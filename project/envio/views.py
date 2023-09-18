@@ -761,7 +761,7 @@ def pesquisa_planos():
 
     form = PesquisaPlanoForm()
     
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
+    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).filter(Unidades.situacaoUnidadeId==1).all()
     lista_unids = [(u.undSigla,u.undSigla) for u in unids]
     lista_unids.insert(0,('','Todas')) 
     

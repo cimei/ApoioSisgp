@@ -404,7 +404,7 @@ def associa_atividade_unidade(cod_ativ):
 
     # opções do form.unid
     unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
-                      .order_by(Unidades.undSigla).all()
+                      .order_by(Unidades.undSigla).filter(Unidades.situacaoUnidadeId==1).all()
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))
 

@@ -128,9 +128,13 @@ def lista_unidades_filtro(lista):
 
     form = PesquisaUnidForm()
 
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
-    lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
-    lista_unids.insert(0,(0,'Todas'))                
+    unids_pai = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
+    lista_unids_pai = [(u.unidadeId,u.undSigla) for u in unids_pai]
+    lista_unids_pai.insert(0,(0,'Todas'))   
+    
+    unids = db.session.query(Unidades.undSigla).order_by(Unidades.undSigla).all()
+    lista_unids = [(u.undSigla,u.undSigla) for u in unids]
+    lista_unids.insert(0,('','Todas'))             
 
     dic_situ_unidade = {1:'Ativa',2:'Inativa'}
     lista_situ = [(s,dic_situ_unidade[s]) for s in dic_situ_unidade]
@@ -141,12 +145,12 @@ def lista_unidades_filtro(lista):
     lista_tipo.insert(0,(0,'Todos'))
 
     form.sigla.choices = lista_unids
-    form.pai.choices   = lista_unids
+    form.pai.choices   = lista_unids_pai
     form.tipo.choices  = lista_tipo
 
     if form.validate_on_submit():
 
-        if int(form.sigla.data) == 0:
+        if form.sigla.data == '':
             p_sigla_pattern = '%'
         else:
             p_sigla_pattern = form.sigla.data
@@ -162,7 +166,7 @@ def lista_unidades_filtro(lista):
             p_tipo_pattern = form.tipo.data    
 
         # pega valores utilizados como filtro para exibição na tela da lista
-        p_sigla = dict(form.sigla.choices).get(int(form.sigla.data))
+        p_sigla = dict(form.sigla.choices).get(form.sigla.data)
         p_pai   = dict(form.pai.choices).get(int(form.pai.data))
         p_tipo  = dict(form.tipo.choices).get(int(form.tipo.data))
     
@@ -191,7 +195,7 @@ def lista_unidades_filtro(lista):
                               .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
                               .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                              .filter(Unidades.unidadeId.like(p_sigla_pattern),
+                              .filter(Unidades.undSigla.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),
                                       Unidades.tipoUnidadeId.like(p_tipo_pattern),
                                       Unidades.ufId.like('%'+form.uf.data+'%'))\
@@ -215,7 +219,7 @@ def lista_unidades_filtro(lista):
                               .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
                               .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                              .filter(Unidades.unidadeId.like(p_sigla_pattern),
+                              .filter(Unidades.undSigla.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),
                                       Unidades.unidadeIdPai.like(p_pai_pattern),
                                       Unidades.tipoUnidadeId.like(p_tipo_pattern),
@@ -346,7 +350,7 @@ def unidade_update(cod_unid):
         qtd_pes = db.session.query(Pessoas)\
                                  .filter(Pessoas.unidadeId == cod_unid)\
                                  .count()
-
+                                 
         # quantidade de pessoas sob as unidades da unidade e sob ela mesma
         qtd_geral = {}
         tree = {}
