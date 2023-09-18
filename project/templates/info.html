@@ -3,30 +3,22 @@
 
 <div class="container">
   <div class="jumbotron">
-    <h3>O Módulo de Envio e Apoio à Gestão do PGD (SISGP-SUSEP)</h3>
+    <h3>O Módulo de Envio e Apoio à Gestão do PGD no âmbito da IN 65 (SISGP-SUSEP)</h3>
     <p></p>
-    <p>Uma iniciativa que visa auxiliar o gerenciameno de dados do Sisgp.</p>
-    <p>A função de envios é uma alternativa ao aplicativo de envios do CADE.</p>
-    <p>Os dados de Unidades correspondem ao que é registrado na tabela de banco de dados "Unidade" do banco de 
-      dados do SISGP. Os campos de Tipo, Situação, Nível e Tipo Função da unidades não tem descrição ou associação direta
-      com outras tabelas do banco de dados, desta forma, na lista de unidades aqui apresentada, associamos o Tipo aos 
-      tipos de unidade mais comuns, a saber: Instituição (1), Diretoria (2), Coordenação-Geral (3), Coordenação (4)
-      e Serviço (5). Para o campo Situação, associamos os valores Ativa (1) e Inativa (2). Nível e Tipo Função deixamos 
-      em branco. Caso se deseje atribuir outras descrições para os valores registrados no banco, será necessário Alterar
-      os scripts (views.py) que geram as listas. Já os valores dos campos Chefe e Substitudo do Chefe puderam ser resgatados
-      da tabela Pessoas.</p>
-    <p>Quanto aos dados de Pessoas, que se encontram registrados na tabela Pessoa do banco de dados, os
-      campos de Unidade, Função, Situação e Vínculo de uma Pessoa encontram contrapartes em outras tabelas do banco, 
-      o que torna possível a consulta às respectivas descrições de cada valor para a visualização na lista, no lugar dos 
-      códigos numéricos. Estes atributos podem ser consultados e alterados no menu Dados Auxiliares.</p>
+    <p>Trata-se de uma iniciativa que visa auxiliar a gestão do SISGP na instituição.</p>
+    <p>O manual do usuário  está disponível aqui: <a class="label label-primary" href=/static/Cartilha_MEAG_PGD1.pdf target="_blank"  style="margin-right: 5px;">Sobre o MEAG</a>.</p>
+    <p>A função de envios é uma alternativa ao aplicativo de envios do CADE. Esta permite agendamento de envios, consulta a planos 
+      aptos ao envio (já enviados ou não) e envio individual de planos.</p>
+    <p>As funções de apoio à gestão permitem consulta, inclusão e alteração de unidades, pessoas e atividades. Fornece também consultas 
+      úteis aos dados do SISGP e a possibilidade de carga em lote de unidades, pessoas e atividades.</p>
+    <p>Quanto às unidades, neste sistema, tipos de unidade estão restritos à Instituição (1), Diretoria (2), Coordenação-Geral (3), Coordenação (4),
+      Serviço (5) e Outros (6). Já os valores de situação, há Ativa (1) e Inativa (2).</p>
+    <p>Quanto aos dados de pessoas, os domínios de valores como Função, Situação e Vínculo podem ser consultados e alterados no menu Dados Auxiliares.</p>
     <p>O menu Consultas apresenta opções de visualização do Catálogo de Domínio e também de informações
       sobre a implementação e pactuação de Programas de Gestão nas Unidades da Instituição.</p>
-    <p>A opção de menu Carga permite a carga em lote de dados de Unidades e Pessoas. Detalhes sobre formato dos arquivos e sequencia de carga 
-      estão em <a class="label label-primary" href=/static/Cartilha_MEAG_PGD1.pdf target="_blank"  style="margin-right: 5px;">Sobre o MEAG</a>.</p>
-     <p>O usuário, após ativado, pode ver o log do sistema, ver a lista dos demais usuários, ativar novos usuários e redefinir o gestor do SISGP.</p>
-    <p><b>Atenção:</b> Quando for registrar um chefe para uma determinada unidade, lembre-se antes de alterar o 
-      status desta pessoa para a correspondente função que ela detém, ou seja, o campo Função da pessoa
-      deve ser alterado primeiro.</p>
+    <p>O usuário, após ativado, no menu de Funções Internas, pode ver o log do sistema, bem como ver e gerenciar a lista dos demais usuários.</p>
+    <p>Uma observação especial quanto ao registro de chefes de unidades: A pessoa que é chefe deve ter um tipo de função com status de chefia, após isto 
+      poderá ser registrada como chefe, ou substituto, em uma unidade.</p>
 
   </div>
 </div>
