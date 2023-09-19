@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+19/09/2023
+Na carga de unidades o campo de chefe e substituto pode vir com CPF.
+v3.2.2
+
 10/09/2023
 Ajustes no agendamento de envios, listas de envios e mensagens de erro. Bloqueio de acesso a Pessoas por usuário não ativo.
 v3.2.1

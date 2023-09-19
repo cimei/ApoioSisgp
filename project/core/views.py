@@ -328,15 +328,23 @@ def CarregaUnidades():
                         else:
                             unid_exist.undCodigoSIORG = linha['undCodigoSIORG']    
 
-                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '':
+                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
                             unid_exist.pessoaIdChefe = None
                         else:
-                            unid_exist.pessoaIdChefe = linha['pessoaIdChefe']
+                            if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
+                                unid_exist.pessoaIdChefe = id_cpf.pessoaId
+                            else:
+                                unid_exist.pessoaIdChefe = int(linha['pessoaIdChefe'])
 
-                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '': 
+                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0: 
                             unid_exist.pessoaIdChefeSubstituto = None
                         else:
-                            unid_exist.pessoaIdChefeSubstituto = linha['pessoaIdChefeSubstituto']
+                            if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
+                                unid_exist.pessoaIdChefeSubstituto = id_cpf.pessoaId
+                            else:
+                                unid_exist.pessoaIdChefeSubstituto = int(linha['pessoaIdChefeSubstituto'])
 
                         db.session.commit()
             
@@ -368,12 +376,20 @@ def CarregaUnidades():
                         if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
                             chefe = None
                         else:
-                            chefe = linha['pessoaIdChefe']
+                             if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
+                                chefe = id_cpf.pessoaId
+                             else:
+                                chefe = int(linha['pessoaIdChefe'])
 
                         if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
                             subs = None
                         else:
-                            subs = linha['pessoaIdChefeSubstituto']    
+                            if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
+                                subs = id_cpf.pessoaId
+                            else:
+                                subs = int(linha['pessoaIdChefeSubstituto'])    
 
                         unidade_gravar = Unidades(undSigla                = linha['undSigla'],
                                                   undDescricao            = linha['undDescricao'],
