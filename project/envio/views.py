@@ -604,6 +604,333 @@ def envia_planos():
 
     print('*** Finalizando o envio de planos conforme agendamento ***')
     print('**')
+    
+    
+    
+# função para envio e reenvio de planos para a API
+def envia_API(tipo):  
+    
+    if tipo == 'enviar':
+      
+        n_enviados = planos_n_enviados_LOG()
+
+        print('**')
+        print('*** Iniciando o envio de planos conforme agendamento ***')    
+        
+        # quando o envio for feito pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+        if current_user == None or current_user.get_id() == None:
+            user_agenda = db.session.query(Log_Auto.user_id)\
+                                    .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
+                                    .order_by(Log_Auto.id.desc())\
+                                    .first()
+            id_user = user_agenda.user_id
+            modo = 'agenda'
+        else:
+            id_user = current_user.id 
+            modo = 'manual'
+
+        registra_log_auto(id_user, '* Início do envio de Planos para API.')       
+        
+        if n_enviados != 'erro_credenciais':   
+            
+            token = pega_token() 
+            print('** Peguei o primeiro token para enviar planos **') 
+            # 55 minutos para pegar novo token
+            hora_token = datetime.now() + timedelta(seconds=(60*55))  
+
+            # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
+            sucesso = 0
+            qtd_planos = 0
+            
+            for l in n_enviados:
+            
+                planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
+                qtd_planos += len(planos)
+
+                # para cada plano, monta o dados do dicionário 
+                for p in planos:
+                    
+                    # parar o envio caso extrapole o horário limite
+                    # if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                    # datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                    #     break
+                    
+                    # se estorar 55 minutos, pega novo token
+                    if datetime.now() > hora_token:
+                        token = pega_token()   
+                        print('** Peguei novo token **') 
+                        hora_token = datetime.now() + timedelta(seconds=(60*55)) 
+                        print ('** Hora para pegar próximo token: ',hora_token)
+
+                    dic_envio = {}
+
+                    dic_envio['cod_plano']              = p.id_pacto
+                    dic_envio['situacao']               = p.situacao
+                    dic_envio['matricula_siape']        = int(p.matricula_siape)
+                    dic_envio['cpf']                    = p.cpf
+                    dic_envio['nome_participante']      = p.nome_participante
+                    dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
+                    dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
+                    dic_envio['modalidade_execucao']    = p.modalidade_execucao
+                    dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
+                    dic_envio['data_inicio']            = p.data_inicio.strftime('%Y-%m-%d')
+                    dic_envio['data_fim']               = p.data_fim.strftime('%Y-%m-%d')
+                    dic_envio['carga_horaria_total']    = p.carga_horaria_total
+                    dic_envio['data_interrupcao']       = p.data_interrupcao
+                    dic_envio['entregue_no_prazo']      = p.entregue_no_prazo
+                    dic_envio['horas_homologadas']      = p.horas_homologadas
+                    dic_envio['atividades']             = []
+
+                    # pega as atividades de cada plano
+                    ativs = db.session.query(VW_Atividades_Pactos)\
+                                    .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
+                                    .all()
+
+                    # para cada atividade, monta o resto do dicionário (key 'atividades')
+                    for a in ativs:
+                        
+                        if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                        a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+                        (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                            dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                            'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                            'nome_atividade': a.nome_atividade,
+                                                            'faixa_complexidade': a.faixa_complexidade,
+                                                            'parametros_complexidade': a.parametros_complexidade,
+                                                            'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                            'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                            'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                            'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                            'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                            'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                            'entrega_esperada': a.entrega_esperada,
+                                                            'qtde_entregas': a.qtde_entregas,
+                                                            'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                            'avaliacao': a.avaliacao,
+                                                            'data_avaliacao': a.data_avaliacao,
+                                                            'justificativa': a.justificativa}) 
+
+                    # prepara headers do put
+                    plano_id = p.id_pacto
+                    headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
+                    
+                    # faz o put na API via dumps json do dicionário    
+                    r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
+
+                    # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
+                    if r_put.ok:
+                        sucesso += 1
+                        registra_log_auto(id_user, ' * PACTO ENVIADO: ' + str(plano_id)+' de '+p.nome_participante)
+                    else:
+                        retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
+
+                        if retorno_API:
+                            retorno_API_msg = retorno_API.group()[6:]
+                            print ('*** Erro envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            registra_log_auto(id_user, '* Retorno API sobre falha  no  envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        else:
+                            retorno_API_msg = 'Sem retorno da API.'
+                            print ('*** Erro envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            print ('*** Texto API: ',str(r_put.text),type(r_put.text))
+                            registra_log_auto(id_user, '* Retorno API sobre falha  no  envio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            if str(r_put.text) == '{"detail":"Unauthorized"}':
+                                abort(401)
+
+                # parar o envio caso extrapole o horário limite
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                    print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                    registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
+                    break
+                
+            # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
+
+            if modo == 'agenda':
+                msg = 'Envio programado. ' 
+            else:
+                msg = ''    
+
+            if sucesso == qtd_planos:
+                if sucesso == 0:
+                    registra_log_auto(id_user, '*' + msg + 'Não havia planos para enviar...')
+                else:    
+                    registra_log_auto(id_user, '*' + msg + str(qtd_planos) + ' Plano(s) enviado(s) com sucesso.')
+                if modo == 'manual':
+                    flash(str(qtd_planos) + ' Planos enviados com sucesso','sucesso') # todos os planos enviados com sucesso
+            else:
+                registra_log_auto(id_user, '*' + msg + 'Na tentativa de envio de ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.')
+                if modo == 'manual':
+                    flash('Houve problema no envio dos Planos: Dos ' + str(qtd_planos) + ' Planos, ' + str(sucesso) + ' foram enviados.','erro') # alguma coisa deu errado 
+
+        else:
+            return 'erro_credenciais'
+
+        registra_log_auto(id_user, '* Término do envio de Planos para API.')    
+
+        print('*** Finalizando o envio de planos conforme agendamento ***')
+        print('**')
+    
+    else:
+
+        enviados = planos_enviados_LOG()
+            
+        print('**')
+        print('*** Iniciando o reenvio de planos conforme agendamento ***')    
+
+        # quando o envio for feito pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+        if current_user == None or current_user.get_id() == None:
+            user_agenda = db.session.query(Log_Auto.user_id)\
+                                    .filter(Log_Auto.msg.like('* Agendamento de reenvio:%'))\
+                                    .order_by(Log_Auto.id.desc())\
+                                    .first()
+            id_user = user_agenda.user_id
+            modo = 'agenda'
+        else:
+            id_user = current_user.id 
+            modo = 'manual'
+
+        registra_log_auto(id_user, '* Início do reenvio de Planos para API.') 
+
+        if enviados != 'erro_credenciais':       
+            
+            token = pega_token()   
+            # 55 minutos para pegar novo token
+            hora_token = datetime.now() + timedelta(seconds=(60*55))  
+
+            # indicadores de planos enviados com sucesso e de quantidade total de planos a serem enviados 
+            sucesso = 0
+            qtd_planos = 0
+
+            for l in enviados:
+                
+                planos = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto.in_(l)).all()
+                qtd_planos += len(planos)
+
+                # para cada plano, monta o dados do dicionário 
+                for p in planos:
+                    
+                    # parar o envio caso extrapole o horário limite
+                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        break
+                    
+                    # se estourar 55 minutos, pega novo token
+                    if datetime.now() > hora_token:
+                        token = pega_token()
+                        hora_token = datetime.now() + timedelta(seconds=(60*55))
+
+                    dic_envio = {}
+
+                    dic_envio['cod_plano']              = p.id_pacto
+                    dic_envio['situacao']               = p.situacao
+                    dic_envio['matricula_siape']        = int(p.matricula_siape)
+                    dic_envio['cpf']                    = p.cpf
+                    dic_envio['nome_participante']      = p.nome_participante
+                    dic_envio['cod_unidade_exercicio']  = p.cod_unidade_exercicio
+                    dic_envio['nome_unidade_exercicio'] = p.nome_unidade_exercicio
+                    dic_envio['modalidade_execucao']    = p.modalidade_execucao
+                    dic_envio['carga_horaria_semanal']  = p.carga_horaria_semanal
+                    dic_envio['data_inicio']            = p.data_inicio.strftime('%Y-%m-%d')
+                    dic_envio['data_fim']               = p.data_fim.strftime('%Y-%m-%d')
+                    dic_envio['carga_horaria_total']    = p.carga_horaria_total
+                    dic_envio['data_interrupcao']       = p.data_interrupcao
+                    dic_envio['entregue_no_prazo']      = p.entregue_no_prazo
+                    dic_envio['horas_homologadas']      = p.horas_homologadas
+                    dic_envio['atividades']             = []
+
+                    # pega as atividades de cada plano
+                    ativs = db.session.query(VW_Atividades_Pactos)\
+                                    .filter(VW_Atividades_Pactos.id_pacto == p.id_pacto)\
+                                    .all()
+
+                    # para cada atividade, monta o resto do dicionário (key 'atividades')
+                    for a in ativs:
+                        
+                        # # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
+                        # situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
+                        #                     .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
+                        #                     .first()
+
+                        if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
+                        a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+                        (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+
+                            dic_envio['atividades'].append({'id_atividade': a.id_produto,
+                                                            'nome_grupo_atividade': a.nome_grupo_atividade,
+                                                            'nome_atividade': a.nome_atividade,
+                                                            'faixa_complexidade': a.faixa_complexidade,
+                                                            'parametros_complexidade': a.parametros_complexidade,
+                                                            'tempo_presencial_estimado': a.tempo_presencial_estimado,
+                                                            'tempo_presencial_programado': a.tempo_presencial_programado,
+                                                            'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                            'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
+                                                            'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
+                                                            'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                            'entrega_esperada': a.entrega_esperada,
+                                                            'qtde_entregas': a.qtde_entregas,
+                                                            'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
+                                                            'avaliacao': a.avaliacao,
+                                                            'data_avaliacao': a.data_avaliacao,
+                                                            'justificativa': a.justificativa}) 
+
+                    # prepara headers do put
+                    plano_id = p.id_pacto
+                    headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
+                    
+                    # faz o put na API via dumps json do dicionário    
+                    r_put = requests.put(os.getenv('APIPGDME_URL') + '/plano_trabalho/'+plano_id, headers= headers, data=json.dumps(dic_envio))
+
+                    # para cada put com sucesso (status_code < 400) acumula 1 no sucesso e registra envio no log
+                    if r_put.ok:
+                        sucesso += 1
+                        registra_log_auto(id_user, ' * PACTO REENVIADO: '+str(plano_id)+' de '+p.nome_participante)
+                    else:
+                        retorno_API = re.search(r'\bmsg[\W|w]+[\w+\s]+',r_put.text) 
+
+                        if retorno_API:
+                            retorno_API_msg = retorno_API.group()[6:]
+                            print ('*** Erro reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                        else:
+                            retorno_API_msg = 'Sem retorno da API.'
+                            print ('*** Erro reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            print ('*** Texto API: ',str(r_put.text))
+                            registra_log_auto(id_user, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+p.nome_participante+' - '+str(retorno_API_msg))
+                            if str(r_put.text) == '{"detail":"Unauthorized"}':
+                                abort(401)
+            
+                # parar o envio caso extrapole o horário limite
+                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                    print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                    registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
+                    break
+            
+            # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
+
+            if modo == 'agenda':
+                msg = 'Envio programado. ' 
+            else:
+                msg = ''    
+
+            if sucesso == qtd_planos:
+                registra_log_auto(id_user, '*' + msg + str(qtd_planos) + ' Plano(s) reenviado(s) com sucesso.')
+                if modo == 'manual':
+                    flash(str(qtd_planos) + ' Planos reenviados com sucesso','sucesso') # todos os planos enviados com sucesso
+            else:
+                registra_log_auto(id_user, '*' + msg + 'Na tentativa de reenvio de ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.')
+                if modo == 'manual':
+                    flash('Houve problema no reenvio dos Planos: Dos ' + str(qtd_planos) + ' Planos,' + str(sucesso) + ' foram reenviados.','erro') # alguma coisa deu errado
+
+        else:
+            return 'erro_credenciais'
+
+        registra_log_auto(id_user, '* Término do reenvio de Planos para API.')    
+
+        print('*** Finalizando o reenvio de planos conforme agendamento ***')
+        print('**')    
+
 
 
 ## lista planos avaliados que não foram enviados ainda 
@@ -981,10 +1308,16 @@ def enviar_um_plano(plano_id,lista):
     else:
         if lista == 'enviados':
             registra_log_auto(current_user.id, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
-            flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro') 
+            if str(retorno_API_msg == 'Sem retorno da API.'):
+                flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+r_put.text,'erro')
+            else:
+                flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro') 
         elif lista == 'n_enviados':
             registra_log_auto(current_user.id, '* Retorno API sobre falha  no  envio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
-            flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro')   
+            if str(retorno_API_msg == 'Sem retorno da API.'):
+                flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+r_put.text,'erro')
+            else:
+                flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro')   
 
     # print(json.dumps(dic_envio, skipkeys=True, allow_nan=True, indent=4))          
 
@@ -1007,11 +1340,75 @@ def agenda_envio():
     |                                                                                       |
     +---------------------------------------------------------------------------------------+
     """
+    
+    def agendador(id_job, periodicidade, tipo_agendamento, tipo_envio, s_hora, s_minuto):
+        """Prepara sched com os parámetros informados.
+
+        Keyword arguments:
+        job -- identificador do job
+        periodicidade -- intervalo de tempo entre envios (Diária, Semanal ou Mensal)
+        tipo_agendamento -- se agendamento ou reagendamento
+        tipo_envio -- se envio ou reenvio
+        s_hora -- hora de execução do job
+        s_minuto -- mintuo de execução do job
+        """
+        
+        if periodicidade == 'Diária':
+            msg = ('*** '+tipo_agendamento+' '+id_job+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+            print(msg)
+            dia_semana = '*'
+            if tipo_agendamento == 'AGENDAR':
+                try:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
+            else:
+                try:
+                    sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
+                except:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+        elif periodicidade == 'Semanal':
+            msg =  ('*** '+tipo_agendamento+' '+id_job+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+            print(msg)
+            dia_semana = 'fri'
+            if tipo_agendamento == 'AGENDAR':
+                try:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
+                    sched.start()
+                except:
+                    sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
+            else:
+                try:
+                    sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))   
+                except:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
+                    sched.start()   
+        elif periodicidade == 'Mensal':
+            msg =  ('*** '+tipo_agendamento+' '+id_job+' como MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+            print(msg)
+            dia = '1st fri'
+            if tipo_agendamento == 'AGENDAR':
+                try:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.start()
+                except:
+                    sched.reschedule_job(id_job, trigger='cron', day=dia, hour=int(s_hora), minute=int(s_minuto))
+            else:
+                try:
+                    sched.reschedule_job(id_job, trigger='cron', day=dia, hour=int(s_hora), minute=int(s_minuto))
+                except:
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.start() 
+
+    
 
     form = AgendamentoForm()
 
     if form.validate_on_submit():
 
+        # pega dados informado no formulário, limitando minutos a 59
         tipo          = form.tipo.data
         periodicidade = form.periodicidade.data
         hora          = form.hora.data
@@ -1019,7 +1416,8 @@ def agenda_envio():
             minuto = 59
         else:    
             minuto    = form.minuto.data
-
+        
+        # tornando minuto e hora strings de duas posições (0 anterior, quando for o caso)
         if len(str(minuto)) == 1:
             s_minuto = '0'+str(minuto)
         else: 
@@ -1036,185 +1434,230 @@ def agenda_envio():
 
         id_1='job_envia_planos'
         id_2='job_envia_planos_novamente'
+        
+        # no caso de cancelamento de envios
+        if periodicidade == 'Nenhuma':
+            msg =  ('*** Jobs CANCELADOS. Não haverá envios automáticos. ***')
+            print(msg)
+            try:
+                job_1 = sched.get_job(id_1)
+                if job_1:
+                    sched.remove_job(id_1)
+            except:
+                pass
+            try:
+                job_2 = sched.get_job(id_2)
+                if job_2:
+                    sched.remove_job(id_2)
+            except:
+                pass
+            registra_log_auto(current_user.id, '* Agendamento cancelado.')    
+            flash(msg,'sucesso')
+        
+        else:    
 
-        try:
-            job_existente = sched.get_job(id_1)
-            if job_existente:
-                print ('*** Job encontrado: ',job_existente)
-                job_agendado = True
-            else:
+            try:
+                job_existente = sched.get_job(id_1)
+                if job_existente:
+                    print ('*** Job encontrado: ',job_existente)
+                    job_agendado = True
+                else:
+                    print ('*** Não encontrei job '+id_1+' ***')
+                    job_agendado = None      
+            except:
                 print ('*** Não encontrei job '+id_1+' ***')
-                job_agendado = None      
-        except:
-            print ('*** Não encontrei job '+id_1+' ***')
-            job_agendado = None
+                job_agendado = None
 
-        if job_agendado:
+            if job_agendado:
+                
+                agendador(id_1, periodicidade, 'REAGENDAR', 'enviar', s_hora, s_minuto)
+                flash(str(id_1)+' reagendado para periodicidade '+str(periodicidade)+' ('+s_hora+':'+s_minuto+')','sucesso')
+                
+                # # altera job existente com os novos parâmetros informados pelo usuário
+                # if periodicidade == 'Diária':
+                #     msg = ('*** O '+id_1+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                #     print(msg)
+                #     dia_semana = '*'
+                #     try:
+                #         sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                #     except:
+                #         sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                #         sched.start()
+                # elif periodicidade == 'Semanal':
+                #     msg =  ('*** O '+id_1+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                #     print(msg)
+                #     dia_semana = 'fri'
+                #     try:
+                #         sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
+                #     except:
+                #         sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                #         sched.start()   
+                # elif periodicidade == 'Mensal':
+                #     msg =  ('*** O '+id_1+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                #     print(msg)
+                #     dia = '1st fri'
+                #     try:
+                #         sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
+                #     except:
+                #         sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                #         sched.start() 
+                # elif periodicidade == 'Nenhuma':
+                #     msg =  ('*** Jobs serão CANCELADOS. Não haverá envios automáticos. ***')
+                #     print(msg)
+                #     sched.remove_job(id_1) 
+                #     try:
+                #         job_2 = sched.get_job(id_2)
+                #         if job_2:
+                #             sched.remove_job(id_2)
+                #     except:
+                #         pass  
+
+            else:
+                
+                agendador(id_1, periodicidade, 'AGENDAR', 'enviar', s_hora, s_minuto)
+                flash(str(id_1)+' agendado para periodicidade '+str(periodicidade)+' ('+s_hora+':'+s_minuto+')','sucesso')
             
-            # altera job existente com os novos parâmetros informados pelo usuário
-            if periodicidade == 'Diária':
-                msg = ('*** O '+id_1+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                print(msg)
-                dia_semana = '*'
+            #     # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
+            #     if periodicidade == 'Diária':
+            #         msg = ('*** O '+id_1+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+            #         print(msg)
+            #         dia_semana = '*'
+            #         try:
+            #             sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+            #             sched.start()
+            #         except:
+            #             sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+            #     elif periodicidade == 'Semanal':
+            #         msg = ('*** O '+id_1+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+            #         print(msg)
+            #         dia_semana = 'fri'
+            #         try:
+            #             sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+            #             sched.start()
+            #         except:
+            #             sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+            #     elif periodicidade == 'Mensal':
+            #         msg = ('*** O '+id_1+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+            #         print(msg)
+            #         dia = '1st fri'
+            #         try:
+            #             sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+            #             sched.start()
+            #         except:
+            #             sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
+            #     elif periodicidade == 'Nenhuma':
+            #         msg =  ('*** Não jobs para cancelar. Comando ignorado. ***')
+            #         print(msg)
+
+            # if periodicidade != 'Nenhuma':
+            #     registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
+            # else:
+            #     registra_log_auto(current_user.id, '* Agendamento cancelado.')    
+            # flash(msg,'sucesso')    
+
+            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
+
+            if tipo == 'todos':
+
+                # hora += 1
+                # s_hora = str(hora)
+                minuto += 2
+                s_minuto = str(minuto)
+
                 try:
-                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    job_existente = sched.get_job(id_2)
+                    if job_existente:
+                        print ('*** Job encontrado: ',job_existente)
+                        job_agendado = True
+                    else:
+                        print ('*** Não encontrei job '+ id_2 +' ***')
+                        job_agendado = None      
                 except:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
-            elif periodicidade == 'Semanal':
-                msg =  ('*** O '+id_1+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    print ('*** Não encontrei job '+ id_2 +' ***')
+                    job_agendado = None
+
+                if job_agendado:
+                    
+                    agendador(id_2, periodicidade, 'REAGENDAR', 'reenviar', s_hora, s_minuto)
+                    flash(str(id_2)+' reagendado para periodicidade '+str(periodicidade)+' ('+s_hora+':'+s_minuto+')','sucesso')
+                    
+                    # # altera job existente com os novos parâmetros informados pelo usuário
+                    # if periodicidade == 'Diária':
+                    #     msg = ('*** O '+id_2+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia_semana = '*'
+                    #     try:
+                    #         sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    #     except:   
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    #         # sched.start()
+                    # elif periodicidade == 'Semanal':
+                    #     msg =  ('*** O '+id_2+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia_semana = 'fri'
+                    #     try:
+                    #         sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
+                    #     except:  
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    #         # sched.start()   
+                    # elif periodicidade == 'Mensal':
+                    #     msg =  ('*** O '+id_2+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia = '1st fri'
+                    #     try:
+                    #         sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
+                    #     except:
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    #         # sched.start()  
+
+                else:
+                    
+                    agendador(id_2, periodicidade, 'AGENDAR', 'reenviar', s_hora, s_minuto)
+                    flash(str(id_2)+' agendado para periodicidade '+str(periodicidade)+' ('+s_hora+':'+s_minuto+')','sucesso')
+                
+                    # # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
+                    # if periodicidade == 'Diária':
+                    #     msg = ('*** O '+id_2+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia_semana = '*'
+                    #     try:
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    #     except:
+                    #         sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    #     # sched.start()
+                    # elif periodicidade == 'Semanal':
+                    #     msg = ('*** O '+id_2+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia_semana = 'fri'
+                    #     try:
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                    #     except:
+                    #         sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                    #     # sched.start()
+                    # elif periodicidade == 'Mensal':
+                    #     msg = ('*** O '+id_2+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                    #     print(msg)
+                    #     dia = '1st fri'
+                    #     try:
+                    #         sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                    #     except:
+                    #         sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
+                    #     # sched.start()
+
+                registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
+
+            else:
+                msg =  ('*** Agendamento só de inéditos. Job de reenvio, se houver, será CANCELADO. ***')
                 print(msg)
-                dia_semana = 'fri'
-                try:
-                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
-                except:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                    sched.start()   
-            elif periodicidade == 'Mensal':
-                msg =  ('*** O '+id_1+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
-                print(msg)
-                dia = '1st fri'
-                try:
-                    sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
-                except:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start() 
-            elif periodicidade == 'Nenhuma':
-                msg =  ('*** Jobs serão CANCELADOS. Não haverá envios automáticos. ***')
-                print(msg)
-                sched.remove_job(id_1) 
                 try:
                     job_2 = sched.get_job(id_2)
                     if job_2:
                         sched.remove_job(id_2)
                 except:
-                    pass  
-
-        else:
-           
-            # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
-            if periodicidade == 'Diária':
-                msg = ('*** O '+id_1+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                print(msg)
-                dia_semana = '*'
-                try:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
-                except:
-                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-            elif periodicidade == 'Semanal':
-                msg = ('*** O '+id_1+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                print(msg)
-                dia_semana = 'fri'
-                try:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                    sched.start()
-                except:
-                    sched.reschedule_job(id_1, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-            elif periodicidade == 'Mensal':
-                msg = ('*** O '+id_1+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
-                print(msg)
-                dia = '1st fri'
-                try:
-                    sched.add_job(trigger='cron', id=id_1, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    sched.start()
-                except:
-                    sched.reschedule_job(id_1, trigger='cron', day=dia, hour=hora, minute=minuto)
-            elif periodicidade == 'Nenhuma':
-                msg =  ('*** Não jobs para cancelar. Comando ignorado. ***')
-                print(msg)
-
-        if periodicidade != 'Nenhuma':
-            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
-        else:
-            registra_log_auto(current_user.id, '* Agendamento cancelado.')    
-        flash(msg,'sucesso')    
-
-        if tipo == 'todos':
-
-            hora += 1
-            s_hora = str(hora)
-            # minuto += 10
-            # s_minuto = str(minuto)
-
-            try:
-                job_existente = sched.get_job(id_2)
-                if job_existente:
-                    print ('*** Job encontrado: ',job_existente)
-                    job_agendado = True
-                else:
-                    print ('*** Não encontrei job '+ id_2 +' ***')
-                    job_agendado = None      
-            except:
-                print ('*** Não encontrei job '+ id_2 +' ***')
-                job_agendado = None
-
-            if job_agendado:
+                    pass
                 
-                # altera job existente com os novos parâmetros informados pelo usuário
-                if periodicidade == 'Diária':
-                    msg = ('*** O '+id_2+' será REAGENDADO para DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia_semana = '*'
-                    try:
-                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    except:   
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                        # sched.start()
-                elif periodicidade == 'Semanal':
-                    msg =  ('*** O '+id_2+' será REAGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia_semana = 'fri'
-                    try:
-                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)   
-                    except:  
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                        # sched.start()   
-                elif periodicidade == 'Mensal':
-                    msg =  ('*** O '+id_2+' será REAGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia = '1st fri'
-                    try:
-                        sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
-                    except:
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                        # sched.start()  
-
-            else:
-            
-                # como não enconcontrou job agendado, cria um job com os parãmetros informados pelo usuário
-                if periodicidade == 'Diária':
-                    msg = ('*** O '+id_2+' será AGENDADO como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia_semana = '*'
-                    try:
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    except:
-                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    # sched.start()
-                elif periodicidade == 'Semanal':
-                    msg = ('*** O '+id_2+' será AGENDADO para SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia_semana = 'fri'
-                    try:
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                    except:
-                        sched.reschedule_job(id_2, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    # sched.start()
-                elif periodicidade == 'Mensal':
-                    msg = ('*** O '+id_2+' será AGENDADO para MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
-                    print(msg)
-                    dia = '1st fri'
-                    try:
-                        sched.add_job(trigger='cron', id=id_2, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                    except:
-                        sched.reschedule_job(id_2, trigger='cron', day=dia, hour=hora, minute=minuto)
-                    # sched.start()
-
-            registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
-            flash(msg,'sucesso')    
-
-        return render_template('index.html')  
+        
+        return render_template('envio.html')  
 
     # verifica agendamentos anteriores via consulta ao log
 
