@@ -414,6 +414,7 @@ def CarregaUnidades():
             # abre novamente o csv, gera a lista data_lines e grava registros no banco de dados
             with open(arq, newline='',encoding = 'utf-8-sig') as data:            
                 
+                erro_pai = 0
                 data_lines = csv.DictReader(data,delimiter=';')
                 for linha in data_lines: 
 
@@ -427,14 +428,14 @@ def CarregaUnidades():
                             if linha['unidadeIdPai'].isnumeric():
                                 cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.unidadeId==linha['unidadeIdPai']).first()
                                 if not cod_pai:
-                                    flash('Id informado como unidade pai inexistente no banco de dados: '+ linha['unidadeIdPai'],'erro' )
+                                    erro_pai += 1
                                     unid_exist.unidadeIdPai = None
                                 else:    
                                     unid_exist.unidadeIdPai = linha['unidadeIdPai']
                             else:    
                                 cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
                                 if not cod_pai:
-                                    flash('Sigla informada como unidade pai inexistente no banco de dados: '+ linha['unidadeIdPai'],'erro' )
+                                    erro_pai += 1
                                     unid_exist.unidadeIdPai = None
                                 else:    
                                     unid_exist.unidadeIdPai = cod_pai.unidadeId 
@@ -445,6 +446,9 @@ def CarregaUnidades():
                 print ('*** ',qtd_exist,'linhas com siglas já existentes -> Unidades alteradas.')
                 print ('*****************************************************************')
 
+                if erro_pai > 0:
+                    flash (str(erro_pai)+' ocorrência(s) de unidade pai sem correspondência na tabela de Unidades.','erro')
+                
                 if qtd_exist == 0:
 
                     flash('Executada carga de unidades no DBSISGP. ' +\
