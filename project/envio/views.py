@@ -651,9 +651,9 @@ def envia_API(tipo):
                 for p in planos:
                     
                     # parar o envio caso extrapole o horário limite
-                    # if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                    # datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
-                    #     break
+                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        break
                     
                     # se estorar 55 minutos, pega novo token
                     if datetime.now() > hora_token:
@@ -847,11 +847,6 @@ def envia_API(tipo):
                     # para cada atividade, monta o resto do dicionário (key 'atividades')
                     for a in ativs:
                         
-                        # # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
-                        # situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
-                        #                     .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
-                        #                     .first()
-
                         if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
                         a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
                         (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
@@ -1308,13 +1303,13 @@ def enviar_um_plano(plano_id,lista):
     else:
         if lista == 'enviados':
             registra_log_auto(current_user.id, '* Retorno API sobre falha no reenvio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
-            if str(retorno_API_msg == 'Sem retorno da API.'):
+            if str(retorno_API_msg) == 'Sem retorno da API.':
                 flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+r_put.text,'erro')
             else:
                 flash('Erro na tentativa de reenvio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro') 
         elif lista == 'n_enviados':
             registra_log_auto(current_user.id, '* Retorno API sobre falha  no  envio do Plano: '+str(plano_id)+' de '+plano.nome_participante+' - '+str(retorno_API_msg))
-            if str(retorno_API_msg == 'Sem retorno da API.'):
+            if str(retorno_API_msg) == 'Sem retorno da API.':
                 flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+r_put.text,'erro')
             else:
                 flash('Erro na tentativa de envio manual do Plano: '+plano.nome_participante+' - '+str(retorno_API_msg),'erro')   
@@ -1559,10 +1554,10 @@ def agenda_envio():
 
             if tipo == 'todos':
 
-                # hora += 1
-                # s_hora = str(hora)
-                minuto += 2
-                s_minuto = str(minuto)
+                hora += 1
+                s_hora = str(hora)
+                # minuto += 2
+                # s_minuto = str(minuto)
 
                 try:
                     job_existente = sched.get_job(id_2)

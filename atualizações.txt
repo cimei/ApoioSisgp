@@ -6,7 +6,7 @@ No envio indivual de plano, caso não haja msg de erro da API, faz flash to r_pu
 v3.2.3
 
 19/09/2023
-Na carga de unidades o campo de chefe e substituto pode vir com CPF.
+Na carga de unidades o campo de chefe e substituto pode conter o id ou CPF da pessoa.
 v3.2.2
 
 10/09/2023
