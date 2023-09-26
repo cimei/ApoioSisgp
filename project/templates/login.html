@@ -30,12 +30,14 @@
       <fieldset>
         <legend>Dados para acesso</legend>
         <div class="row">
-          <div class="col-md-7 mb-3">
+          <div class="col-4">
             <div class="br-input">
               {{render_field(form.email,class="form-control", placeholder="Insira seu e_mail",obr=True)}}
             </div>
           </div>
-          <div class="col-md-7 mb-3">
+        </div>  
+        <div class="row">  
+          <div class="col-4">
             <div class="br-input input-button">
               {{render_field(form.password,class="form-control", placeholder="Senha",obr=True)}}
             </div>

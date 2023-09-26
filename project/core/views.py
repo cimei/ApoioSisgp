@@ -29,7 +29,7 @@ from flask import render_template,url_for,flash, redirect, request, Blueprint, s
 from flask_login import current_user, login_required
 
 import os
-from datetime import datetime as dt
+from datetime import datetime as dt, date
 import tempfile
 from werkzeug.utils import secure_filename
 import csv
@@ -37,10 +37,12 @@ import uuid
 
 from sqlalchemy import distinct
 
-from project.core.forms import ArquivoForm
+from datetime import datetime
+
+from project.core.forms import ArquivoForm, RefEnvioForm
 from project import db, sched
 from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
-                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users, jobs, Log_Auto
+                           Pactos_de_Trabalho, cat_item_cat, unidade_ativ, users, catdom, Log_Auto
 
 from project.usuarios.views import registra_log_auto
 
@@ -797,6 +799,51 @@ def CarregaAtividades():
             return redirect(url_for('atividades.lista_atividades',lista='ativas'))
 
     return render_template('grab_file.html',form=form, tipo = tipo)
+
+
+@core.route('/ref_envios', methods=['GET', 'POST'])
+@login_required
+
+def ref_envios():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Define dada de referência para envio de planos                                         |
+    +---------------------------------------------------------------------------------------+
+
+    """
+    
+    referencia = db.session.query(catdom).filter(catdom.classificacao == 'DataBaseEnvioPlanos').first()
+        
+    form = RefEnvioForm()
+    
+    if form.validate_on_submit():
+        
+        if referencia:
+            referencia.descricao = form.data_ref.data.strftime('%Y-%m-%d')
+        else:
+            referencia = catdom(catalogoDominioId = 99999,
+                                classificacao     = 'DataBaseEnvioPlanos',
+                                descricao         = date.today().strftime('%Y-%m-%d'),
+                                ativo             = True)
+            db.session.add(referencia)    
+        
+        db.session.commit()
+        
+        flash('Data de referência para envios atualizada para '+form.data_ref.data.strftime('%d/%m/%Y'),'sucesso')
+        
+        registra_log_auto(current_user.id,'* Data de referência para envios atualizada para '+form.data_ref.data.strftime('%d/%m/%Y'))
+        
+        return render_template('registra_ref_envios.html', form=form)
+    
+    if referencia:
+        form.data_ref.data = datetime.strptime(referencia.descricao,'%Y-%m-%d').date()
+    else:
+        form.data_ref.data = None   
+        flash('Ainda não foi definida uma data de referência para envio de planos!','perigo') 
+    
+    return render_template('registra_ref_envios.html', form=form)
+        
+        
 
 
 ## renderiza tela inicial do apoio

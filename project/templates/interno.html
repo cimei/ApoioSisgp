@@ -5,10 +5,6 @@
     <div class="br-breadcrumb">
       <ul class="crumb-list">
         <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
-        <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior</a></li>
-        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-        <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
         <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Funções internas</span>
         </li>
       </ul>
@@ -44,6 +40,15 @@
           title="Trocar senha",
           description="Formulário onde o usuário logado pode trocar sua senha.",
           link=url_for("usuarios.troca_senha")
+        %}
+          {% include "card_menu.html" %}
+        {% endwith %}
+
+        {% with 
+          icon="fa-calendar-check", 
+          title="Data ref. para envios",
+          description="Data de referência para selecionar planos aptos ao envio.",
+          link=url_for("core.ref_envios")
         %}
           {% include "card_menu.html" %}
         {% endwith %}

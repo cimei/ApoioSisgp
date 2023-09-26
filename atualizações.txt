@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+26/09/2023
+
+Implementada data de referência para envio de planos.
+v3.2.4
+
 20/09/2023
 Ajustes na rotina de agendamento. Ao agendar inéditos, cancela agendamento de já enviados, se houver.
 No envio indivual de plano, caso não haja msg de erro da API, faz flash to r_put.text.

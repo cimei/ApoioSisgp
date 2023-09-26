@@ -272,8 +272,11 @@
                               class="fa fa-user" aria-hidden="true"></i></span><span class="content">Usuário</span></a>
                       </li>
                       <li><a class="menu-item" href="{{ url_for('usuarios.troca_senha') }}"><span class="icon"><i
-                              class="fa fa-lock" aria-hidden="true"></i></span><span class="content">Trocar
-                            senha</span></a></li>
+                              class="fa fa-lock" aria-hidden="true"></i></span><span class="content">Trocar senha</span></a>
+                      </li>
+                      <li><a class="menu-item" href="{{ url_for('core.ref_envios') }}"><span class="icon"><i
+                        class="fa fa-calendar-check" aria-hidden="true"></i></span><span class="content">Data ref. para envios</span></a>
+                      </li>      
                     </ul>
                   </div>
 
@@ -363,7 +366,7 @@
     <footer class="br-footer pt-3" id="footer">
       <div class="container-lg">
         <div class="info">
-          {% set ver = namespace(num = '3.2.3') %}
+          {% set ver = namespace(num = '3.2.4') %}
           <div class="text-down-01 text-medium pb-3">{{'DB_DATABASE'|verifica_serv_bd}} em
             {{'DB_SERVER'|verifica_serv_bd}} v. {{ ver.num }} <small>cbt-gr</small>
           </div>

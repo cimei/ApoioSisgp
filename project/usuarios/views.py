@@ -484,6 +484,10 @@ def update_user(user_id):
             user.userAtivo = form.ativo.data
             user.userEnvia = form.envia.data
 
+            if not user.email_confirmed and form.ativo.data:
+                user.email_confirmed = True
+                user.email_confirmed_on = datetime.now()
+
             db.session.commit()
 
             registra_log_auto(current_user.id,'Usuário '+ user.userNome +' alterado.')

@@ -47,7 +47,7 @@ from project.envio.forms import AgendamentoForm, PesquisaPlanoForm
 
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 import re
 
@@ -56,6 +56,14 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 
 # funções
 
+def pega_data_ref():
+    
+    ref_envios = db.session.query(catdom).filter(catdom.classificacao=='DataBaseEnvioPlanos').first()
+    if ref_envios:
+        return (datetime.strptime(ref_envios.descricao,'%Y-%m-%d').date())
+    else:
+        return (date.today())
+    
 
 # pega token de acesso à API de envio de dados
 def pega_token():        
@@ -140,8 +148,11 @@ def planos_enviados_API():
 # função que gera lista com ids dos planos que já foram enviados previamente, consultando o log
 def planos_enviados_LOG():
     
+    data_ref = pega_data_ref()
+    
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
+                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                     Log_Auto.data_hora >= data_ref)\
                              .distinct()                        
     
     enviados = [e.msg[18:54] for e in enviados_log]
@@ -229,17 +240,21 @@ def planos_n_enviados_API():
 
 # função que gera lista de planos que nunca foram enviados, consultando o LOG
 def planos_n_enviados_LOG(): 
+    
+    data_ref = pega_data_ref()
               
     # todos os planos executados e com horas homologadas > 0
     planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
                                  .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                        VW_Pactos.horas_homologadas > 0)\
+                                        VW_Pactos.horas_homologadas > 0,
+                                        VW_Pactos.data_fim >= data_ref)\
                                  .all()                                            
     
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%') )\
+                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                     Log_Auto.data_hora >= data_ref)\
                              .distinct()                       
     
     log = [e.msg[18:54] for e in enviados_log]
@@ -349,11 +364,6 @@ def envia_planos_novamente():
 
                 # para cada atividade, monta o resto do dicionário (key 'atividades')
                 for a in ativs:
-                    
-                    # # consulta a tabela de atividades do pacto para ver situação. Serão enviadas somente atividades concluídas (503)
-                    # situ_ativ = db.session.query(Pactos_de_Trabalho_Atividades.situacaoId)\
-                    #                     .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoAtividadeId == a.id_produto)\
-                    #                     .first()
 
                     if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
                        a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
@@ -941,7 +951,8 @@ def lista_a_enviar():
     +---------------------------------------------------------------------------------------+
     """
     page = request.args.get('page', 1, type=int)
-
+       
+    data_ref = pega_data_ref()
     
     if os.getenv('CONSULTA_API') == 'S':
         n_enviados = planos_n_enviados_API()
@@ -962,7 +973,8 @@ def lista_a_enviar():
 
         #query que resgata erros em tentativas de envios de planos   
         log_erro_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like('* Retorno API sobre falha'+'%') )\
+                                .filter(Log_Auto.msg.like('* Retorno API sobre falha'+'%'),
+                                        Log_Auto.data_hora >= data_ref)\
                                 .order_by(Log_Auto.id.desc())\
                                 .all() 
         l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]  
@@ -995,7 +1007,8 @@ def lista_a_enviar():
                                               lista = lista,
                                               fonte = fonte,
                                               l_log_erro_envio = l_log_erro_envio,
-                                              formas = formas)
+                                              formas = formas,
+                                              data_ref = data_ref)
 
     else:
 
@@ -1016,6 +1029,8 @@ def lista_enviados():
     +---------------------------------------------------------------------------------------+
     """
     page = request.args.get('page', 1, type=int)
+    
+    data_ref = pega_data_ref()
 
     if os.getenv('CONSULTA_API') == 'S':
         enviados = planos_enviados_API()
@@ -1059,7 +1074,8 @@ def lista_enviados():
                                               qtd_total = qtd_total,
                                               lista = lista,
                                               fonte = fonte,
-                                              formas = formas)
+                                              formas = formas,
+                                              data_ref = data_ref)
 
     else:
 

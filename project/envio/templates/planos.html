@@ -26,6 +26,7 @@
             {% else %}
               conforme LOG deste sistema
             {% endif %}
+            (Data de referência: <span class="text-danger">{{data_ref.strftime('%d/%m/%Y')}}</span>)
                 <h6>(Destino: {{'APIPGDME_URL'|verifica_serv_bd}})</h6> </b></h5>
           <p>
             <span class="badge text-bg-success">{{demandas_count}}</span> plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviado(s).
@@ -40,6 +41,7 @@
             {% else %}
               conforme LOG deste sistema
             {% endif %}
+            (Data de referência: <span class="text-danger">{{data_ref.strftime('%d/%m/%Y')}}</span>)
                 <h6>(Origem: {{'APIPGDME_URL'|verifica_serv_bd}})</h6></b></h5>
           <p>
             <span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) nesta lista.
