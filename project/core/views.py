@@ -46,7 +46,7 @@ from project.models import Unidades, Pessoas, Atividades, Planos_de_Trabalho,\
 
 from project.usuarios.views import registra_log_auto
 
-from project.envio.views import envia_planos, envia_planos_novamente
+from project.envio.views import envia_API
 
 
 core = Blueprint("core",__name__)
@@ -127,6 +127,8 @@ def index():
                 print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
 
                 id = 'job_envia_planos'
+                
+                tipo_envio = 'enviar'
 
                 if hora_min[1] == ':':
                     hora_min = '0'+ hora_min
@@ -140,7 +142,7 @@ def index():
                     print(msg)
                     dia_semana = 'mon-fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                         sched.start()
                     except:
                         sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
@@ -149,7 +151,7 @@ def index():
                     print(msg)
                     dia_semana = 'fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                        sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                         sched.start()
                     except:
                         sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
@@ -158,7 +160,7 @@ def index():
                     print(msg)
                     dia = '1st fri'
                     try:
-                        sched.add_job(trigger='cron', id=id, func=envia_planos, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                        sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                         sched.start()
                     except:
                         sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
@@ -172,6 +174,8 @@ def index():
                 if log_agenda_ant_reenvio and log_agenda_ant_reenvio.id > log_agenda_ant_envio.id:
 
                     id='job_envia_planos_novamente'
+                    
+                    tipo_envio = 'reenviar'
 
                     hora += 1
                     s_hora = str(hora)
@@ -183,7 +187,7 @@ def index():
                         print(msg)
                         dia_semana = 'mon-fri'
                         try:
-                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                         except:   
                             sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                     elif periodicidade == 'Semanal':
@@ -191,7 +195,7 @@ def index():
                         print(msg)
                         dia_semana = 'fri'
                         try:
-                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
                         except:  
                             sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)    
                     elif periodicidade == 'Mensal':
@@ -199,7 +203,7 @@ def index():
                         print(msg)
                         dia = '1st fri'
                         try:
-                            sched.add_job(trigger='cron', id=id, func=envia_planos_novamente, day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio), day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
                         except:
                             sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
 
@@ -821,9 +825,9 @@ def ref_envios():
         if referencia:
             referencia.descricao = form.data_ref.data.strftime('%Y-%m-%d')
         else:
-            referencia = catdom(catalogoDominioId = 99999,
+            referencia = catdom(catalogoDominioId = 55555,
                                 classificacao     = 'DataBaseEnvioPlanos',
-                                descricao         = date.today().strftime('%Y-%m-%d'),
+                                descricao         = form.data_ref.data.strftime('%Y-%m-%d'),
                                 ativo             = True)
             db.session.add(referencia)    
         

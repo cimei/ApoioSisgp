@@ -143,31 +143,7 @@
   </div>
 
 
-  {# modal confirmar envio de Planos de Trabalho #}
 
-      <div class="modal" tabindex="-1" role="dialog" id="envia_modal">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-                  <div class="p-3 mb-2 bg-danger text-white">
-                  <h5 class="modal-title">Enviar Planos de Trabalho?</h5>
-                  </div>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p>Deseja enviar todos os Planos de Trabalho desta lista?</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-
-              <form action="{{url_for('envio.enviar_planos',tipo=lista)}}" method="post">
-                <input class="btn btn-danger" type="submit" name="" value="Executar">
-              </form>
-
-            </div>
-          </div>
-        </div>
-      </div>
 
 
 {% endblock %}

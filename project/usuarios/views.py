@@ -177,7 +177,7 @@ def register():
             return redirect(url_for('core.index'))
         
     if usuarios_qtd == 0:
-        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','erro')
+        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','perigo')
         return redirect(url_for('usuarios.primeiro_user'))    
 
     return render_template('register.html',form=form)
@@ -382,7 +382,7 @@ def login():
             flash('E-mail informado não encontrado, favor verificar!','erro')
 
     if usuarios_qtd == 0:
-        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','erro')
+        flash('Não foram encontrados usuários no sistema. O primeiro será registrado de forma direta.','perigo')
         return redirect(url_for('usuarios.primeiro_user'))
     
     return render_template('login.html',form=form)
