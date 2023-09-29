@@ -3,8 +3,6 @@ Aplicativo de apoio à gestão do SISGP. Possibilita o envio de dados ao órgão
 
 O sistema está configurado para a instalação via contêiner Docker, usando o gunicorn como WSGI.
 
-Imagem disponível em https://hub.docker.com/r/cimei/apoiosisgp. Atenção para a tag que se deseja utilizar, bem como para as respectivas variáveis de ambiente que devem ser informadas no momento da execução (run) do contêiner.
-
 Para verificar o que foi incorporado/corrigido em cada versão, veja o arquivo de histórico de atualizações, disponível em atualizações.txt.
 
 Como o código é reaproveitado de um projeto anterior, pode ocorrer de ter mais pacotes instalados do que o realmente necessário, mas isto não é um impedimento.

@@ -57,6 +57,15 @@ def lista_pessoas():
     page = request.args.get('page', 1, type=int)    
 
     tipo = "inst"
+    
+    # Verifica a quantidade de pessoas para decidir sobre paginação
+    
+    qtd_pessoas = db.session.query(Pessoas).count()
+    
+    if qtd_pessoas < 500:
+        pag = 500
+    else:
+        pag = 100
 
     # Lê tabela pessoas
 
@@ -80,7 +89,7 @@ def lista_pessoas():
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                             .order_by(Pessoas.pesNome)\
-                            .paginate(page=page,per_page=100)
+                            .paginate(page=page,per_page=pag)
 
     quantidade = pessoas.total
 

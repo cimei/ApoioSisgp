@@ -58,6 +58,15 @@ def lista_unidades(lista):
 
     chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
     substitutos = aliased(chefes)
+    
+    # Verifica a quantidade de unidades ativas  para decidir sobre paginação
+    
+    qtd_unids = db.session.query(Unidades).filter(Unidades.situacaoUnidadeId == 1).count()
+    
+    if qtd_unids < 500:
+        pag = 500
+    else:
+        pag = 100
 
 
     if lista == 'ativas':
@@ -80,7 +89,7 @@ def lista_unidades(lista):
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .filter(Unidades.situacaoUnidadeId == 1)\
                                 .order_by(Unidades.undSigla)\
-                                .paginate(page=page,per_page=100)
+                                .paginate(page=page,per_page=pag)
         
     elif lista == 'inativas':
         unids = db.session.query(Unidades.unidadeId,
