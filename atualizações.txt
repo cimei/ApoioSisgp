@@ -1,7 +1,11 @@
 ## Atualizações ##
 
-26/09/2023
+11/10/2023
+Ajuste na carga de unidades. Retirado erro quanto cpf informado para chefe ou chefe substituto não corresponde a um id
+válido da tabela Pessoas.
+v3.2.5
 
+26/09/2023
 Implementada data de referência para envio de planos.
 v3.2.4
 
