@@ -228,6 +228,9 @@
                       <li><a class="menu-item" href="{{url_for('consultas.pactos')}}"><span class="icon"><i
                               class="fa fa-archive" aria-hidden="true"></i></span><span class="content">Planos de
                             Trabalho - Todos</span></a></li>
+                      <li><a class="menu-item" href="{{url_for('consultas.pactos_executados')}}"><span class="icon"><i
+                              class="fa fa-archive" aria-hidden="true"></i></span><span class="content">Planos de
+                             Trabalho - Executados</span></a></li>      
                       <li><a class="menu-item" href="{{url_for('consultas.pactos_irregulares')}}"><span class="icon"><i
                               class="fa fa-bell" aria-hidden="true"></i></span><span class="content">Planos de Trabaho -
                             Irregulares</span></a></li>
@@ -366,7 +369,7 @@
     <footer class="br-footer pt-3" id="footer">
       <div class="container-lg">
         <div class="info">
-          {% set ver = namespace(num = '3.2.5') %}
+          {% set ver = namespace(num = '3.2.6') %}
           <div class="text-down-01 text-medium pb-3">{{'DB_DATABASE'|verifica_serv_bd}} em
             {{'DB_SERVER'|verifica_serv_bd}} v. {{ ver.num }} <small>cbt-gr</small>
           </div>

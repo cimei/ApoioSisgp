@@ -170,6 +170,9 @@ def pactos():
     |Apresenta uma lista dos planos de trabalho e dados relevantes.                         |
     +---------------------------------------------------------------------------------------+
     """
+
+    page = request.args.get('page', 1, type=int)
+
     tipo = 'todos'
 
     situacao = db.session.query(catdom.catalogoDominioId,
@@ -199,12 +202,70 @@ def pactos():
                                  .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
                                  .filter(Unidades.situacaoUnidadeId == 1)\
                                  .order_by(Pessoas.pesNome)\
-                                 .all()
+                                 .paginate(page=page,per_page=1000)
 
-    qtd_itens = len(pactos_trabalho)
+    qtd_itens = pactos_trabalho.total
 
     return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho, tipo = tipo)    
 
+
+## dados dos pactos de trabalho
+
+@consultas.route('/pactos_executados')
+def pactos_executados():
+    """
+    +---------------------------------------------------------------------------------------+
+    |Apresenta uma lista dos planos de trabalho executados.                                 |
+    +---------------------------------------------------------------------------------------+
+    """
+
+    page = request.args.get('page', 1, type=int)
+
+    tipo = 'executados'
+
+    situacao = db.session.query(catdom.catalogoDominioId,
+                                catdom.descricao)\
+                         .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
+                         .subquery()
+
+                         
+    avaliados = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
+                                 label('qtd_hom',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)))\
+                          .filter(Pactos_de_Trabalho_Atividades.tempoHomologado != None)\
+                          .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
+                          .subquery()                      
+
+
+    pactos_trabalho = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
+                                       Pactos_de_Trabalho.unidadeId,
+                                       Pactos_de_Trabalho.pessoaId,
+                                       Pactos_de_Trabalho.dataInicio,
+                                       Pactos_de_Trabalho.dataFim,
+                                       Pactos_de_Trabalho.formaExecucaoId,
+                                       Pactos_de_Trabalho.situacaoId,
+                                       Pactos_de_Trabalho.percentualExecucao,
+                                       Pactos_de_Trabalho.relacaoPrevistoRealizado,
+                                       Pactos_de_Trabalho.avaliacaoId,
+                                       VW_Unidades.undSiglaCompleta,
+                                       Unidades.situacaoUnidadeId,
+                                       Pessoas.pesNome,
+                                       label('descricao1',catdom.descricao),
+                                       label('descricao2',situacao.c.descricao),
+                                       avaliados.c.qtd_hom)\
+                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                 .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
+                                 .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
+                                 .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
+                                 .outerjoin(avaliados, avaliados.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
+                                 .filter(Unidades.situacaoUnidadeId == 1,
+                                         Pactos_de_Trabalho.situacaoId == 406)\
+                                 .order_by(Pessoas.pesNome)\
+                                 .paginate(page=page,per_page=1000)
+
+    qtd_itens = pactos_trabalho.total
+
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho, tipo = tipo) 
 
 ## pactos em situação irregular
 
@@ -215,6 +276,8 @@ def pactos_irregulares():
     |Apresenta uma lista dos pactos de trabalho em situação irregular.                      |
     +---------------------------------------------------------------------------------------+
     """
+
+    page = request.args.get('page', 1, type=int)
 
     tipo = 'irregulares'
 
@@ -249,9 +312,9 @@ def pactos_irregulares():
                                          Pactos_de_Trabalho.situacaoId != 407,
                                          Unidades.situacaoUnidadeId == 1)\
                                  .order_by(Pessoas.pesNome)\
-                                 .all()
+                                 .paginate(page=page,per_page=1000)
 
-    qtd_itens = len(pactos_irregulares)
+    qtd_itens = pactos_irregulares.total
 
     return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_irregulares, tipo = tipo)                                 
 
