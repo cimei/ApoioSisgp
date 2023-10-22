@@ -239,9 +239,9 @@ def envia_API(tipo):
                     # para cada atividade, monta o resto do dicionário (key 'atividades')
                     for a in ativs:
                         
-                        if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                        a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
-                        (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                        if a.tempo_presencial_estimado != None and a.tempo_presencial_programado != None and \
+                           a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
+                           (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
                             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                                             'nome_grupo_atividade': a.nome_grupo_atividade,
@@ -397,9 +397,9 @@ def envia_API(tipo):
                     # para cada atividade, monta o resto do dicionário (key 'atividades')
                     for a in ativs:
                         
-                        if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-                        a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
-                        (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                        if a.tempo_presencial_estimado != None and a.tempo_presencial_programado != None and \
+                           a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
+                           (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
                             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                                             'nome_grupo_atividade': a.nome_grupo_atividade,
@@ -532,7 +532,7 @@ def lista_a_enviar():
                                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
                                             VW_Pactos.horas_homologadas > 0,
                                             VW_Pactos.id_pacto.in_(l))\
-                                   .paginate(page=page,per_page=100)                    
+                                   .paginate(page=page,per_page=500)                    
 
         planos = planos_nao_env
         planos_count = planos.total      
@@ -597,7 +597,7 @@ def lista_enviados():
                            .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
                                    VW_Pactos.horas_homologadas > 0,
                                    VW_Pactos.id_pacto.in_(l))\
-                           .paginate(page=page,per_page=100)                         
+                           .paginate(page=page,per_page=500)                         
        
         planos_count = planos.total 
         
@@ -768,8 +768,8 @@ def enviar_um_plano(plano_id,lista):
     # para cada atividade, monta o resto do dicionário (key 'atividades')
     for a in ativs:
 
-        if a.tempo_presencial_estimado and a.tempo_presencial_programado and \
-           a.tempo_teletrabalho_estimado and a.tempo_teletrabalho_programado and \
+        if a.tempo_presencial_estimado != None and a.tempo_presencial_programado != None and \
+           a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
           (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
             dic_envio['atividades'].append({'id_atividade': a.id_produto,
@@ -790,6 +790,7 @@ def enviar_um_plano(plano_id,lista):
                                             'data_avaliacao': a.data_avaliacao,
                                             'justificativa': a.justificativa}) 
 
+   
     # prepara headers do put
     headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
     
@@ -867,7 +868,7 @@ def agenda_envio():
         if periodicidade == 'Diária':
             msg = ('*** '+tipo_agendamento+' '+id_job+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
             print(msg)
-            dia_semana = '*'
+            dia_semana = 'mon-fri'
             if tipo_agendamento == 'AGENDAR':
                 try:
                     sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
@@ -1005,8 +1006,12 @@ def agenda_envio():
 
             if tipo == 'todos':
 
-                hora += 1
-                s_hora = str(hora)
+                if hora == 0:
+                    hora = 1
+                    s_hora = '0'+str(hora)
+                else:    
+                    hora += 1
+                    s_hora = str(hora)
                 # minuto += 2
                 # s_minuto = str(minuto)
 

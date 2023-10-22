@@ -30,7 +30,7 @@
 from flask import render_template,url_for,flash, redirect, request, Blueprint, send_from_directory
 from flask_login import current_user, login_required
 
-from sqlalchemy.sql import label
+from sqlalchemy.sql import label, literal
 from sqlalchemy import and_, func, distinct, or_
 from sqlalchemy.orm import aliased
 
@@ -38,7 +38,7 @@ from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
                            Pactos_de_Trabalho_Atividades, Atividades, Planos_de_Trabalho_Ativs,\
                            Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items, Pactos_de_Trabalho_Solic,\
-                           VW_Unidades, Atividade_Candidato
+                           VW_Unidades, Atividade_Candidato, VW_Pactos,VW_Unidades_Ativas
 from project.usuarios.views import registra_log_auto                           
 
 from project.consultas.forms import PeriodoForm
@@ -223,18 +223,9 @@ def pactos_executados():
 
     tipo = 'executados'
 
-    situacao = db.session.query(catdom.catalogoDominioId,
-                                catdom.descricao)\
-                         .filter(catdom.classificacao == 'SituacaoPactoTrabalho')\
-                         .subquery()
+    avaliados = db.session.query(VW_Pactos.id_pacto).all()
 
-                         
-    avaliados = db.session.query(Pactos_de_Trabalho_Atividades.pactoTrabalhoId,
-                                 label('qtd_hom',func.count(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)))\
-                          .filter(Pactos_de_Trabalho_Atividades.tempoHomologado != None)\
-                          .group_by(Pactos_de_Trabalho_Atividades.pactoTrabalhoId)\
-                          .subquery()                      
-
+    avaliados_l = [a.id_pacto for a in avaliados]
 
     pactos_trabalho = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                        Pactos_de_Trabalho.unidadeId,
@@ -242,26 +233,17 @@ def pactos_executados():
                                        Pactos_de_Trabalho.dataInicio,
                                        Pactos_de_Trabalho.dataFim,
                                        Pactos_de_Trabalho.formaExecucaoId,
-                                       Pactos_de_Trabalho.situacaoId,
-                                       Pactos_de_Trabalho.percentualExecucao,
-                                       Pactos_de_Trabalho.relacaoPrevistoRealizado,
-                                       Pactos_de_Trabalho.avaliacaoId,
-                                       VW_Unidades.undSiglaCompleta,
-                                       Unidades.situacaoUnidadeId,
+                                       VW_Unidades_Ativas.undSiglaCompleta,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
-                                       label('descricao2',situacao.c.descricao),
-                                       avaliados.c.qtd_hom)\
-                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
-                                 .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                       literal(None).label('qtd_hom'))\
+                                 .join(VW_Unidades_Ativas, VW_Unidades_Ativas.id_unidade == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                 .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                 .outerjoin(avaliados, avaliados.c.pactoTrabalhoId == Pactos_de_Trabalho.pactoTrabalhoId)\
-                                 .filter(Unidades.situacaoUnidadeId == 1,
-                                         Pactos_de_Trabalho.situacaoId == 406)\
+                                 .filter(Pactos_de_Trabalho.situacaoId == 406, Pactos_de_Trabalho.pactoTrabalhoId.not_in(avaliados_l))\
                                  .order_by(Pessoas.pesNome)\
                                  .paginate(page=page,per_page=1000)
+
 
     qtd_itens = pactos_trabalho.total
 

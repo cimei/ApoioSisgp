@@ -2,7 +2,7 @@
 
 20/10/2023
 Criação da consulta de planos executados com indicação de avaliação.
-
+Correção no envio de atividades de planos.
 v3.2.6
 
 11/10/2023
