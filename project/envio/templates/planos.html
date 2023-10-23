@@ -31,7 +31,7 @@
           <p>
             <span class="badge text-bg-success">{{demandas_count}}</span> plano(s) executados, com pelo menos uma atividade avaliada e ainda não enviado(s).
             {% if demandas_count < qtd_total %}
-              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span>.
+              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span> no log.
             {% endif %}
           </p>
         {% else %}
@@ -46,7 +46,7 @@
           <p>
             <span class="badge text-bg-success">{{demandas_count}}</span> é a quantidade de plano(s) nesta lista.
             {% if demandas_count < qtd_total %}
-              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span>.
+              Consulta limitada a <b>1000</b> registros de um total de <span class="badge text-bg-warning">{{ qtd_total }}</span> no log.
             {% endif %}
           </p>
         {% endif %}  
