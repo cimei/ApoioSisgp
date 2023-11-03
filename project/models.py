@@ -138,12 +138,11 @@ class Unidades(db.Model):
     tipoFuncaoUnidadeId      = db.Column(db.BigInteger)
     Email                    = db.Column(db.String)
     undCodigoSIORG           = db.Column(db.Integer)
-    pessoaIdChefe           = db.Column(db.BigInteger)
-    pessoaIdChefeSubstituto = db.Column(db.BigInteger)
+    # pessoaIdChefe           = db.Column(db.BigInteger)
+    # pessoaIdChefeSubstituto = db.Column(db.BigInteger)
 
     def __init__(self, undSigla, undDescricao, unidadeIdPai, tipoUnidadeId,
-                 situacaoUnidadeId, ufId, undNivel, tipoFuncaoUnidadeId, Email, undCodigoSIORG,
-                 pessoaIdChefe, pessoaIdChefeSubstituto):
+                 situacaoUnidadeId, ufId, undNivel, tipoFuncaoUnidadeId, Email, undCodigoSIORG):
 
         self.undSigla                  = undSigla
         self.undDescricao              = undDescricao
@@ -155,14 +154,12 @@ class Unidades(db.Model):
         self.tipoFuncaoUnidadeId       = tipoFuncaoUnidadeId
         self.Email                     = Email
         self.undCodigoSIORG            = undCodigoSIORG
-        self.pessoaIdChefe            = pessoaIdChefe
-        self.pessoaIdChefeSubstituto  = pessoaIdChefeSubstituto
+
 
     def __repr__ (self):
         return f"{self.undSigla};{self.undDescricao};{self.unidadeIdPai};\
                  {self.tipoUnidadeId};{self.situacaoUnidadeId};{self.ufId};{self.undNivel};\
-                 {self.tipoFuncaoUnidadeId};{self.Email};{self.undCodigoSIORG};\
-                 {self.pessoaIdChefe};{self.pessoaIdChefeSubstituto};"
+                 {self.tipoFuncaoUnidadeId};{self.Email};{self.undCodigoSIORG}"
 
 # view que monta a sigla completa das unidades
 
@@ -211,21 +208,21 @@ class VW_Unidades_Ativas(db.Model):
     __tablename__ = 'VW_UNIDADE'
     __table_args__ = {"schema": "dbo"}
 
-    id_unidade       = db.Column(db.BigInteger, primary_key = True)
-    undSiglaCompleta = db.Column(db.String)
-    undDescricao     = db.Column(db.String)
-    undCodigoSIORG   = db.Column(db.Integer)
+    id_unidade = db.Column(db.BigInteger, primary_key = True)
+    sigla      = db.Column(db.String)
+    nome       = db.Column(db.String)
+    codigo     = db.Column(db.Integer)
 
-    def __init__(self, id_unidade,undSiglaCompleta,undDescricao,undCodigoSIORG):
+    def __init__(self, id_unidade,sigla,nome,codigo):
 
-        self.id_unidade          = id_unidade
-        self.undSiglaCompleta    = undSiglaCompleta
-        self.undDescricao        = undDescricao
-        self.undCodigoSIORG      = undCodigoSIORG
+        self.id_unidade = id_unidade
+        self.sigla      = sigla
+        self.nome       = nome
+        self.codigo     = codigo
 
 
     def __repr__ (self):
-        return f"{self.undSiglaCompleta}"
+        return f"{self.sigla}"
 
 # pessoas
 
@@ -243,11 +240,11 @@ class Pessoas(db.Model):
     unidadeId         = db.Column(db.BigInteger)
     tipoFuncaoId      = db.Column(db.BigInteger)
     cargaHoraria      = db.Column(db.Integer)
-    situacaoPessoaId  = db.Column(db.BigInteger)
-    tipoVinculoId     = db.Column(db.BigInteger)
+    # situacaoPessoaId  = db.Column(db.BigInteger)
+    # tipoVinculoId     = db.Column(db.BigInteger)
 
     def __init__(self, pesNome, pesCPF, pesDataNascimento, pesMatriculaSiape, pesEmail, unidadeId,
-                 tipoFuncaoId, cargaHoraria, situacaoPessoaId, tipoVinculoId):
+                 tipoFuncaoId, cargaHoraria):
 
         self.pesNome           = pesNome
         self.pesCPF            = pesCPF
@@ -257,13 +254,13 @@ class Pessoas(db.Model):
         self.unidadeId         = unidadeId
         self.tipoFuncaoId      = tipoFuncaoId
         self.cargaHoraria      = cargaHoraria
-        self.situacaoPessoaId  = situacaoPessoaId
-        self.tipoVinculoId     = tipoVinculoId
+        # self.situacaoPessoaId  = situacaoPessoaId
+        # self.tipoVinculoId     = tipoVinculoId
 
     def __repr__ (self):
         return f"{self.pesNome};{self.pesCPF};{self.pesDataNascimento};\
                  {self.pesMatriculaSiape};{self.pesEmail};{self.unidadeId};\
-                 {self.tipoFuncaoId};{self.cargaHoraria};{self.situacaoPessoaId};{self.tipoVinculoId};"
+                 {self.tipoFuncaoId};{self.cargaHoraria}"
 
 # situação pessoa
 

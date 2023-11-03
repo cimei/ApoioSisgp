@@ -56,8 +56,8 @@ def lista_unidades(lista):
 
     dic_situ_unidade = {1:'Ativa',2:'Inativa'}
 
-    chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
-    substitutos = aliased(chefes)
+    # chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
+    # substitutos = aliased(chefes)
     
     # Verifica a quantidade de unidades ativas  para decidir sobre paginação
     
@@ -81,11 +81,7 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                label('titular',chefes.c.pesNome),
-                                label('substituto',substitutos.c.pesNome))\
-                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                Unidades.undCodigoSIORG)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .filter(Unidades.situacaoUnidadeId == 1)\
                                 .order_by(Unidades.undSigla)\
@@ -103,11 +99,7 @@ def lista_unidades(lista):
                                 Unidades.undNivel,
                                 Unidades.tipoFuncaoUnidadeId,
                                 Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                label('titular',chefes.c.pesNome),
-                                label('substituto',substitutos.c.pesNome))\
-                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                Unidades.undCodigoSIORG)\
                                 .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                                 .filter(Unidades.situacaoUnidadeId != 1)\
                                 .order_by(Unidades.undSigla)\
@@ -183,8 +175,8 @@ def lista_unidades_filtro(lista):
 
         unids_pai = db.session.query(Unidades.unidadeId,Unidades.undSigla).subquery()
 
-        chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
-        substitutos = aliased(chefes)
+        # chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
+        # substitutos = aliased(chefes)
 
         if int(form.pai.data) == 0:
             unids = db.session.query(Unidades.unidadeId,
@@ -198,11 +190,7 @@ def lista_unidades_filtro(lista):
                                      Unidades.undNivel,
                                      Unidades.tipoFuncaoUnidadeId,
                                      Unidades.Email,
-                                     Unidades.undCodigoSIORG,
-                                    label('titular',chefes.c.pesNome),
-                                    label('substituto',substitutos.c.pesNome))\
-                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                     Unidades.undCodigoSIORG)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                               .filter(Unidades.undSigla.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),
@@ -222,11 +210,7 @@ def lista_unidades_filtro(lista):
                                     Unidades.undNivel,
                                     Unidades.tipoFuncaoUnidadeId,
                                     Unidades.Email,
-                                    Unidades.undCodigoSIORG,
-                                    label('titular',chefes.c.pesNome),
-                                    label('substituto',substitutos.c.pesNome))\
-                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                                    Unidades.undCodigoSIORG)\
                               .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
                               .filter(Unidades.undSigla.like(p_sigla_pattern),
                                       Unidades.undDescricao.like('%'+form.desc.data+'%'),
@@ -271,11 +255,11 @@ def unidade_update(cod_unid):
     lista_pais = [(int(p.unidadeId),p.undSigla) for p in pais]
     lista_pais.insert(0,(0,''))
 
-    chefes = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
-                         .filter(Pessoas.tipoFuncaoId != None)\
-                         .order_by(Pessoas.pesNome).all()
-    lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
-    lista_chefes.insert(0,(0,''))
+    # chefes = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
+    #                      .filter(Pessoas.tipoFuncaoId != None)\
+    #                      .order_by(Pessoas.pesNome).all()
+    # lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
+    # lista_chefes.insert(0,(0,''))
 
     lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
 
@@ -286,8 +270,8 @@ def unidade_update(cod_unid):
     form = UnidadeForm()
 
     form.pai.choices = lista_pais
-    form.chefe.choices = lista_chefes
-    form.subs.choices = lista_chefes
+    # form.chefe.choices = lista_chefes
+    # form.subs.choices = lista_chefes
     form.tipo.choices = lista_tipo_unidade
     form.situ.choices = lista_situ_unidade
 
@@ -306,8 +290,6 @@ def unidade_update(cod_unid):
             unidade.tipoFuncaoUnidadeId      = form.tipoFun.data
             unidade.Email                    = form.email.data
             unidade.undCodigoSIORG           = form.siorg.data
-            unidade.pessoaIdChefe            = form.chefe.data
-            unidade.pessoaIdChefeSubstituto  = form.subs.data
 
             db.session.commit()
 
@@ -338,8 +320,6 @@ def unidade_update(cod_unid):
         form.tipoFun.data = unidade.tipoFuncaoUnidadeId
         form.email.data   = unidade.Email
         form.siorg.data   = unidade.undCodigoSIORG
-        form.chefe.data   = unidade.pessoaIdChefe
-        form.subs.data    = unidade.pessoaIdChefeSubstituto
 
         # quantidade de atividade da unidade
         ativs = db.session.query(unidade_ativ.unidadeId,
@@ -425,11 +405,11 @@ def cria_unidade():
     lista_pais = [(int(p.unidadeId),p.undSigla) for p in pais]
     lista_pais.insert(0,(0,''))
 
-    chefes = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
-                         .filter(Pessoas.tipoFuncaoId != None)\
-                         .order_by(Pessoas.pesNome).all()
-    lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
-    lista_chefes.insert(0,(0,''))
+    # chefes = db.session.query(Pessoas.pessoaId, Pessoas.pesNome)\
+    #                      .filter(Pessoas.tipoFuncaoId != None)\
+    #                      .order_by(Pessoas.pesNome).all()
+    # lista_chefes = [(int(c.pessoaId),c.pesNome) for c in chefes]
+    # lista_chefes.insert(0,(0,''))
 
     lista_tipo_unidade = [(1,'Instituição'),(2,'Diretoria'),(3,'Coordenação-Geral'),(4,'Coordenação'),(5,'Serviço'),(6,'Outro')]
 
@@ -438,8 +418,8 @@ def cria_unidade():
     form = UnidadeForm()
 
     form.pai.choices = lista_pais
-    form.chefe.choices = lista_chefes
-    form.subs.choices = lista_chefes
+    # form.chefe.choices = lista_chefes
+    # form.subs.choices = lista_chefes
     form.tipo.choices = lista_tipo_unidade
     form.situ.choices = lista_situ_unidade
 
@@ -453,15 +433,15 @@ def cria_unidade():
             else:
                 pai = form.pai.data
 
-            if form.chefe.data == 0:
-                chefe = None
-            else:
-                chefe = form.chefe.data
+            # if form.chefe.data == 0:
+            #     chefe = None
+            # else:
+            #     chefe = form.chefe.data
 
-            if form.subs.data == 0:
-                subs = None
-            else:
-                subs = form.chefe.data     
+            # if form.subs.data == 0:
+            #     subs = None
+            # else:
+            #     subs = form.chefe.data     
 
             unidade = Unidades(undSigla                = form.sigla.data,
                                undDescricao            = form.desc.data,
@@ -472,9 +452,7 @@ def cria_unidade():
                                undNivel                = form.nivel.data,
                                tipoFuncaoUnidadeId     = form.tipoFun.data,
                                Email                   = form.email.data,
-                               undCodigoSIORG          = form.siorg.data,
-                               pessoaIdChefe           = chefe,
-                               pessoaIdChefeSubstituto = subs)
+                               undCodigoSIORG          = form.siorg.data)
 
             db.session.add(unidade)
             db.session.commit()

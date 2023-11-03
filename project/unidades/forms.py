@@ -27,8 +27,8 @@ class UnidadeForm(FlaskForm):
    tipoFun = StringField('Tipo Função:')
    email   = EmailField('E-mail:', validators = [Email('Informar um e-mail'), Optional()])
    siorg   = StringField('SIORG:')
-   chefe   = SelectField('Chefe:',coerce=int)
-   subs    = SelectField('Substituto:',coerce=int)
+   # chefe   = SelectField('Chefe:',coerce=int)
+   # subs    = SelectField('Substituto:',coerce=int)
     
    submit  = SubmitField('Submeter')
 

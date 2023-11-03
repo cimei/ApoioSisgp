@@ -79,15 +79,9 @@ def lista_pessoas():
                              Unidades.undSigla,
                              Pessoas.tipoFuncaoId,
                              Tipo_Func_Pessoa.tfnDescricao,
-                             Pessoas.cargaHoraria,
-                             Pessoas.situacaoPessoaId,
-                             Situ_Pessoa.spsDescricao,
-                             Pessoas.tipoVinculoId,
-                             Tipo_Vinculo_Pessoa.tvnDescricao)\
+                             Pessoas.cargaHoraria)\
                             .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                             .order_by(Pessoas.pesNome)\
                             .paginate(page=page,per_page=pag)
 
@@ -127,22 +121,22 @@ def lista_pessoas_filtro():
     lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
     lista_unids.insert(0,(0,'Todas'))                
 
-    situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao).order_by(Situ_Pessoa.spsDescricao).all()
-    lista_situ = [(s.situacaoPessoaId,s.spsDescricao) for s in situ]
-    lista_situ.insert(0,(0,'Todas'))
+    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao).order_by(Situ_Pessoa.spsDescricao).all()
+    # lista_situ = [(s.situacaoPessoaId,s.spsDescricao) for s in situ]
+    # lista_situ.insert(0,(0,'Todas'))
 
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao).order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(f.tipoFuncaoId,f.tfnDescricao) for f in func]
     lista_func.insert(0,(-1,'Sem função'))
     lista_func.insert(0,(0,'Todas'))
 
-    vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao).order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    lista_vinc = [(v.tipoVinculoId,v.tvnDescricao) for v in vinc]
-    lista_vinc.insert(0,(0,'Todos'))
+    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao).order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
+    # lista_vinc = [(v.tipoVinculoId,v.tvnDescricao) for v in vinc]
+    # lista_vinc.insert(0,(0,'Todos'))
 
     form.func.choices    = lista_func
-    form.situ.choices    = lista_situ
-    form.vinculo.choices = lista_vinc
+    # form.situ.choices    = lista_situ
+    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
 
     if form.validate_on_submit():
@@ -181,25 +175,25 @@ def lista_pessoas_filtro():
                 pai =  prox_pai
 
 
-        if int(form.vinculo.data) == 0:
-            p_vinculo_pattern = '%'
-        else:
-            p_vinculo_pattern = form.vinculo.data
+        # if int(form.vinculo.data) == 0:
+        #     p_vinculo_pattern = '%'
+        # else:
+        #     p_vinculo_pattern = form.vinculo.data
 
         # if int(form.func.data) == 0:
         #     p_func_pattern = '%'
         # else:
         #     p_func_pattern = form.func.data
 
-        if int(form.situ.data) == 0:
-            p_situ_pattern = '%'
-        else:
-            p_situ_pattern = form.situ.data   
+        # if int(form.situ.data) == 0:
+        #     p_situ_pattern = '%'
+        # else:
+        #     p_situ_pattern = form.situ.data   
 
         # pega valores utilizados como filtro para exibição na tela da lista
-        p_vinculo  = dict(form.vinculo.choices).get(int(form.vinculo.data))
+        # p_vinculo  = dict(form.vinculo.choices).get(int(form.vinculo.data))
         p_func     = dict(form.func.choices).get(int(form.func.data))
-        p_situ     = dict(form.situ.choices).get(int(form.situ.data))
+        # p_situ     = dict(form.situ.choices).get(int(form.situ.data))
         p_unid     = dict(form.unidade.choices).get(int(form.unidade.data)) 
         p_rel_unid = dict(form.rel_unid.choices).get(int(form.rel_unid.data)) 
 
@@ -208,92 +202,74 @@ def lista_pessoas_filtro():
             if int(form.func.data) == -1:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                    Pessoas.pesNome,
-                                    Pessoas.pesCPF,
-                                    Pessoas.pesDataNascimento,
-                                    Pessoas.pesMatriculaSiape,
-                                    Pessoas.pesEmail,
-                                    Pessoas.unidadeId,
-                                    Unidades.undSigla,
-                                    Pessoas.tipoFuncaoId,
-                                    Tipo_Func_Pessoa.tfnDescricao,
-                                    Pessoas.cargaHoraria,
-                                    Pessoas.situacaoPessoaId,
-                                    Situ_Pessoa.spsDescricao,
-                                    Pessoas.tipoVinculoId,
-                                    Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                    .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                    .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                    .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                    .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                            Pessoas.unidadeId.like(p_unidade_pattern),
-                                            Pessoas.tipoFuncaoId.is_(None),
-                                            Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                            Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                    .order_by(Pessoas.pesNome)\
-                                    .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.like(p_unidade_pattern),
+                                             Pessoas.tipoFuncaoId.is_(None))\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
             elif int(form.func.data) == 0:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                        Pessoas.pesNome,
-                                        Pessoas.pesCPF,
-                                        Pessoas.pesDataNascimento,
-                                        Pessoas.pesMatriculaSiape,
-                                        Pessoas.pesEmail,
-                                        Pessoas.unidadeId,
-                                        Unidades.undSigla,
-                                        Pessoas.tipoFuncaoId,
-                                        Tipo_Func_Pessoa.tfnDescricao,
-                                        Pessoas.cargaHoraria,
-                                        Pessoas.situacaoPessoaId,
-                                        Situ_Pessoa.spsDescricao,
-                                        Pessoas.tipoVinculoId,
-                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.like(p_unidade_pattern),
-                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome)\
-                                        .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.like(p_unidade_pattern))\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
             else:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                        Pessoas.pesNome,
-                                        Pessoas.pesCPF,
-                                        Pessoas.pesDataNascimento,
-                                        Pessoas.pesMatriculaSiape,
-                                        Pessoas.pesEmail,
-                                        Pessoas.unidadeId,
-                                        Unidades.undSigla,
-                                        Pessoas.tipoFuncaoId,
-                                        Tipo_Func_Pessoa.tfnDescricao,
-                                        Pessoas.cargaHoraria,
-                                        Pessoas.situacaoPessoaId,
-                                        Situ_Pessoa.spsDescricao,
-                                        Pessoas.tipoVinculoId,
-                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.like(p_unidade_pattern),
-                                                Pessoas.tipoFuncaoId == form.func.data,
-                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome)\
-                                        .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.like(p_unidade_pattern),
+                                              Pessoas.tipoFuncaoId == form.func.data)\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
@@ -302,92 +278,74 @@ def lista_pessoas_filtro():
             if int(form.func.data) == -1:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                    Pessoas.pesNome,
-                                    Pessoas.pesCPF,
-                                    Pessoas.pesDataNascimento,
-                                    Pessoas.pesMatriculaSiape,
-                                    Pessoas.pesEmail,
-                                    Pessoas.unidadeId,
-                                    Unidades.undSigla,
-                                    Pessoas.tipoFuncaoId,
-                                    Tipo_Func_Pessoa.tfnDescricao,
-                                    Pessoas.cargaHoraria,
-                                    Pessoas.situacaoPessoaId,
-                                    Situ_Pessoa.spsDescricao,
-                                    Pessoas.tipoVinculoId,
-                                    Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                    .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                    .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                    .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                    .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                            Pessoas.unidadeId.in_(tree),
-                                            Pessoas.tipoFuncaoId.is_(None),
-                                            Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                            Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                    .order_by(Pessoas.pesNome)\
-                                    .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.in_(tree),
+                                             Pessoas.tipoFuncaoId.is_(None))\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
             elif int(form.func.data) == 0:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                        Pessoas.pesNome,
-                                        Pessoas.pesCPF,
-                                        Pessoas.pesDataNascimento,
-                                        Pessoas.pesMatriculaSiape,
-                                        Pessoas.pesEmail,
-                                        Pessoas.unidadeId,
-                                        Unidades.undSigla,
-                                        Pessoas.tipoFuncaoId,
-                                        Tipo_Func_Pessoa.tfnDescricao,
-                                        Pessoas.cargaHoraria,
-                                        Pessoas.situacaoPessoaId,
-                                        Situ_Pessoa.spsDescricao,
-                                        Pessoas.tipoVinculoId,
-                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.in_(tree),
-                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome)\
-                                        .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.in_(tree))\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
             else:
 
                 pessoas = db.session.query(Pessoas.pessoaId,
-                                        Pessoas.pesNome,
-                                        Pessoas.pesCPF,
-                                        Pessoas.pesDataNascimento,
-                                        Pessoas.pesMatriculaSiape,
-                                        Pessoas.pesEmail,
-                                        Pessoas.unidadeId,
-                                        Unidades.undSigla,
-                                        Pessoas.tipoFuncaoId,
-                                        Tipo_Func_Pessoa.tfnDescricao,
-                                        Pessoas.cargaHoraria,
-                                        Pessoas.situacaoPessoaId,
-                                        Situ_Pessoa.spsDescricao,
-                                        Pessoas.tipoVinculoId,
-                                        Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                                        .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                                        .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                                        .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                                        .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.in_(tree),
-                                                Pessoas.tipoFuncaoId == form.func.data,
-                                                Pessoas.situacaoPessoaId.like(p_situ_pattern),
-                                                Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
-                                        .order_by(Pessoas.pesNome)\
-                                        .paginate(page=page,per_page=100)
+                                           Pessoas.pesNome,
+                                           Pessoas.pesCPF,
+                                           Pessoas.pesDataNascimento,
+                                           Pessoas.pesMatriculaSiape,
+                                           Pessoas.pesEmail,
+                                           Pessoas.unidadeId,
+                                           Unidades.undSigla,
+                                           Pessoas.tipoFuncaoId,
+                                           Tipo_Func_Pessoa.tfnDescricao,
+                                           Pessoas.cargaHoraria,
+                                           Situ_Pessoa.spsDescricao,
+                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                     .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
+                                             Pessoas.unidadeId.in_(tree),
+                                             Pessoas.tipoFuncaoId == form.func.data)\
+                                     .order_by(Pessoas.pesNome)\
+                                     .paginate(page=page,per_page=100)
 
                 quantidade = pessoas.total
 
@@ -399,8 +357,8 @@ def lista_pessoas_filtro():
 
         return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
                                                     gestorQtd = gestorQtd, tipo = tipo,
-                                                    p_vinculo = p_vinculo, p_func = p_func,
-                                                    p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data,
+                                                    p_func = p_func,
+                                                    p_unid = p_unid, p_nome = form.nome.data,
                                                     p_rel_unid = p_rel_unid)
 
     return render_template('pesquisa_pessoas.html', form = form)                                                
@@ -428,28 +386,24 @@ def lista_gestores_sisgp():
     # Lê tabela pessoas
 
     gestores = db.session.query(Pessoas.pessoaId,
-                             Pessoas.pesNome,
-                             Pessoas.pesCPF,
-                             Pessoas.pesDataNascimento,
-                             Pessoas.pesMatriculaSiape,
-                             Pessoas.pesEmail,
-                             Pessoas.unidadeId,
-                             Unidades.undSigla,
-                             Pessoas.tipoFuncaoId,
-                             Tipo_Func_Pessoa.tfnDescricao,
-                             Pessoas.cargaHoraria,
-                             Pessoas.situacaoPessoaId,
-                             Situ_Pessoa.spsDescricao,
-                             Pessoas.tipoVinculoId,
-                             Tipo_Vinculo_Pessoa.tvnDescricao)\
-                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                            .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                            .outerjoin(catdom, catdom.descricao == cast(Pessoas.pessoaId,String))\
-                            .filter(catdom.classificacao == 'GestorSistema')\
-                            .order_by(Pessoas.pesNome)\
-                            .paginate(page=page,per_page=100)
+                                Pessoas.pesNome,
+                                Pessoas.pesCPF,
+                                Pessoas.pesDataNascimento,
+                                Pessoas.pesMatriculaSiape,
+                                Pessoas.pesEmail,
+                                Pessoas.unidadeId,
+                                Unidades.undSigla,
+                                Pessoas.tipoFuncaoId,
+                                Tipo_Func_Pessoa.tfnDescricao,
+                                Pessoas.cargaHoraria,
+                                Situ_Pessoa.spsDescricao,
+                                Tipo_Vinculo_Pessoa.tvnDescricao)\
+                          .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                          .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                          .outerjoin(catdom, catdom.descricao == cast(Pessoas.pessoaId,String))\
+                          .filter(catdom.classificacao == 'GestorSistema')\
+                          .order_by(Pessoas.pesNome)\
+                          .paginate(page=page,per_page=100)
 
     quantidade = gestores.total
 
@@ -487,26 +441,26 @@ def pessoa_update(cod_pes):
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))                
 
-    situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
-                     .order_by(Situ_Pessoa.spsDescricao).all()
-    lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
-    lista_situ.insert(0,(0,''))
+    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
+    #                  .order_by(Situ_Pessoa.spsDescricao).all()
+    # lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
+    # lista_situ.insert(0,(0,''))
 
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao)\
                      .order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(int(f.tipoFuncaoId),f.tfnDescricao) for f in func]
     lista_func.insert(0,(0,'Sem função'))
 
-    vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
-                     .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
-    lista_vinc.insert(0,(0,''))
+    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
+    #                  .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
+    # lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
+    # lista_vinc.insert(0,(0,''))
 
     form = PessoaForm()
 
     form.func.choices    = lista_func
-    form.situ.choices    = lista_situ
-    form.vinculo.choices = lista_vinc
+    # form.situ.choices    = lista_situ
+    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
   
     if form.validate_on_submit():
@@ -524,15 +478,15 @@ def pessoa_update(cod_pes):
             else:
                 funcPes = form.func.data
 
-            if form.situ.data == 0:
-                situPes = None
-            else:
-                situPes = form.situ.data
+            # if form.situ.data == 0:
+            #     situPes = None
+            # else:
+            #     situPes = form.situ.data
 
-            if form.vinculo.data == 0:
-                vincuPes = None
-            else:
-                vincuPes = form.vinculo.data
+            # if form.vinculo.data == 0:
+            #     vincuPes = None
+            # else:
+            #     vincuPes = form.vinculo.data
 
             pessoa.pesNome            = form.nome.data
             pessoa.pesCPF             = form.cpf.data
@@ -542,8 +496,8 @@ def pessoa_update(cod_pes):
             pessoa.unidadeId          = form.unidade.data
             pessoa.tipoFuncaoId       = funcPes
             pessoa.cargaHoraria       = form.carga.data
-            pessoa.situacaoPessoaId   = situPes
-            pessoa.tipoVinculoId      = vincuPes
+            # pessoa.situacaoPessoaId   = situPes
+            # pessoa.tipoVinculoId      = vincuPes
 
             db.session.commit()
 
@@ -587,8 +541,8 @@ def pessoa_update(cod_pes):
         form.unidade.data = pessoa.unidadeId      
         form.func.data    = pessoa.tipoFuncaoId    
         form.carga.data   = pessoa.cargaHoraria  
-        form.situ.data    = pessoa.situacaoPessoaId 
-        form.vinculo.data = pessoa.tipoVinculoId 
+        # form.situ.data    = pessoa.situacaoPessoaId 
+        # form.vinculo.data = pessoa.tipoVinculoId 
 
         if gestor.first() != None:
             form.gestor.data = True
@@ -622,26 +576,26 @@ def cria_pessoa():
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))
 
-    situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
-                     .order_by(Situ_Pessoa.spsDescricao).all()
-    lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
-    lista_situ.insert(0,(0,''))
+    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
+    #                  .order_by(Situ_Pessoa.spsDescricao).all()
+    # lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
+    # lista_situ.insert(0,(0,''))
 
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao)\
                      .order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(int(f.tipoFuncaoId),f.tfnDescricao) for f in func]
     lista_func.insert(0,(0,'Sem função'))
 
-    vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
-                     .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
-    lista_vinc.insert(0,(0,''))
+    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
+    #                  .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
+    # lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
+    # lista_vinc.insert(0,(0,''))
 
     form = PessoaForm()
 
     form.func.choices    = lista_func
-    form.situ.choices    = lista_situ
-    form.vinculo.choices = lista_vinc
+    # form.situ.choices    = lista_situ
+    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
 
 
@@ -659,26 +613,24 @@ def cria_pessoa():
             else:
                 funcPes = form.func.data
 
-            if form.situ.data == 0:
-                situPes = None
-            else:
-                situPes = form.situ.data
+            # if form.situ.data == 0:
+            #     situPes = None
+            # else:
+            #     situPes = form.situ.data
 
-            if form.vinculo.data == 0:
-                vincuPes = None
-            else:
-                vincuPes = form.vinculo.data     
+            # if form.vinculo.data == 0:
+            #     vincuPes = None
+            # else:
+            #     vincuPes = form.vinculo.data     
 
             pessoa = Pessoas(pesNome           = form.nome.data,
-                            pesCPF            = form.cpf.data,
-                            pesDataNascimento = form.nasc.data,
-                            pesMatriculaSiape = form.siape.data,
-                            pesEmail          = form.email.data,
-                            unidadeId         = form.unidade.data,
-                            tipoFuncaoId      = funcPes,
-                            cargaHoraria      = form.carga.data,
-                            situacaoPessoaId  = situPes,
-                            tipoVinculoId     = vincuPes)
+                             pesCPF            = form.cpf.data,
+                             pesDataNascimento = form.nasc.data,
+                             pesMatriculaSiape = form.siape.data,
+                             pesEmail          = form.email.data,
+                             unidadeId         = form.unidade.data,
+                             tipoFuncaoId      = funcPes,
+                             cargaHoraria      = form.carga.data)
 
             db.session.add(pessoa)
             db.session.commit()
@@ -735,14 +687,10 @@ def lista_pessoas_unid(unid):
                              Pessoas.tipoFuncaoId,
                              Tipo_Func_Pessoa.tfnDescricao,
                              Pessoas.cargaHoraria,
-                             Pessoas.situacaoPessoaId,
                              Situ_Pessoa.spsDescricao,
-                             Pessoas.tipoVinculoId,
                              Tipo_Vinculo_Pessoa.tvnDescricao)\
                             .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                             .filter(Unidades.undSigla.in_(l_unid))\
                             .order_by(Pessoas.unidadeId,Pessoas.pesNome)\
                             .paginate(page=page,per_page=100)

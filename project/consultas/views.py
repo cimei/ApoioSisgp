@@ -233,7 +233,7 @@ def pactos_executados():
                                        Pactos_de_Trabalho.dataInicio,
                                        Pactos_de_Trabalho.dataFim,
                                        Pactos_de_Trabalho.formaExecucaoId,
-                                       VW_Unidades_Ativas.undSiglaCompleta,
+                                       VW_Unidades_Ativas.sigla,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
                                        literal(None).label('qtd_hom'))\
@@ -657,7 +657,8 @@ def estatisticas():
 
 
     qtd_pessoas = Pessoas.query.count()
-    qtd_pessoas_ativas = Pessoas.query.filter(Pessoas.situacaoPessoaId == 1).count()
+    # qtd_pessoas_ativas = Pessoas.query.filter(Pessoas.situacaoPessoaId == 1).count()
+    qtd_pessoas_ativas = 0
 
     qtd_ativs = db.session.query(Atividades).count()
     qtd_ativs_validas = db.session.query(Atividades).filter(Atividades.titulo.notlike('x%'),
@@ -756,8 +757,7 @@ def estatisticas():
     # pessoas: max, min e média nas unidades
     pessoas_unid = db.session.query(label('qtd_pes',func.count(Pessoas.pessoaId)))\
                              .join(Unidades, Unidades.unidadeIdPai == Pessoas.unidadeId)\
-                             .filter(Unidades.situacaoUnidadeId == 1,
-                                     Pessoas.situacaoPessoaId == 1)\
+                             .filter(Unidades.situacaoUnidadeId == 1)\
                              .group_by(Pessoas.unidadeId)\
                              .all()
 

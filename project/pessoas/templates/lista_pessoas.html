@@ -6,9 +6,6 @@
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Pessoas</span>
       </li>
     </ul>
@@ -69,8 +66,6 @@
             <th scope="col" data-field="undSigla" data-filter-control="input" data-sortable="true"><p align = "center">Unidade</p></th>
             <th scope="col" data-field="tfnDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Função</p></th>
             <th scope="col" data-field="cargaHoraria" data-filter-control="input" data-sortable="true"><p align = "center">Carga Hor.</p></th>
-            <th scope="col" data-field="spsDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Situação</p></th>
-            <th scope="col" data-field="tvnDescricao" data-filter-control="input" data-sortable="true"><p align = "center">Vínculo</p></th>
           </tr>
         </thead>
         <tbody>
@@ -86,8 +81,6 @@
             <td><p align = "center"> {{p.undSigla}} </p></td>
             <td><p align = "center"> {% if p.tfnDescricao == None %}N.I.{% else %}{{p.tfnDescricao}}{% endif %} </p></td>
             <td><p align = "center"> {{p.cargaHoraria}} </p></td>
-            <td><p align = "center"> {{p.spsDescricao}} </p></td>
-            <td><p align = "center"> {% if p.tvnDescricao == None %}N.I.{% else %}{{p.tvnDescricao}}{% endif %} </p></td>
           </tr>
 
           {% endfor %}

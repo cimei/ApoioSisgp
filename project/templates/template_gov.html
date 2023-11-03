@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>MEAG PGD IN 65</title>
+  <title>MEAG14 PGD IN 65</title>
   <!-- Fonte Rawline-->
   <link rel="stylesheet"
     href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css" />
@@ -75,7 +75,7 @@
               </button>
             </div>
             <div class="header-info">
-              <div class="header-title"><a href="{{url_for('core.inicio')}}">MEAG PGD IN 65</a></div>
+              <div class="header-title"><a href="{{url_for('core.inicio')}}">MEAG14 PGD IN 65</a></div>
               <div class="header-subtitle">Módulo de Envio e Apoio à Gestão do PGD IN 65</div>
             </div>
           </div>
@@ -155,7 +155,7 @@
             <div class="menu-container">
               <div class="menu-panel">
                 <div class="menu-header">
-                  <div class="menu-title"><span>MEAG PGD IN 65</span></div>
+                  <div class="menu-title"><span>MEAG14 PGD IN 65</span></div>
                   <div class="menu-close">
                     <button class="br-button circle" type="button" aria-label="Fechar o menu" data-dismiss="menu"><i
                         class="fa fa-times" aria-hidden="true"></i>
@@ -201,15 +201,17 @@
                           class="fa fa-eye" aria-hidden="true"></i></span><span class="content">Dados
                         Auxiliares</span></a>
                     <ul>
-                      <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i
+                      {# <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i
                               class="fa fa-heart" aria-hidden="true"></i></span><span class="content">Situações
                             Pessoa</span></a></li>
+                      #}      
                       <li><a class="menu-item" href="{{url_for('padroes.lista_tipo_funcao')}}"><span class="icon"><i
                               class="fa fa-star" aria-hidden="true"></i></span><span class="content">Tipos
                             Função</span></a></li>
-                      <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i
+                      {# <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i
                               class="fa fa-link" aria-hidden="true"></i></span><span class="content">Tipos
                             Vínculo</span></a></li>
+                      #}      
                       <li><a class="menu-item" href="{{url_for('padroes.lista_feriados')}}"><span class="icon"><i
                               class="fa fa-bed" aria-hidden="true"></i></span><span class="content">Feriados</span></a>
                       </li>

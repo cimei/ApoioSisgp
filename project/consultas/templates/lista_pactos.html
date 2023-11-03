@@ -67,7 +67,7 @@
             <p align = "center"> <a href="{{url_for('consultas.pacto_atividades', pactoId=p.pactoTrabalhoId, nome=p.pesNome)}}">
              {{(pactos_trabalho.page - 1) * pactos_trabalho.per_page + pactos_trabalho.items.index(p) + 1}}</a></p>
           </th>
-          <td><p align = "center"> {{ p.undSiglaCompleta }} </p></td>
+          <td><p align = "center"> {{ p.sigla }} </p></td>
           <td><p align = "center"> {{ p.pesNome }} </p></td>
           <td><p align = "center"> {{ p.dataInicio.strftime('%x') }} </p></td>
           <td><p align = "center"> {{ p.dataFim.strftime('%x') }} </p></td>

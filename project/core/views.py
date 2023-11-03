@@ -334,37 +334,37 @@ def CarregaUnidades():
                         else:
                             unid_exist.undCodigoSIORG = linha['undCodigoSIORG']    
                         
-                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
-                            unid_exist.pessoaIdChefe = None
-                        else:
-                            if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
-                                if id_cpf:
-                                    unid_exist.pessoaIdChefe = id_cpf.pessoaId
-                                else:
-                                    unid_exist.pessoaIdChefe = None    
-                            else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
-                                if confirma_id:
-                                    unid_exist.pessoaIdChefe = int(linha['pessoaIdChefe'])
-                                else:
-                                    unid_exist.pessoaIdChefe = None
+                        # if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
+                        #     unid_exist.pessoaIdChefe = None
+                        # else:
+                        #     if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                        #         id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
+                        #         if id_cpf:
+                        #             unid_exist.pessoaIdChefe = id_cpf.pessoaId
+                        #         else:
+                        #             unid_exist.pessoaIdChefe = None    
+                        #     else:
+                        #         confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
+                        #         if confirma_id:
+                        #             unid_exist.pessoaIdChefe = int(linha['pessoaIdChefe'])
+                        #         else:
+                        #             unid_exist.pessoaIdChefe = None
 
-                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0: 
-                            unid_exist.pessoaIdChefeSubstituto = None
-                        else:
-                            if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
-                                if id_cpf:
-                                    unid_exist.pessoaIdChefeSubstituto = id_cpf.pessoaId
-                                else:
-                                    unid_exist.pessoaIdChefeSubstituto = None
-                            else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
-                                if confirma_id:
-                                    unid_exist.pessoaIdChefeSubstituto = int(linha['pessoaIdChefeSubstituto'])
-                                else:
-                                    unid_exist.pessoaIdChefeSubstituto = None
+                        # if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0: 
+                        #     unid_exist.pessoaIdChefeSubstituto = None
+                        # else:
+                        #     if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                        #         id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
+                        #         if id_cpf:
+                        #             unid_exist.pessoaIdChefeSubstituto = id_cpf.pessoaId
+                        #         else:
+                        #             unid_exist.pessoaIdChefeSubstituto = None
+                        #     else:
+                        #         confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
+                        #         if confirma_id:
+                        #             unid_exist.pessoaIdChefeSubstituto = int(linha['pessoaIdChefeSubstituto'])
+                        #         else:
+                        #             unid_exist.pessoaIdChefeSubstituto = None
 
                         db.session.commit()
             
@@ -393,37 +393,37 @@ def CarregaUnidades():
                         else:
                             siorg = linha['undCodigoSIORG']     
 
-                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
-                            chefe = None
-                        else:
-                            if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
-                                if id_cpf:
-                                    chefe = id_cpf.pessoaId
-                                else:
-                                    chefe = None    
-                            else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
-                                if confirma_id:
-                                    chefe = int(linha['pessoaIdChefe'])
-                                else:
-                                    chefe = None    
+                        # if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
+                        #     chefe = None
+                        # else:
+                        #     if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                        #         id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
+                        #         if id_cpf:
+                        #             chefe = id_cpf.pessoaId
+                        #         else:
+                        #             chefe = None    
+                        #     else:
+                        #         confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
+                        #         if confirma_id:
+                        #             chefe = int(linha['pessoaIdChefe'])
+                        #         else:
+                        #             chefe = None    
 
-                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
-                            subs = None
-                        else:
-                            if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
-                                if id_cpf:
-                                    subs = id_cpf.pessoaId
-                                else:
-                                    subs = None
-                            else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
-                                if confirma_id:
-                                    subs = int(linha['pessoaIdChefeSubstituto'])
-                                else:
-                                    subs = None    
+                        # if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
+                        #     subs = None
+                        # else:
+                        #     if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                        #         id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
+                        #         if id_cpf:
+                        #             subs = id_cpf.pessoaId
+                        #         else:
+                        #             subs = None
+                        #     else:
+                        #         confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
+                        #         if confirma_id:
+                        #             subs = int(linha['pessoaIdChefeSubstituto'])
+                        #         else:
+                        #             subs = None    
                                 
                                   
 
@@ -436,9 +436,7 @@ def CarregaUnidades():
                                                   undNivel                = niv,
                                                   tipoFuncaoUnidadeId     = func,
                                                   Email                   = email,
-                                                  undCodigoSIORG          = siorg,
-                                                  pessoaIdChefe           = chefe,
-                                                  pessoaIdChefeSubstituto = subs)
+                                                  undCodigoSIORG          = siorg)
 
                         db.session.add(unidade_gravar)
 
@@ -594,15 +592,15 @@ def CarregaPessoas():
                             else:
                                 pessoa_exist.cargaHoraria = linha['cargaHoraria']
 
-                            if linha['situacaoPessoaId'] == 'NULL':
-                                pessoa_exist.situacaoPessoaId = None
-                            else:
-                                pessoa_exist.situacaoPessoaId = linha['situacaoPessoaId']
+                            # if linha['situacaoPessoaId'] == 'NULL':
+                            #     pessoa_exist.situacaoPessoaId = None
+                            # else:
+                            #     pessoa_exist.situacaoPessoaId = linha['situacaoPessoaId']
 
-                            if linha['tipoVinculoId'] == 'NULL':
-                                pessoa_exist.tipoVinculoId = None
-                            else:
-                                pessoa_exist.tipoVinculoId = linha['tipoVinculoId']
+                            # if linha['tipoVinculoId'] == 'NULL':
+                            #     pessoa_exist.tipoVinculoId = None
+                            # else:
+                            #     pessoa_exist.tipoVinculoId = linha['tipoVinculoId']
 
                         elif linha['pesCPF'] != '' and linha['pesCPF'] != None:
 
@@ -621,15 +619,15 @@ def CarregaPessoas():
                             else:
                                 func = linha['tipoFuncaoId']
 
-                            if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0 or linha['situacaoPessoaId'] == 'NULL':
-                                sit = None
-                            else:
-                                sit = linha['situacaoPessoaId']
+                            # if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0 or linha['situacaoPessoaId'] == 'NULL':
+                            #     sit = None
+                            # else:
+                            #     sit = linha['situacaoPessoaId']
 
-                            if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0 or linha['tipoVinculoId'] == 'NULL':
-                                vinc = None
-                            else:
-                                vinc = linha['tipoVinculoId']   
+                            # if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0 or linha['tipoVinculoId'] == 'NULL':
+                            #     vinc = None
+                            # else:
+                            #     vinc = linha['tipoVinculoId']   
 
                             pessoa_gravar = Pessoas(pesNome           = linha['pesNome'],
                                                     pesCPF            = linha['pesCPF'],
@@ -638,9 +636,7 @@ def CarregaPessoas():
                                                     pesEmail          = email,
                                                     unidadeId         = unid.unidadeId,
                                                     tipoFuncaoId      = func,
-                                                    cargaHoraria      = linha['cargaHoraria'],
-                                                    situacaoPessoaId  = sit,
-                                                    tipoVinculoId     = vinc)
+                                                    cargaHoraria      = linha['cargaHoraria'])
 
                             db.session.add(pessoa_gravar)
                                 

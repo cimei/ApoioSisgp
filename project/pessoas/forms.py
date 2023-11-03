@@ -27,8 +27,8 @@ class PessoaForm(FlaskForm):
    unidade = SelectField('Unidade:',validators=[DataRequired(message="Escolha a unidade!")],coerce=int)
    func    = SelectField('Função:',coerce=int)
    carga   = IntegerField('Carga Horária:')
-   situ    = SelectField('Situação:',coerce=int)
-   vinculo = SelectField('Tipo vínculo:',coerce=int)
+   # situ    = SelectField('Situação:',coerce=int)
+   # vinculo = SelectField('Tipo vínculo:',coerce=int)
    gestor  = BooleanField('Gestor(a) SISGP?')
     
    submit  = SubmitField('Submeter')
@@ -39,8 +39,8 @@ class PesquisaForm(FlaskForm):
    nome    = StringField('Nome:')
    unidade = SelectField('Unidade:')
    func    = SelectField('Função:')
-   situ    = SelectField('Situação:')
-   vinculo = SelectField('Tipo vínculo:')
+   # situ    = SelectField('Situação:')
+   # vinculo = SelectField('Tipo vínculo:')
    rel_unid = SelectField('Subordinação:',choices=[(1,'Direta'),(2,'Hierarquia')])
    
    submit              = SubmitField('Pesquisar')

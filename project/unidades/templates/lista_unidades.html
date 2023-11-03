@@ -6,9 +6,6 @@
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Unidades</span>
       </li>
     </ul>
@@ -77,8 +74,6 @@
           <th scope="col" data-sortable="true"><p class = "text-muted" align = "center">TipoFunc</p></th>
           <th scope="col" data-sortable="true"><p align = "center">E-mail</p></th>
           <th scope="col" data-sortable="true"><p align = "center">SIORG</p></th>
-          <th scope="col" data-sortable="true"><p align = "center">Titular</p></th>
-          <th scope="col" data-sortable="true"><p align = "center">Substituto</p></th>
         </tr>
       </thead>
       <tbody>
@@ -107,8 +102,6 @@
           <td><p class = "text-muted" align = "center"> {% if u.tipoFuncaoUnidadeId == None %}N.I.{% else %}{{u.tipoFuncaoUnidadeId}}{% endif %} </p></td>
           <td><p align = "center"> {% if u.Email == None or u.Email == '' %}N.I.{% else %}{{u.Email}}{% endif %} </p></td>
           <td><p align = "center"> {% if u.undCodigoSIORG == 0 %}N.I.{% else %}{{u.undCodigoSIORG}}{% endif %} </p></td>
-          <td><p align = "center"> {% if u.titular == None or u.titular == '' %}N.I.{% else %}{{u.titular}}{% endif %} </p></td>
-          <td><p align = "center"> {% if u.substituto == None or u.substituto == '' %}N.I.{% else %}{{u.substituto}}{% endif %} </p></td>
         </tr>
 
         {% endfor %}
