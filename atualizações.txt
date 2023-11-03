@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+03/11/2023
+Criada versão MEAG14.
+v1.0.0
+
 20/10/2023
 Criação da consulta de planos executados com indicação de avaliação.
 Correção no envio de atividades de planos.
