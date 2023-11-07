@@ -1,5 +1,11 @@
 ## Atualizações ##
 
+06/11/2023
+Não deixa colocar uma unidade com pai dela mesma.
+Avisa, na lista de unidades, se houver unidade pai dela mesma.
+Caracteres coringa na carga de unidades e pessoas.
+v3.2.7
+
 20/10/2023
 Criação da consulta de planos executados com indicação de avaliação.
 Correção no envio de atividades de planos.

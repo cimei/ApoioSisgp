@@ -300,75 +300,90 @@ def CarregaUnidades():
 
                     qtdLinhas += 1
 
-                    # se a unidade (sigla) já existir, atualiza os registros (sobreescreve)
+                    # Se a unidade (sigla) já existir, atualiza os registros (sobreescreve)
+                    # Campos com ** serão ignorados
+
                     if linha['undSigla'] in l_siglaExistente:
 
                         qtd_exist += 1
 
                         unid_exist = db.session.query(Unidades).filter(Unidades.undSigla == linha['undSigla']).first()
 
-                        unid_exist.undSigla          = linha['undSigla']
-                        unid_exist.undDescricao      = linha['undDescricao']
-                        unid_exist.unidadeIdPai      = None
-                        unid_exist.tipoUnidadeId     = linha['tipoUnidadeId']
-                        unid_exist.situacaoUnidadeId = linha['situacaoUnidadeId']
-                        unid_exist.ufId              = linha['ufId']
+                        unid_exist.undSigla = linha['undSigla']
 
-                        if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
-                            unid_exist.undNivel = None
-                        else:
-                            unid_exist.undNivel = linha['undNivel']
+                        if linha['undDescricao'] != '**':
+                            unid_exist.undDescricao = linha['undDescricao']
+                        if linha['unidadeIdPai'] != '**':
+                            unid_exist.unidadeIdPai = None
+                        if linha['tipoUnidadeId'] != '**':
+                            unid_exist.tipoUnidadeId = linha['tipoUnidadeId']
+                        if linha['situacaoUnidadeId'] != '**':
+                            unid_exist.situacaoUnidadeId = linha['situacaoUnidadeId']
+                        if linha['ufId'] != '**':
+                            unid_exist.ufId = linha['ufId']
 
-                        if linha['tipoFuncaoUnidadeId'] == 'NULL' or linha['tipoFuncaoUnidadeId'] == '':
-                            unid_exist.tipoFuncaoUnidadeId = None
-                        else:
-                            unid_exist.tipoFuncaoUnidadeId = linha['tipoFuncaoUnidadeId']
+                        if linha['undNivel'] != '**':
+                            if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
+                                unid_exist.undNivel = None
+                            else:
+                                unid_exist.undNivel = linha['undNivel']
 
-                        if linha['Email'] == 'NULL' or linha['Email'] == '':
-                            unid_exist.Email = None
-                        else:
-                            unid_exist.Email = linha['Email']
+                        if linha['tipoFuncaoUnidadeId'] != '**':
+                            if linha['tipoFuncaoUnidadeId'] == 'NULL' or linha['tipoFuncaoUnidadeId'] == '':
+                                unid_exist.tipoFuncaoUnidadeId = None
+                            else:
+                                unid_exist.tipoFuncaoUnidadeId = linha['tipoFuncaoUnidadeId']
 
-                        if linha['undCodigoSIORG'] == 'NULL' or linha['undCodigoSIORG'] == '':
-                            unid_exist.undCodigoSIORG = 0
-                        else:
-                            unid_exist.undCodigoSIORG = linha['undCodigoSIORG']    
+                        if linha['Email'] != '**':
+                            if linha['Email'] == 'NULL' or linha['Email'] == '':
+                                unid_exist.Email = None
+                            else:
+                                unid_exist.Email = linha['Email']
+
+                        if linha['undCodigoSIORG'] != '**':
+                            if linha['undCodigoSIORG'] == 'NULL' or linha['undCodigoSIORG'] == '':
+                                unid_exist.undCodigoSIORG = 0
+                            else:
+                                unid_exist.undCodigoSIORG = linha['undCodigoSIORG']    
                         
-                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
-                            unid_exist.pessoaIdChefe = None
-                        else:
-                            if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
-                                if id_cpf:
-                                    unid_exist.pessoaIdChefe = id_cpf.pessoaId
-                                else:
-                                    unid_exist.pessoaIdChefe = None    
+                        if linha['pessoaIdChefe'] != '**':
+                            if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
+                                unid_exist.pessoaIdChefe = None
                             else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
-                                if confirma_id:
-                                    unid_exist.pessoaIdChefe = int(linha['pessoaIdChefe'])
+                                if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                    id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefe'])).first()
+                                    if id_cpf:
+                                        unid_exist.pessoaIdChefe = id_cpf.pessoaId
+                                    else:
+                                        unid_exist.pessoaIdChefe = None    
                                 else:
-                                    unid_exist.pessoaIdChefe = None
+                                    confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefe'])).first()
+                                    if confirma_id:
+                                        unid_exist.pessoaIdChefe = int(linha['pessoaIdChefe'])
+                                    else:
+                                        unid_exist.pessoaIdChefe = None
 
-                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0: 
-                            unid_exist.pessoaIdChefeSubstituto = None
-                        else:
-                            if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
-                                id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
-                                if id_cpf:
-                                    unid_exist.pessoaIdChefeSubstituto = id_cpf.pessoaId
-                                else:
-                                    unid_exist.pessoaIdChefeSubstituto = None
+                        if linha['pessoaIdChefeSubstituto'] != '**':
+                            if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0: 
+                                unid_exist.pessoaIdChefeSubstituto = None
                             else:
-                                confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
-                                if confirma_id:
-                                    unid_exist.pessoaIdChefeSubstituto = int(linha['pessoaIdChefeSubstituto'])
+                                if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
+                                    id_cpf = db.session.query(Pessoas.pessoaId).filter(Pessoas.pesCPF == str(linha['pessoaIdChefeSubstituto'])).first()
+                                    if id_cpf:
+                                        unid_exist.pessoaIdChefeSubstituto = id_cpf.pessoaId
+                                    else:
+                                        unid_exist.pessoaIdChefeSubstituto = None
                                 else:
-                                    unid_exist.pessoaIdChefeSubstituto = None
+                                    confirma_id = db.session.query(Pessoas).filter(Pessoas.pessoaId == int(linha['pessoaIdChefeSubstituto'])).first()
+                                    if confirma_id:
+                                        unid_exist.pessoaIdChefeSubstituto = int(linha['pessoaIdChefeSubstituto'])
+                                    else:
+                                        unid_exist.pessoaIdChefeSubstituto = None
 
                         db.session.commit()
             
-                    # não encontrando a unidade(sigla) no banco, cria um novo registro
+                    # Não encontrando a unidade(sigla) no banco, cria um novo registro
+
                     elif linha['undSigla'] != '' and linha['undSigla'] != None :
 
                         pai = None
@@ -451,6 +466,7 @@ def CarregaUnidades():
             with open(arq, newline='',encoding = 'utf-8-sig') as data:            
                 
                 erro_pai = 0
+                erro_pai_de_si_mema = 0
                 data_lines = csv.DictReader(data,delimiter=';')
                 for linha in data_lines: 
 
@@ -466,15 +482,24 @@ def CarregaUnidades():
                                 if not cod_pai:
                                     erro_pai += 1
                                     unid_exist.unidadeIdPai = None
-                                else:    
-                                    unid_exist.unidadeIdPai = linha['unidadeIdPai']
+                                else:
+                                    if linha['unidadeIdPai'] == unid_exist.unidadeId:
+                                        erro_pai_de_si_mema += 1
+                                        unid_exist.unidadeIdPai = None
+                                    else:
+                                        unid_exist.unidadeIdPai = linha['unidadeIdPai']
                             else:    
                                 cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
                                 if not cod_pai:
                                     erro_pai += 1
                                     unid_exist.unidadeIdPai = None
-                                else:    
-                                    unid_exist.unidadeIdPai = cod_pai.unidadeId 
+                                else:
+                                    if linha['unidadeIdPai'] == unid_exist.undSigla:
+                                        erro_pai_de_si_mema += 1
+                                        unid_exist.unidadeIdPai = None
+                                    else:
+                                        unid_exist.unidadeIdPai = cod_pai.unidadeId
+
                 db.session.commit()                          
 
                 print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
@@ -485,6 +510,9 @@ def CarregaUnidades():
                 if erro_pai > 0:
                     flash (str(erro_pai)+' ocorrência(s) de unidade pai sem correspondência na tabela de Unidades.','erro')
                 
+                if erro_pai_de_si_mema > 0:
+                    flash (str(erro_pai_de_si_mema)+' ocorrência(s) de unidade que estão referênciadas como pai de si mesma.','erro')
+
                 if qtd_exist == 0:
 
                     flash('Executada carga de unidades no DBSISGP. ' +\
@@ -565,44 +593,56 @@ def CarregaPessoas():
 
                         if linha['pesCPF'] in l_cpfExistente:
 
+                            # Se o cpf já existir no banco, atuliza registro
+                            # Caso receba **, ignora o campo
+
                             qtd_exist += 1
 
                             pessoa_exist = db.session.query(Pessoas).filter(Pessoas.pesCPF == linha['pesCPF']).first()
 
-                            pessoa_exist.pesNome = linha['pesNome']
-                            pessoa_exist.pesDataNascimento    = linha['pesDataNascimento']
-
-                            if linha['pesMatriculaSiape'] == 'NULL':
-                                pessoa_exist.pesMatriculaSiape = None
-                            else:
-                                pessoa_exist.pesMatriculaSiape = linha['pesMatriculaSiape']
-
-                            if linha['pesEmail'] == 'NULL':
-                                pessoa_exist.pesEmail = None
-                            else:
-                                pessoa_exist.pesEmail = linha['pesEmail']
-
                             pessoa_exist.unidadeId = unid.unidadeId
 
-                            if linha['tipoFuncaoId'] == 'NULL' or linha['tipoFuncaoId'] == '':
-                                pessoa_exist.tipoFuncaoId = None
-                            else:
-                                pessoa_exist.tipoFuncaoId  = linha['tipoFuncaoId']
+                            if linha['pesNome'] != '**':
+                                pessoa_exist.pesNome = linha['pesNome']
 
-                            if linha['cargaHoraria'] == 'NULL':
-                                pessoa_exist.cargaHoraria = None
-                            else:
-                                pessoa_exist.cargaHoraria = linha['cargaHoraria']
+                            if linha['pesDataNascimento'] != '**':    
+                                pessoa_exist.pesDataNascimento    = linha['pesDataNascimento']
 
-                            if linha['situacaoPessoaId'] == 'NULL':
-                                pessoa_exist.situacaoPessoaId = None
-                            else:
-                                pessoa_exist.situacaoPessoaId = linha['situacaoPessoaId']
+                            if linha['pesMatriculaSiape'] != '**':
+                                if linha['pesMatriculaSiape'] == 'NULL':
+                                    pessoa_exist.pesMatriculaSiape = None
+                                else:
+                                    pessoa_exist.pesMatriculaSiape = linha['pesMatriculaSiape']
 
-                            if linha['tipoVinculoId'] == 'NULL':
-                                pessoa_exist.tipoVinculoId = None
-                            else:
-                                pessoa_exist.tipoVinculoId = linha['tipoVinculoId']
+                            if linha['pesEmail'] != '**':
+                                if linha['pesEmail'] == 'NULL':
+                                    pessoa_exist.pesEmail = None
+                                else:
+                                    pessoa_exist.pesEmail = linha['pesEmail']
+
+                            if linha['tipoFuncaoId'] != '**':
+                                if linha['tipoFuncaoId'] == 'NULL' or linha['tipoFuncaoId'] == '':
+                                    pessoa_exist.tipoFuncaoId = None
+                                else:
+                                    pessoa_exist.tipoFuncaoId  = linha['tipoFuncaoId']
+
+                            if linha['cargaHoraria'] != '**':
+                                if linha['cargaHoraria'] == 'NULL':
+                                    pessoa_exist.cargaHoraria = None
+                                else:
+                                    pessoa_exist.cargaHoraria = linha['cargaHoraria']
+
+                            if linha['situacaoPessoaId'] != '**':
+                                if linha['situacaoPessoaId'] == 'NULL':
+                                    pessoa_exist.situacaoPessoaId = None
+                                else:
+                                    pessoa_exist.situacaoPessoaId = linha['situacaoPessoaId']
+
+                            if linha['tipoVinculoId'] != '**':
+                                if linha['tipoVinculoId'] == 'NULL':
+                                    pessoa_exist.tipoVinculoId = None
+                                else:
+                                    pessoa_exist.tipoVinculoId = linha['tipoVinculoId']
 
                         elif linha['pesCPF'] != '' and linha['pesCPF'] != None:
 
