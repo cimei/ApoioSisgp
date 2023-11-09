@@ -6,9 +6,6 @@
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Unidades</span>
       </li>
     </ul>
@@ -88,7 +85,7 @@
           <th scope="row"> <p align = "center">{{(unids.page - 1) * unids.per_page + unids.items.index(u) + 1}} </a> </p></th>
           <td><p align = "center"> <a href="{{url_for('unidades.unidade_update', cod_unid=u.unidadeId)}}">{{u.undSigla}} </a></p></td>
           <td><p align = "center"> {{u.undDescricao}} </p></td>
-          <td><p align = "center"> {{u.Sigla_Pai}} </p></td>
+          <td><p align = "center"> {% if u.Sigla_Pai == None or u.Sigla_Pai == '' %}N.I.{% else %}{{u.Sigla_Pai}}{% endif %} </p></td>
           <td><p class = "text-muted" align = "center"> 
             {% if  u.tipoUnidadeId in dic_tipo_unidade.keys() %}
               {{dic_tipo_unidade[u.tipoUnidadeId]}} 

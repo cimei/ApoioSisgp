@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+09/11/2023
+Correções na carga de unidade e pessoas.
+v3.2.8
+
 06/11/2023
 Não deixa colocar uma unidade com pai dela mesma.
 Avisa, na lista de unidades, se houver unidade pai dela mesma.

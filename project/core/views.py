@@ -313,12 +313,16 @@ def CarregaUnidades():
 
                         if linha['undDescricao'] != '**':
                             unid_exist.undDescricao = linha['undDescricao']
+                            
                         if linha['unidadeIdPai'] != '**':
                             unid_exist.unidadeIdPai = None
+                            
                         if linha['tipoUnidadeId'] != '**':
                             unid_exist.tipoUnidadeId = linha['tipoUnidadeId']
+                            
                         if linha['situacaoUnidadeId'] != '**':
                             unid_exist.situacaoUnidadeId = linha['situacaoUnidadeId']
+                            
                         if linha['ufId'] != '**':
                             unid_exist.ufId = linha['ufId']
 
@@ -384,31 +388,51 @@ def CarregaUnidades():
             
                     # Não encontrando a unidade(sigla) no banco, cria um novo registro
 
-                    elif linha['undSigla'] != '' and linha['undSigla'] != None :
+                    elif linha['undSigla'] != '' and linha['undSigla'] != None : # sigla não pode vir vazia em um registro novo
 
-                        pai = None
+                        pai = None  # pai, se houver, será carregado posteriormente
                         
-                        if linha['undNivel'] == 'NULL' or linha['undNivel'] == '':
+                        if linha['undDescricao'] == 'NULL' or linha['undDescricao'] == '' or linha['undDescricao'] == '**':
+                            descricao = 'N.I. - **'
+                        else:
+                            descricao = linha['undDescricao']
+                            
+                        if linha['tipoUnidadeId'] == 'NULL' or linha['tipoUnidadeId'] == '' or linha['tipoUnidadeId'] == '**':
+                            tipounidade = 0
+                        else:
+                            tipounidade = linha['tipoUnidadeId']   
+                            
+                        if linha['situacaoUnidadeId'] == 'NULL' or linha['situacaoUnidadeId'] == '' or linha['situacaoUnidadeId'] == '**':
+                            situunidade = 0
+                        else:
+                            situunidade = linha['situacaoUnidadeId']    
+                            
+                        if linha['ufId'] == 'NULL' or linha['ufId'] == '' or linha['ufId'] == '**':
+                            ufId = 'xx'
+                        else:
+                            ufId = linha['ufId']    
+                        
+                        if linha['undNivel'] == 'NULL' or linha['undNivel'] == '' or linha['undNivel'] == '**':
                             niv = None
                         else:
                             niv = linha['undNivel']
 
-                        if linha['tipoFuncaoUnidadeId'] == 'NULL' or linha['tipoFuncaoUnidadeId'] == '':
+                        if linha['tipoFuncaoUnidadeId'] == 'NULL' or linha['tipoFuncaoUnidadeId'] == '' or linha['tipoFuncaoUnidadeId'] == '**':
                             func = None
                         else:
                             func = linha['tipoFuncaoUnidadeId']
 
-                        if linha['Email'] == 'NULL' or linha['Email'] == '':
+                        if linha['Email'] == 'NULL' or linha['Email'] == '' or linha['Email'] == '**':
                             email = None
                         else:
                             email = linha['Email']
 
-                        if linha['undCodigoSIORG'] == 'NULL' or linha['undCodigoSIORG'] == '':
+                        if linha['undCodigoSIORG'] == 'NULL' or linha['undCodigoSIORG'] == '' or linha['undCodigoSIORG'] == '**':
                             siorg = 0
                         else:
                             siorg = linha['undCodigoSIORG']     
 
-                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0:
+                        if linha['pessoaIdChefe'] == 'NULL' or linha['pessoaIdChefe'] == '' or linha['pessoaIdChefe'] == 0 or linha['pessoaIdChefe'] == '**':
                             chefe = None
                         else:
                             if len(str(linha['pessoaIdChefe'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
@@ -424,7 +448,7 @@ def CarregaUnidades():
                                 else:
                                     chefe = None    
 
-                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0:
+                        if linha['pessoaIdChefeSubstituto'] == 'NULL' or linha['pessoaIdChefeSubstituto'] == '' or linha['pessoaIdChefeSubstituto'] == 0 or linha['pessoaIdChefeSubstituto'] == '**':
                             subs = None
                         else:
                             if len(str(linha['pessoaIdChefeSubstituto'])) == 11: # deve ser um cpf neste campo, pega então id correspondente
@@ -443,11 +467,11 @@ def CarregaUnidades():
                                   
 
                         unidade_gravar = Unidades(undSigla                = linha['undSigla'],
-                                                  undDescricao            = linha['undDescricao'],
+                                                  undDescricao            = descricao,
                                                   unidadeIdPai            = pai,
-                                                  tipoUnidadeId           = linha['tipoUnidadeId'],
-                                                  situacaoUnidadeId       = linha['situacaoUnidadeId'],
-                                                  ufId                    = linha['ufId'],
+                                                  tipoUnidadeId           = tipounidade,
+                                                  situacaoUnidadeId       = situunidade,
+                                                  ufId                    = ufId,
                                                   undNivel                = niv,
                                                   tipoFuncaoUnidadeId     = func,
                                                   Email                   = email,
@@ -488,46 +512,49 @@ def CarregaUnidades():
                                         unid_exist.unidadeIdPai = None
                                     else:
                                         unid_exist.unidadeIdPai = linha['unidadeIdPai']
-                            else:    
-                                cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
-                                if not cod_pai:
-                                    erro_pai += 1
-                                    unid_exist.unidadeIdPai = None
-                                else:
-                                    if linha['unidadeIdPai'] == unid_exist.undSigla:
-                                        erro_pai_de_si_mema += 1
+                            else:   
+                                
+                                if linha['unidadeIdPai'] != '**':
+                                    
+                                    cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
+                                    if not cod_pai:
+                                        erro_pai += 1
                                         unid_exist.unidadeIdPai = None
                                     else:
-                                        unid_exist.unidadeIdPai = cod_pai.unidadeId
+                                        if linha['unidadeIdPai'] == unid_exist.undSigla:
+                                            erro_pai_de_si_mema += 1
+                                            unid_exist.unidadeIdPai = None
+                                        else:
+                                            unid_exist.unidadeIdPai = cod_pai.unidadeId
 
                 db.session.commit()                          
 
-                print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
-                print ('*** ',qtd,'linhas inseridas na tabela unidade -> Unidades novas.')
-                print ('*** ',qtd_exist,'linhas com siglas já existentes -> Unidades alteradas.')
+                print ('*** ',qtdLinhas,'linha(s) no arquivo de entrada.')
+                print ('*** ',qtd,'linha(s) inserida(s) na tabela unidade -> Unidades novas.')
+                print ('*** ',qtd_exist,'linha(s) com sigla(s) já existente(s) -> Unidade(s) alterada(s).')
                 print ('*****************************************************************')
 
                 if erro_pai > 0:
                     flash (str(erro_pai)+' ocorrência(s) de unidade pai sem correspondência na tabela de Unidades.','erro')
                 
                 if erro_pai_de_si_mema > 0:
-                    flash (str(erro_pai_de_si_mema)+' ocorrência(s) de unidade que estão referênciadas como pai de si mesma.','erro')
+                    flash (str(erro_pai_de_si_mema)+' ocorrência(s) de unidade com tentativa de registro como próprio pai. O campo unidadeIdPai foi ignorado.','erro')
 
                 if qtd_exist == 0:
 
                     flash('Executada carga de unidades no DBSISGP. ' +\
-                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                        str(qtd) + ' linhas efetivamente inseridas.','sucesso')
+                        str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                        str(qtd) + ' linha(s) inserida(s).','sucesso')
 
                 else:
 
                     flash('Executada carga de unidades no DBSISGP. ' +\
-                        str(qtdLinhas) +' linhas no arquivo de entrada, ' +\
-                        str(qtd) + ' registros efetivamente inseridos e ' +\
-                        str(qtd_exist) + ' registros preexistentes alterados.','perigo')
+                        str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                        str(qtd) + ' registro(s) inserido(s) e ' +\
+                        str(qtd_exist) + ' registro(s) preexistente(s) alterado(s).','perigo')
 
-                registra_log_auto(current_user.id,'Carga em Unidades: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
-                                                 str(qtd) + ' registros inseridos. ' + str(qtd_exist) + ' registros alterados.')
+                registra_log_auto(current_user.id,'Carga em Unidades: ' + str(qtdLinhas) +' linha(s) no arquivo. ' +\
+                                                 str(qtd) + ' registro(s) inserido(s). ' + str(qtd_exist) + ' registro(s) alterado(s).')
 
             if os.path.exists(arq):
                 os.remove(arq)
@@ -593,7 +620,7 @@ def CarregaPessoas():
 
                         if linha['pesCPF'] in l_cpfExistente:
 
-                            # Se o cpf já existir no banco, atuliza registro
+                            # Se o cpf já existir no banco, atualiza registro
                             # Caso receba **, ignora o campo
 
                             qtd_exist += 1
@@ -644,41 +671,56 @@ def CarregaPessoas():
                                 else:
                                     pessoa_exist.tipoVinculoId = linha['tipoVinculoId']
 
-                        elif linha['pesCPF'] != '' and linha['pesCPF'] != None:
+                        elif linha['pesCPF'] != '' and linha['pesCPF'] != None:  # o cpf não pode vir vazio em um registro novo
 
-                            if linha['pesMatriculaSiape'] == 'NULL':
+                            if linha['pesNome'] == '**':
+                                nome = 'N.I. - **'
+                            else:
+                                nome = linha['pesNome']
+
+                            if linha['pesDataNascimento'] == '**':    
+                                nasc = datetime.strptime('2001-01-01','%Y-%m-%d').date()
+                            else:
+                                nasc = linha['pesDataNascimento']
+                            
+                            if linha['pesMatriculaSiape'] == 'NULL' or linha['pesMatriculaSiape'] == '**':
                                 siape = None
                             else:
                                 siape = linha['pesMatriculaSiape']
 
-                            if linha['pesEmail'] == 'NULL':
+                            if linha['pesEmail'] == 'NULL' or linha['pesEmail'] == '**':
                                 email = None
                             else:
                                 email = linha['pesEmail']
 
-                            if linha['tipoFuncaoId'] == '' or linha['tipoFuncaoId'] == 0 or linha['tipoFuncaoId'] == 'NULL':
+                            if linha['tipoFuncaoId'] == '' or linha['tipoFuncaoId'] == 0 or linha['tipoFuncaoId'] == 'NULL' or linha['tipoFuncaoId'] == '**':
                                 func = None
                             else:
                                 func = linha['tipoFuncaoId']
+                                
+                            if linha['cargaHoraria'] == 'NULL' or linha['cargaHoraria'] == '**':
+                                cargaHoraria = None
+                            else:
+                                cargaHoraria = linha['cargaHoraria']   
 
-                            if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0 or linha['situacaoPessoaId'] == 'NULL':
+                            if linha['situacaoPessoaId'] == '' or linha['situacaoPessoaId'] == 0 or linha['situacaoPessoaId'] == 'NULL' or linha['situacaoPessoaId'] == '**':
                                 sit = None
                             else:
                                 sit = linha['situacaoPessoaId']
 
-                            if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0 or linha['tipoVinculoId'] == 'NULL':
+                            if linha['tipoVinculoId'] == '' or linha['tipoVinculoId'] == 0 or linha['tipoVinculoId'] == 'NULL' or linha['tipoVinculoId'] == '**':
                                 vinc = None
                             else:
                                 vinc = linha['tipoVinculoId']   
 
-                            pessoa_gravar = Pessoas(pesNome           = linha['pesNome'],
-                                                    pesCPF            = linha['pesCPF'],
-                                                    pesDataNascimento = linha['pesDataNascimento'],
+                            pessoa_gravar = Pessoas(pesCPF            = linha['pesCPF'],
+                                                    unidadeId         = unid.unidadeId,
+                                                    pesNome           = nome,
+                                                    pesDataNascimento = nasc,
                                                     pesMatriculaSiape = siape,
                                                     pesEmail          = email,
-                                                    unidadeId         = unid.unidadeId,
                                                     tipoFuncaoId      = func,
-                                                    cargaHoraria      = linha['cargaHoraria'],
+                                                    cargaHoraria      = cargaHoraria,
                                                     situacaoPessoaId  = sit,
                                                     tipoVinculoId     = vinc)
 
@@ -691,29 +733,37 @@ def CarregaPessoas():
                     else:
                         qtd_sem_unid += 1
 
-                print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
-                print ('*** ',qtd,'linhas inseridas na tabela pessoa.')
-                print ('*** ',qtd_exist,'registros preexistentes alterados.')
-                print ('*** ',qtd_sem_unid,'não inseridas por não encontrar undSigla correspondente na tabela Unidades.')
+                print ('*** ',qtdLinhas,'linha(s) no arquivo de entrada.')
+                print ('*** ',qtd,'linha(s) inserida(s) na tabela pessoa.')
+                print ('*** ',qtd_exist,'registro(s) preexistente(s) alterado(s).')
+                print ('*** ',qtd_sem_unid,'não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.')
                 print ('***********************************************************************************')
 
                 if qtd_exist == 0:
-
-                    flash('Executada carga de Pessoas no DBSISGP. ' +\
-                        str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
-                        str(qtd) +' linha(s) efetivamente inserida(s). ' +\
-                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','sucesso')
-
+                    if qtd_sem_unid == 0:
+                        flash('Executada carga de Pessoas no DBSISGP: ' +\
+                            str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                            str(qtd) +' linha(s) inserida(s).','sucesso')
+                    else:
+                        flash('Executada carga de Pessoas no DBSISGP: ' +\
+                            str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                            str(qtd) +' linha(s) inserida(s). ' +\
+                            str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','sucesso')    
                 else:
-
-                    flash('Executada carga de Pessoas no DBSISGP. ' +\
-                        str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
-                        str(qtd) +' registro(s) efetivamente inserido(s) e ' +\
-                        str(qtd_exist) +' registros alterado(s). ' +\
-                        str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','perigo')
+                    if qtd_sem_unid == 0:
+                        flash('Executada carga de Pessoas no DBSISGP: ' +\
+                            str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                            str(qtd) +' registro(s) inserido(s) e ' +\
+                            str(qtd_exist) +' registros alterado(s).','perigo')
+                    else:
+                        flash('Executada carga de Pessoas no DBSISGP: ' +\
+                            str(qtdLinhas) +' linha(s) no arquivo de entrada, ' +\
+                            str(qtd) +' registro(s) inserido(s) e ' +\
+                            str(qtd_exist) +' registros alterado(s). ' +\
+                            str(qtd_sem_unid) +' pessoa(s) não inserida(s) por não encontrar undSigla correspondente na tabela Unidades.','perigo')    
             
-                registra_log_auto(current_user.id,'Carga em Pessoas: ' + str(qtdLinhas) +' linhas no arquivo. ' +\
-                                                 str(qtd) + ' registros inseridos. ' + str(qtd_exist) + ' registros alterados.')
+                registra_log_auto(current_user.id,'Carga em Pessoas: ' + str(qtdLinhas) +' linha(s) no arquivo. ' +\
+                                                 str(qtd) + ' registro(s) inserido(s). ' + str(qtd_exist) + ' registro(s) alterado(s).')
 
 
             if os.path.exists(arq):
