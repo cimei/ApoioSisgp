@@ -74,8 +74,11 @@ class users(db.Model, UserMixin):
     userAtivo                  = db.Column(db.Boolean)
     userEnvia                  = db.Column(db.Boolean)
     avaliadorId                = db.Column(db.Integer, nullable=True)
+    instituicaoId              = db.Column(db.Integer, nullable=True)
+    user_api                   = db.Column(db.String)
+    senha_api                  = db.Column(db.String)
 
-    def __init__(self,userNome,userEmail,plaintext_password,userAtivo,userEnvia,email_confirmation_sent_on=None):
+    def __init__(self,userNome,userEmail,instituicaoId,plaintext_password,userAtivo,userEnvia,user_api,senha_api,email_confirmation_sent_on=None):
 
         self.userNome                   = userNome
         self.userEmail                  = userEmail
@@ -89,6 +92,9 @@ class users(db.Model, UserMixin):
         self.userAtivo                  = userAtivo
         self.userEnvia                  = userEnvia
         self.avaliadorId                = None
+        self.instituicaoId              = instituicaoId
+        self.user_api                   = user_api
+        self.senha_api                  = senha_api
 
     def check_password (self,plaintext_password):
 

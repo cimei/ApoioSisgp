@@ -7,8 +7,6 @@
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.interno_i')}}">Funções Internas</a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('usuarios.view_users')}}">Usuários</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Troca senha</span>
       </li>
     </ul>
@@ -42,19 +40,45 @@
   
 <br>
 
-  <div class="form-group col-6">
-    {{ render_field(form.ativo,class="form-check-input", obr=True) }}
+<div class="row">
+
+  <div class="col-6">
+
+    <div class="form-group col-6">
+      {{ render_field(form.ativo, obr=True) }}
+    </div>
+
+    <div class="form-group col-8">
+      {{ render_field(form.unidade, obr=True) }}
+    </div>
+
+  </div>
+  
+  <div class="col-6">
+
+    <div class="form-group col-8">
+      {{ render_field(form.envia, obr=True) }}
+    </div>
+
+    <div class="form-group col-10">
+      {{ render_field(form.user_api, obr=False) }}
+    </div>  
+    
+    <div class="form-group col-6">
+      {{ render_field(form.senha_api, obr=False) }}
+    </div>
+
   </div>
 
-  <div class="form-group col-8">
-    {{ render_field(form.envia,class="form-check-input", obr=True) }}
-  </div>
+</div>
 
-
+<div class="row justify-content-center">
   <br>
-  <div class="form-group">
+  <div class="col-2">
     {{ form.submit(class="br-button secondary mr-3") }}
   </div>
+  <div class="col-2"></div>
+</div>  
 
 </div>
 </div>

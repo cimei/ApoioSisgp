@@ -48,9 +48,10 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from collections import Counter
+import os
 
 from project import db, mail, app
-from project.models import users, Log_Auto, catdom, Pessoas
+from project.models import users, Log_Auto, catdom, Pessoas, Unidades, VW_Unidades
 
 from project.usuarios.forms import RegistrationForm, LoginForm, EmailForm, PasswordForm, AdminForm,\
                                 LogForm, TrocaPasswordForm
@@ -151,17 +152,30 @@ def register():
     usuarios_qtd = users.query.count()
 
     form = RegistrationForm()
+    
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
+                      .order_by(VW_Unidades.undSiglaCompleta)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undNivel < 2).all()
+    
+    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids.insert(0,(0,''))
+    
+    form.unidade.choices = lista_unids
 
     if form.validate_on_submit():
 
         if form.check_username(form.username) and form.check_email(form.email):
 
             user = users(userNome                   = form.username.data,
-                        userEmail                  = form.email.data,
-                        plaintext_password         = form.password.data,
-                        email_confirmation_sent_on = datetime.now(),
-                        userAtivo                  = False,
-                        userEnvia                  = False)
+                         userEmail                  = form.email.data,
+                         plaintext_password         = form.password.data,
+                         email_confirmation_sent_on = datetime.now(),
+                         userAtivo                  = False,
+                         userEnvia                  = False,
+                         instituicaoId              = form.unidade.data,
+                         user_api                   = None,
+                         senha_api                  = None)
 
             db.session.add(user)
             db.session.commit()
@@ -362,6 +376,14 @@ def login():
                     db.session.commit()
 
                     login_user(user)
+                    
+                    if current_user.userEnvia == 1:
+                        if current_user.user_api == None:
+                            os.environ["APIPGDME_AUTH_USER"]     = ''
+                            os.environ["APIPGDME_AUTH_PASSWORD"] = ''
+                        else:
+                            os.environ["APIPGDME_AUTH_USER"]     = current_user.user_api
+                            os.environ["APIPGDME_AUTH_PASSWORD"] = current_user.senha_api
 
                     flash('Login bem sucedido!','sucesso')
 
@@ -406,12 +428,15 @@ def primeiro_user():
 
         if usuarios_qtd == 0:
 
-            user = users(userNome                  = form.username.data,
-                        userEmail                  = form.email.data,
-                        plaintext_password         = form.password.data,
-                        email_confirmation_sent_on = datetime.now(),
-                        userAtivo                  = True,
-                        userEnvia                  = False)
+            user = users(userNome                   = form.username.data,
+                         userEmail                  = form.email.data,
+                         plaintext_password         = form.password.data,
+                         email_confirmation_sent_on = datetime.now(),
+                         userAtivo                  = True,
+                         userEnvia                  = False,
+                         instituicaoId              = form.unidade.data,
+                         user_api                   = None,
+                         senha_api                  = None)
 
             db.session.add(user)
             db.session.commit()
@@ -476,6 +501,16 @@ def update_user(user_id):
     user = users.query.get_or_404(user_id)
 
     form = AdminForm()
+    
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
+                      .order_by(VW_Unidades.undSiglaCompleta)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undNivel < 2).all()
+    
+    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids.insert(0,(0,''))
+    
+    form.unidade.choices = lista_unids
 
     if form.validate_on_submit():
 
@@ -483,10 +518,19 @@ def update_user(user_id):
 
             user.userAtivo = form.ativo.data
             user.userEnvia = form.envia.data
+            
+            if form.envia.data == True:
+                user.user_api  = form.user_api.data
+                user.senha_api = form.senha_api.data
+            else:
+                user.user_api  = None
+                user.senha_api = None
 
             if not user.email_confirmed and form.ativo.data:
                 user.email_confirmed = True
                 user.email_confirmed_on = datetime.now()
+                
+            user.instituicaoId = form.unidade.data    
 
             db.session.commit()
 
@@ -506,8 +550,12 @@ def update_user(user_id):
     # traz a informação atual do usuário
     elif request.method == 'GET':
 
-        form.ativo.data = user.userAtivo
-        form.envia.data = user.userEnvia
+        form.ativo.data     = user.userAtivo
+        form.envia.data     = user.userEnvia
+        form.user_api.data  = user.user_api
+        form.senha_api.data = user.senha_api
+        form.unidade.data   = user.instituicaoId  
+
 
     return render_template('update_user.html', title='Update', name=user.userNome,
                             form=form)

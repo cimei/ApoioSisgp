@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+20/11/2023
+Ajustes em envios para múltiplas instituições no DBSISGP.
+v3.3.0
+
 09/11/2023
 Correções na carga de unidade e pessoas.
 v3.2.8

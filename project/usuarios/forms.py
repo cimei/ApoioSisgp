@@ -19,7 +19,7 @@
 
 """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
 from wtforms.fields.html5 import DateField
 
 from wtforms.validators import DataRequired, Email, EqualTo
@@ -42,6 +42,7 @@ class RegistrationForm(FlaskForm):
     username     = StringField('Nome do usuário: ', validators=[DataRequired(message="Informe um nome de usuário!")])
     password     = PasswordField('Senha: ', validators=[DataRequired(message="Informe uma senha!"),EqualTo('pass_confirm',message='Senhas devem ser iguais!')])
     pass_confirm = PasswordField('Confirmar Senha: ', validators=[DataRequired(message="Confirme a senha!")])
+    unidade      = SelectField('Instituição:',validators=[DataRequired(message="Escolha a instituição!")],coerce=int)
     submit       = SubmitField('Registrar-se')
 
     def check_email(self,field):
@@ -99,8 +100,11 @@ class TrocaPasswordForm(FlaskForm):
 
 class AdminForm(FlaskForm):
 
-    ativo  = BooleanField('Usuário está ativo?')
-    envia  = BooleanField('Usuário pode enviar planos?')
+    ativo     = BooleanField('Usuário está ativo?')
+    envia     = BooleanField('Usuário pode enviar planos?')
+    user_api  = StringField('User API')
+    senha_api = StringField('Senha API')
+    unidade   = SelectField('Instituição:',validators=[DataRequired(message="Escolha a instituição!")],coerce=int)
     
     submit = SubmitField('Atualizar')
 

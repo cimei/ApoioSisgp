@@ -36,7 +36,7 @@ from sqlalchemy import func, literal
 from project import db, sched
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
                            Pactos_de_Trabalho_Atividades, VW_Pactos, VW_Atividades_Pactos,\
-                           jobs, users, Log_Auto
+                           jobs, users, Log_Auto, VW_Unidades
 
 from project.usuarios.views import registra_log_auto                           
 
@@ -63,9 +63,17 @@ def pega_data_ref():
     
 
 # pega token de acesso à API de envio de dados
-def pega_token():        
-
-    string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
+def pega_token():    
+    
+    user_api   = os.getenv('APIPGDME_AUTH_USER')
+    senha_api  = os.getenv('APIPGDME_AUTH_PASSWORD')
+    
+    if user_api == None:
+        user_api  = ''
+    if senha_api == None:    
+        senha_api = ''
+    
+    string = 'grant_type=&username='+user_api+'&password='+senha_api+'&scope=&client_id=&client_secret='
 
     headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
 
@@ -74,10 +82,15 @@ def pega_token():
     response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
     rlogin_json = response.json()
-
-    token = rlogin_json['access_token']
-    tipo =  rlogin_json['token_type']  
-    
+        
+    try:
+        token = rlogin_json['access_token']
+        # tipo =  rlogin_json['token_type'] 
+    except:
+         retorno_API = rlogin_json['detail']  
+         print ('** RETORNO DA API: ',retorno_API)
+         abort(403)  
+        
     return(token)
 
 
@@ -86,9 +99,18 @@ def planos_enviados_LOG():
     
     data_ref = pega_data_ref()
     
+    ## Pegar usuarios que são da mesma instituição do usuario logado
+    if current_user.instituicaoId != None:
+        usuarios = db.session.query(users.id).filter(users.instituicaoId == current_user.instituicaoId).all()
+        lista_users = [u.id for u in usuarios]
+    else:
+        abort(401)
+    ##
+        
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                     Log_Auto.data_hora >= data_ref)\
+                                     Log_Auto.data_hora >= data_ref,
+                                     Log_Auto.user_id.in_(lista_users))\
                              .distinct()                        
     
     enviados = [e.msg[18:54] for e in enviados_log]
@@ -114,19 +136,35 @@ def planos_enviados_LOG():
 def planos_n_enviados_LOG(): 
     
     data_ref = pega_data_ref()
+    
+    # Pegar instituição do usuário logado e definir filtro na busca por pactos
+    if current_user.instituicaoId != None:
+        instituicao = db.session.query(Unidades.undSigla, Unidades.undNivel)\
+                                .filter(Unidades.unidadeId == current_user.instituicaoId)\
+                                .first()
+    else:
+        abort(401)                            
+  
+    limite_unid = '%' + instituicao.undSigla + '%'     
               
     # todos os planos executados e com horas homologadas > 0
     planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
                                  .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
                                         VW_Pactos.horas_homologadas > 0,
-                                        VW_Pactos.data_fim >= data_ref)\
+                                        VW_Pactos.data_fim >= data_ref,
+                                        VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
                                  .all()                                            
     
+    ## Pegar usuarios que são da mesma instituição do usuario logado
+    usuarios = db.session.query(users.id).filter(users.instituicaoId == current_user.instituicaoId).all()
+    lista_users = [u.id for u in usuarios]
+    ##
     # identifica envios na tabela do log
     
     enviados_log = db.session.query(Log_Auto.msg)\
                              .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                     Log_Auto.data_hora >= data_ref)\
+                                     Log_Auto.data_hora >= data_ref,
+                                     Log_Auto.user_id.in_(lista_users))\
                              .distinct()                       
     
     log = [e.msg[18:54] for e in enviados_log]
