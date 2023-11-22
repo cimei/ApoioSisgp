@@ -37,6 +37,9 @@ Como este sistema faz controle de acesso e registra o log dos commits realizados
             [userAtivo] [bit] NULL,
             [userEnvia] [bit] NULL,
             [avaliadorId] [bigint] NULL,
+            [instituicaoId] [bigint] NULL,
+	      [user_api] [varchar](150) NULL,
+	      [senha_api] [varchar](150) NULL,
        CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED 
       (
       	[id] ASC

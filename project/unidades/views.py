@@ -26,8 +26,9 @@ from sqlalchemy import func
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Atividades, Unidades, Pessoas, cat_item_cat, unidade_ativ
+from project.models import Atividades, Unidades, Pessoas, cat_item_cat, unidade_ativ, VW_Unidades
 from project.unidades.forms import UnidadeForm, PesquisaUnidForm
+from project.pessoas.views import instituicao_user
 
 from project.usuarios.views import registra_log_auto
 
@@ -65,59 +66,55 @@ def lista_unidades(lista):
                                .filter(Unidades.unidadeId == Unidades.unidadeIdPai)\
                                .all()
     
-    # Verifica a quantidade de unidades ativas  para decidir sobre paginação
-    
-    qtd_unids = db.session.query(Unidades).filter(Unidades.situacaoUnidadeId == 1).count()
-    
-    if qtd_unids < 500:
-        pag = 500
-    else:
-        pag = 100
-
+    # sobre paginação    
+    pag = 500
 
     if lista == 'ativas':
-        unids = db.session.query(Unidades.unidadeId,
-                                Unidades.undSigla,
-                                Unidades.undDescricao,
-                                Unidades.unidadeIdPai,
-                                unids_pai.c.undSigla.label("Sigla_Pai"),
-                                Unidades.tipoUnidadeId,
-                                Unidades.situacaoUnidadeId,
-                                Unidades.ufId,
-                                Unidades.undNivel,
-                                Unidades.tipoFuncaoUnidadeId,
-                                Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                label('titular',chefes.c.pesNome),
-                                label('substituto',substitutos.c.pesNome))\
-                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                                .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                                .filter(Unidades.situacaoUnidadeId == 1)\
-                                .order_by(Unidades.undSigla)\
-                                .paginate(page=page,per_page=pag)
+        unids = db.session.query(VW_Unidades.unidadeId,
+                                 VW_Unidades.undSigla,
+                                 VW_Unidades.undDescricao,
+                                 VW_Unidades.unidadeIdPai,
+                                 unids_pai.c.undSigla.label("Sigla_Pai"),
+                                 VW_Unidades.tipoUnidadeId,
+                                 VW_Unidades.situacaoUnidadeId,
+                                 VW_Unidades.ufId,
+                                 VW_Unidades.undNivel,
+                                 VW_Unidades.tipoFuncaoUnidadeId,
+                                 VW_Unidades.Email,
+                                 VW_Unidades.undCodigoSIORG,
+                                 label('titular',chefes.c.pesNome),
+                                 label('substituto',substitutos.c.pesNome))\
+                          .join(Unidades, Unidades.unidadeId == VW_Unidades.unidadeId)\
+                          .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                          .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                          .outerjoin(unids_pai,unids_pai.c.unidadeId == VW_Unidades.unidadeIdPai)\
+                          .filter(VW_Unidades.situacaoUnidadeId == 1,
+                                  VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                          .order_by(VW_Unidades.undSigla)\
+                          .paginate(page=page,per_page=pag)
         
     elif lista == 'inativas':
-        unids = db.session.query(Unidades.unidadeId,
-                                Unidades.undSigla,
-                                Unidades.undDescricao,
-                                Unidades.unidadeIdPai,
-                                unids_pai.c.undSigla.label("Sigla_Pai"),
-                                Unidades.tipoUnidadeId,
-                                Unidades.situacaoUnidadeId,
-                                Unidades.ufId,
-                                Unidades.undNivel,
-                                Unidades.tipoFuncaoUnidadeId,
-                                Unidades.Email,
-                                Unidades.undCodigoSIORG,
-                                label('titular',chefes.c.pesNome),
-                                label('substituto',substitutos.c.pesNome))\
-                                .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                                .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                                .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                                .filter(Unidades.situacaoUnidadeId != 1)\
-                                .order_by(Unidades.undSigla)\
-                                .paginate(page=page,per_page=100)
+        unids = db.session.query(VW_Unidades.unidadeId,
+                                 VW_Unidades.undSigla,
+                                 VW_Unidades.undDescricao,
+                                 VW_Unidades.unidadeIdPai,
+                                 unids_pai.c.undSigla.label("Sigla_Pai"),
+                                 VW_Unidades.tipoUnidadeId,
+                                 VW_Unidades.situacaoUnidadeId,
+                                 VW_Unidades.ufId,
+                                 VW_Unidades.undNivel,
+                                 VW_Unidades.tipoFuncaoUnidadeId,
+                                 VW_Unidades.Email,
+                                 VW_Unidades.undCodigoSIORG,
+                                 label('titular',chefes.c.pesNome),
+                                 label('substituto',substitutos.c.pesNome))\
+                          .join(Unidades, Unidades.unidadeId == VW_Unidades.unidadeId)\
+                          .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                          .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                          .outerjoin(unids_pai,unids_pai.c.unidadeId == VW_Unidades.unidadeIdPai)\
+                          .filter(VW_Unidades.situacaoUnidadeId != 1)\
+                          .order_by(VW_Unidades.undSigla)\
+                          .paginate(page=page,per_page=pag)
 
     quantidade = unids.total
 
@@ -149,10 +146,11 @@ def lista_unidades(lista):
  
 
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
-                                                dic_situ_unidade = dic_situ_unidade, 
-                                                dic_tipo_unidade = dic_tipo_unidade,
-                                                lista = lista,
-                                                unids_erro_pai = unids_erro_pai)
+                                                  instituicao_sigla = instituicao_user().split('%')[1],
+                                                  dic_situ_unidade = dic_situ_unidade, 
+                                                  dic_tipo_unidade = dic_tipo_unidade,
+                                                  lista = lista,
+                                                  unids_erro_pai = unids_erro_pai)
 
 
 ## lista unidades da instituição
@@ -170,38 +168,31 @@ def lista_unidades_filtro(lista):
     page = request.args.get('page', 1, type=int)
 
     form = PesquisaUnidForm()
-
-    unids_pai = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).all()
-    lista_unids_pai = [(u.unidadeId,u.undSigla) for u in unids_pai]
-    lista_unids_pai.insert(0,(0,'Todas'))   
     
-    unids = db.session.query(Unidades.undSigla).order_by(Unidades.undSigla).all()
-    lista_unids = [(u.undSigla,u.undSigla) for u in unids]
-    lista_unids.insert(0,('','Todas'))             
-
-    dic_situ_unidade = {1:'Ativa',2:'Inativa'}
-    lista_situ = [(s,dic_situ_unidade[s]) for s in dic_situ_unidade]
-    lista_situ.insert(0,(0,'Todas'))
+    unids = db.session.query(VW_Unidades.undSiglaCompleta, VW_Unidades.undSigla)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                      .order_by(VW_Unidades.undSigla).all()
+    lista_unids = [(u.undSiglaCompleta,u.undSigla) for u in unids]
+    lista_unids.insert(0,('','Todas'))            
 
     dic_tipo_unidade = {1:'Instituição',2:'Diretoria',3:'Coordenação-Geral',4:'Coordenação',5:'Serviço',6:'Outro'}
     lista_tipo = [(t,dic_tipo_unidade[t]) for t in dic_tipo_unidade]
     lista_tipo.insert(0,(0,'Todos'))
+    
+    dic_situ_unidade = {1:'Ativa',2:'Inativa'}
+    lista_situ = [(s,dic_situ_unidade[s]) for s in dic_situ_unidade]
+    lista_situ.insert(0,(0,'Todas'))
 
     form.sigla.choices = lista_unids
-    form.pai.choices   = lista_unids_pai
     form.tipo.choices  = lista_tipo
 
     if form.validate_on_submit():
 
         if form.sigla.data == '':
-            p_sigla_pattern = '%'
+            p_sigla_pattern = instituicao_user()
         else:
-            p_sigla_pattern = form.sigla.data
-
-        if int(form.pai.data) == 0:
-            p_pai_pattern = '%'
-        else:
-            p_pai_pattern = form.pai.data
+            p_sigla_pattern = '%'+form.sigla.data+'%'
 
         if int(form.tipo.data) == 0:
             p_tipo_pattern = '%'
@@ -210,7 +201,6 @@ def lista_unidades_filtro(lista):
 
         # pega valores utilizados como filtro para exibição na tela da lista
         p_sigla = dict(form.sigla.choices).get(form.sigla.data)
-        p_pai   = dict(form.pai.choices).get(int(form.pai.data))
         p_tipo  = dict(form.tipo.choices).get(int(form.tipo.data))
     
         # Lê tabela unidades
@@ -220,55 +210,30 @@ def lista_unidades_filtro(lista):
         chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
         substitutos = aliased(chefes)
 
-        if int(form.pai.data) == 0:
-            unids = db.session.query(Unidades.unidadeId,
-                                     Unidades.undSigla,
-                                     Unidades.undDescricao,
-                                     Unidades.unidadeIdPai,
-                                     unids_pai.c.undSigla.label("Sigla_Pai"),
-                                     Unidades.tipoUnidadeId,
-                                     Unidades.situacaoUnidadeId,
-                                     Unidades.ufId,
-                                     Unidades.undNivel,
-                                     Unidades.tipoFuncaoUnidadeId,
-                                     Unidades.Email,
-                                     Unidades.undCodigoSIORG,
-                                    label('titular',chefes.c.pesNome),
-                                    label('substituto',substitutos.c.pesNome))\
-                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                              .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                              .filter(Unidades.undSigla.like(p_sigla_pattern),
-                                      Unidades.undDescricao.like('%'+form.desc.data+'%'),
-                                      Unidades.tipoUnidadeId.like(p_tipo_pattern),
-                                      Unidades.ufId.like('%'+form.uf.data+'%'))\
-                              .order_by(Unidades.undSigla)\
-                              .paginate(page=page,per_page=100)
-        else:
-            unids = db.session.query(Unidades.unidadeId,
-                                    Unidades.undSigla,
-                                    Unidades.undDescricao,
-                                    Unidades.unidadeIdPai,
-                                    unids_pai.c.undSigla.label("Sigla_Pai"),
-                                    Unidades.tipoUnidadeId,
-                                    Unidades.situacaoUnidadeId,
-                                    Unidades.ufId,
-                                    Unidades.undNivel,
-                                    Unidades.tipoFuncaoUnidadeId,
-                                    Unidades.Email,
-                                    Unidades.undCodigoSIORG,
-                                    label('titular',chefes.c.pesNome),
-                                    label('substituto',substitutos.c.pesNome))\
-                              .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
-                              .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
-                              .outerjoin(unids_pai,unids_pai.c.unidadeId == Unidades.unidadeIdPai)\
-                              .filter(Unidades.undSigla.like(p_sigla_pattern),
-                                      Unidades.undDescricao.like('%'+form.desc.data+'%'),
-                                      Unidades.unidadeIdPai.like(p_pai_pattern),
-                                      Unidades.tipoUnidadeId.like(p_tipo_pattern),
-                                      Unidades.ufId.like('%'+form.uf.data+'%'))\
-                              .order_by(Unidades.undSigla)\
-                              .paginate(page=page,per_page=100)
+        unids = db.session.query(VW_Unidades.unidadeId,
+                                 VW_Unidades.undSigla,
+                                 VW_Unidades.undDescricao,
+                                 VW_Unidades.unidadeIdPai,
+                                 unids_pai.c.undSigla.label("Sigla_Pai"),
+                                 VW_Unidades.tipoUnidadeId,
+                                 VW_Unidades.situacaoUnidadeId,
+                                 VW_Unidades.ufId,
+                                 VW_Unidades.undNivel,
+                                 VW_Unidades.tipoFuncaoUnidadeId,
+                                 VW_Unidades.Email,
+                                 VW_Unidades.undCodigoSIORG,
+                                label('titular',chefes.c.pesNome),
+                                label('substituto',substitutos.c.pesNome))\
+                            .join(Unidades, Unidades.unidadeId == VW_Unidades.unidadeId)\
+                            .outerjoin(chefes, chefes.c.pessoaId == Unidades.pessoaIdChefe)\
+                            .outerjoin(substitutos, substitutos.c.pessoaId == Unidades.pessoaIdChefeSubstituto)\
+                            .outerjoin(unids_pai,unids_pai.c.unidadeId == VW_Unidades.unidadeIdPai)\
+                            .filter(VW_Unidades.undSiglaCompleta.like(p_sigla_pattern),
+                                    VW_Unidades.undDescricao.like('%'+form.desc.data+'%'),
+                                    VW_Unidades.tipoUnidadeId.like(p_tipo_pattern),
+                                    VW_Unidades.ufId.like('%'+form.uf.data+'%'))\
+                            .order_by(VW_Unidades.undSigla)\
+                            .paginate(page=page,per_page=500)
 
         quantidade = unids.total
 
@@ -277,7 +242,6 @@ def lista_unidades_filtro(lista):
                                                     dic_tipo_unidade = dic_tipo_unidade,
                                                     lista = lista,
                                                     p_sigla = p_sigla,
-                                                    p_pai = p_pai,
                                                     p_tipo = p_tipo,
                                                     p_nome = form.desc.data,
                                                     p_uf = form.uf.data)
@@ -317,6 +281,8 @@ def unidade_update(cod_unid):
     lista_situ_unidade = [(1,'Ativa'),(2,'Inativa')]
 
     unidade = Unidades.query.filter(Unidades.unidadeId==cod_unid).first_or_404()
+    
+    unidade_view = db.session.query(VW_Unidades.undSiglaCompleta).filter(VW_Unidades.unidadeId==unidade.unidadeId).first()
 
     form = UnidadeForm()
 
@@ -442,6 +408,7 @@ def unidade_update(cod_unid):
                                                    qtd_ativs = qtd_ativs,
                                                    qtd_pes = qtd_pes,
                                                    sigla = unidade.undSigla,
+                                                   sigla_completa = unidade_view.undSiglaCompleta,
                                                    qtd_geral = qtd_geral,
                                                    tree = tree)
 

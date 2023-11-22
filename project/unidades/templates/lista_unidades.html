@@ -18,14 +18,14 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between">
       {% if lista == 'pesq' %}
-        <h5  class="header-list">Lista das Unidades  
-        - Filtro aplicado: Sigla <b>"{{p_sigla}}"</b>, Nome <b>"{{p_nome}}"</b>, Pai <b>"{{p_pai}}"</b>, Tipo <b>"{{p_tipo}}"</b>, UF <b>"{{p_uf}}"</b>   
+        <h5  class="header-list">Lista das Unidades ativas 
+        - Filtro aplicado: Sigla completa contém <b>"{{p_sigla}}"</b>, Nome <b>"{{p_nome}}"</b>, Tipo <b>"{{p_tipo}}"</b>, UF <b>"{{p_uf}}"</b>   
         </h5>
       {% else %}
         {% if lista == 'ativas' %}
-          <h5  class="header-list">Lista das Unidades Ativas </h5>
+          <h5  class="header-list">Lista das Unidades Ativas em <b>{{instituicao_sigla}}</b></h5>
         {% elif lista == 'inativas' %} 
-          <h5  class="header-list">Lista das Unidades Inativas</h5>
+          <h5  class="header-list">Lista das Unidades Inativas em <b>{{instituicao_sigla}}</b></h5>
         {% endif %}
       {% endif %}  
 

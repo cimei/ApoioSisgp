@@ -1,7 +1,9 @@
 ## Atualizações ##
 
 20/11/2023
-Ajustes em envios para múltiplas instituições no DBSISGP.
+Usuário passa a ter instituição em seu cadastro.
+Usuário que envia planos deve ter credenciais em seu registro.
+Ajustes em envios e consultas para múltiplas instituições no mesmo DBSISGP, usuário limitado à sua instituição.
 v3.3.0
 
 09/11/2023

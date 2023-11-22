@@ -36,7 +36,6 @@ class PesquisaUnidForm(FlaskForm):
 
    sigla   = SelectField('Sigla:')
    desc    = StringField('Descrição:')
-   pai     = SelectField('Pai:')
    tipo    = SelectField('Tipo:')
    uf      = StringField('UF:')
    

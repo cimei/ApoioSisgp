@@ -6,9 +6,6 @@
     <ul class="crumb-list">
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior2</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Pessoas</span>
       </li>
     </ul>
@@ -19,9 +16,11 @@
   <div class="card">
     <div class="card-header">
       <div class="d-flex flex-column flex-md-row justify-content-between">
-        <h5 class="header-list">Lista das Pessoas {% if tipo == "gest" %}Gestoras do SISGP na Instituição 
-          {% elif tipo == "inst" %}na Instituição
-          {% elif tipo == "pesq" %} <br><small>Filtro aplicado: Nome <b>"{{p_nome}}"</b>, Unidade <b>"{{p_unid}}"</b>, Subord. <b>"{{p_rel_unid}}"</b>, Função <b>"{{p_func}}"</b>, Situação <b>"{{p_situ}}"</b>, Tipo vínculo <b>"{{p_vinculo}}"</b>
+        <h5 class="header-list">Lista das Pessoas 
+          {% if tipo == "gest" %}Gestoras do SISGP 
+          {% elif tipo == "inst" %}em <b>{{instituicao_sigla}}</b>
+          {% elif tipo == "pesq" %}em <b>{{instituicao_sigla}}</b> 
+            <br><small>Filtro aplicado: Nome <b>"{{p_nome}}"</b>, Unidade <b>"{{p_unid}}"</b>, Subord. <b>"{{p_rel_unid}}"</b>, Função <b>"{{p_func}}"</b>, Situação <b>"{{p_situ}}"</b>, Tipo vínculo <b>"{{p_vinculo}}"</b>
           {% else %}na Unidade
           {% endif %}</h5>
 
@@ -42,9 +41,11 @@
       <p>Lista das <span class="badge text-bg-primary">{{quantidade}}</span> pessoas 
         {% if tipo == "inst" %}
           na Instituição
-        {% elif itpo == "pesq" %}
-          conforme filtro aplicado  
-        {% else %}
+        {% elif tipo == "pesq" %}
+          conforme filtro aplicado 
+        {% elif tipo == "gest" %}
+          gestoras   
+        {% elif tipo == "unid" %}
           na Unidade {{unid}}
         {% endif %}
       </p>

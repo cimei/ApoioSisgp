@@ -38,10 +38,13 @@ from project import db
 from project.models import Pactos_de_Trabalho, Pessoas, Unidades, Planos_de_Trabalho, catdom,\
                            Pactos_de_Trabalho_Atividades, Atividades, Planos_de_Trabalho_Ativs,\
                            Planos_de_Trabalho_Hist, Planos_de_Trabalho_Ativs_Items, Pactos_de_Trabalho_Solic,\
-                           VW_Unidades, Atividade_Candidato, VW_Pactos,VW_Unidades_Ativas
+                           VW_Unidades, Atividade_Candidato, VW_Pactos
 from project.usuarios.views import registra_log_auto                           
 
 from project.consultas.forms import PeriodoForm
+
+from project.pessoas.views import instituicao_user
+from project.envio.views import pega_data_ref
 
 from werkzeug.utils import secure_filename
 
@@ -68,9 +71,14 @@ def pessoas_qtd_pg_unidade():
     +---------------------------------------------------------------------------------------+
     """
 
-    qtd_unidades = Unidades.query.count()
+    qtd_unidades = VW_Unidades.query.filter(VW_Unidades.situacaoUnidadeId == 1,
+                                            VW_Unidades.undSiglaCompleta.like(instituicao_user())).count()
 
-    qtd_pessoas = Pessoas.query.count()
+    qtd_pessoas = Pessoas.query\
+                         .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
+                         .filter(VW_Unidades.situacaoUnidadeId == 1,
+                                 VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                         .count()
 
     planos = db.session.query(Planos_de_Trabalho.unidadeId,
                               label('qtd_pg',func.count(Planos_de_Trabalho.unidadeId)))\
@@ -88,22 +96,30 @@ def pessoas_qtd_pg_unidade():
                              .group_by(Pessoas.unidadeId)\
                              .subquery()    
 
-    pt = db.session.query(Unidades.unidadeId,
-                          Unidades.unidadeIdPai,
-                          Unidades.undSigla,
-                          Unidades.undDescricao,
+    pt = db.session.query(VW_Unidades.unidadeId,
+                          VW_Unidades.unidadeIdPai,
+                          VW_Unidades.undSigla,
+                          VW_Unidades.undDescricao,
                           planos.c.qtd_pg,
                           pactos.c.qtd_pactos,
-                          pessoas_unid.c.qtd_pes)\
-                   .join(planos, planos.c.unidadeId == Unidades.unidadeId)\
-                   .outerjoin(pactos, pactos.c.unidadeId == Unidades.unidadeId)\
-                   .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == Unidades.unidadeId)\
-                   .order_by(Unidades.unidadeId)\
+                          pessoas_unid.c.qtd_pes,
+                          VW_Unidades.undSiglaCompleta)\
+                   .join(planos, planos.c.unidadeId == VW_Unidades.unidadeId)\
+                   .outerjoin(pactos, pactos.c.unidadeId == VW_Unidades.unidadeId)\
+                   .outerjoin(pessoas_unid, pessoas_unid.c.unidadeId == VW_Unidades.unidadeId)\
+                   .filter(VW_Unidades.situacaoUnidadeId == 1,
+                           VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                   .order_by(VW_Unidades.unidadeId)\
                    .all()
 
     qtd_pt_unidade = len(pt)
 
-    qtd_pactos_unidade = Pactos_de_Trabalho.query.filter(Pactos_de_Trabalho.situacaoId == 405).count()
+    qtd_pactos_unidade = Pactos_de_Trabalho.query\
+                                           .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
+                                           .filter(VW_Unidades.situacaoUnidadeId == 1,
+                                                   VW_Unidades.undSiglaCompleta.like(instituicao_user()),
+                                                   Pactos_de_Trabalho.situacaoId == 405)\
+                                           .count()
 
     ## buscando detalhes dos programas de gestão das unidades e das pessoas com pacto vigente
 
@@ -125,22 +141,12 @@ def pessoas_qtd_pg_unidade():
                                    .filter(Pactos_de_Trabalho.situacaoId == 405)\
                                    .all()                                          
 
-    # montando estrutura hierárquica de cada unidade com pg
-    tree = {}
-
-    for item in pt:
-        sigla = item.undSigla
-        pai = item.unidadeIdPai
-        while pai != None:
-            sup = Unidades.query.filter(Unidades.unidadeId==pai).first()
-            sigla = sup.undSigla + '/' + sigla
-            pai = sup.unidadeIdPai
-        tree[item.unidadeId]=sigla
 
     return render_template('lista_pessoas_qtd_pg_unidade.html', qtd_unidades=qtd_unidades, pt=pt,
                            qtd_pessoas = qtd_pessoas, qtd_pt_unidade = qtd_pt_unidade,
                            qtd_pactos_unidade = qtd_pactos_unidade,
-                           dados_pt = dados_pt, dados_pessoa_pacto = dados_pessoa_pacto, tree=tree)
+                           instituicao_user = instituicao_user().split('%')[1],
+                           dados_pt = dados_pt, dados_pessoa_pacto = dados_pessoa_pacto)
 
 #
 
@@ -191,22 +197,25 @@ def pactos():
                                        Pactos_de_Trabalho.relacaoPrevistoRealizado,
                                        Pactos_de_Trabalho.avaliacaoId,
                                        VW_Unidades.undSiglaCompleta,
-                                       Unidades.situacaoUnidadeId,
+                                       VW_Unidades.situacaoUnidadeId,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
                                        label('descricao2',situacao.c.descricao))\
-                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
                                  .join(situacao, situacao.c.catalogoDominioId == Pactos_de_Trabalho.situacaoId)\
-                                 .filter(Unidades.situacaoUnidadeId == 1)\
+                                 .filter(VW_Unidades.situacaoUnidadeId == 1,
+                                         VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                                  .order_by(Pessoas.pesNome)\
                                  .paginate(page=page,per_page=1000)
 
     qtd_itens = pactos_trabalho.total
 
-    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho, tipo = tipo)    
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, 
+                                                pactos_trabalho = pactos_trabalho, 
+                                                instituicao_user = instituicao_user().split('%')[1],
+                                                tipo = tipo)    
 
 
 ## dados dos pactos de trabalho
@@ -222,32 +231,47 @@ def pactos_executados():
     page = request.args.get('page', 1, type=int)
 
     tipo = 'executados'
+    
+    data_ref = pega_data_ref()
 
-    avaliados = db.session.query(VW_Pactos.id_pacto).all()
+    # avaliados = db.session.query(VW_Pactos.id_pacto).all()
+    
+    avaliados = db.session.query(VW_Pactos.id_pacto)\
+                          .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                  VW_Pactos.horas_homologadas > 0,
+                                  VW_Pactos.data_fim >= data_ref,
+                                  VW_Pactos.sigla_unidade_exercicio.like(instituicao_user()))\
+                           .all()    
 
     avaliados_l = [a.id_pacto for a in avaliados]
-
+    
     pactos_trabalho = db.session.query(Pactos_de_Trabalho.pactoTrabalhoId,
                                        Pactos_de_Trabalho.unidadeId,
                                        Pactos_de_Trabalho.pessoaId,
                                        Pactos_de_Trabalho.dataInicio,
                                        Pactos_de_Trabalho.dataFim,
                                        Pactos_de_Trabalho.formaExecucaoId,
-                                       VW_Unidades_Ativas.undSiglaCompleta,
+                                       VW_Unidades.undSiglaCompleta,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
                                        literal(None).label('qtd_hom'))\
-                                 .join(VW_Unidades_Ativas, VW_Unidades_Ativas.id_unidade == Pactos_de_Trabalho.unidadeId)\
+                                 .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
-                                 .filter(Pactos_de_Trabalho.situacaoId == 406, Pactos_de_Trabalho.pactoTrabalhoId.not_in(avaliados_l))\
+                                 .filter(Pactos_de_Trabalho.situacaoId == 406, 
+                                         Pactos_de_Trabalho.pactoTrabalhoId.not_in(avaliados_l),
+                                         VW_Unidades.situacaoUnidadeId == 1,
+                                         VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                                  .order_by(Pessoas.pesNome)\
                                  .paginate(page=page,per_page=1000)
 
 
     qtd_itens = pactos_trabalho.total
 
-    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_trabalho, tipo = tipo) 
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, 
+                                                pactos_trabalho = pactos_trabalho,
+                                                instituicao_user = instituicao_user().split('%')[1],
+                                                tipo = tipo) 
 
 ## pactos em situação irregular
 
@@ -279,11 +303,10 @@ def pactos_irregulares():
                                        Pactos_de_Trabalho.relacaoPrevistoRealizado,
                                        Pactos_de_Trabalho.avaliacaoId,
                                        VW_Unidades.undSiglaCompleta,
-                                       Unidades.situacaoUnidadeId,
+                                       VW_Unidades.situacaoUnidadeId,
                                        Pessoas.pesNome,
                                        label('descricao1',catdom.descricao),
                                        label('descricao2',catdom_1.descricao))\
-                                 .join(Unidades, Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(VW_Unidades, VW_Unidades.unidadeId == Pactos_de_Trabalho.unidadeId)\
                                  .join(Pessoas, Pessoas.pessoaId == Pactos_de_Trabalho.pessoaId)\
                                  .join(catdom, catdom.catalogoDominioId == Pactos_de_Trabalho.formaExecucaoId)\
@@ -292,13 +315,17 @@ def pactos_irregulares():
                                          Pactos_de_Trabalho.situacaoId != 404,
                                          Pactos_de_Trabalho.situacaoId != 406,
                                          Pactos_de_Trabalho.situacaoId != 407,
-                                         Unidades.situacaoUnidadeId == 1)\
+                                         VW_Unidades.situacaoUnidadeId == 1,
+                                         VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                                  .order_by(Pessoas.pesNome)\
                                  .paginate(page=page,per_page=1000)
 
     qtd_itens = pactos_irregulares.total
 
-    return render_template('lista_pactos.html', qtd_itens = qtd_itens, pactos_trabalho = pactos_irregulares, tipo = tipo)                                 
+    return render_template('lista_pactos.html', qtd_itens = qtd_itens, 
+                                                pactos_trabalho = pactos_irregulares,
+                                                instituicao_user = instituicao_user().split('%')[1],
+                                                tipo = tipo)                                 
 
 
 ## lista atividades de um pacto de trabalho
@@ -454,7 +481,8 @@ def relatorioPG():
                           pactos.c.formaExec)\
                    .join(dados_pt, dados_pt.c.unidadeId == VW_Unidades.unidadeId)\
                    .outerjoin(pactos, pactos.c.planoTrabalhoId == dados_pt.c.planoTrabalhoId)\
-                   .filter(VW_Unidades.situacaoUnidadeId == 1)\
+                   .filter(VW_Unidades.situacaoUnidadeId == 1,
+                           VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                    .order_by(VW_Unidades.unidadeId)\
                    .all()
 
@@ -544,7 +572,7 @@ def relatorioPG():
 
 
     # return render_template('download.html')
-    return render_template('lista_relatorio.html', pt=pt)
+    return render_template('lista_relatorio.html', pt=pt, instituicao_user = instituicao_user().split('%')[1])
 
 
 
@@ -932,7 +960,6 @@ def candidatos_sem_plano():
     candidatos_sem_plano = db.session.query(Atividade_Candidato.pessoaId,
                                             Atividade_Candidato.situacaoId,
                                             Pessoas.pesNome,
-                                            Unidades.undSigla,
                                             VW_Unidades.undSiglaCompleta,
                                             Planos_de_Trabalho_Ativs.planoTrabalhoId,
                                             Planos_de_Trabalho.situacaoId,
@@ -940,8 +967,7 @@ def candidatos_sem_plano():
                                             Planos_de_Trabalho.dataFim,
                                             catdom.descricao)\
                              .join(Pessoas, Pessoas.pessoaId == Atividade_Candidato.pessoaId)\
-                             .join(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                             .outerjoin(VW_Unidades, VW_Unidades.unidadeId == Pessoas.unidadeId)\
+                             .join(VW_Unidades, VW_Unidades.unidadeId == Pessoas.unidadeId)\
                              .join(Planos_de_Trabalho_Ativs, Planos_de_Trabalho_Ativs.planoTrabalhoAtividadeId == Atividade_Candidato.planoTrabalhoAtividadeId)\
                              .join(Planos_de_Trabalho, Planos_de_Trabalho.planoTrabalhoId == Planos_de_Trabalho_Ativs.planoTrabalhoId)\
                              .join(catdom, catdom.catalogoDominioId == Planos_de_Trabalho.situacaoId)\
@@ -949,14 +975,17 @@ def candidatos_sem_plano():
                                                                  Pactos_de_Trabalho.pessoaId == Atividade_Candidato.pessoaId))\
                              .filter(Atividade_Candidato.situacaoId == 804,
                                      Pactos_de_Trabalho.pactoTrabalhoId == None,
-                                     Unidades.situacaoUnidadeId == 1,
-                                     Planos_de_Trabalho.situacaoId == 309)\
+                                     VW_Unidades.situacaoUnidadeId == 1,
+                                     Planos_de_Trabalho.situacaoId == 309,
+                                     VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                              .order_by(VW_Unidades.undSiglaCompleta,Pessoas.pesNome)\
                              .all()
 
     quantidade = len(candidatos_sem_plano)  
 
-    return render_template('lista_candidatos_sem_plano.html', candidatos_sem_plano=candidatos_sem_plano, quantidade=quantidade)
+    return render_template('lista_candidatos_sem_plano.html', candidatos_sem_plano=candidatos_sem_plano,
+                                                              instituicao_user = instituicao_user().split('%')[1],
+                                                              quantidade=quantidade)
 
 ## renderiza tela inicial de consultas
 

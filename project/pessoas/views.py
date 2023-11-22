@@ -24,7 +24,7 @@ from sqlalchemy import cast, String
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom
+from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom, VW_Unidades
 from project.pessoas.forms import PessoaForm, PesquisaForm
 
 from project.usuarios.views import registra_log_auto
@@ -36,6 +36,21 @@ from calendar import monthrange
 
 
 pessoas = Blueprint('pessoas',__name__, template_folder='templates')
+
+
+# func que pega a instituição do usuário logado e e define filtro para buscas
+def instituicao_user():
+
+    if current_user.instituicaoId != None:
+        instituicao = db.session.query(VW_Unidades.undSigla, VW_Unidades.undSiglaCompleta)\
+                                .filter(VW_Unidades.unidadeId == current_user.instituicaoId)\
+                                .first()
+    else:
+        abort(401)                            
+  
+    limite_unid = '%' + instituicao.undSiglaCompleta + '%'
+    
+    return(limite_unid)
 
 
 ## lista pessoas da instituição
@@ -66,30 +81,32 @@ def lista_pessoas():
         pag = 500
     else:
         pag = 100
-
+    
     # Lê tabela pessoas
 
     pessoas = db.session.query(Pessoas.pessoaId,
-                             Pessoas.pesNome,
-                             Pessoas.pesCPF,
-                             Pessoas.pesDataNascimento,
-                             Pessoas.pesMatriculaSiape,
-                             Pessoas.pesEmail,
-                             Pessoas.unidadeId,
-                             Unidades.undSigla,
-                             Pessoas.tipoFuncaoId,
-                             Tipo_Func_Pessoa.tfnDescricao,
-                             Pessoas.cargaHoraria,
-                             Pessoas.situacaoPessoaId,
-                             Situ_Pessoa.spsDescricao,
-                             Pessoas.tipoVinculoId,
-                             Tipo_Vinculo_Pessoa.tvnDescricao)\
-                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
-                            .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
-                            .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
-                            .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                            .order_by(Pessoas.pesNome)\
-                            .paginate(page=page,per_page=pag)
+                               Pessoas.pesNome,
+                               Pessoas.pesCPF,
+                               Pessoas.pesDataNascimento,
+                               Pessoas.pesMatriculaSiape,
+                               Pessoas.pesEmail,
+                               Pessoas.unidadeId,
+                               VW_Unidades.undSigla,
+                               Pessoas.tipoFuncaoId,
+                               Tipo_Func_Pessoa.tfnDescricao,
+                               Pessoas.cargaHoraria,
+                               Pessoas.situacaoPessoaId,
+                               Situ_Pessoa.spsDescricao,
+                               Pessoas.tipoVinculoId,
+                               Tipo_Vinculo_Pessoa.tvnDescricao)\
+                         .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
+                         .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
+                         .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
+                         .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
+                         .filter(VW_Unidades.situacaoUnidadeId == 1,
+                                 VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                         .order_by(Pessoas.pesNome)\
+                         .paginate(page=page,per_page=pag)
 
     quantidade = pessoas.total
 
@@ -98,6 +115,7 @@ def lista_pessoas():
 
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
+                                                 instituicao_sigla = instituicao_user().split('%')[1],
                                                  gestorQtd = gestorQtd, tipo = tipo)
 
 
@@ -123,7 +141,10 @@ def lista_pessoas_filtro():
 
     form = PesquisaForm()
 
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).filter(Unidades.situacaoUnidadeId==1).all()
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                      .order_by(VW_Unidades.undSigla).all()
     lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
     lista_unids.insert(0,(0,'Todas'))                
 
@@ -151,11 +172,11 @@ def lista_pessoas_filtro():
 
         if int(form.rel_unid.data) == 1:
             if int(form.unidade.data) == 0:
-                p_unidade_pattern = '%'
+                p_unidade_pattern = instituicao_user()
             else:
                 p_unidade_pattern = form.unidade.data
         elif int(form.rel_unid.data) == 2 and int(form.unidade.data) == 0:        
-            p_unidade_pattern = '%'
+            p_unidade_pattern = instituicao_user()
         elif int(form.rel_unid.data) == 2 and int(form.unidade.data) != 0:
             # sub hierarquia da unidade selecionada
             tree = []
@@ -398,12 +419,13 @@ def lista_pessoas_filtro():
 
 
         return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
-                                                    gestorQtd = gestorQtd, tipo = tipo,
-                                                    p_vinculo = p_vinculo, p_func = p_func,
-                                                    p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data,
-                                                    p_rel_unid = p_rel_unid)
+                                                     instituicao_sigla = instituicao_user().split('%')[1],
+                                                     gestorQtd = gestorQtd, tipo = tipo,
+                                                     p_vinculo = p_vinculo, p_func = p_func,
+                                                     p_situ = p_situ, p_unid = p_unid, p_nome = form.nome.data,
+                                                     p_rel_unid = p_rel_unid)
 
-    return render_template('pesquisa_pessoas.html', form = form)                                                
+    return render_template('pesquisa_pessoas.html', form = form, instituicao_sigla = instituicao_user().split('%')[1])                                                
 
 ## lista gestores do SISGP
 
@@ -481,9 +503,10 @@ def pessoa_update(cod_pes):
 
     gestor = db.session.query(catdom).filter(catdom.descricao == str(cod_pes), catdom.classificacao == 'GestorSistema')
 
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
-                      .filter(Unidades.situacaoUnidadeId == 1)\
-                      .order_by(Unidades.undSigla).all()
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                      .order_by(VW_Unidades.undSigla).all()                  
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))                
 
@@ -595,7 +618,7 @@ def pessoa_update(cod_pes):
         else:
             form.gestor.data = False 
 
-    return render_template('atu_pessoa.html', form=form, tp=tp)
+    return render_template('atu_pessoa.html', form=form, tp=tp, instituicao_sigla = instituicao_user().split('%')[1])
 
 #
 ### insere nova pessoa no banco de dados
@@ -616,9 +639,10 @@ def cria_pessoa():
 
     tp = 'ins'
 
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla)\
-                      .filter(Unidades.situacaoUnidadeId == 1)\
-                      .order_by(Unidades.undSigla).all()
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+                      .filter(VW_Unidades.situacaoUnidadeId==1,
+                              VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
+                      .order_by(VW_Unidades.undSigla).all()
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))
 
@@ -696,7 +720,7 @@ def cria_pessoa():
             return redirect(url_for('pessoas.lista_pessoas'))
 
 
-    return render_template('atu_pessoa.html', form=form, tp=tp)
+    return render_template('atu_pessoa.html', form=form, tp=tp, instituicao_sigla = instituicao_user().split('%')[1])
 
 ## lista pessoas de uma unidade
 

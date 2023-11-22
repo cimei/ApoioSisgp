@@ -7,8 +7,6 @@
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('consultas.consultas_i')}}">Consultas</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Pessoas em PG por unidade</span>
       </li>
     </ul>
@@ -19,14 +17,14 @@
 <div class="card">
   <div class="card-header">
     <div class="d-flex flex-column flex-md-row justify-content-between">
-      <h5 class="header-list">Lista das quantidades de pessoas no programa de gestão por unidade</h5>
+      <h5 class="header-list">Lista das quantidades de pessoas no programa de gestão por unidade em <b>{{instituicao_user}}</b></h5>
       <div class="d-flex justify-content-around">
       </div>
     </div>
   </div>
   <div class="card-body">
-    <p><span class="badge text-bg-primary">{{qtd_unidades}}</span> unidade(s) na instituição,
-      com <span class="badge text-bg-primary">{{qtd_pessoas}}</span> pessoa(s) cadastradas no SISGP.</p>
+    <p><span class="badge text-bg-primary">{{qtd_unidades}}</span> unidade(s) e
+       <span class="badge text-bg-primary">{{qtd_pessoas}}</span> pessoa(s) no SISGP.</p>
     <p>Nesta lista: <span class="badge text-bg-success">{{qtd_pt_unidade}}</span> unidade(s).
                    <span class="badge text-bg-success">{{qtd_pactos_unidade}}</span> PTs em execução.</p>
 
@@ -55,7 +53,7 @@
       {% for u in pt %}
       <tr>
         <th scope="row"><p align = "center"> {{pt.index(u) + 1}} </p></th>
-        <td><p align = "center"> {{ tree[u.unidadeId] }} </p></td>
+        <td><p align = "center"> {{ u.undSiglaCompleta }} </p></td>
         <td><p align = "center"> {{ u.undDescricao }} </p></td>
         <td><p align = "center" class = "font-weight-bold">
           <abbr title="Clique aqui para ver dados dos programas de gestão da unidade.">

@@ -7,8 +7,6 @@
       <li class="crumb home"><a class="br-button circle" href="{{url_for('core.inicio')}}"><span class="sr-only">Página inicial</span><i class="fa fa-home"></i></a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('core.apoio_i')}}">Funções de Apoio</a></li>
       <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="{{url_for('pessoas.lista_pessoas')}}">Pessoas</a></li>
-      <!-- <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior3</a></li>
-      <li class="crumb"><i class="icon fa fa-chevron-right"></i><a href="javascript:void(0)">Tela Anterior4</a></li> -->
       <li class="crumb" data-active="active"><i class="icon fa fa-chevron-right"></i><span>Pessoa</span>
       </li>
     </ul>
@@ -18,7 +16,7 @@
 <div class="container">
 
 <div class="jumbotron">
-<h1>Dados de uma Pessoa {% if tp == 'ins'%} (INCLUSÃO){% else %} (CONSULTA/ALTERAÇÃO){% endif %}</h1>
+<h1>Dados de uma Pessoa em <b>{{instituicao_sigla}}</b> {% if tp == 'ins'%} (INCLUSÃO){% else %} (CONSULTA/ALTERAÇÃO){% endif %}</h1>
 
 {% macro render_field(field,obr) %}
   {% if obr == True %}
