@@ -73,7 +73,7 @@ Antes de rodar o contêiner pela primeira vez, é necessário criar, ou alterar,
       ALTER TABLE [Apoio].[log_auto] CHECK CONSTRAINT [FK_log_auto_user_id]
       GO
 
-[Apoio].[User] é para o controle de usuários, [Apoio] e [log_auto] para o diário do sistema .
+[Apoio].[User] é para o controle de usuários, [Apoio].[log_auto] para o diário do sistema .
 
 Outro detalhe sobre o banco de dados: Como o sistema conta com a funcionalidade de envio de dados, ele utiliza as views da API de Envio de Planos de Trabalho do Programa de Gestão (CADE/ME). O script de geração destas views está disponível no github do SISGP (https://github.com/spbgovbr/Sistema_Programa_de_Gestao_Susep).
 
