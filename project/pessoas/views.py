@@ -174,7 +174,8 @@ def lista_pessoas_filtro():
             if int(form.unidade.data) == 0:
                 p_unidade_pattern = instituicao_user()
             else:
-                p_unidade_pattern = form.unidade.data
+                value = dict(form.unidade.choices).get(int(form.unidade.data))
+                p_unidade_pattern = '%' + value
         elif int(form.rel_unid.data) == 2 and int(form.unidade.data) == 0:        
             p_unidade_pattern = instituicao_user()
         elif int(form.rel_unid.data) == 2 and int(form.unidade.data) != 0:
@@ -224,6 +225,7 @@ def lista_pessoas_filtro():
         p_unid     = dict(form.unidade.choices).get(int(form.unidade.data)) 
         p_rel_unid = dict(form.rel_unid.choices).get(int(form.rel_unid.data)) 
 
+        
         if len(tree) == 0:   ### consulta pessoas diretamente associadas à unidade
         
             if int(form.func.data) == -1:
@@ -235,7 +237,7 @@ def lista_pessoas_filtro():
                                     Pessoas.pesMatriculaSiape,
                                     Pessoas.pesEmail,
                                     Pessoas.unidadeId,
-                                    Unidades.undSigla,
+                                    VW_Unidades.undSigla,
                                     Pessoas.tipoFuncaoId,
                                     Tipo_Func_Pessoa.tfnDescricao,
                                     Pessoas.cargaHoraria,
@@ -243,12 +245,12 @@ def lista_pessoas_filtro():
                                     Situ_Pessoa.spsDescricao,
                                     Pessoas.tipoVinculoId,
                                     Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                    .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                     .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                     .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                                     .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                            Pessoas.unidadeId.like(p_unidade_pattern),
+                                            VW_Unidades.undSiglaCompleta.like(p_unidade_pattern),
                                             Pessoas.tipoFuncaoId.is_(None),
                                             Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                             Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
@@ -266,7 +268,7 @@ def lista_pessoas_filtro():
                                         Pessoas.pesMatriculaSiape,
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
-                                        Unidades.undSigla,
+                                        VW_Unidades.undSigla,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -274,12 +276,12 @@ def lista_pessoas_filtro():
                                         Situ_Pessoa.spsDescricao,
                                         Pessoas.tipoVinculoId,
                                         Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                         .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                         .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                         .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                                         .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.like(p_unidade_pattern),
+                                                VW_Unidades.undSiglaCompleta.like(p_unidade_pattern),
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\
                                         .order_by(Pessoas.pesNome)\
@@ -296,7 +298,7 @@ def lista_pessoas_filtro():
                                         Pessoas.pesMatriculaSiape,
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
-                                        Unidades.undSigla,
+                                        VW_Unidades.undSigla,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -304,12 +306,12 @@ def lista_pessoas_filtro():
                                         Situ_Pessoa.spsDescricao,
                                         Pessoas.tipoVinculoId,
                                         Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                         .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                         .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                         .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
                                         .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
-                                                Pessoas.unidadeId.like(p_unidade_pattern),
+                                                VW_Unidades.undSiglaCompleta.like(p_unidade_pattern),
                                                 Pessoas.tipoFuncaoId == form.func.data,
                                                 Pessoas.situacaoPessoaId.like(p_situ_pattern),
                                                 Pessoas.tipoVinculoId.like(p_vinculo_pattern))\

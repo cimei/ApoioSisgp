@@ -1,5 +1,10 @@
 ## Atualizações ##
 
+06/12/2023
+Correção de erro na pesquisa por pessoas.
+Correção de erro no agendamento de envio.
+v3.3.1
+
 20/11/2023
 Usuário passa a ter instituição em seu cadastro.
 Usuário que envia planos deve ter credenciais em seu registro.

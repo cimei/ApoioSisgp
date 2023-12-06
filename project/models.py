@@ -212,26 +212,26 @@ class VW_Unidades(db.Model):
 
 # view que monta a sigla completa das unidades ativas
 
-class VW_Unidades_Ativas(db.Model):
+# class VW_Unidades_Ativas(db.Model):
 
-    __tablename__ = 'VW_UNIDADE'
-    __table_args__ = {"schema": "dbo"}
+#     __tablename__ = 'VW_UNIDADE'
+#     __table_args__ = {"schema": "dbo"}
 
-    id_unidade       = db.Column(db.BigInteger, primary_key = True)
-    undSiglaCompleta = db.Column(db.String)
-    undDescricao     = db.Column(db.String)
-    undCodigoSIORG   = db.Column(db.Integer)
+#     id_unidade       = db.Column(db.BigInteger, primary_key = True)
+#     undSiglaCompleta = db.Column(db.String)
+#     undDescricao     = db.Column(db.String)
+#     undCodigoSIORG   = db.Column(db.Integer)
 
-    def __init__(self, id_unidade,undSiglaCompleta,undDescricao,undCodigoSIORG):
+#     def __init__(self, id_unidade,undSiglaCompleta,undDescricao,undCodigoSIORG):
 
-        self.id_unidade          = id_unidade
-        self.undSiglaCompleta    = undSiglaCompleta
-        self.undDescricao        = undDescricao
-        self.undCodigoSIORG      = undCodigoSIORG
+#         self.id_unidade          = id_unidade
+#         self.undSiglaCompleta    = undSiglaCompleta
+#         self.undDescricao        = undDescricao
+#         self.undCodigoSIORG      = undCodigoSIORG
 
 
-    def __repr__ (self):
-        return f"{self.undSiglaCompleta}"
+#     def __repr__ (self):
+#         return f"{self.undSiglaCompleta}"
 
 # pessoas
 

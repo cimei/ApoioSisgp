@@ -95,23 +95,43 @@ def pega_token():
 
 
 # função que gera lista com ids dos planos que já foram enviados previamente, consultando o log
-def planos_enviados_LOG():
+def planos_enviados_LOG(uso):
     
     data_ref = pega_data_ref()
     
     ## Pegar usuarios que são da mesma instituição do usuario logado
-    if current_user.instituicaoId != None:
+    # quando a função é chamada pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+    if current_user == None or current_user.get_id() == None:
+        user_agenda = db.session.query(Log_Auto.user_id)\
+                                .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
+                                .order_by(Log_Auto.id.desc())\
+                                .first()
+        id_user = user_agenda.user_id
+        id_inst = db.session.query(users.instituicaoId).filter(users.id == id_user).first()
+        usuarios = db.session.query(users.id).filter(users.instituicaoId == id_inst.instituicaoId).all()
+        lista_users = [u.id for u in usuarios]
+    elif current_user.instituicaoId != None:
         usuarios = db.session.query(users.id).filter(users.instituicaoId == current_user.instituicaoId).all()
         lista_users = [u.id for u in usuarios]
     else:
         abort(401)
     ##
-        
-    enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                     Log_Auto.data_hora >= data_ref,
-                                     Log_Auto.user_id.in_(lista_users))\
-                             .distinct()                        
+
+    if uso == 'lista':
+        # pesquisa log de users da instituição do usuário
+        enviados_log = db.session.query(Log_Auto.msg)\
+                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                        Log_Auto.data_hora >= data_ref,
+                                        Log_Auto.user_id.in_(lista_users))\
+                                .distinct()  
+
+    elif uso == 'agenda':
+        # pesquisa o log inteiro
+        enviados_log = db.session.query(Log_Auto.msg)\
+                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                        Log_Auto.data_hora >= data_ref)\
+                                .distinct()
+
     
     enviados = [e.msg[18:54] for e in enviados_log]
    
@@ -133,39 +153,84 @@ def planos_enviados_LOG():
    
 
 # função que gera lista de planos que nunca foram enviados, consultando o LOG
-def planos_n_enviados_LOG(): 
+def planos_n_enviados_LOG(uso): 
     
     data_ref = pega_data_ref()
     
     # Pegar instituição do usuário logado e definir filtro na busca por pactos
-    if current_user.instituicaoId != None:
+    # quando a função é chamada pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+    if current_user == None or current_user.get_id() == None:
+        user_agenda = db.session.query(Log_Auto.user_id)\
+                                .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
+                                .order_by(Log_Auto.id.desc())\
+                                .first()
+        id_user = users.query.filter_by(id = user_agenda.user_id).first()
+        instituicao = db.session.query(Unidades.undSigla, Unidades.undNivel)\
+                                .filter(Unidades.unidadeId == id_user.instituicaoId)\
+                                .first()
+    elif current_user.instituicaoId != None:
         instituicao = db.session.query(Unidades.undSigla, Unidades.undNivel)\
                                 .filter(Unidades.unidadeId == current_user.instituicaoId)\
                                 .first()
     else:
         abort(401)                            
   
-    limite_unid = '%' + instituicao.undSigla + '%'     
-              
-    # todos os planos executados e com horas homologadas > 0
-    planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
-                                 .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                        VW_Pactos.horas_homologadas > 0,
-                                        VW_Pactos.data_fim >= data_ref,
-                                        VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
-                                 .all()                                            
+    if uso == 'lista':
+
+        limite_unid = '%' + instituicao.undSigla + '%'
+
+        # todos os planos executados e com horas homologadas > 0 de unidades de uma institução específica
+        planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
+                                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                            VW_Pactos.horas_homologadas > 0,
+                                            VW_Pactos.data_fim >= data_ref,
+                                            VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
+                                    .all()
+
+    elif uso == 'agenda':    
+                
+        # todos os planos executados e com horas homologadas > 0 de todas as unidades
+        planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
+                                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                            VW_Pactos.horas_homologadas > 0,
+                                            VW_Pactos.data_fim >= data_ref)\
+                                    .all()                                            
     
+
     ## Pegar usuarios que são da mesma instituição do usuario logado
-    usuarios = db.session.query(users.id).filter(users.instituicaoId == current_user.instituicaoId).all()
-    lista_users = [u.id for u in usuarios]
+    # quando a função é chamada pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
+    if current_user == None or current_user.get_id() == None:
+        user_agenda = db.session.query(Log_Auto.user_id)\
+                                .filter(Log_Auto.msg.like('* Agendamento de envio:%'))\
+                                .order_by(Log_Auto.id.desc())\
+                                .first()
+        id_user = user_agenda.user_id
+        id_inst = db.session.query(users.instituicaoId).filter(users.id == id_user).first()
+        usuarios = db.session.query(users.id).filter(users.instituicaoId == id_inst.instituicaoId).all()
+        lista_users = [u.id for u in usuarios]
+    elif current_user.instituicaoId != None:
+        usuarios = db.session.query(users.id).filter(users.instituicaoId == current_user.instituicaoId).all()
+        lista_users = [u.id for u in usuarios]
+    else:
+        abort(401)
     ##
-    # identifica envios na tabela do log
+
+    if uso == 'lista':
+
+        # identifica envios na tabela do log para users da instituição selecionada
+        enviados_log = db.session.query(Log_Auto.msg)\
+                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                        Log_Auto.data_hora >= data_ref,
+                                        Log_Auto.user_id.in_(lista_users))\
+                                .distinct()
     
-    enviados_log = db.session.query(Log_Auto.msg)\
-                             .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                     Log_Auto.data_hora >= data_ref,
-                                     Log_Auto.user_id.in_(lista_users))\
-                             .distinct()                       
+    elif uso == 'agenda':
+
+        # identifica envios na tabela do log para todos os uses
+        enviados_log = db.session.query(Log_Auto.msg)\
+                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                        Log_Auto.data_hora >= data_ref)\
+                                .distinct()                       
     
     log = [e.msg[18:54] for e in enviados_log]
 
@@ -191,16 +256,17 @@ def planos_n_enviados_LOG():
     
     # print ('*** A lista de não enviados tem: ',len(n_enviados),' items. Será quebrada em : ',len(listas),' sub-listas.')      
     
-    
     return listas        
     
     
 # função para envio e reenvio de planos para a API
 def envia_API(tipo):  
+
+    limita_horario = False
     
     if tipo == 'enviar':
       
-        n_enviados = planos_n_enviados_LOG()
+        n_enviados = planos_n_enviados_LOG('agenda')
 
         print('**')
         print('*** Iniciando o envio de planos conforme agendamento ***')    
@@ -239,9 +305,10 @@ def envia_API(tipo):
                 for p in planos:
                     
                     # parar o envio caso extrapole o horário limite
-                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
-                        break
+                    if limita_horario:
+                        if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                        datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                            break
                     
                     # se estorar 55 minutos, pega novo token
                     if datetime.now() > hora_token:
@@ -326,11 +393,12 @@ def envia_API(tipo):
                                 abort(401)
 
                 # parar o envio caso extrapole o horário limite
-                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
-                    print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
-                    registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
-                    break
+                if limita_horario:
+                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                        registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
+                        break
                 
             # quando o envio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
@@ -361,7 +429,7 @@ def envia_API(tipo):
     
     else:
 
-        enviados = planos_enviados_LOG()
+        enviados = planos_enviados_LOG('agenda')
             
         print('**')
         print('*** Iniciando o reenvio de planos conforme agendamento ***')    
@@ -399,9 +467,10 @@ def envia_API(tipo):
                 for p in planos:
                     
                     # parar o envio caso extrapole o horário limite
-                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
-                        break
+                    if limita_horario:
+                        if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                        datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                            break
                     
                     # se estourar 55 minutos, pega novo token
                     if datetime.now() > hora_token:
@@ -484,11 +553,12 @@ def envia_API(tipo):
                                 abort(401)
             
                 # parar o envio caso extrapole o horário limite
-                if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
-                    print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
-                    registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
-                    break
+                if limita_horario:
+                    if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
+                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
+                        registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
+                        break
             
             # quando o reenvio for feito pelo agendamento, personaliza msg no log com dados do agendamento
 
@@ -532,7 +602,7 @@ def lista_a_enviar():
        
     data_ref = pega_data_ref()
     
-    n_enviados = planos_n_enviados_LOG()
+    n_enviados = planos_n_enviados_LOG('lista')
     fonte = 'LOG'
 
     if n_enviados != 'erro_credenciais':
@@ -606,7 +676,7 @@ def lista_enviados():
     
     data_ref = pega_data_ref()
 
-    enviados = planos_enviados_LOG()
+    enviados = planos_enviados_LOG('lista')
     fonte = 'LOG'
 
     if enviados != 'erro_credenciais':
@@ -689,7 +759,7 @@ def pesquisa_planos():
                                 .all() 
         l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]                    
                             
-        enviados = planos_enviados_LOG()                    
+        enviados = planos_enviados_LOG('lista')                    
         
         for l in enviados:
         
@@ -717,7 +787,7 @@ def pesquisa_planos():
                 demandas_count += len(planos_avaliados)                    
         
         
-        n_enviados = planos_n_enviados_LOG()                    
+        n_enviados = planos_n_enviados_LOG('lista')                    
         
         for l in n_enviados:
         
