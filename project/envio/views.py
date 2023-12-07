@@ -262,7 +262,7 @@ def planos_n_enviados_LOG(uso):
 # função para envio e reenvio de planos para a API
 def envia_API(tipo):  
 
-    limita_horario = False
+    limita_horario = True
     
     if tipo == 'enviar':
       
@@ -966,14 +966,14 @@ def agenda_envio():
 
         Keyword arguments:
         job -- identificador do job
-        periodicidade -- intervalo de tempo entre envios (Diária, Semanal ou Mensal)
+        periodicidade -- intervalo de tempo entre envios (D, S ou M)
         tipo_agendamento -- se agendamento ou reagendamento
         tipo_envio -- se envio ou reenvio
         s_hora -- hora de execução do job
         s_minuto -- mintuo de execução do job
         """
         
-        if periodicidade == 'Diária':
+        if periodicidade == 'D':
             msg = ('*** '+tipo_agendamento+' '+id_job+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
             print(msg)
             dia_semana = 'mon-fri'
@@ -989,7 +989,7 @@ def agenda_envio():
                 except:
                     sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
                     sched.start()
-        elif periodicidade == 'Semanal':
+        elif periodicidade == 'S':
             msg =  ('*** '+tipo_agendamento+' '+id_job+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
             print(msg)
             dia_semana = 'fri'
@@ -1005,7 +1005,7 @@ def agenda_envio():
                 except:
                     sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
                     sched.start()   
-        elif periodicidade == 'Mensal':
+        elif periodicidade == 'M':
             msg =  ('*** '+tipo_agendamento+' '+id_job+' como MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
             print(msg)
             dia = '1st fri'
@@ -1056,7 +1056,7 @@ def agenda_envio():
         id_2='job_envia_planos_novamente'
         
         # no caso de cancelamento de envios
-        if periodicidade == 'Nenhuma':
+        if periodicidade == 'N':
             msg =  ('*** Jobs CANCELADOS. Não haverá envios automáticos. ***')
             print(msg)
             try:
@@ -1083,32 +1083,32 @@ def agenda_envio():
                     job_agendado = True
                 else:
                     print ('*** Não encontrei job '+id_1+' ***')
-                    job_agendado = None      
+                    job_agendado = False      
             except:
                 print ('*** Não encontrei job '+id_1+' ***')
-                job_agendado = None
+                job_agendado = False
 
             if job_agendado:
                 
                 agendador(id_1, periodicidade, 'REAGENDAR', 'enviar', s_hora, s_minuto)
-                if periodicidade == 'Semanal':
-                    txt = ' (sextas-feiras)'
-                elif periodicidade == 'Mensal':
-                    txt = ' (primeira sexta-feira)'
+                if periodicidade == 'S':
+                    txt = 'todas as sextas-feiras'
+                elif periodicidade == 'M':
+                    txt = 'a primeira sexta-feira do mês'
                 else:
                     txt = '' 
-                flash(str(id_1)+' reagendado para periodicidade '+str(periodicidade)+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
+                flash(str(id_1)+' reagendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
                 
             else:
                 
                 agendador(id_1, periodicidade, 'AGENDAR', 'enviar', s_hora, s_minuto)
-                if periodicidade == 'Semanal':
-                    txt = ' (sextas-feiras)'
-                elif periodicidade == 'Mensal':
-                    txt = ' (primeira sexta-feira)'
+                if periodicidade == 'S':
+                    txt = 'todas as sextas-feiras'
+                elif periodicidade == 'M':
+                    txt = 'a primeira sexta-feira do mês'
                 else:
                     txt = ''
-                flash(str(id_1)+' agendado para periodicidade '+str(periodicidade)+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
+                flash(str(id_1)+' agendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
             
             registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
 
@@ -1130,32 +1130,32 @@ def agenda_envio():
                         job_agendado = True
                     else:
                         print ('*** Não encontrei job '+ id_2 +' ***')
-                        job_agendado = None      
+                        job_agendado = False      
                 except:
                     print ('*** Não encontrei job '+ id_2 +' ***')
-                    job_agendado = None
+                    job_agendado = False
 
                 if job_agendado:
                     
                     agendador(id_2, periodicidade, 'REAGENDAR', 'reenviar', s_hora, s_minuto)
-                    if periodicidade == 'Semanal':
-                        txt = ' (sextas-feiras)'
-                    elif periodicidade == 'Mensal':
-                        txt = ' (primeira sexta-feira)'
+                    if periodicidade == 'S':
+                        txt = 'todas as sextas-feiras'
+                    elif periodicidade == 'M':
+                        txt = 'a primeira sexta-feira do mês'
                     else:
                         txt = ''
-                    flash(str(id_2)+' reagendado para periodicidade '+str(periodicidade)+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
+                    flash(str(id_2)+' reagendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
                     
                 else:
                     
                     agendador(id_2, periodicidade, 'AGENDAR', 'reenviar', s_hora, s_minuto)
-                    if periodicidade == 'Semanal':
-                        txt = ' (sextas-feiras)'
-                    elif periodicidade == 'Mensal':
-                        txt = ' (primeira sexta-feira)'
+                    if periodicidade == 'S':
+                        txt = 'todas as sextas-feiras'
+                    elif periodicidade == 'M':
+                        txt = 'a primeira sexta-feira do mês'
                     else:
                         txt = ''
-                    flash(str(id_2)+' agendado para periodicidade '+str(periodicidade)+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
+                    flash(str(id_2)+' agendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
                 
                 registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
 

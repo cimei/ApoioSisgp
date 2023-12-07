@@ -21,9 +21,9 @@ class PeriodoForm(FlaskForm):
 class AgendamentoForm(FlaskForm):
 
    tipo          = SelectField('Planos para envio:',choices=[('nunca_enviados','Nunca enviados'),('todos','Todos')])
-   periodicidade = SelectField('Periodicidade',choices=[('Diária','Diária'),('Semanal','Semanal'),('Mensal','Mensal'),('Nenhuma','Nenhuma')])
+   periodicidade = SelectField('Periodicidade',choices=[('D','Diária'),('S','Semanal'),('M','Mensal'),('N','Nenhuma')])
 
-   limita_horario = False
+   limita_horario = True
    if limita_horario:
       hora = SelectField('Hora',choices=[(20,'20'),(21,'21'),(22,'22'),(23,'23'),(0,'00'),(1,'01'),(2,'02'),(3,'03')],coerce=int)
    else:
