@@ -188,7 +188,7 @@
                       <li><a class="menu-item" href="{{url_for('envio.lista_enviados')}}"><span class="icon"><i
                               class="fa fa-cloud" aria-hidden="true"></i></span><span class="content">Planos
                             enviados</span></a></li>
-                      <li><a class="menu-item" href="{{url_for('envio.agenda_envio')}}"><span class="icon"><i
+                      <li><a class="menu-item" href="{{url_for('envio.agenda_envio',inst=current_user.instituicaoId)}}"><span class="icon"><i
                               class="fa fa-play" aria-hidden="true"></i></span><span
                             class="content">Agendamento</span></a></li>
                       <li><a class="menu-item" href="{{url_for('usuarios.log',tipo='envio')}}"><span class="icon"><i
@@ -229,7 +229,7 @@
                               class="fa fa-archive" aria-hidden="true"></i></span><span class="content">Planos de
                             Trabalho - Todos</span></a></li>
                       <li><a class="menu-item" href="{{url_for('consultas.pactos_executados')}}"><span class="icon"><i
-                              class="fa fa-archive" aria-hidden="true"></i></span><span class="content">Planos de
+                              class="fa fa-ban" aria-hidden="true"></i></span><span class="content">Planos de
                              Trabalho - Não avaliados</span></a></li>      
                       <li><a class="menu-item" href="{{url_for('consultas.pactos_irregulares')}}"><span class="icon"><i
                               class="fa fa-bell" aria-hidden="true"></i></span><span class="content">Planos de Trabaho -

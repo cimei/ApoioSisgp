@@ -46,7 +46,7 @@
           description="Pode-se agendar envio de todos os planos (passíveis de envio e já enviados), ou somente dos planos 
           passíveis de envio. O agendamento é restrito ao intervalo das 20:00 às 03:59, nas opções 'Diária',
           'Semanal' e 'Mensal'.",
-          link=url_for('envio.agenda_envio')
+          link=url_for('envio.agenda_envio',inst=current_user.instituicaoId)
         %}
           {% include "card_menu.html" %}
         {% endwith %}

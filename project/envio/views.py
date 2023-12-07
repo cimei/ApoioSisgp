@@ -63,11 +63,21 @@ def pega_data_ref():
     
 
 # pega token de acesso à API de envio de dados
-def pega_token():    
+def pega_token(inst): 
+
+    #pega credenciais da instituição informada
+    credenciais = db.session.query(users.user_api,
+                                   users.senha_api)\
+                            .filter(users.instituicaoId == inst)\
+                            .first()              
     
-    user_api   = os.getenv('APIPGDME_AUTH_USER')
-    senha_api  = os.getenv('APIPGDME_AUTH_PASSWORD')
-    
+    if credenciais == None:
+        user_api   = os.getenv('APIPGDME_AUTH_USER')
+        senha_api  = os.getenv('APIPGDME_AUTH_PASSWORD')
+    else:
+        user_api   = credenciais.user_api
+        senha_api  = credenciais.senha_api
+
     if user_api == None:
         user_api  = ''
     if senha_api == None:    
@@ -95,7 +105,7 @@ def pega_token():
 
 
 # função que gera lista com ids dos planos que já foram enviados previamente, consultando o log
-def planos_enviados_LOG(uso):
+def planos_enviados_LOG():
     
     data_ref = pega_data_ref()
     
@@ -117,21 +127,12 @@ def planos_enviados_LOG(uso):
         abort(401)
     ##
 
-    if uso == 'lista':
-        # pesquisa log de users da instituição do usuário
-        enviados_log = db.session.query(Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                        Log_Auto.data_hora >= data_ref,
-                                        Log_Auto.user_id.in_(lista_users))\
-                                .distinct()  
-
-    elif uso == 'agenda':
-        # pesquisa o log inteiro
-        enviados_log = db.session.query(Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                        Log_Auto.data_hora >= data_ref)\
-                                .distinct()
-
+    # pesquisa log de users da instituição do usuário
+    enviados_log = db.session.query(Log_Auto.msg)\
+                            .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                    Log_Auto.data_hora >= data_ref,
+                                    Log_Auto.user_id.in_(lista_users))\
+                            .distinct()  
     
     enviados = [e.msg[18:54] for e in enviados_log]
    
@@ -153,7 +154,7 @@ def planos_enviados_LOG(uso):
    
 
 # função que gera lista de planos que nunca foram enviados, consultando o LOG
-def planos_n_enviados_LOG(uso): 
+def planos_n_enviados_LOG(): 
     
     data_ref = pega_data_ref()
     
@@ -175,27 +176,16 @@ def planos_n_enviados_LOG(uso):
     else:
         abort(401)                            
   
-    if uso == 'lista':
+    limite_unid = '%' + instituicao.undSigla + '%'
 
-        limite_unid = '%' + instituicao.undSigla + '%'
+    # todos os planos executados e com horas homologadas > 0 de unidades de uma institução específica
+    planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
+                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+                                        VW_Pactos.horas_homologadas > 0,
+                                        VW_Pactos.data_fim >= data_ref,
+                                        VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
+                                .all()                                         
 
-        # todos os planos executados e com horas homologadas > 0 de unidades de uma institução específica
-        planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
-                                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                            VW_Pactos.horas_homologadas > 0,
-                                            VW_Pactos.data_fim >= data_ref,
-                                            VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
-                                    .all()
-
-    elif uso == 'agenda':    
-                
-        # todos os planos executados e com horas homologadas > 0 de todas as unidades
-        planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
-                                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                            VW_Pactos.horas_homologadas > 0,
-                                            VW_Pactos.data_fim >= data_ref)\
-                                    .all()                                            
-    
 
     ## Pegar usuarios que são da mesma instituição do usuario logado
     # quando a função é chamada pelo agendamento, current_user está vazio, pega então o usuário que fez o últinmo agendamento 
@@ -215,22 +205,12 @@ def planos_n_enviados_LOG(uso):
         abort(401)
     ##
 
-    if uso == 'lista':
-
-        # identifica envios na tabela do log para users da instituição selecionada
-        enviados_log = db.session.query(Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                        Log_Auto.data_hora >= data_ref,
-                                        Log_Auto.user_id.in_(lista_users))\
-                                .distinct()
-    
-    elif uso == 'agenda':
-
-        # identifica envios na tabela do log para todos os uses
-        enviados_log = db.session.query(Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
-                                        Log_Auto.data_hora >= data_ref)\
-                                .distinct()                       
+    # identifica envios na tabela do log para users da instituição selecionada
+    enviados_log = db.session.query(Log_Auto.msg)\
+                            .filter(Log_Auto.msg.like(' * PACTO ENVIADO:'+'%'),
+                                    Log_Auto.data_hora >= data_ref,
+                                    Log_Auto.user_id.in_(lista_users))\
+                            .distinct()
     
     log = [e.msg[18:54] for e in enviados_log]
 
@@ -260,13 +240,13 @@ def planos_n_enviados_LOG(uso):
     
     
 # função para envio e reenvio de planos para a API
-def envia_API(tipo):  
+def envia_API(tipo,inst):  
 
     limita_horario = True
     
     if tipo == 'enviar':
       
-        n_enviados = planos_n_enviados_LOG('agenda')
+        n_enviados = planos_n_enviados_LOG()
 
         print('**')
         print('*** Iniciando o envio de planos conforme agendamento ***')    
@@ -287,7 +267,7 @@ def envia_API(tipo):
         
         if n_enviados != 'erro_credenciais':   
             
-            token = pega_token() 
+            token = pega_token(inst) 
             print('** Peguei o primeiro token para enviar planos **') 
             # 55 minutos para pegar novo token
             hora_token = datetime.now() + timedelta(seconds=(60*55))  
@@ -312,7 +292,7 @@ def envia_API(tipo):
                     
                     # se estorar 55 minutos, pega novo token
                     if datetime.now() > hora_token:
-                        token = pega_token()   
+                        token = pega_token(inst)   
                         print('** Peguei novo token **') 
                         hora_token = datetime.now() + timedelta(seconds=(60*55)) 
                         print ('** Hora para pegar próximo token: ',hora_token)
@@ -429,7 +409,7 @@ def envia_API(tipo):
     
     else:
 
-        enviados = planos_enviados_LOG('agenda')
+        enviados = planos_enviados_LOG()
             
         print('**')
         print('*** Iniciando o reenvio de planos conforme agendamento ***')    
@@ -450,7 +430,7 @@ def envia_API(tipo):
 
         if enviados != 'erro_credenciais':       
             
-            token = pega_token()   
+            token = pega_token(inst)   
             # 55 minutos para pegar novo token
             hora_token = datetime.now() + timedelta(seconds=(60*55))  
 
@@ -474,7 +454,7 @@ def envia_API(tipo):
                     
                     # se estourar 55 minutos, pega novo token
                     if datetime.now() > hora_token:
-                        token = pega_token()
+                        token = pega_token(inst)
                         hora_token = datetime.now() + timedelta(seconds=(60*55))
 
                     dic_envio = {}
@@ -602,7 +582,7 @@ def lista_a_enviar():
        
     data_ref = pega_data_ref()
     
-    n_enviados = planos_n_enviados_LOG('lista')
+    n_enviados = planos_n_enviados_LOG()
     fonte = 'LOG'
 
     if n_enviados != 'erro_credenciais':
@@ -676,7 +656,7 @@ def lista_enviados():
     
     data_ref = pega_data_ref()
 
-    enviados = planos_enviados_LOG('lista')
+    enviados = planos_enviados_LOG()
     fonte = 'LOG'
 
     if enviados != 'erro_credenciais':
@@ -737,9 +717,15 @@ def pesquisa_planos():
     +---------------------------------------------------------------------------------------+
     """
 
+    instituicao_user = db.session.query(Unidades.undSigla).filter(Unidades.unidadeId == current_user.instituicaoId).first()
+
     form = PesquisaPlanoForm()
     
-    unids = db.session.query(Unidades.unidadeId, Unidades.undSigla).order_by(Unidades.undSigla).filter(Unidades.situacaoUnidadeId==1).all()
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+                      .order_by(VW_Unidades.undSigla)\
+                      .filter(VW_Unidades.undSiglaCompleta.like(instituicao_user.undSigla+'%'),
+                              VW_Unidades.situacaoUnidadeId==1)\
+                      .all()
     lista_unids = [(u.undSigla,u.undSigla) for u in unids]
     lista_unids.insert(0,('','Todas')) 
     
@@ -759,7 +745,7 @@ def pesquisa_planos():
                                 .all() 
         l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]                    
                             
-        enviados = planos_enviados_LOG('lista')                    
+        enviados = planos_enviados_LOG()                    
         
         for l in enviados:
         
@@ -787,7 +773,7 @@ def pesquisa_planos():
                 demandas_count += len(planos_avaliados)                    
         
         
-        n_enviados = planos_n_enviados_LOG('lista')                    
+        n_enviados = planos_n_enviados_LOG()                    
         
         for l in n_enviados:
         
@@ -837,9 +823,19 @@ def enviar_um_plano(plano_id,lista):
     |Envia um plano específico.                                                             |
     |Recebe o id do plano como parâmetro.                                                   |
     +---------------------------------------------------------------------------------------+
-    """     
+    """   
+
+    # pega instituição do usuário logado
+    instituicao = db.session.query(users.instituicaoId).filter(users.id == current_user.id).first()
+
+    if instituicao == None:
+        flash('Usuário não tem uma instiuição definida em seu registro!','erro')
+        if lista == 'n_enviados':
+            return redirect (url_for('envio.lista_a_enviar'))
+        elif lista == 'enviados':
+            return redirect (url_for('envio.lista_enviados'))
     
-    token = pega_token()
+    token = pega_token(instituicao.instituicaoId)
 
     # indicador de plano enviado com sucesso 
     sucesso = False
@@ -950,10 +946,10 @@ def enviar_um_plano(plano_id,lista):
 
 ## agendamento de envio 
 
-@envio.route('/agenda_envio', methods = ['GET', 'POST'])
+@envio.route('/<int:inst>/agenda_envio', methods = ['GET', 'POST'])
 @login_required
 
-def agenda_envio():
+def agenda_envio(inst):
     """
     +---------------------------------------------------------------------------------------+
     |Faz agendamento de envio de planos.                                                    |
@@ -961,7 +957,7 @@ def agenda_envio():
     +---------------------------------------------------------------------------------------+
     """
     
-    def agendador(id_job, periodicidade, tipo_agendamento, tipo_envio, s_hora, s_minuto):
+    def agendador(id_job, periodicidade, tipo_agendamento, tipo_envio, s_hora, s_minuto, inst):
         """Prepara sched com os parámetros informados.
 
         Keyword arguments:
@@ -971,6 +967,7 @@ def agenda_envio():
         tipo_envio -- se envio ou reenvio
         s_hora -- hora de execução do job
         s_minuto -- mintuo de execução do job
+        inst -- a instituição 
         """
         
         if periodicidade == 'D':
@@ -979,7 +976,7 @@ def agenda_envio():
             dia_semana = 'mon-fri'
             if tipo_agendamento == 'AGENDAR':
                 try:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
                     sched.start()
                 except:
                     sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
@@ -987,7 +984,7 @@ def agenda_envio():
                 try:
                     sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
                 except:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
                     sched.start()
         elif periodicidade == 'S':
             msg =  ('*** '+tipo_agendamento+' '+id_job+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
@@ -995,7 +992,7 @@ def agenda_envio():
             dia_semana = 'fri'
             if tipo_agendamento == 'AGENDAR':
                 try:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
                     sched.start()
                 except:
                     sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))
@@ -1003,7 +1000,7 @@ def agenda_envio():
                 try:
                     sched.reschedule_job(id_job, trigger='cron', day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto))   
                 except:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)  
                     sched.start()   
         elif periodicidade == 'M':
             msg =  ('*** '+tipo_agendamento+' '+id_job+' como MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
@@ -1011,7 +1008,7 @@ def agenda_envio():
             dia = '1st fri'
             if tipo_agendamento == 'AGENDAR':
                 try:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
                     sched.start()
                 except:
                     sched.reschedule_job(id_job, trigger='cron', day=dia, hour=int(s_hora), minute=int(s_minuto))
@@ -1019,12 +1016,21 @@ def agenda_envio():
                 try:
                     sched.reschedule_job(id_job, trigger='cron', day=dia, hour=int(s_hora), minute=int(s_minuto))
                 except:
-                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
+                    sched.add_job(trigger='cron', id=id_job, func=lambda:envia_API(tipo_envio, inst), day=dia, hour=int(s_hora), minute=int(s_minuto), misfire_grace_time=3600, coalesce=True)
                     sched.start() 
 
     
 
     form = AgendamentoForm()
+
+    # pega instituição do usuário logado
+    instituicao = db.session.query(users.instituicaoId).filter(users.id == current_user.id).first()
+
+    if instituicao == None:
+        flash('Usuário não tem uma instiuição definida em seu registro!','erro')
+        return render_template('jobs.html', agenda_ant_envio='',
+                                            agenda_ant_reenvio='', 
+                                            form=form)
 
     if form.validate_on_submit():
 
@@ -1052,8 +1058,8 @@ def agenda_envio():
         
         # verifica agendamentos existentes
 
-        id_1='job_envia_planos'
-        id_2='job_envia_planos_novamente'
+        id_1='job_envia_planos_'+str(instituicao.instituicaoId)
+        id_2='job_envia_planos_novamente_'+str(instituicao.instituicaoId)
         
         # no caso de cancelamento de envios
         if periodicidade == 'N':
@@ -1090,7 +1096,7 @@ def agenda_envio():
 
             if job_agendado:
                 
-                agendador(id_1, periodicidade, 'REAGENDAR', 'enviar', s_hora, s_minuto)
+                agendador(id_1, periodicidade, 'REAGENDAR', 'enviar', s_hora, s_minuto, instituicao.instituicaoId)
                 if periodicidade == 'S':
                     txt = 'todas as sextas-feiras'
                 elif periodicidade == 'M':
@@ -1101,7 +1107,7 @@ def agenda_envio():
                 
             else:
                 
-                agendador(id_1, periodicidade, 'AGENDAR', 'enviar', s_hora, s_minuto)
+                agendador(id_1, periodicidade, 'AGENDAR', 'enviar', s_hora, s_minuto, instituicao.instituicaoId)
                 if periodicidade == 'S':
                     txt = 'todas as sextas-feiras'
                 elif periodicidade == 'M':
@@ -1137,7 +1143,7 @@ def agenda_envio():
 
                 if job_agendado:
                     
-                    agendador(id_2, periodicidade, 'REAGENDAR', 'reenviar', s_hora, s_minuto)
+                    agendador(id_2, periodicidade, 'REAGENDAR', 'reenviar', s_hora, s_minuto, instituicao.instituicaoId)
                     if periodicidade == 'S':
                         txt = 'todas as sextas-feiras'
                     elif periodicidade == 'M':
@@ -1148,7 +1154,7 @@ def agenda_envio():
                     
                 else:
                     
-                    agendador(id_2, periodicidade, 'AGENDAR', 'reenviar', s_hora, s_minuto)
+                    agendador(id_2, periodicidade, 'AGENDAR', 'reenviar', s_hora, s_minuto, instituicao.instituicaoId)
                     if periodicidade == 'S':
                         txt = 'todas as sextas-feiras'
                     elif periodicidade == 'M':
