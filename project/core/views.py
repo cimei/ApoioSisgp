@@ -449,6 +449,7 @@ def CarregaUnidades():
             with open(arq, newline='',encoding = 'utf-8-sig') as data:            
                 
                 erro_pai = 0
+                erro_pai_de_si_mema = 0
                 data_lines = csv.DictReader(data,delimiter=';')
                 for linha in data_lines: 
 
@@ -464,15 +465,24 @@ def CarregaUnidades():
                                 if not cod_pai:
                                     erro_pai += 1
                                     unid_exist.unidadeIdPai = None
-                                else:    
-                                    unid_exist.unidadeIdPai = linha['unidadeIdPai']
+                                else:
+                                    if linha['unidadeIdPai'] == unid_exist.unidadeId:
+                                        erro_pai_de_si_mema += 1
+                                        unid_exist.unidadeIdPai = None
+                                    else:
+                                        unid_exist.unidadeIdPai = linha['unidadeIdPai']
                             else:    
                                 cod_pai = db.session.query(Unidades.unidadeId).filter(Unidades.undSigla==linha['unidadeIdPai']).first()
                                 if not cod_pai:
                                     erro_pai += 1
                                     unid_exist.unidadeIdPai = None
-                                else:    
-                                    unid_exist.unidadeIdPai = cod_pai.unidadeId 
+                                else:
+                                    if linha['unidadeIdPai'] == unid_exist.undSigla:
+                                        erro_pai_de_si_mema += 1
+                                        unid_exist.unidadeIdPai = None
+                                    else:
+                                        unid_exist.unidadeIdPai = cod_pai.unidadeId
+                                        
                 db.session.commit()                          
 
                 print ('*** ',qtdLinhas,'linhas no arquivo de entrada.')
@@ -482,6 +492,9 @@ def CarregaUnidades():
 
                 if erro_pai > 0:
                     flash (str(erro_pai)+' ocorrência(s) de unidade pai sem correspondência na tabela de Unidades.','erro')
+                
+                if erro_pai_de_si_mema > 0:
+                    flash (str(erro_pai_de_si_mema)+' ocorrência(s) de unidade que estão referênciadas como pai de si mesma.','erro')
                 
                 if qtd_exist == 0:
 

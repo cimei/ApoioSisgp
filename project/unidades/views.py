@@ -59,6 +59,12 @@ def lista_unidades(lista):
     # chefes = db.session.query(Pessoas.pessoaId,Pessoas.pesNome).filter(Pessoas.tipoFuncaoId != None, Pessoas.tipoFuncaoId != '').subquery()
     # substitutos = aliased(chefes)
     
+    # Verifica se há unidade relacionada como próprio pai
+    unids_erro_pai = db.session.query(Unidades.unidadeId,
+                                      Unidades.unidadeIdPai)\
+                               .filter(Unidades.unidadeId == Unidades.unidadeIdPai)\
+                               .all()
+    
     # Verifica a quantidade de unidades ativas  para decidir sobre paginação
     
     qtd_unids = db.session.query(Unidades).filter(Unidades.situacaoUnidadeId == 1).count()
@@ -106,6 +112,9 @@ def lista_unidades(lista):
                                 .paginate(page=page,per_page=100)
 
     quantidade = unids.total
+    
+    if unids_erro_pai != None:
+        flash('Atenção! Exite(m) unidade(s) que está(ão) referenciada(s) como pai de si mesma(s). Isto provocará erro de acesso no SISGP!','erro')
 
     return render_template('lista_unidades.html', unids = unids, quantidade = quantidade,
                                                 dic_situ_unidade = dic_situ_unidade, 
@@ -279,6 +288,11 @@ def unidade_update(cod_unid):
     if form.validate_on_submit():
 
         if current_user.userAtivo:
+                    
+            # conferir se unidade está sendo colocada como pai dela mesma
+            if form.pai.data == unidade.unidadeId:
+                flash('Unidade não pode ser pai de si mesma, alteração não realizada!','erro')
+                return redirect(url_for('unidades.lista_unidades',lista='ativas'))
 
             unidade.undSigla                 = form.sigla.data
             unidade.undDescricao             = form.desc.data
@@ -427,6 +441,14 @@ def cria_unidade():
     if form.validate_on_submit():
 
         if current_user.userAtivo:
+            
+            # conferir sigla da unidade com a que está sendo colocada como pai
+            verifica_pai = dict(form.pai.choices).get(int(form.pai.data))
+            if verifica_pai == form.sigla.data:
+                flash('Unidade não pode ser pai de si mesma!','erro')
+                return render_template('atu_unidade.html', form=form,
+                                               id = None,
+                                               sigla = None)
 
             if form.pai.data == 0:
                 pai = None

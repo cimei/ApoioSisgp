@@ -63,7 +63,7 @@ def pega_data_ref():
     
 
 # pega token de acesso à API de envio de dados
-def pega_token():        
+def pega_token():      
 
     string = 'grant_type=&username='+os.getenv('APIPGDME_AUTH_USER')+'&password='+os.getenv('APIPGDME_AUTH_PASSWORD')+'&scope=&client_id=&client_secret='
 
@@ -75,8 +75,16 @@ def pega_token():
 
     rlogin_json = response.json()
 
-    token = rlogin_json['access_token']
-    tipo =  rlogin_json['token_type']  
+    try:
+        token = rlogin_json['access_token']
+        # tipo =  rlogin_json['token_type'] 
+    except:
+         retorno_API = rlogin_json['detail']  
+         print ('** RETORNO DA API: ',retorno_API)
+         print ('*** url: ', os.getenv('APIPGDME_URL'))
+         print ('*** user: ',os.getenv('APIPGDME_AUTH_USER'))  
+         print ('*** senha: ',os.getenv('APIPGDME_AUTH_PASSWORD'))
+         abort(403)  
     
     return(token)
 
