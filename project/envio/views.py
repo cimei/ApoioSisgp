@@ -1077,7 +1077,7 @@ def agenda_envio(inst):
                     sched.remove_job(id_2)
             except:
                 pass
-            registra_log_auto(current_user.id, '* Agendamento cancelado.')    
+            registra_log_auto(current_user.id, '* Agendamento cancelado. - '+str(instituicao.instituicaoId))    
             flash(msg,'sucesso')
         
         else:    
@@ -1116,7 +1116,7 @@ def agenda_envio(inst):
                     txt = ''
                 flash(str(id_1)+' agendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
             
-            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
+            registra_log_auto(current_user.id, '* Agendamento de envio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto + ' - ' + str(instituicao.instituicaoId))
 
             if tipo == 'todos':
 
@@ -1163,7 +1163,7 @@ def agenda_envio(inst):
                         txt = ''
                     flash(str(id_2)+' agendado para '+txt+' ('+s_hora+':'+s_minuto+')','sucesso')
                 
-                registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto)
+                registra_log_auto(current_user.id, '* Agendamento de reenvio: '+ str(periodicidade) +' - '+ s_hora +':'+ s_minuto + ' - ' + str(instituicao.instituicaoId))
 
             else:
                 msg =  ('*** Agendamento só de inéditos. Job de reenvio, se houver, será CANCELADO. ***')
@@ -1181,22 +1181,23 @@ def agenda_envio(inst):
     # verifica agendamentos anteriores via consulta ao log
 
     log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                     .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%') )\
+                                     .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%'+str(instituicao.instituicaoId)))\
                                      .order_by(Log_Auto.id.desc())\
                                      .first()
+    
     log_agenda_ant_reenvio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                       .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%') )\
+                                       .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%'+str(instituicao.instituicaoId)))\
                                        .order_by(Log_Auto.id.desc())\
-                                       .first()                                 
+                                       .first()      
 
     log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                      .filter(Log_Auto.msg == '* Agendamento cancelado.')\
+                                      .filter(Log_Auto.msg.like('* Agendamento cancelado.'+'%'+str(instituicao.instituicaoId)))\
                                       .order_by(Log_Auto.id.desc())\
-                                      .first()                                        
+                                      .first() 
 
     
     try:
-        job_envio_existente = sched.get_job('job_envia_planos')
+        job_envio_existente = sched.get_job('job_envia_planos_'+str(instituicao.instituicaoId))
         if job_envio_existente:
             txt_envio = ' (job de envio ativo)'
         else:
@@ -1205,7 +1206,7 @@ def agenda_envio(inst):
         txt_envio = ' (não há job de envio ativo)' 
 
     try:
-        job_reenvio_existente = sched.get_job('job_envia_planos_novamente')
+        job_reenvio_existente = sched.get_job('job_envia_planos_novamente_'+str(instituicao.instituicaoId))
         if job_reenvio_existente:
             txt_reenvio = ' (job de reenvio ativo)'
         else:

@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+10/12/2023
+Correção na rotina de agendamento de envios.
+v3.3.2
+
 06/12/2023
 Correção de erro na pesquisa por pessoas.
 Correção de erro no agendamento de envio.
