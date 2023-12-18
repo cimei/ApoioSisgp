@@ -423,6 +423,16 @@ def primeiro_user():
     usuarios_qtd = users.query.count()
 
     form = RegistrationForm()
+    
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
+                    .order_by(VW_Unidades.undSiglaCompleta)\
+                    .filter(VW_Unidades.situacaoUnidadeId==1,
+                            VW_Unidades.undNivel < 2).all()
+
+    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids.insert(0,(0,''))
+    
+    form.unidade.choices = lista_unids    
 
     if form.validate_on_submit():
 
