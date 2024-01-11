@@ -247,9 +247,19 @@ def envia_API(tipo):
                     # para cada atividade, monta o resto do dicionário (key 'atividades')
                     for a in ativs:
                         
+                        if a.tempo_presencial_executado == None:
+                            tempo_presencial_executado = 0
+                        else:
+                            tempo_presencial_executado =  a.tempo_presencial_executado
+                            
+                        if a.tempo_teletrabalho_executado == None:
+                            tempo_teletrabalho_executado = 0 
+                        else:
+                            tempo_teletrabalho_executado = a.tempo_teletrabalho_executado
+                        
                         if a.tempo_presencial_estimado != None and a.tempo_presencial_programado != None and \
                            a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
-                           (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+                           (tempo_presencial_executado > 0 or tempo_teletrabalho_executado > 0):
 
                             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                                             'nome_grupo_atividade': a.nome_grupo_atividade,
@@ -258,10 +268,10 @@ def envia_API(tipo):
                                                             'parametros_complexidade': a.parametros_complexidade,
                                                             'tempo_presencial_estimado': a.tempo_presencial_estimado,
                                                             'tempo_presencial_programado': a.tempo_presencial_programado,
-                                                            'tempo_presencial_executado': a.tempo_presencial_executado,
+                                                            'tempo_presencial_executado': tempo_presencial_executado,
                                                             'tempo_teletrabalho_estimado': a.tempo_teletrabalho_estimado,
                                                             'tempo_teletrabalho_programado': a.tempo_teletrabalho_programado,
-                                                            'tempo_teletrabalho_executado': a.tempo_teletrabalho_executado,
+                                                            'tempo_teletrabalho_executado': tempo_teletrabalho_executado,
                                                             'entrega_esperada': a.entrega_esperada,
                                                             'qtde_entregas': a.qtde_entregas,
                                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,

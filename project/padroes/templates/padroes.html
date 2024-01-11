@@ -19,17 +19,6 @@
     <div class="row mt-5">
       <div class="d-flex justify-content-center  flex-wrap">
 
-        {#
-        {% with 
-          icon="fa-heart", 
-          title="Situações Pessoas",
-          description="Consulta e atualização da lista de possíveis situações para uma pessoa.",
-          link=url_for("padroes.lista_situ_pessoas")
-        %}
-          {% include "card_menu.html" %}
-        {% endwith %}
-        #}  
-
         {% with 
           icon="fa-star", 
           title="Tipos Função",
@@ -38,17 +27,6 @@
         %}
           {% include "card_menu.html" %}
         {% endwith %}
-
-        {#
-        {% with 
-          icon="fa-link", 
-          title="Tipos Vínculo",
-          description="Consulta e atualização dos tipos de vinculo que uma pessoa pode ter com a instituição.",
-          link=url_for("padroes.lista_vinc_pessoas")
-        %}
-          {% include "card_menu.html" %}
-        {% endwith %}
-        #}
 
         {% with 
           icon="fa-bed", 

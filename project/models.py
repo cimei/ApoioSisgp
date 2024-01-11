@@ -9,9 +9,7 @@
     * log_auto: tabela de log dos principais commits
     * Unidades: as caixas que compóe a instituição.
     * Pessoas: pessoa da instituição
-    * Situ_Pessoa: situção das pessoas na instituição
     * Tipo_Func_Pessoa: tipo de função exercida pela pessoa
-    * Tipo_Vinculo_Pessoa: tipo de vínculo da pessoa
     * Feriados: tabela de feriados
     * Planos_de_Trabalho: tabela dos programas de gestão de cada unidade
     * Pactos_de_Trabalho:
@@ -240,8 +238,7 @@ class Pessoas(db.Model):
     unidadeId         = db.Column(db.BigInteger)
     tipoFuncaoId      = db.Column(db.BigInteger)
     cargaHoraria      = db.Column(db.Integer)
-    # situacaoPessoaId  = db.Column(db.BigInteger)
-    # tipoVinculoId     = db.Column(db.BigInteger)
+
 
     def __init__(self, pesNome, pesCPF, pesDataNascimento, pesMatriculaSiape, pesEmail, unidadeId,
                  tipoFuncaoId, cargaHoraria):
@@ -254,31 +251,13 @@ class Pessoas(db.Model):
         self.unidadeId         = unidadeId
         self.tipoFuncaoId      = tipoFuncaoId
         self.cargaHoraria      = cargaHoraria
-        # self.situacaoPessoaId  = situacaoPessoaId
-        # self.tipoVinculoId     = tipoVinculoId
+
 
     def __repr__ (self):
         return f"{self.pesNome};{self.pesCPF};{self.pesDataNascimento};\
                  {self.pesMatriculaSiape};{self.pesEmail};{self.unidadeId};\
                  {self.tipoFuncaoId};{self.cargaHoraria}"
 
-# situação pessoa
-
-class Situ_Pessoa(db.Model):
-
-    __tablename__ = 'SituacaoPessoa'
-    __table_args__ = {"schema": "dbo"}
-
-    situacaoPessoaId = db.Column(db.BigInteger, primary_key = True, autoincrement=False)
-    spsDescricao     = db.Column(db.String)
-
-    def __init__(self, situacaoPessoaId, spsDescricao):
-
-        self.situacaoPessoaId = situacaoPessoaId
-        self.spsDescricao     = spsDescricao
-
-    def __repr__ (self):
-        return f"{self.spsDescricao};"
 
 # tipo função pessoa
 
@@ -301,24 +280,7 @@ class Tipo_Func_Pessoa(db.Model):
 
     def __repr__ (self):
         return f"{self.tfnDescricao};{self.tfnCodigoFuncao};{self.tfnIndicadorChefia};"
-
-# tipo vínculo pessoa
-
-class Tipo_Vinculo_Pessoa(db.Model):
-
-    __tablename__ = 'TipoVinculo'
-    __table_args__ = {"schema": "dbo"}
-
-    tipoVinculoId = db.Column(db.BigInteger, primary_key = True, autoincrement=False)
-    tvnDescricao  = db.Column(db.String)
-
-    def __init__(self, tipoVinculoId, tvnDescricao):
-
-        self.tipoVinculoId = tipoVinculoId
-        self.tvnDescricao = tvnDescricao
-
-    def __repr__ (self):
-        return f"{self.tvnDescricao};"            
+          
 
 # feriados
 

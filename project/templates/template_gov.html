@@ -201,17 +201,11 @@
                           class="fa fa-eye" aria-hidden="true"></i></span><span class="content">Dados
                         Auxiliares</span></a>
                     <ul>
-                      {# <li><a class="menu-item" href="{{url_for('padroes.lista_situ_pessoas')}}"><span class="icon"><i
-                              class="fa fa-heart" aria-hidden="true"></i></span><span class="content">Situações
-                            Pessoa</span></a></li>
-                      #}      
+   
                       <li><a class="menu-item" href="{{url_for('padroes.lista_tipo_funcao')}}"><span class="icon"><i
                               class="fa fa-star" aria-hidden="true"></i></span><span class="content">Tipos
                             Função</span></a></li>
-                      {# <li><a class="menu-item" href="{{url_for('padroes.lista_vinc_pessoas')}}"><span class="icon"><i
-                              class="fa fa-link" aria-hidden="true"></i></span><span class="content">Tipos
-                            Vínculo</span></a></li>
-                      #}      
+    
                       <li><a class="menu-item" href="{{url_for('padroes.lista_feriados')}}"><span class="icon"><i
                               class="fa fa-bed" aria-hidden="true"></i></span><span class="content">Feriados</span></a>
                       </li>
@@ -371,7 +365,7 @@
     <footer class="br-footer pt-3" id="footer">
       <div class="container-lg">
         <div class="info">
-          {% set ver = namespace(num = '1.0.0') %}
+          {% set ver = namespace(num = '1.0.1') %}
           <div class="text-down-01 text-medium pb-3">{{'DB_DATABASE'|verifica_serv_bd}} em
             {{'DB_SERVER'|verifica_serv_bd}} v. {{ ver.num }} <small>cbt-gr</small>
           </div>

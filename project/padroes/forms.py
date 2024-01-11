@@ -4,7 +4,6 @@
 
    Formulários de alteração tipos e situações específicos da instituição.
 
-   * Situ_PessoasForm: registrar ou atualizar situações de uma pessoa.
    * Func_PessoasForm: registrar ou atualizar função.
    * Vinc_PessoasForm: registrar ou atualizar tipo de vínculo.
    * FeriadoForm: registrar ou atualizar feriado.
@@ -18,12 +17,6 @@ from wtforms import StringField, IntegerField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 from wtforms.fields.html5 import DateField
 
-class Situ_PessoasForm(FlaskForm):
-
-   id  = IntegerField('ID:', validators=[DataRequired(message="Informe um identificador para a situação!")])
-   desc = StringField('Descrição:', validators=[DataRequired(message="Informe uma descrição para a situação!")])
-       
-   submit  = SubmitField('Submeter')
 
 class Func_PessoasForm(FlaskForm):
 

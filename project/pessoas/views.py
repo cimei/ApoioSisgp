@@ -24,7 +24,7 @@ from sqlalchemy import cast, String
 from sqlalchemy.sql import label
 from sqlalchemy.orm import aliased
 from project import db
-from project.models import Unidades, Pessoas, Situ_Pessoa, Tipo_Func_Pessoa, Tipo_Vinculo_Pessoa, catdom
+from project.models import Unidades, Pessoas, Tipo_Func_Pessoa, catdom
 from project.pessoas.forms import PessoaForm, PesquisaForm
 
 from project.usuarios.views import registra_log_auto
@@ -121,22 +121,12 @@ def lista_pessoas_filtro():
     lista_unids = [(u.unidadeId,u.undSigla) for u in unids]
     lista_unids.insert(0,(0,'Todas'))                
 
-    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao).order_by(Situ_Pessoa.spsDescricao).all()
-    # lista_situ = [(s.situacaoPessoaId,s.spsDescricao) for s in situ]
-    # lista_situ.insert(0,(0,'Todas'))
-
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao).order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(f.tipoFuncaoId,f.tfnDescricao) for f in func]
     lista_func.insert(0,(-1,'Sem função'))
     lista_func.insert(0,(0,'Todas'))
 
-    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao).order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    # lista_vinc = [(v.tipoVinculoId,v.tvnDescricao) for v in vinc]
-    # lista_vinc.insert(0,(0,'Todos'))
-
     form.func.choices    = lista_func
-    # form.situ.choices    = lista_situ
-    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
 
     if form.validate_on_submit():
@@ -175,21 +165,6 @@ def lista_pessoas_filtro():
                 pai =  prox_pai
 
 
-        # if int(form.vinculo.data) == 0:
-        #     p_vinculo_pattern = '%'
-        # else:
-        #     p_vinculo_pattern = form.vinculo.data
-
-        # if int(form.func.data) == 0:
-        #     p_func_pattern = '%'
-        # else:
-        #     p_func_pattern = form.func.data
-
-        # if int(form.situ.data) == 0:
-        #     p_situ_pattern = '%'
-        # else:
-        #     p_situ_pattern = form.situ.data   
-
         # pega valores utilizados como filtro para exibição na tela da lista
         # p_vinculo  = dict(form.vinculo.choices).get(int(form.vinculo.data))
         p_func     = dict(form.func.choices).get(int(form.func.data))
@@ -211,9 +186,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -236,9 +209,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -260,9 +231,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -287,9 +256,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -312,9 +279,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -336,9 +301,7 @@ def lista_pessoas_filtro():
                                            Unidades.undSigla,
                                            Pessoas.tipoFuncaoId,
                                            Tipo_Func_Pessoa.tfnDescricao,
-                                           Pessoas.cargaHoraria,
-                                           Situ_Pessoa.spsDescricao,
-                                           Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                           Pessoas.cargaHoraria)\
                                      .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                                      .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                      .filter(Pessoas.pesNome.like('%'+form.nome.data+'%'),
@@ -395,9 +358,7 @@ def lista_gestores_sisgp():
                                 Unidades.undSigla,
                                 Pessoas.tipoFuncaoId,
                                 Tipo_Func_Pessoa.tfnDescricao,
-                                Pessoas.cargaHoraria,
-                                Situ_Pessoa.spsDescricao,
-                                Tipo_Vinculo_Pessoa.tvnDescricao)\
+                                Pessoas.cargaHoraria)\
                           .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                           .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                           .outerjoin(catdom, catdom.descricao == cast(Pessoas.pessoaId,String))\
@@ -441,26 +402,16 @@ def pessoa_update(cod_pes):
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))                
 
-    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
-    #                  .order_by(Situ_Pessoa.spsDescricao).all()
-    # lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
-    # lista_situ.insert(0,(0,''))
 
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao)\
                      .order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(int(f.tipoFuncaoId),f.tfnDescricao) for f in func]
     lista_func.insert(0,(0,'Sem função'))
 
-    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
-    #                  .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    # lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
-    # lista_vinc.insert(0,(0,''))
 
     form = PessoaForm()
 
     form.func.choices    = lista_func
-    # form.situ.choices    = lista_situ
-    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
   
     if form.validate_on_submit():
@@ -576,26 +527,14 @@ def cria_pessoa():
     lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))
 
-    # situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
-    #                  .order_by(Situ_Pessoa.spsDescricao).all()
-    # lista_situ = [(int(s.situacaoPessoaId),s.spsDescricao) for s in situ]
-    # lista_situ.insert(0,(0,''))
-
     func = db.session.query(Tipo_Func_Pessoa.tipoFuncaoId, Tipo_Func_Pessoa.tfnDescricao)\
                      .order_by(Tipo_Func_Pessoa.tfnDescricao).all()
     lista_func = [(int(f.tipoFuncaoId),f.tfnDescricao) for f in func]
     lista_func.insert(0,(0,'Sem função'))
 
-    # vinc = db.session.query(Tipo_Vinculo_Pessoa.tipoVinculoId, Tipo_Vinculo_Pessoa.tvnDescricao)\
-    #                  .order_by(Tipo_Vinculo_Pessoa.tvnDescricao).all()
-    # lista_vinc = [(int(v.tipoVinculoId),v.tvnDescricao) for v in vinc]
-    # lista_vinc.insert(0,(0,''))
-
     form = PessoaForm()
 
     form.func.choices    = lista_func
-    # form.situ.choices    = lista_situ
-    # form.vinculo.choices = lista_vinc
     form.unidade.choices = lista_unids
 
 
@@ -611,17 +550,7 @@ def cria_pessoa():
             if form.func.data == 0:
                 funcPes = None
             else:
-                funcPes = form.func.data
-
-            # if form.situ.data == 0:
-            #     situPes = None
-            # else:
-            #     situPes = form.situ.data
-
-            # if form.vinculo.data == 0:
-            #     vincuPes = None
-            # else:
-            #     vincuPes = form.vinculo.data     
+                funcPes = form.func.data  
 
             pessoa = Pessoas(pesNome           = form.nome.data,
                              pesCPF            = form.cpf.data,
@@ -686,9 +615,7 @@ def lista_pessoas_unid(unid):
                              Unidades.undSigla,
                              Pessoas.tipoFuncaoId,
                              Tipo_Func_Pessoa.tfnDescricao,
-                             Pessoas.cargaHoraria,
-                             Situ_Pessoa.spsDescricao,
-                             Tipo_Vinculo_Pessoa.tvnDescricao)\
+                             Pessoas.cargaHoraria)\
                             .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .filter(Unidades.undSigla.in_(l_unid))\
