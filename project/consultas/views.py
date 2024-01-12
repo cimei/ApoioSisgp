@@ -335,7 +335,7 @@ def pacto_atividades(pactoId,nome):
 
     pacto_ativ_unic = db.session.query(distinct(Pactos_de_Trabalho_Atividades.itemCatalogoId))\
                                 .filter(Pactos_de_Trabalho_Atividades.pactoTrabalhoId == pactoId)\
-                                .group_by(Pactos_de_Trabalho_Atividades,Pactos_de_Trabalho_Atividades.itemCatalogoId)\
+                                .group_by(Pactos_de_Trabalho_Atividades.itemCatalogoId)\
                                 .count()
 
 
