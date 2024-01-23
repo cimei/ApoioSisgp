@@ -65,10 +65,10 @@ def pega_data_ref():
 # pega token de acesso à API de envio de dados
 def pega_token(inst): 
 
-    #pega credenciais da instituição informada
+    #pega credenciais do usuário logado
     credenciais = db.session.query(users.user_api,
                                    users.senha_api)\
-                            .filter(users.instituicaoId == inst)\
+                            .filter(users.id == current_user.id)\
                             .first()              
     
     if credenciais == None:
@@ -80,8 +80,10 @@ def pega_token(inst):
 
     if user_api == None:
         user_api  = ''
+        print ('** Não há user_api configurado para acesso à API. ***')
     if senha_api == None:    
         senha_api = ''
+        print ('** Não há senha_api configurada para acesso à API. ***')
     
     string = 'grant_type=&username='+user_api+'&password='+senha_api+'&scope=&client_id=&client_secret='
 

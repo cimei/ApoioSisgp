@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+23/01/2024
+Correção na função pega token para acesso à API.
+v3.3.4
+
 18/12/2023
 Correção na rotina de registro de primeiro usuário.
 v3.3.3
