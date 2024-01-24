@@ -68,7 +68,11 @@ def pega_token(inst):
     #pega credenciais do usuário logado
     credenciais = db.session.query(users.user_api,
                                    users.senha_api)\
-                            .filter(users.id == current_user.id)\
+                            .filter(users.instituicaoId == inst,
+                                    users.user_api != None,
+                                    users.senha_api != None,
+                                    users.user_api != '',
+                                    users.senha_api != '')\
                             .first()              
     
     if credenciais == None:
