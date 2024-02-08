@@ -283,6 +283,10 @@ def unidade_update(cod_unid):
     unidade = Unidades.query.filter(Unidades.unidadeId==cod_unid).first_or_404()
     
     unidade_view = db.session.query(VW_Unidades.undSiglaCompleta).filter(VW_Unidades.unidadeId==unidade.unidadeId).first()
+    if unidade_view == None:
+        sigla_completa = 'Não encontrada'
+    else:
+        sigla_completa = unidade_view.undSiglaCompleta
 
     form = UnidadeForm()
 
@@ -408,7 +412,7 @@ def unidade_update(cod_unid):
                                                    qtd_ativs = qtd_ativs,
                                                    qtd_pes = qtd_pes,
                                                    sigla = unidade.undSigla,
-                                                   sigla_completa = unidade_view.undSiglaCompleta,
+                                                   sigla_completa = sigla_completa,
                                                    qtd_geral = qtd_geral,
                                                    tree = tree)
 

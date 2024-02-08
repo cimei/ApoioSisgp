@@ -46,9 +46,14 @@ def instituicao_user():
                                 .filter(VW_Unidades.unidadeId == current_user.instituicaoId)\
                                 .first()
     else:
+        flash('Usuário sem instituição definida!','erro')
         abort(401)                            
   
-    limite_unid = '%' + instituicao.undSiglaCompleta + '%'
+    if instituicao == None:
+        flash('Não encontei a instituição do usuário como unidade ativa na tabela de unidades!','erro')
+        abort(404)
+    else:
+        limite_unid = '%' + instituicao.undSiglaCompleta + '%'
     
     return(limite_unid)
 

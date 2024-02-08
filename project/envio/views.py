@@ -92,8 +92,11 @@ def pega_token(inst):
     string = 'grant_type=&username='+user_api+'&password='+senha_api+'&scope=&client_id=&client_secret='
 
     headers = {'Content-Type': "application/x-www-form-urlencoded", 'Accept': "application/json"}
-
-    api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
+    
+    if os.getenv('APIPGDME_URL')[-1] == '/': 
+        api_url_login = os.getenv('APIPGDME_URL') + 'auth/jwt/login'
+    else:
+        api_url_login = os.getenv('APIPGDME_URL') + '/auth/jwt/login'
 
     response = requests.post(api_url_login, headers=headers ,data=json.dumps(string))
 
@@ -105,6 +108,9 @@ def pega_token(inst):
     except:
          retorno_API = rlogin_json['detail']  
          print ('** RETORNO DA API: ',retorno_API)
+         print ('** API URL login: ', api_url_login)
+         print ('** User API: ', user_api)
+         print ('** Senha API: ', senha_api)
          abort(403)  
         
     return(token)

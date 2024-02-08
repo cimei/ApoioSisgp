@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+08/02/2024
+Saneamento de excessões 
+v3.3.6
+
 23/01/2024
 Correção na função pega token para acesso à API.
 v3.3.5
