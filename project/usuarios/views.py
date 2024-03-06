@@ -371,6 +371,16 @@ def login():
 
                 if user.email_confirmed:
 
+                    # força uma instituição para o usuário caso ele não tenha uma registrada
+                    if user.instituicaoId == None:
+                        inst = Unidades.query.filter(Unidades.unidadeIdPai == None, Unidades.situacaoUnidadeId == 1).first()
+                        if inst == None:
+                            print ('** NÃO HÁ UNIDADE ATIVA TOPO DE HIERARQUIA (SEM PAI) NA TABELA UNIDADES **')
+                            flash ('Não há unidade ATIVA topo de hirarquia na tabela Unidades','erro')
+                            abort(404)
+                        else:    
+                            user.instituicaoId = inst.unidadeId
+
                     user.last_logged_in = user.current_logged_in
                     user.current_logged_in = datetime.now()
                     db.session.commit()

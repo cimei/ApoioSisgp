@@ -1,7 +1,11 @@
 ## Atualizações ##
 
+03/03/2024
+Força instituição para usuário, caso ele não tenha.
+v3.3.7
+
 08/02/2024
-Saneamento de excessões 
+Saneamento de exceções 
 v3.3.6
 
 23/01/2024

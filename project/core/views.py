@@ -94,125 +94,128 @@ def index():
 
     # pegar unidades de todos os usuários para conferir a existência de jobs de envio para cada uma
     instituicoes = db.session.query(users.instituicaoId).filter(users.instituicaoId != None).all()
-    instituicoes_lista = [i.instituicaoId for i in instituicoes]
-   
-    for i in instituicoes_lista:
+
+    if instituicoes != None:
+
+        instituicoes_lista = [i.instituicaoId for i in instituicoes]
     
-        # pega últimos registros de agendamento no log
-        log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                        .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%'+str(i)))\
-                                        .order_by(Log_Auto.id.desc())\
-                                        .first()
-        log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                            .filter(Log_Auto.msg.like('* Agendamento cancelado.'+'%'+str(i)))\
+        for i in instituicoes_lista:
+        
+            # pega últimos registros de agendamento no log
+            log_agenda_ant_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                            .filter(Log_Auto.msg.like('* Agendamento de envio:'+'%'+str(i)))\
                                             .order_by(Log_Auto.id.desc())\
                                             .first()
+            log_agenda_canc_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                                .filter(Log_Auto.msg.like('* Agendamento cancelado.'+'%'+str(i)))\
+                                                .order_by(Log_Auto.id.desc())\
+                                                .first()
 
-        if log_agenda_ant_envio != None:
+            if log_agenda_ant_envio != None:
 
-            if log_agenda_canc_envio != None and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
-                pass
-            
-            else:  #não há cancelamento de agendamento
+                if log_agenda_canc_envio != None and log_agenda_canc_envio.id > log_agenda_ant_envio.id:
+                    pass
+                
+                else:  #não há cancelamento de agendamento
 
-                # pega dados do último agendamento e se certifica que não há job_envia_planos na memória
-                periodicidade = (log_agenda_ant_envio.msg[24:].split())[0]
-                hora_min      = (log_agenda_ant_envio.msg[24:].split())[2]
-                inst          = i
+                    # pega dados do último agendamento e se certifica que não há job_envia_planos na memória
+                    periodicidade = (log_agenda_ant_envio.msg[24:].split())[0]
+                    hora_min      = (log_agenda_ant_envio.msg[24:].split())[2]
+                    inst          = i
 
-                try:
-                    job_existente = sched.get_job('job_envia_planos_'+str(inst))
-                    if job_existente:
-                        executa = False
-                    else:
-                        executa = True      
-                except:
-                    executa = True
+                    try:
+                        job_existente = sched.get_job('job_envia_planos_'+str(inst))
+                        if job_existente:
+                            executa = False
+                        else:
+                            executa = True      
+                    except:
+                        executa = True
 
-                if executa:  # não achou nada na memória, coloca agenda job_envia_planos_<id da instituição>
+                    if executa:  # não achou nada na memória, coloca agenda job_envia_planos_<id da instituição>
 
-                    print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
+                        print ('*** Agendamento inicial: '+ periodicidade + ' - ' + hora_min)
 
-                    id = 'job_envia_planos_'+str(inst)
-                    
-                    tipo_envio = 'enviar'
-
-                    if hora_min[1] == ':':
-                        hora_min = '0'+ hora_min
-                    s_hora   = hora_min[0:2]    
-                    hora     = int(s_hora)
-                    s_minuto = hora_min[3:5]
-                    minuto   = int(s_minuto)
-
-                    if periodicidade == 'Diária':
-                        msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                        print(msg)
-                        dia_semana = 'mon-fri'
-                        try:
-                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                            sched.start()
-                        except:
-                            sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    elif periodicidade == 'Semanal':
-                        msg = ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
-                        print(msg)
-                        dia_semana = 'fri'
-                        try:
-                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                            sched.start()
-                        except:
-                            sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
-                    elif periodicidade == 'Mensal':
-                        msg = ('*** Agendamento inicial de '+id+' com MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
-                        print(msg)
-                        dia = '1st fri'
-                        try:
-                            sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                            sched.start()
-                        except:
-                            sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
-
-                    # agendanto também o job_envia_planos_novamente, caso necessário
-                    log_agenda_ant_reenvio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                            .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%'+str(i)))\
-                                            .order_by(Log_Auto.id.desc())\
-                                            .first()
-
-                    if log_agenda_ant_reenvio and log_agenda_ant_reenvio.id > log_agenda_ant_envio.id:
-
-                        id='job_envia_planos_novamente_'+str(inst)
+                        id = 'job_envia_planos_'+str(inst)
                         
-                        tipo_envio = 'reenviar'
+                        tipo_envio = 'enviar'
 
-                        hora += 1
-                        s_hora = str(hora)
-                        # minuto += 2
-                        # s_minuto = str(minuto)
-                            
+                        if hora_min[1] == ':':
+                            hora_min = '0'+ hora_min
+                        s_hora   = hora_min[0:2]    
+                        hora     = int(s_hora)
+                        s_minuto = hora_min[3:5]
+                        minuto   = int(s_minuto)
+
                         if periodicidade == 'Diária':
                             msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                             print(msg)
                             dia_semana = 'mon-fri'
                             try:
                                 sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
-                            except:   
+                                sched.start()
+                            except:
                                 sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                         elif periodicidade == 'Semanal':
-                            msg =  ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                            msg = ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
                             print(msg)
                             dia_semana = 'fri'
                             try:
                                 sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
-                            except:  
-                                sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)    
+                                sched.start()
+                            except:
+                                sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
                         elif periodicidade == 'Mensal':
-                            msg =  ('*** Agendamento inicial de '+id+' como MENSAL, rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                            msg = ('*** Agendamento inicial de '+id+' com MENSAL,  rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
                             print(msg)
                             dia = '1st fri'
                             try:
                                 sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                                sched.start()
                             except:
-                                sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
+                                sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)   
+
+                        # agendanto também o job_envia_planos_novamente, caso necessário
+                        log_agenda_ant_reenvio = db.session.query(Log_Auto.id, Log_Auto.msg)\
+                                                .filter(Log_Auto.msg.like('* Agendamento de reenvio:'+'%'+str(i)))\
+                                                .order_by(Log_Auto.id.desc())\
+                                                .first()
+
+                        if log_agenda_ant_reenvio and log_agenda_ant_reenvio.id > log_agenda_ant_envio.id:
+
+                            id='job_envia_planos_novamente_'+str(inst)
+                            
+                            tipo_envio = 'reenviar'
+
+                            hora += 1
+                            s_hora = str(hora)
+                            # minuto += 2
+                            # s_minuto = str(minuto)
+                                
+                            if periodicidade == 'Diária':
+                                msg = ('*** Agendamento inicial de '+id+' como DIÁRIO, rodando de segunda a sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                                print(msg)
+                                dia_semana = 'mon-fri'
+                                try:
+                                    sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                                except:   
+                                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)
+                            elif periodicidade == 'Semanal':
+                                msg =  ('*** Agendamento inicial de '+id+' como SEMANAL, rodando toda sexta-feira, às '+s_hora+':'+s_minuto+' ***')
+                                print(msg)
+                                dia_semana = 'fri'
+                                try:
+                                    sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day_of_week=dia_semana, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)  
+                                except:  
+                                    sched.reschedule_job(id, trigger='cron', day_of_week=dia_semana, hour=hora, minute=minuto)    
+                            elif periodicidade == 'Mensal':
+                                msg =  ('*** Agendamento inicial de '+id+' como MENSAL, rodando na primeira sexta-feira de cada mês, às '+s_hora+':'+s_minuto+' ***')
+                                print(msg)
+                                dia = '1st fri'
+                                try:
+                                    sched.add_job(trigger='cron', id=id, func=lambda:envia_API(tipo_envio, inst), day=dia, hour=hora, minute=minuto, misfire_grace_time=3600, coalesce=True)
+                                except:
+                                    sched.reschedule_job(id, trigger='cron', day=dia, hour=hora, minute=minuto)
 
     
     return render_template ('index.html')
@@ -227,7 +230,7 @@ def inicio():
     +---------------------------------------------------------------------------------------+
     """
 
-    return render_template ('index.html',sistema='Apoio SISGP')
+    return render_template ('index.html')
 
 @core.route('/info')
 def info():
