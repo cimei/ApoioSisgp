@@ -25,6 +25,10 @@ def decimal_com_virgula(valor):
     else:
         return locale.format_string('%.1f',valor,grouping=True)
 
+@app.template_filter('splitpart')
+def splitpart (value, char = '/'):
+    return value.split(char)       
+
 # @app.route('/')
 # def index():
 #     return render_template('home.html')

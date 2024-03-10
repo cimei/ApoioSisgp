@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+09/03/2024
+Sigla da unidade acompanhada de sua superior no cadastro de pessoas.
+v3.3.8
+
 03/03/2024
 Força instituição para usuário, caso ele não tenha.
 v3.3.7

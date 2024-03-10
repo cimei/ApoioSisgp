@@ -97,6 +97,7 @@ def lista_pessoas():
                                Pessoas.pesEmail,
                                Pessoas.unidadeId,
                                VW_Unidades.undSigla,
+                               VW_Unidades.undSiglaCompleta,
                                Pessoas.tipoFuncaoId,
                                Tipo_Func_Pessoa.tfnDescricao,
                                Pessoas.cargaHoraria,
@@ -510,11 +511,12 @@ def pessoa_update(cod_pes):
 
     gestor = db.session.query(catdom).filter(catdom.descricao == str(cod_pes), catdom.classificacao == 'GestorSistema')
 
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta, VW_Unidades.undSigla)\
                       .filter(VW_Unidades.situacaoUnidadeId==1,
                               VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
                       .order_by(VW_Unidades.undSigla).all()                  
-    lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
+    
+    lista_unids = [(int(u.unidadeId),(u.undSiglaCompleta.split('/')[-2]+'/'+u.undSiglaCompleta.split('/')[-1])) if len(u.undSiglaCompleta.split('/')) > 1 else (int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))                
 
     situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\

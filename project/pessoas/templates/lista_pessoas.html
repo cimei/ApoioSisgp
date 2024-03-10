@@ -84,7 +84,14 @@
             <td><p align = "center"> {% if p.pesDataNascimento == None or p.pesDataNascimento == '' %}N.I.{% else %}{{p.pesDataNascimento.strftime('%d/%m/%Y')}}{%endif%} </p></td>
             <td><p align = "center"> {{p.pesMatriculaSiape}} </p></td>
             <td><p align = "center"> {% if p.pesEmail == None %}N.I.{% else %}{{p.pesEmail}}{% endif %} </p></td>
-            <td><p align = "center"> {{p.undSigla}} </p></td>
+            <td><p align = "center"> 
+              {% if (p.undSiglaCompleta | splitpart('/') | length) > 1 %}
+                {{ (p.undSiglaCompleta | splitpart('/'))[-2] }}/{{ (p.undSiglaCompleta | splitpart('/'))[-1] }}
+              {% else %}
+                {{ p.undSigla }}
+              {% endif %}   
+
+            </p></td>
             <td><p align = "center"> {% if p.tfnDescricao == None %}N.I.{% else %}{{p.tfnDescricao}}{% endif %} </p></td>
             <td><p align = "center"> {{p.cargaHoraria}} </p></td>
             <td><p align = "center"> {{p.spsDescricao}} </p></td>
