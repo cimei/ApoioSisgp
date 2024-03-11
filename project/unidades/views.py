@@ -375,7 +375,8 @@ def unidade_update(cod_unid):
         tree = {}
         total_pessoas = 0
         pai = [unidade.unidadeId]
-        tree[unidade.undSigla] = [unidade.undSigla]
+        und_sigla = unidade.undSigla.replace('/','$')
+        tree[unidade.undSigla] = [und_sigla]
 
         while pai != []:
 
@@ -383,7 +384,7 @@ def unidade_update(cod_unid):
 
             for p in pai:
 
-                filhos = Unidades.query.filter(Unidades.unidadeIdPai==p).all()
+                filhos = Unidades.query.filter(Unidades.unidadeIdPai==p, Unidades.situacaoUnidadeId == 1).all()
 
                 for unid in filhos:
 
@@ -401,7 +402,7 @@ def unidade_update(cod_unid):
                         if pessoas is not None:
                             total_pessoas += pessoas.qtd_pes
 
-                        tree[unidade.undSigla].append(unid.undSigla)    
+                        tree[unidade.undSigla].append(unid.undSigla.replace('/','$'))    
 
             pai =  prox_pai
 

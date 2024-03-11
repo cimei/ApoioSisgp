@@ -244,6 +244,7 @@ def lista_pessoas_filtro():
                                     Pessoas.pesEmail,
                                     Pessoas.unidadeId,
                                     VW_Unidades.undSigla,
+                                    VW_Unidades.undSiglaCompleta,
                                     Pessoas.tipoFuncaoId,
                                     Tipo_Func_Pessoa.tfnDescricao,
                                     Pessoas.cargaHoraria,
@@ -275,6 +276,7 @@ def lista_pessoas_filtro():
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
                                         VW_Unidades.undSigla,
+                                        VW_Unidades.undSiglaCompleta,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -305,6 +307,7 @@ def lista_pessoas_filtro():
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
                                         VW_Unidades.undSigla,
+                                        VW_Unidades.undSiglaCompleta,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -337,7 +340,8 @@ def lista_pessoas_filtro():
                                     Pessoas.pesMatriculaSiape,
                                     Pessoas.pesEmail,
                                     Pessoas.unidadeId,
-                                    Unidades.undSigla,
+                                    VW_Unidades.undSigla,
+                                    VW_Unidades.undSiglaCompleta,
                                     Pessoas.tipoFuncaoId,
                                     Tipo_Func_Pessoa.tfnDescricao,
                                     Pessoas.cargaHoraria,
@@ -345,7 +349,7 @@ def lista_pessoas_filtro():
                                     Situ_Pessoa.spsDescricao,
                                     Pessoas.tipoVinculoId,
                                     Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                    .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                    .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                     .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                     .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                     .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
@@ -368,7 +372,8 @@ def lista_pessoas_filtro():
                                         Pessoas.pesMatriculaSiape,
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
-                                        Unidades.undSigla,
+                                        VW_Unidades.undSigla,
+                                        VW_Unidades.undSiglaCompleta,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -376,7 +381,7 @@ def lista_pessoas_filtro():
                                         Situ_Pessoa.spsDescricao,
                                         Pessoas.tipoVinculoId,
                                         Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                         .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                         .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                         .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
@@ -398,7 +403,8 @@ def lista_pessoas_filtro():
                                         Pessoas.pesMatriculaSiape,
                                         Pessoas.pesEmail,
                                         Pessoas.unidadeId,
-                                        Unidades.undSigla,
+                                        VW_Unidades.undSigla,
+                                        VW_Unidades.undSiglaCompleta,
                                         Pessoas.tipoFuncaoId,
                                         Tipo_Func_Pessoa.tfnDescricao,
                                         Pessoas.cargaHoraria,
@@ -406,7 +412,7 @@ def lista_pessoas_filtro():
                                         Situ_Pessoa.spsDescricao,
                                         Pessoas.tipoVinculoId,
                                         Tipo_Vinculo_Pessoa.tvnDescricao)\
-                                        .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                                        .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                                         .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                                         .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                                         .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
@@ -464,7 +470,8 @@ def lista_gestores_sisgp():
                              Pessoas.pesMatriculaSiape,
                              Pessoas.pesEmail,
                              Pessoas.unidadeId,
-                             Unidades.undSigla,
+                             VW_Unidades.undSigla,
+                             VW_Unidades.undSiglaCompleta,
                              Pessoas.tipoFuncaoId,
                              Tipo_Func_Pessoa.tfnDescricao,
                              Pessoas.cargaHoraria,
@@ -472,7 +479,7 @@ def lista_gestores_sisgp():
                              Situ_Pessoa.spsDescricao,
                              Pessoas.tipoVinculoId,
                              Tipo_Vinculo_Pessoa.tvnDescricao)\
-                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                            .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                             .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
@@ -648,11 +655,12 @@ def cria_pessoa():
 
     tp = 'ins'
 
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
+    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta, VW_Unidades.undSigla)\
                       .filter(VW_Unidades.situacaoUnidadeId==1,
                               VW_Unidades.undSiglaCompleta.like(instituicao_user()))\
-                      .order_by(VW_Unidades.undSigla).all()
-    lista_unids = [(int(u.unidadeId),u.undSigla) for u in unids]
+                      .order_by(VW_Unidades.undSigla).all()                  
+    
+    lista_unids = [(int(u.unidadeId),(u.undSiglaCompleta.split('/')[-2]+'/'+u.undSiglaCompleta.split('/')[-1])) if len(u.undSiglaCompleta.split('/')) > 1 else (int(u.unidadeId),u.undSigla) for u in unids]
     lista_unids.insert(0,(0,''))
 
     situ = db.session.query(Situ_Pessoa.situacaoPessoaId, Situ_Pessoa.spsDescricao)\
@@ -703,15 +711,15 @@ def cria_pessoa():
                 vincuPes = form.vinculo.data     
 
             pessoa = Pessoas(pesNome           = form.nome.data,
-                            pesCPF            = form.cpf.data,
-                            pesDataNascimento = form.nasc.data,
-                            pesMatriculaSiape = form.siape.data,
-                            pesEmail          = form.email.data,
-                            unidadeId         = form.unidade.data,
-                            tipoFuncaoId      = funcPes,
-                            cargaHoraria      = form.carga.data,
-                            situacaoPessoaId  = situPes,
-                            tipoVinculoId     = vincuPes)
+                             pesCPF            = form.cpf.data,
+                             pesDataNascimento = form.nasc.data,
+                             pesMatriculaSiape = form.siape.data,
+                             pesEmail          = form.email.data,
+                             unidadeId         = form.unidade.data,
+                             tipoFuncaoId      = funcPes,
+                             cargaHoraria      = form.carga.data,
+                             situacaoPessoaId  = situPes,
+                             tipoVinculoId     = vincuPes)
 
             db.session.add(pessoa)
             db.session.commit()
@@ -753,7 +761,7 @@ def lista_pessoas_unid(unid):
 
     tipo = "unid"
 
-    r_unid = unid.replace('[','').replace(']','').replace(', ',',').replace("'","")
+    r_unid = unid.replace('[','').replace(']','').replace(', ',',').replace("'","").replace('$','/')
 
     l_unid = r_unid.split(',')
 
@@ -764,7 +772,8 @@ def lista_pessoas_unid(unid):
                              Pessoas.pesMatriculaSiape,
                              Pessoas.pesEmail,
                              Pessoas.unidadeId,
-                             Unidades.undSigla,
+                             VW_Unidades.undSigla,
+                             VW_Unidades.undSiglaCompleta,
                              Pessoas.tipoFuncaoId,
                              Tipo_Func_Pessoa.tfnDescricao,
                              Pessoas.cargaHoraria,
@@ -772,17 +781,17 @@ def lista_pessoas_unid(unid):
                              Situ_Pessoa.spsDescricao,
                              Pessoas.tipoVinculoId,
                              Tipo_Vinculo_Pessoa.tvnDescricao)\
-                            .outerjoin(Unidades,Unidades.unidadeId == Pessoas.unidadeId)\
+                            .outerjoin(VW_Unidades,VW_Unidades.unidadeId == Pessoas.unidadeId)\
                             .outerjoin(Situ_Pessoa, Situ_Pessoa.situacaoPessoaId == Pessoas.situacaoPessoaId)\
                             .outerjoin(Tipo_Func_Pessoa,Tipo_Func_Pessoa.tipoFuncaoId == Pessoas.tipoFuncaoId)\
                             .outerjoin(Tipo_Vinculo_Pessoa,Tipo_Vinculo_Pessoa.tipoVinculoId == Pessoas.tipoVinculoId)\
-                            .filter(Unidades.undSigla.in_(l_unid))\
+                            .filter(VW_Unidades.undSigla.in_(l_unid))\
                             .order_by(Pessoas.unidadeId,Pessoas.pesNome)\
-                            .paginate(page=page,per_page=100)
+                            .paginate(page=page,per_page=500)
 
     quantidade = pessoas.total
 
     return render_template('lista_pessoas.html', pessoas = pessoas, quantidade=quantidade,
-                                                 gestorNome = None, tipo = tipo, unid=unid)
+                                                 gestorNome = None, tipo = tipo, unid=l_unid)
 
 #
