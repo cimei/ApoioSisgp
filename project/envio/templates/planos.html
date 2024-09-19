@@ -72,7 +72,6 @@
             <th scope="col" data-field="Pessoa" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Pessoa</p></th>
             <th scope="col" data-sortable="true"><p align = "center">Início</p></th>
             <th scope="col" data-sortable="true"><p align = "center">Fim</p></th>
-            <th scope="col" data-field="Forma" data-filter-control="input" data-sortable="true" data-filter-control-placeholder="Termo de pesquisa..."><p align = "center">Forma</p></th>
             <th scope="col"><p align = "center"><abbr title="Enviar plano específico.">Ação</abbr></p></th>
           </tr>
         </thead>
@@ -97,13 +96,6 @@
               </p></td>
               <td><p align = "center"> {{demanda.data_inicio.strftime('%d/%m/%Y')}} </p></td>
               <td><p align = "center"> {{demanda.data_fim.strftime('%d/%m/%Y')}} </p></td> 
-              <td><p align = "center">
-                {% for forma in formas %}
-                  {% if demanda.modalidade_execucao + 100 == forma.catalogoDominioId %} 
-                    {{ forma.descricao }}
-                  {% endif %}  
-                {% endfor %}
-              </p></td>
               <td><p align = "center"> <a class="" href="{{url_for('envio.enviar_um_plano',plano_id=demanda.id_pacto,lista=lista)}}">
                   {% if lista == 'n_enviados' %} Enviar {% else %} Reenviar {% endif %}</a> </p></td>
               </tr>

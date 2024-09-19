@@ -34,13 +34,11 @@ from sqlalchemy.sql import label
 from sqlalchemy import func, literal
 
 from project import db, sched
-from project.models import Pactos_de_Trabalho, Pessoas, Unidades, catdom,\
-                           Pactos_de_Trabalho_Atividades, VW_Pactos, VW_Atividades_Pactos,\
-                           jobs, users, Log_Auto, VW_Unidades
+from project.models import Unidades, VW_Pactos, VW_Atividades_Pactos, users, Log_Auto
 
 from project.usuarios.views import registra_log_auto                           
 
-from project.envio.forms import AgendamentoForm, PesquisaPlanoForm
+from project.envio.forms import AgendamentoForm
 
 import requests
 import json
@@ -55,9 +53,10 @@ envio = Blueprint('envio',__name__, template_folder='templates')
 
 def pega_data_ref():
     
-    ref_envios = db.session.query(catdom).filter(catdom.classificacao=='DataBaseEnvioPlanos').first()
-    if ref_envios:
-        return (datetime.strptime(ref_envios.descricao,'%Y-%m-%d').date())
+    ref_envios   = os.environ.get('REF_ENVIOS')
+    
+    if ref_envios != None and ref_envios != '':
+        return (datetime.strptime(ref_envios,'%Y-%m-%d').date())
     else:
         return (date.today())
     
@@ -178,25 +177,30 @@ def planos_n_enviados_LOG():
                                 .order_by(Log_Auto.id.desc())\
                                 .first()
         id_user = users.query.filter_by(id = user_agenda.user_id).first()
-        instituicao = db.session.query(Unidades.undSigla, Unidades.undNivel)\
-                                .filter(Unidades.unidadeId == id_user.instituicaoId)\
+        instituicao = db.session.query(Unidades.Sigla)\
+                                .filter(Unidades.IdUnidade == id_user.instituicaoId)\
                                 .first()
     elif current_user.instituicaoId != None:
-        instituicao = db.session.query(Unidades.undSigla, Unidades.undNivel)\
-                                .filter(Unidades.unidadeId == current_user.instituicaoId)\
+        instituicao = db.session.query(Unidades.Sigla)\
+                                .filter(Unidades.IdUnidade == current_user.instituicaoId)\
                                 .first()
     else:
         abort(401)                            
   
-    limite_unid = '%' + instituicao.undSigla + '%'
+    limite_unid = '%' + instituicao.Sigla + '%'
 
     # todos os planos executados e com horas homologadas > 0 de unidades de uma institução específica
+    # planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
+    #                             .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+    #                                     VW_Pactos.horas_homologadas > 0,
+    #                                     VW_Pactos.data_fim >= data_ref,
+    #                                     VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
+    #                             .all()   
+    
+    # todos os planos de vw_pacto que terminam depois da data de referência
     planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
-                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                        VW_Pactos.horas_homologadas > 0,
-                                        VW_Pactos.data_fim >= data_ref,
-                                        VW_Pactos.sigla_unidade_exercicio.like(limite_unid))\
-                                .all()                                         
+                                .filter(VW_Pactos.data_fim >= data_ref)\
+                                .all()                                                                  
 
 
     ## Pegar usuarios que são da mesma instituição do usuario logado
@@ -614,13 +618,23 @@ def lista_a_enviar():
                                 .order_by(Log_Auto.id.desc())\
                                 .all() 
         l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]  
-        
-        formas = db.session.query(catdom.catalogoDominioId,
-                                  catdom.descricao)\
-                            .filter(catdom.classificacao == 'ModalidadeExecucao')\
-                            .all()                                          
+                                               
                             
         # todos os planos executados e com horas homologadas > 0
+        # planos_nao_env = db.session.query(VW_Pactos.id_pacto,
+        #                                   VW_Pactos.situacao,
+        #                                   VW_Pactos.data_inicio,
+        #                                   VW_Pactos.data_fim,
+        #                                   VW_Pactos.nome_participante,
+        #                                   VW_Pactos.sigla_unidade_exercicio,
+        #                                   VW_Pactos.modalidade_execucao)\
+        #                            .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
+        #                            .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+        #                                     VW_Pactos.horas_homologadas > 0,
+        #                                     VW_Pactos.id_pacto.in_(l))\
+        #                            .paginate(page=page,per_page=500) 
+        
+        # todos os planos de vw_pacto
         planos_nao_env = db.session.query(VW_Pactos.id_pacto,
                                           VW_Pactos.situacao,
                                           VW_Pactos.data_inicio,
@@ -629,10 +643,8 @@ def lista_a_enviar():
                                           VW_Pactos.sigla_unidade_exercicio,
                                           VW_Pactos.modalidade_execucao)\
                                    .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
-                                   .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                            VW_Pactos.horas_homologadas > 0,
-                                            VW_Pactos.id_pacto.in_(l))\
-                                   .paginate(page=page,per_page=500)                    
+                                   .filter(VW_Pactos.id_pacto.in_(l))\
+                                   .paginate(page=page,per_page=500)                                              
 
         planos = planos_nao_env
         planos_count = planos.total      
@@ -643,7 +655,6 @@ def lista_a_enviar():
                                               lista = lista,
                                               fonte = fonte,
                                               l_log_erro_envio = l_log_erro_envio,
-                                              formas = formas,
                                               data_ref = data_ref)
 
     else:
@@ -679,13 +690,20 @@ def lista_enviados():
         
         qtd_total = 0    
         for grupo in enviados:
-            qtd_total += len(grupo)
-            
-        formas = db.session.query(catdom.catalogoDominioId,
-                                  catdom.descricao)\
-                            .filter(catdom.classificacao == 'ModalidadeExecucao')\
-                            .all()    
+            qtd_total += len(grupo)   
                                 
+        # planos = db.session.query(VW_Pactos.id_pacto,
+        #                           VW_Pactos.situacao,
+        #                           VW_Pactos.data_inicio,
+        #                           VW_Pactos.data_fim,
+        #                           VW_Pactos.nome_participante,
+        #                           VW_Pactos.sigla_unidade_exercicio,
+        #                           VW_Pactos.modalidade_execucao)\
+        #                    .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
+        #                    .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
+        #                            VW_Pactos.horas_homologadas > 0,
+        #                            VW_Pactos.id_pacto.in_(l))\
+        #                    .paginate(page=page,per_page=500)   
         planos = db.session.query(VW_Pactos.id_pacto,
                                   VW_Pactos.situacao,
                                   VW_Pactos.data_inicio,
@@ -694,10 +712,8 @@ def lista_enviados():
                                   VW_Pactos.sigla_unidade_exercicio,
                                   VW_Pactos.modalidade_execucao)\
                            .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
-                           .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                   VW_Pactos.horas_homologadas > 0,
-                                   VW_Pactos.id_pacto.in_(l))\
-                           .paginate(page=page,per_page=500)                         
+                           .filter(VW_Pactos.id_pacto.in_(l))\
+                           .paginate(page=page,per_page=500)                                         
        
         planos_count = planos.total 
         
@@ -706,7 +722,6 @@ def lista_enviados():
                                               qtd_total = qtd_total,
                                               lista = lista,
                                               fonte = fonte,
-                                              formas = formas,
                                               data_ref = data_ref)
 
     else:
@@ -714,114 +729,6 @@ def lista_enviados():
         flash ('Credenciais de envio não informadas no deploy do aplicativo!','erro') 
 
         return render_template('index.html')                                          
-
-
-## pesquisa planos 
-
-@envio.route('/pesquisa_planos', methods = ['GET', 'POST'])
-@login_required
-
-def pesquisa_planos():
-    """
-    +---------------------------------------------------------------------------------------+
-    |Pesquisa planos a partir de critérios informados.                                      |
-    |                                                                                       |
-    +---------------------------------------------------------------------------------------+
-    """
-
-    instituicao_user = db.session.query(Unidades.undSigla).filter(Unidades.unidadeId == current_user.instituicaoId).first()
-
-    form = PesquisaPlanoForm()
-    
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSigla)\
-                      .order_by(VW_Unidades.undSigla)\
-                      .filter(VW_Unidades.undSiglaCompleta.like(instituicao_user.undSigla+'%'),
-                              VW_Unidades.situacaoUnidadeId==1)\
-                      .all()
-    lista_unids = [(u.undSigla,u.undSigla) for u in unids]
-    lista_unids.insert(0,('','Todas')) 
-    
-    form.unidade.choices = lista_unids
-    
-    if form.validate_on_submit():
-        
-        formas = db.session.query(catdom.catalogoDominioId,
-                                  catdom.descricao)\
-                            .filter(catdom.classificacao == 'ModalidadeExecucao')\
-                            .all()
-                            
-        #query que resgata erros em tentativas de envios de planos   
-        log_erro_envio = db.session.query(Log_Auto.id, Log_Auto.msg)\
-                                .filter(Log_Auto.msg.like('* Retorno API sobre falha'+'%') )\
-                                .order_by(Log_Auto.id.desc())\
-                                .all() 
-        l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]                    
-                            
-        enviados = planos_enviados_LOG()                    
-        
-        for l in enviados:
-        
-            planos_avaliados = db.session.query(VW_Pactos.id_pacto,
-                                                VW_Pactos.situacao,
-                                                VW_Pactos.data_inicio,
-                                                VW_Pactos.data_fim,
-                                                VW_Pactos.nome_participante,
-                                                VW_Pactos.sigla_unidade_exercicio,
-                                                VW_Pactos.modalidade_execucao,
-                                                literal('enviado').label('sit_envio'))\
-                                .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
-                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                        VW_Pactos.horas_homologadas > 0,
-                                        VW_Pactos.nome_participante.like('%'+form.pessoa.data+'%'),
-                                        VW_Pactos.sigla_unidade_exercicio.like('%'+form.unidade.data+'%'),
-                                        VW_Pactos.id_pacto.in_(l))\
-                                .all()
-                                
-            if enviados.index(l) == 0:
-                demandas = planos_avaliados
-                demandas_count = len(planos_avaliados)
-            else:    
-                demandas += planos_avaliados 
-                demandas_count += len(planos_avaliados)                    
-        
-        
-        n_enviados = planos_n_enviados_LOG()                    
-        
-        for l in n_enviados:
-        
-            planos_avaliados = db.session.query(VW_Pactos.id_pacto,
-                                                VW_Pactos.situacao,
-                                                VW_Pactos.data_inicio,
-                                                VW_Pactos.data_fim,
-                                                VW_Pactos.nome_participante,
-                                                VW_Pactos.sigla_unidade_exercicio,
-                                                VW_Pactos.modalidade_execucao,
-                                                literal('n_enviado').label('sit_envio'))\
-                                .order_by(VW_Pactos.data_fim.desc(),VW_Pactos.sigla_unidade_exercicio,VW_Pactos.nome_participante)\
-                                .filter(VW_Pactos.desc_situacao_pacto == 'Executado',
-                                        VW_Pactos.horas_homologadas > 0,
-                                        VW_Pactos.nome_participante.like('%'+form.pessoa.data+'%'),
-                                        VW_Pactos.sigla_unidade_exercicio.like('%'+form.unidade.data+'%'),
-                                        VW_Pactos.id_pacto.in_(l))\
-                                .all()
-                                
-            if n_enviados.index(l) == 0 and demandas == None:
-                demandas = planos_avaliados
-                demandas_count = len(planos_avaliados)
-            else:    
-                demandas += planos_avaliados 
-                demandas_count += len(planos_avaliados)    
-                                     
-        
-        return render_template('planos_pesq.html', demandas = demandas, 
-                                                   demandas_count = demandas_count,
-                                                   formas = formas,
-                                                   l_log_erro_envio = l_log_erro_envio)                            
-
-    return render_template('pesquisa.html', form = form)
-
-
-
 
 
 ## enviar plano específico 

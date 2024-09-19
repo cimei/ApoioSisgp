@@ -62,11 +62,10 @@
         {% endwith %}
 
         {% with 
-          icon="fa-magnifying-glass", 
-          title="Pesquisa Planos",
-          description="Permite procurar planos aptos ao envio (enviados e não enviados), 
-          conforme critérios de pesquisa.",
-          link=url_for("envio.pesquisa_planos")
+          icon="fa-calendar-check", 
+          title="Data ref. para envios",
+          description="Data de referência para selecionar planos aptos ao envio.",
+          link=url_for("core.ref_envios")
         %}
           {% include "card_menu.html" %}
         {% endwith %}

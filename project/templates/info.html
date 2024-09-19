@@ -3,91 +3,14 @@
 
 <div class="container">
   <div class="jumbotron">
-    <h3>O Módulo de Envio e Apoio à Gestão do PGD no âmbito da IN 65 (SISGP-SUSEP)</h3>
+    <h3>O Módulo de Envio para o PGD CADE</h3>
     <p></p>
-    <p>Trata-se de uma iniciativa que visa auxiliar a gestão do SISGP na instituição.</p>
-    <p>O manual do usuário  está disponível aqui: <a class="label label-primary" href=/static/Cartilha_MEAG_PGD1.pdf target="_blank"  style="margin-right: 5px;">Sobre o MEAG</a>.</p>
-    <p>A função de envios é uma alternativa ao aplicativo de envios do CADE. Esta permite agendamento de envios, consulta a planos 
-      aptos ao envio (já enviados ou não) e envio individual de planos.</p>
-    <p>As funções de apoio à gestão permitem consulta, inclusão e alteração de unidades, pessoas e atividades. Fornece também consultas 
-      úteis aos dados do SISGP e a possibilidade de carga em lote de unidades, pessoas e atividades.</p>
-    <p>Quanto às unidades, neste sistema, tipos de unidade estão restritos à Instituição (1), Diretoria (2), Coordenação-Geral (3), Coordenação (4),
-      Serviço (5) e Outros (6). Já os valores de situação, há Ativa (1) e Inativa (2).</p>
-    <p>Quanto aos dados de pessoas, os domínios de valores como Função, Situação e Vínculo podem ser consultados e alterados no menu Dados Auxiliares.</p>
-    <p>O menu Consultas apresenta opções de visualização do Catálogo de Domínio e também de informações
-      sobre a implementação e pactuação de Programas de Gestão nas Unidades da Instituição.</p>
-    <p>O usuário, após ativado, no menu de Funções Internas, pode ver o log do sistema, bem como ver e gerenciar a lista dos demais usuários.</p>
-    <p>Uma observação especial quanto ao registro de chefes de unidades: A pessoa que é chefe deve ter um tipo de função com status de chefia, após isto 
-      poderá ser registrada como chefe, ou substituto, em uma unidade.</p>
-
-  </div>
-</div>
-
-<div class="container">
-  <div class="jumbotron">
-
-    <h4><center>Alguns dados do Programa de Gestão na Instituição</center></h4><br>
+    <p>Baseado no MEAG SISGP, este sistema oferece somente a parte de envio de dados.</p>
     
-    <div class="row">
 
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{unids}} Unidades</h5>
-            <p class="card-text">{{unids_com_pg}} já criaram algum PG</p>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('unidades.lista_unidades',lista='ativas')}}" class="card-link">Ver unidades</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pes}} Pessoas</h5>
-            <p class="card-text">{{pes_pacto}} com planos vigentes</p>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('pessoas.lista_pessoas')}}" class="card-link">Ver pessoas</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{ativs}} Atividades</h5>
-            {% if current_user.is_authenticated and current_user.userAtivo %}
-              <a href="{{url_for('atividades.lista_atividades',lista='ativas')}}" class="card-link">Ver atividades</a>
-            {% endif %}  
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pts}} Programas de Gestão</h5>
-            <p class="card-text">{{pts_exec}} em execução</p>
-            <p class="card-text">veja "Consultas"</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card text-center" style="width: 10rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{pactos}} Planos</h5>
-            <p class="card-text">{{pactos_exec}} em execução</p>
-            <p class="card-text">veja "Consultas"</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
+
 
 
 {% endblock %}

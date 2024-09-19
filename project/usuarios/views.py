@@ -44,14 +44,10 @@ from flask_mail import Message
 from threading import Thread
 from datetime import datetime, date, timedelta, time
 from werkzeug.security import generate_password_hash
-from sqlalchemy import func
-from sqlalchemy.sql import label
-from sqlalchemy.orm import aliased
-from collections import Counter
 import os
 
 from project import db, mail, app
-from project.models import users, Log_Auto, catdom, Pessoas, Unidades, VW_Unidades
+from project.models import users, Log_Auto, Unidades
 
 from project.usuarios.forms import RegistrationForm, LoginForm, EmailForm, PasswordForm, AdminForm,\
                                 LogForm, TrocaPasswordForm
@@ -153,12 +149,11 @@ def register():
 
     form = RegistrationForm()
     
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
-                      .order_by(VW_Unidades.undSiglaCompleta)\
-                      .filter(VW_Unidades.situacaoUnidadeId==1,
-                              VW_Unidades.undNivel < 2).all()
+    unids = db.session.query(Unidades.IdUnidade, Unidades.Sigla)\
+                      .order_by(Unidades.Sigla)\
+                      .filter(Unidades.IdUnidadeSuperior == None).all()
     
-    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids = [(u.IdUnidade,u.Sigla) for u in unids]
     lista_unids.insert(0,(0,''))
     
     form.unidade.choices = lista_unids
@@ -373,13 +368,13 @@ def login():
 
                     # força uma instituição para o usuário caso ele não tenha uma registrada
                     if user.instituicaoId == None:
-                        inst = Unidades.query.filter(Unidades.unidadeIdPai == None, Unidades.situacaoUnidadeId == 1).first()
+                        inst = Unidades.query.filter(Unidades.IdUnidadePai == None, Unidades.situacaoIdUnidade == 1).first()
                         if inst == None:
                             print ('** NÃO HÁ UNIDADE ATIVA TOPO DE HIERARQUIA (SEM PAI) NA TABELA UNIDADES **')
                             flash ('Não há unidade ATIVA topo de hirarquia na tabela Unidades','erro')
                             abort(404)
                         else:    
-                            user.instituicaoId = inst.unidadeId
+                            user.instituicaoId = inst.IdUnidade
 
                     user.last_logged_in = user.current_logged_in
                     user.current_logged_in = datetime.now()
@@ -434,12 +429,11 @@ def primeiro_user():
 
     form = RegistrationForm()
     
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
-                    .order_by(VW_Unidades.undSiglaCompleta)\
-                    .filter(VW_Unidades.situacaoUnidadeId==1,
-                            VW_Unidades.undNivel < 2).all()
+    unids = db.session.query(Unidades.IdUnidade, Unidades.Sigla)\
+                    .order_by(Unidades.Sigla)\
+                    .filter(Unidades.IdUnidadeSuperior == None).all()
 
-    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids = [(u.IdUnidade,u.Sigla) for u in unids]
     lista_unids.insert(0,(0,''))
     
     form.unidade.choices = lista_unids    
@@ -522,12 +516,11 @@ def update_user(user_id):
 
     form = AdminForm()
     
-    unids = db.session.query(VW_Unidades.unidadeId, VW_Unidades.undSiglaCompleta)\
-                      .order_by(VW_Unidades.undSiglaCompleta)\
-                      .filter(VW_Unidades.situacaoUnidadeId==1,
-                              VW_Unidades.undNivel < 2).all()
+    unids = db.session.query(Unidades.IdUnidade, Unidades.Sigla)\
+                      .order_by(Unidades.Sigla)\
+                      .filter(Unidades.IdUnidadeSuperior == None).all()
     
-    lista_unids = [(u.unidadeId,u.undSiglaCompleta) for u in unids]
+    lista_unids = [(u.IdUnidade,u.Sigla) for u in unids]
     lista_unids.insert(0,(0,''))
     
     form.unidade.choices = lista_unids
