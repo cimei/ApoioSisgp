@@ -806,6 +806,8 @@ def enviar_um_plano(plano_id,lista):
             else:
                 data_avaliacao = a.data_avaliacao.strftime('%Y-%m-%d')  
 
+                    
+
             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                             'nome_grupo_atividade': a.nome_grupo_atividade,
                                             'nome_atividade': a.nome_atividade,
@@ -821,7 +823,7 @@ def enviar_um_plano(plano_id,lista):
                                             'qtde_entregas': a.qtde_entregas,
                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                             'avaliacao': a.avaliacao,
-                                            'data_avaliacao': data_avaliacao.strftime('%Y-%m-%d'),
+                                            'data_avaliacao': data_avaliacao,
                                             'justificativa': a.justificativa}) 
 
    
