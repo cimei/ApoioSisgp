@@ -145,7 +145,7 @@ def planos_enviados_LOG():
                                     Log_Auto.user_id.in_(lista_users))\
                             .distinct()  
     
-    enviados = [e.msg[18:54] for e in enviados_log]
+    enviados = [e.msg[18:54].split()[0] for e in enviados_log]
    
     # quebrando enviados em listas com 1000 ou menos elementos
     listas = []

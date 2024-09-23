@@ -123,7 +123,7 @@ class VW_Pactos(db.Model):
     __tablename__ = 'vw_pacto'
     __table_args__ = {"schema": "dbo"}
 
-    id_pacto                = db.Column(db.String, primary_key = True)
+    id_pacto                = db.Column(db.Integer, primary_key = True)
     situacao                = db.Column(db.String)
     matricula_siape         = db.Column(db.String)
     cpf                     = db.Column(db.String)
@@ -133,12 +133,12 @@ class VW_Pactos(db.Model):
     sigla_unidade_exercicio = db.Column(db.String)
     desc_situacao_pacto     = db.Column(db.String)
     modalidade_execucao     = db.Column(db.Integer)
-    carga_horaria_semanal   = db.Column(db.Integer)
+    carga_horaria_semanal   = db.Column(db.Float)
     data_inicio             = db.Column(db.Date)
     data_fim                = db.Column(db.Date)
-    carga_horaria_total     = db.Column(db.Integer)
+    carga_horaria_total     = db.Column(db.Float)
     data_interrupcao        = db.Column(db.Date)
-    entregue_no_prazo       = db.Column(db.Integer)
+    entregue_no_prazo       = db.Column(db.String)
     horas_homologadas       = db.Column(db.Float)
 
     def __init__(self, id_pacto, situacao, matricula_siape, cpf, nome_participante, cod_unidade_exercicio, nome_unidade_exercicio, sigla_unidade_exercicio, desc_situacao_pacto,
