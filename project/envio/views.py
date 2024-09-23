@@ -763,6 +763,12 @@ def enviar_um_plano(plano_id,lista):
     plano = db.session.query(VW_Pactos).filter(VW_Pactos.id_pacto == plano_id).first()
 
     # para o plano, monta dados no dicionário 
+    
+    if plano.data_interrupcao == None or plano.data_interrupcao == '':
+        data_interrupcao = None
+    else:
+        data_interrupcao = plano.data_interrupcao.strftime('%Y-%m-%d')
+        
 
     dic_envio = {}
 
@@ -778,7 +784,7 @@ def enviar_um_plano(plano_id,lista):
     dic_envio['data_inicio']            = plano.data_inicio.strftime('%Y-%m-%d')
     dic_envio['data_fim']               = plano.data_fim.strftime('%Y-%m-%d')
     dic_envio['carga_horaria_total']    = plano.carga_horaria_total
-    dic_envio['data_interrupcao']       = plano.data_interrupcao.strftime('%Y-%m-%d')
+    dic_envio['data_interrupcao']       = data_interrupcao
     dic_envio['entregue_no_prazo']      = plano.entregue_no_prazo
     dic_envio['horas_homologadas']      = plano.horas_homologadas
     dic_envio['atividades']             = []
@@ -794,6 +800,11 @@ def enviar_um_plano(plano_id,lista):
         if a.tempo_presencial_estimado != None and a.tempo_presencial_programado != None and \
            a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
           (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
+              
+            if a.data_avaliacao == None or a.data_avaliacao == '':
+                data_avaliacao = None
+            else:
+                data_avaliacao = a.data_avaliacao.strftime('%Y-%m-%d')  
 
             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                             'nome_grupo_atividade': a.nome_grupo_atividade,
@@ -810,7 +821,7 @@ def enviar_um_plano(plano_id,lista):
                                             'qtde_entregas': a.qtde_entregas,
                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                             'avaliacao': a.avaliacao,
-                                            'data_avaliacao': a.data_avaliacao.strftime('%Y-%m-%d'),
+                                            'data_avaliacao': data_avaliacao.strftime('%Y-%m-%d'),
                                             'justificativa': a.justificativa}) 
 
    
