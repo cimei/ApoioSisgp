@@ -778,7 +778,7 @@ def enviar_um_plano(plano_id,lista):
     dic_envio['data_inicio']            = plano.data_inicio.strftime('%Y-%m-%d')
     dic_envio['data_fim']               = plano.data_fim.strftime('%Y-%m-%d')
     dic_envio['carga_horaria_total']    = plano.carga_horaria_total
-    dic_envio['data_interrupcao']       = plano.data_interrupcao
+    dic_envio['data_interrupcao']       = plano.data_interrupcao.strftime('%Y-%m-%d')
     dic_envio['entregue_no_prazo']      = plano.entregue_no_prazo
     dic_envio['horas_homologadas']      = plano.horas_homologadas
     dic_envio['atividades']             = []
@@ -810,7 +810,7 @@ def enviar_um_plano(plano_id,lista):
                                             'qtde_entregas': a.qtde_entregas,
                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                             'avaliacao': a.avaliacao,
-                                            'data_avaliacao': a.data_avaliacao,
+                                            'data_avaliacao': a.data_avaliacao.strftime('%Y-%m-%d'),
                                             'justificativa': a.justificativa}) 
 
    

@@ -1,5 +1,9 @@
 ## Atualizações ##
 
+23/09/2024
+Datas como string no json de envio.
+v1.0.2
+
 19/09/2024
 Ajuste no filtro de planos a enviar e enviados
 v1.0.1
