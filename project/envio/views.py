@@ -363,7 +363,7 @@ def envia_API(tipo,inst):
                                                             'justificativa': a.justificativa}) 
 
                     # prepara headers do put
-                    plano_id = p.id_pacto
+                    plano_id = str(p.id_pacto)
                     headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
                     
                     # faz o put na API via dumps json do dicionário    
@@ -523,7 +523,7 @@ def envia_API(tipo,inst):
                                                             'justificativa': a.justificativa}) 
 
                     # prepara headers do put
-                    plano_id = p.id_pacto
+                    plano_id = str(p.id_pacto)
                     headers = {'Content-Type': "application/json", 'Accept': "application/json", 'Authorization': 'Bearer {}'.format(token)}
                     
                     # faz o put na API via dumps json do dicionário    
