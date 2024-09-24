@@ -84,7 +84,7 @@
               <td><p align = "center">
                 {% set erro = namespace(msg = None) %}
                 {% for item in l_log_erro_envio %}
-                  {% if demanda.id_pacto in item[0] %}
+                  {% if demanda.id_pacto == item[0] %}
                     {% set erro.msg = item[1] %}
                   {% endif %}  
                 {% endfor %}

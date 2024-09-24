@@ -199,7 +199,8 @@ def planos_n_enviados_LOG():
     
     # todos os planos de vw_pacto que terminam depois da data de referência
     planos_avaliados = db.session.query(VW_Pactos.id_pacto)\
-                                .filter(VW_Pactos.data_fim >= data_ref)\
+                                .filter(VW_Pactos.horas_homologadas > 0,
+                                        VW_Pactos.data_fim >= data_ref)\
                                 .all()                                                                  
 
 
