@@ -145,7 +145,7 @@ def planos_enviados_LOG():
                                     Log_Auto.user_id.in_(lista_users))\
                             .distinct()  
     
-    enviados = [e.msg[18:54].split()[0] for e in enviados_log]
+    enviados = [int(e.msg[18:54].split()[0]) for e in enviados_log]
    
     # quebrando enviados em listas com 1000 ou menos elementos
     listas = []
@@ -228,7 +228,7 @@ def planos_n_enviados_LOG():
                                     Log_Auto.user_id.in_(lista_users))\
                             .distinct()
     
-    log = [e.msg[18:54] for e in enviados_log]
+    log = [int(e.msg[18:54].split()[0]) for e in enviados_log]
 
     n_enviados = []
     
@@ -303,7 +303,7 @@ def envia_API(tipo,inst):
                     # parar o envio caso extrapole o horário limite
                     if limita_horario:
                         if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                        datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        datetime.now().time() < datetime.strptime('15:00:00','%H:%M:%S').time():
                             break
                     
                     # se estorar 55 minutos, pega novo token
@@ -313,6 +313,11 @@ def envia_API(tipo,inst):
                         hora_token = datetime.now() + timedelta(seconds=(60*55)) 
                         print ('** Hora para pegar próximo token: ',hora_token)
 
+                    if p.data_interrupcao == None or p.data_interrupcao == '':
+                        data_interrupcao = None
+                    else:
+                        data_interrupcao = p.data_interrupcao.strftime('%Y-%m-%d')
+                    
                     dic_envio = {}
 
                     dic_envio['cod_plano']              = p.id_pacto
@@ -327,7 +332,7 @@ def envia_API(tipo,inst):
                     dic_envio['data_inicio']            = p.data_inicio.strftime('%Y-%m-%d')
                     dic_envio['data_fim']               = p.data_fim.strftime('%Y-%m-%d')
                     dic_envio['carga_horaria_total']    = p.carga_horaria_total
-                    dic_envio['data_interrupcao']       = p.data_interrupcao
+                    dic_envio['data_interrupcao']       = data_interrupcao
                     dic_envio['entregue_no_prazo']      = p.entregue_no_prazo
                     dic_envio['horas_homologadas']      = p.horas_homologadas
                     dic_envio['atividades']             = []
@@ -344,6 +349,12 @@ def envia_API(tipo,inst):
                            a.tempo_teletrabalho_estimado != None and a.tempo_teletrabalho_programado != None and \
                            (a.tempo_presencial_executado > 0 or a.tempo_teletrabalho_executado > 0):
 
+                            if a.data_avaliacao == None or a.data_avaliacao == '':
+                                data_avaliacao = None
+                            else:
+                                data_avaliacao = a.data_avaliacao.strftime('%Y-%m-%d')
+                            
+                            
                             dic_envio['atividades'].append({'id_atividade': a.id_produto,
                                                             'nome_grupo_atividade': a.nome_grupo_atividade,
                                                             'nome_atividade': a.nome_atividade,
@@ -359,7 +370,7 @@ def envia_API(tipo,inst):
                                                             'qtde_entregas': a.qtde_entregas,
                                                             'qtde_entregas_efetivas': a.qtde_entregas_efetivas,
                                                             'avaliacao': a.avaliacao,
-                                                            'data_avaliacao': a.data_avaliacao,
+                                                            'data_avaliacao': data_avaliacao,
                                                             'justificativa': a.justificativa}) 
 
                     # prepara headers do put
@@ -465,7 +476,7 @@ def envia_API(tipo,inst):
                     # parar o envio caso extrapole o horário limite
                     if limita_horario:
                         if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                        datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                        datetime.now().time() < datetime.strptime('15:00:00','%H:%M:%S').time():
                             break
                     
                     # se estourar 55 minutos, pega novo token
@@ -617,7 +628,7 @@ def lista_a_enviar():
                                         Log_Auto.data_hora >= data_ref)\
                                 .order_by(Log_Auto.id.desc())\
                                 .all() 
-        l_log_erro_envio = [[p.msg[47:83],p.msg] for p in log_erro_envio]  
+        l_log_erro_envio = [[int(p.msg[47:83].split()[0]),p.msg] for p in log_erro_envio]  
                                                
                             
         # todos os planos executados e com horas homologadas > 0
