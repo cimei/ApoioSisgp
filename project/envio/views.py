@@ -391,7 +391,7 @@ def envia_API(tipo,inst):
                 # parar o envio caso extrapole o horário limite
                 if limita_horario:
                     if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                    datetime.now().time() < datetime.strptime('15:00:00','%H:%M:%S').time():
                         print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
                         registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
                         break
@@ -551,7 +551,7 @@ def envia_API(tipo,inst):
                 # parar o envio caso extrapole o horário limite
                 if limita_horario:
                     if datetime.now().time() > datetime.strptime('06:00:00','%H:%M:%S').time() and \
-                    datetime.now().time() < datetime.strptime('20:00:00','%H:%M:%S').time():
+                    datetime.now().time() < datetime.strptime('15:00:00','%H:%M:%S').time():
                         print ('** Intervalo de tempo para o envio de planos esgotado para hoje **')
                         registra_log_auto(id_user, '* Intervalo de tempo para o envio de planos esgotado para hoje.') 
                         break
